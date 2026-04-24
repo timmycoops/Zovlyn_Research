@@ -339,6 +339,25 @@ nav {
 }
 .section-h2 span { color: var(--teal); }
 
+/* Sub-section label for grouping grids */
+.sub-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--t3);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  margin: 40px 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sub-label::before {
+  content: '';
+  width: 18px; height: 1px;
+  background: var(--t4);
+}
+.sub-label:first-of-type { margin-top: 8px; }
+
 /* Tool cards grid */
 .tools-grid {
   display: grid;
@@ -586,41 +605,41 @@ footer {
   </a>
   <ul class="nav-links">
     <li><a href="#tools">Tools</a></li>
+    <li><a href="#library">Research</a></li>
     <li><a href="#about">About</a></li>
-    <li><a href="https://github.com" target="_blank">GitHub ↗</a></li>
   </ul>
 </nav>
 
 <!-- Hero -->
 <section class="hero" id="home">
-  <div class="hero-eyebrow">Independent Research · Lithium Markets · April 2026</div>
+  <div class="hero-eyebrow">Independent Lithium Research · April 2026</div>
   <h1 class="hero-h1">Interactive tools<br>for <em>lithium</em><br>project analysis</h1>
-  <p class="hero-sub">Open-source DCF models, EV/t LCE valuation charts, and market research built for investors and analysts. Free to use, free to share.</p>
+  <p class="hero-sub">Open-source DCF models, EV/t LCE valuation charts, global project mapping, and deep-dive company reports. Built for investors and analysts who want to do their own work.</p>
   <div class="hero-cta">
-    <a href="cisco-enhanced-v2.html" class="btn-primary">Open DCF Model →</a>
-    <a href="lce_chart_2.html" class="btn-secondary">Valuation Chart</a>
+    <a href="#tools" class="btn-primary">Explore Tools →</a>
+    <a href="#library" class="btn-secondary">Research Library</a>
   </div>
 
   <div class="hero-stats">
     <div class="stat-item">
-      <div class="stat-v">9.9 Mt</div>
-      <div class="stat-l">Cisco LCE Resource</div>
+      <div class="stat-v">4</div>
+      <div class="stat-l">Interactive Tools</div>
     </div>
     <div class="stat-item">
-      <div class="stat-v">C$2.80</div>
-      <div class="stat-l">QTWO Current Price</div>
+      <div class="stat-v">19</div>
+      <div class="stat-l">Valuation Comps</div>
     </div>
     <div class="stat-item">
-      <div class="stat-v">$40/t</div>
-      <div class="stat-l">Implied EV/t LCE</div>
+      <div class="stat-v">Global</div>
+      <div class="stat-l">Project Coverage</div>
     </div>
     <div class="stat-item">
-      <div class="stat-v">US$395M</div>
-      <div class="stat-l">Market Cap</div>
+      <div class="stat-v">Apr 2026</div>
+      <div class="stat-l">Latest Build</div>
     </div>
     <div class="stat-item">
-      <div class="stat-v">~$103/t</div>
-      <div class="stat-l">VW/PMET M&A Comp</div>
+      <div class="stat-v">Open</div>
+      <div class="stat-l">Free to Use & Share</div>
     </div>
   </div>
 </section>
@@ -629,7 +648,7 @@ footer {
 <section class="tools" id="tools">
   <div class="section-header reveal">
     <div class="section-tag">Interactive tools</div>
-    <h2 class="section-h2">Everything in one place.<br><span>Open any tool instantly.</span></h2>
+    <h2 class="section-h2">Value. Compare. Map.<br><span>Everything in one place.</span></h2>
   </div>
 
   <div class="tools-grid">
@@ -708,15 +727,30 @@ footer {
       </div>
     </a>
 
+  </div>
+</section>
+
+<!-- Research Library -->
+<section class="tools" id="library" style="padding-top:40px;">
+  <div class="section-header reveal">
+    <div class="section-tag">Research library</div>
+    <h2 class="section-h2">Market context &<br><span>company deep dives.</span></h2>
+    <p style="font-size:14px;color:var(--t2);line-height:1.7;margin-top:18px;max-width:640px;">Long-form reference material and full reports on specific companies. The tools above answer <em style="color:var(--t1);font-style:normal;">what's it worth</em> — this section answers <em style="color:var(--t1);font-style:normal;">what do I need to know</em>.</p>
+  </div>
+
+  <!-- Market Research subsection -->
+  <div class="sub-label reveal">Market Research</div>
+  <div class="tools-grid" style="margin-bottom:32px;">
+
     <!-- TSX.V Market Primer -->
     <a href="tsxv_primer.html" class="tool-card reveal" style="--accent: var(--gold)">
       <div class="tool-card-head">
         <div class="tool-icon" style="background:rgba(212,175,55,.1);">📖</div>
         <div class="tool-arrow">↗</div>
       </div>
-      <div class="tool-tag" style="background:rgba(212,175,55,.1);color:var(--gold)">Reference Guide</div>
+      <div class="tool-tag" style="background:rgba(212,175,55,.1);color:var(--gold)">Primer</div>
       <div class="tool-name">TSX.V<br>Market Primer</div>
-      <div class="tool-desc">How Canada's junior exchange actually works. Fourteen trading venues, the order lifecycle, the five tiers of market data, settlement mechanics, what's hidden from retail, and the broker playbook used on thin-float juniors. Essential context for anyone researching TSX.V names.</div>
+      <div class="tool-desc">How Canada's junior exchange actually works. Fourteen trading venues, the order lifecycle, the five tiers of market data, settlement mechanics, what's hidden from retail, and the broker playbook used on thin-float juniors. Essential context for anyone researching any TSX.V name.</div>
       <div class="tool-features">
         <span class="feat">14 venues</span>
         <span class="feat">Order lifecycle</span>
@@ -727,51 +761,92 @@ footer {
     </a>
 
   </div>
+
+  <!-- Company Deep Dives subsection -->
+  <div class="sub-label reveal">Company Deep Dives</div>
+  <div class="tools-grid">
+
+    <!-- Q2 Metals (QTWO) -->
+    <a href="QTWO_Report_v4.html" class="tool-card reveal" style="--accent: var(--cisco)">
+      <div class="tool-card-head">
+        <div class="tool-icon" style="background:rgba(255,53,71,.1);">🔍</div>
+        <div class="tool-arrow">↗</div>
+      </div>
+      <div class="tool-tag" style="background:rgba(255,53,71,.1);color:var(--cisco)">Company Report</div>
+      <div class="tool-name">Q2 Metals Corp<br><span style="color:var(--t3);font-size:16px;font-weight:500;">(TSX.V: QTWO) — Cisco Lithium</span></div>
+      <div class="tool-desc">Full situation report on Q2 Metals and the Cisco Lithium Project in James Bay, Quebec. Covers the 9.9 Mt LCE maiden resource, broker flow analysis across trading venues, narrative phases, and the investigative framework applied to the name.</div>
+      <div class="tool-features">
+        <span class="feat">9.9 Mt LCE</span>
+        <span class="feat">Broker flow</span>
+        <span class="feat">Narrative arc</span>
+        <span class="feat">Case study</span>
+        <span class="feat">Apr 2026</span>
+      </div>
+    </a>
+
+    <!-- Placeholder: More deep dives coming -->
+    <div class="tool-card reveal" style="--accent: var(--t3); cursor:default; opacity:.55;">
+      <div class="tool-card-head">
+        <div class="tool-icon" style="background:rgba(127,168,200,.06);color:var(--t3);">＋</div>
+        <div class="tool-arrow" style="border-style:dashed;">…</div>
+      </div>
+      <div class="tool-tag" style="background:rgba(127,168,200,.08);color:var(--t3)">In the works</div>
+      <div class="tool-name" style="color:var(--t2)">More deep dives<br>coming soon</div>
+      <div class="tool-desc">Additional company reports on lithium developers and producers will be added here — same framework, same level of detail. Reach out if there's a name you'd like covered.</div>
+      <div class="tool-features">
+        <span class="feat">Developers</span>
+        <span class="feat">Producers</span>
+        <span class="feat">Hard rock</span>
+        <span class="feat">Brine</span>
+      </div>
+    </div>
+
+  </div>
 </section>
 
 <!-- About -->
 <section class="about" id="about">
   <div class="reveal">
-    <h2 class="about-h">Built around the<br><span>Cisco Lithium Project</span></h2>
-    <p class="about-p">Q2 Metals Corp (TSX.V: QTWO) released a maiden NI 43-101 MRE on April 20, 2026 for the Cisco Lithium Project in Eeyou Istchee James Bay, Quebec — one of the largest lithium pegmatite resources ever defined.</p>
-    <p class="about-p">These tools were built to analyse the project's economics, understand where it sits relative to global peers, and model what different development scenarios might imply for shareholder value.</p>
-    <div class="about-note">All models are pre-PEA estimates calibrated to comparable feasibility studies. Not investment advice. Figures sourced from company filings and public M&A data as of April 2026.</div>
+    <h2 class="about-h">Independent research for<br><span>lithium investors</span></h2>
+    <p class="about-p">The lithium space runs on press releases, unverified assumptions, and recycled broker decks. These tools exist so anyone willing to do the work can sanity-check the economics, compare projects on a consistent basis, and understand the mechanics of the exchanges these names trade on.</p>
+    <p class="about-p">Every model is open — if you disagree with an assumption, change it. The methodology is calibrated against published feasibility studies and real M&A transactions. Where a company-specific deep dive exists, it's a worked example of the framework applied to a single name, not a recommendation.</p>
+    <div class="about-note">All models and reports are independent research, pre-PEA estimates where applicable, and calibrated to comparable feasibility studies. Not investment advice. Figures sourced from company filings, NI 43-101 reports, and public M&A data. Do your own work.</div>
   </div>
   <div class="about-right reveal">
     <div class="fact-row">
-      <div class="fact-lbl">Total resource</div>
-      <div class="fact-val" style="color:var(--cisco)">295 Mt @ 1.36% Li₂O</div>
+      <div class="fact-lbl">Coverage</div>
+      <div class="fact-val" style="color:var(--teal)">Global · all stages</div>
     </div>
     <div class="fact-row">
-      <div class="fact-lbl">Contained LCE</div>
-      <div class="fact-val" style="color:var(--teal)">9.9 Mt LCE</div>
+      <div class="fact-lbl">Data sources</div>
+      <div class="fact-val" style="color:var(--t2)">Filings · M&A · FS decks</div>
     </div>
     <div class="fact-row">
-      <div class="fact-lbl">Location</div>
-      <div class="fact-val" style="color:var(--t2)">James Bay, Québec</div>
+      <div class="fact-lbl">Methodology</div>
+      <div class="fact-val" style="color:var(--t2)">Calibrated to peer FS</div>
     </div>
     <div class="fact-row">
-      <div class="fact-lbl">Infrastructure</div>
-      <div class="fact-val" style="color:var(--t2)">150km to Matagami CN Rail</div>
+      <div class="fact-lbl">Licensing</div>
+      <div class="fact-val" style="color:var(--green)">Open · free to share</div>
     </div>
     <div class="fact-row">
-      <div class="fact-lbl">Best intercept</div>
-      <div class="fact-val" style="color:var(--amber)">457.4m @ 1.65% Li₂O</div>
+      <div class="fact-lbl">Latest build</div>
+      <div class="fact-val" style="color:var(--amber)">April 2026</div>
     </div>
     <div class="fact-row">
-      <div class="fact-lbl">PEA expected</div>
-      <div class="fact-val" style="color:var(--green)">Late 2026</div>
+      <div class="fact-lbl">Deep dives</div>
+      <div class="fact-val" style="color:var(--cisco)">1 active · more to come</div>
     </div>
   </div>
 </section>
 
 <!-- Footer -->
 <footer>
-  <div class="footer-l">Lithium Research Tools</div>
+  <div class="footer-l">Lithium Research</div>
   <div class="footer-r">
-    Data: company filings, Bloomberg, public M&A · April 2026<br>
+    Data: company filings, NI 43-101 reports, public M&A · April 2026<br>
     Not investment advice · Tools provided for educational purposes only<br>
-    TSX.V: QTWO · Q2 Metals Corp · q2metals.com
+    Independent research · Free to use · Free to share
   </div>
 </footer>
 
