@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Global Lithium Supply Model — Interactive Forecast</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080d14;--surface:#0e1620;--card:#131e2e;--card2:#192538;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
+  --accent:#ffc107;--teal:#26c6da;--blue:#64b5f6;--purple:#b39dff;
+  --green:#69f0ae;--red:#ff5252;--orange:#ffab40;--pink:#f48fb1;
+  --text:#f1f5f9;--muted:#64748b;--dim:#334155;
+  --font:'Space Grotesk',system-ui,sans-serif;--mono:'Space Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px;}
+body{padding:0 0 60px;}
+
+.hdr{padding:20px 28px 16px;border-bottom:1px solid var(--border);background:var(--surface);}
+.hdr-eyebrow{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--teal);margin-bottom:4px;}
+.hdr-row{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
+.hdr-title{font-size:22px;font-weight:700;line-height:1.2;}
+.hdr-title span{color:var(--accent);}
+.hdr-sub{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5;max-width:600px;}
+.kpi-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.kpi{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:10px 16px;min-width:130px;text-align:center;}
+.kpi-val{font-size:20px;font-weight:700;font-family:var(--mono);line-height:1.1;}
+.kpi-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:3px;}
+
+.tabs{display:flex;padding:0 28px;border-bottom:1px solid var(--border);background:var(--surface);overflow-x:auto;}
+.tab{background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;padding:10px 16px;font-size:12px;color:var(--muted);font-family:inherit;white-space:nowrap;transition:all .15s;}
+.tab.on{color:var(--text);border-bottom-color:var(--accent);font-weight:600;}
+.tab:hover:not(.on){color:var(--text);}
+
+.filters{padding:12px 28px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.filter-group{display:flex;align-items:center;gap:6px;}
+.filter-group label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+select,input[type=text]{background:var(--card);color:var(--text);border:1px solid var(--border2);border-radius:6px;padding:6px 10px;font-size:12px;font-family:inherit;}
+select:focus,input:focus{outline:1px solid var(--accent);}
+.btn{background:var(--accent);color:#000;border:none;border-radius:6px;padding:6px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;}
+.btn:hover{opacity:.85;}
+.btn-sm{background:var(--card);color:var(--text);border:1px solid var(--border2);padding:4px 10px;font-size:10px;}
+.btn-sm:hover{border-color:var(--accent);}
+
+.content{padding:20px 28px;}
+
+.chart-wrap{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:16px;margin-bottom:20px;position:relative;}
+.chart-title{font-size:13px;font-weight:600;margin-bottom:10px;}
+canvas{width:100%!important;max-height:500px;}
+
+.table-wrap{overflow-x:auto;margin-top:16px;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead th{background:var(--card2);position:sticky;top:0;padding:8px 10px;text-align:left;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--border2);white-space:nowrap;cursor:pointer;}
+thead th:hover{color:var(--text);}
+tbody td{padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap;}
+tbody tr:hover{background:rgba(255,193,7,.04);}
+.editable{background:rgba(255,255,255,.03);border:1px solid transparent;border-radius:3px;padding:2px 6px;color:var(--text);font-family:var(--mono);font-size:11px;width:70px;text-align:right;}
+.editable:focus{border-color:var(--accent);outline:none;background:var(--card2);}
+.editable.changed{color:var(--accent);}
+.stage-badge{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:600;letter-spacing:.04em;}
+.stage-operating{background:rgba(105,240,174,.12);color:var(--green);}
+.stage-construction{background:rgba(100,181,246,.12);color:var(--blue);}
+.stage-care{background:rgba(255,171,64,.12);color:var(--orange);}
+.stage-dfs,.stage-pfs,.stage-feasibility{background:rgba(179,157,255,.12);color:var(--purple);}
+.stage-permitting{background:rgba(244,143,177,.12);color:var(--pink);}
+.stage-exploration{background:rgba(255,82,82,.12);color:var(--red);}
+.type-badge{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:500;}
+.type-hard-rock{background:rgba(255,193,7,.1);color:var(--accent);}
+.type-brine{background:rgba(38,198,218,.1);color:var(--teal);}
+.type-clay{background:rgba(244,143,177,.1);color:var(--pink);}
+.type-lepidolite{background:rgba(179,157,255,.1);color:var(--purple);}
+
+.source-cell{font-size:10px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;}
+
+.notes{margin-top:20px;padding:16px;background:var(--card);border:1px solid var(--border2);border-radius:8px;font-size:11px;color:var(--muted);line-height:1.6;}
+.notes strong{color:var(--text);}
+
+.export-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border2);padding:10px 28px;display:flex;gap:10px;align-items:center;z-index:100;}
+
+#add-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;}
+#add-modal.show{display:flex;}
+.modal-box{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:24px;width:90%;max-width:500px;max-height:80vh;overflow-y:auto;}
+.modal-box h3{margin-bottom:16px;font-size:16px;}
+.form-row{margin-bottom:10px;}
+.form-row label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.form-row input,.form-row select{width:100%;background:var(--card2);color:var(--text);border:1px solid var(--border2);border-radius:6px;padding:8px 10px;font-size:12px;font-family:inherit;}
+.modal-actions{display:flex;gap:10px;margin-top:16px;justify-content:flex-end;}
+
+@media(max-width:768px){
+  .hdr{padding:14px 16px 12px;}
+  .filters,.content{padding-left:16px;padding-right:16px;}
+  .tabs{padding:0 16px;}
+  .kpi{min-width:100px;padding:8px 10px;}
+  .kpi-val{font-size:16px;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-eyebrow">Zovlyn Research</div>
+  <div class="hdr-row">
+    <div>
+      <div class="hdr-title">Global Lithium <span>Supply Model</span></div>
+      <div class="hdr-sub">Interactive forecast by company & asset — LCE kt/yr. Data sourced from company reports, feasibility studies & analyst estimates. Click any production cell to edit. Last updated April 2026.</div>
+    </div>
+  </div>
+  <div class="kpi-row" id="kpis"></div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" data-tab="chart" onclick="switchTab(this)">Supply Chart</button>
+  <button class="tab" data-tab="table" onclick="switchTab(this)">Data Table</button>
+  <button class="tab" data-tab="bytype" onclick="switchTab(this)">By Type</button>
+  <button class="tab" data-tab="byregion" onclick="switchTab(this)">By Region</button>
+  <button class="tab" data-tab="company" onclick="switchTab(this)">Top Companies</button>
+  <button class="tab" data-tab="costcurve" onclick="switchTab(this)">Cost Curve (LCE)</button>
+  <button class="tab" data-tab="sc6curve" onclick="switchTab(this)">Hard Rock SC6</button>
+  <button class="tab" data-tab="demand" onclick="switchTab(this)">Demand Model</button>
+  <button class="tab" data-tab="gwh" onclick="switchTab(this)">GWh Tracker</button>
+  <button class="tab" data-tab="convert" onclick="switchTab(this)">Conversions</button>
+</div>
+
+<div class="filters">
+  <div class="filter-group">
+    <label>Type</label>
+    <select id="f-type" onchange="applyFilters()">
+      <option value="all">All Types</option>
+      <option value="Hard Rock">Hard Rock</option>
+      <option value="Brine">Brine</option>
+      <option value="Lepidolite">Lepidolite</option>
+      <option value="Clay">Clay</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Stage</label>
+    <select id="f-stage" onchange="applyFilters()">
+      <option value="all">All Stages</option>
+      <option value="Operating">Operating</option>
+      <option value="Construction">Construction</option>
+      <option value="Care & Maintenance">Care & Maint.</option>
+      <option value="DFS">DFS</option>
+      <option value="PFS">PFS</option>
+      <option value="Permitting">Permitting</option>
+      <option value="Exploration">Exploration</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Region</label>
+    <select id="f-region" onchange="applyFilters()">
+      <option value="all">All Regions</option>
+      <option value="Australia">Australia</option>
+      <option value="South America">South America</option>
+      <option value="North America">North America</option>
+      <option value="Africa">Africa</option>
+      <option value="China">China</option>
+      <option value="Europe">Europe</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Search</label>
+    <input type="text" id="f-search" placeholder="Company or asset..." oninput="applyFilters()">
+  </div>
+  <div class="filter-group">
+    <label>Exclude JV Doubles</label>
+    <input type="checkbox" id="f-dedup" checked onchange="applyFilters()">
+  </div>
+  <div class="filter-group" style="margin-left:auto;">
+    <label>Risk-Adjusted Supply</label>
+    <input type="checkbox" id="f-prob" onchange="applyFilters()">
+  </div>
+  <button class="btn" onclick="showAddModal()">+ Add Asset</button>
+</div>
+
+<div class="content">
+  <div id="tab-chart">
+    <div class="chart-wrap"><div class="chart-title">Total Supply Forecast (kt LCE/yr) — Stacked by Company</div><div style="position:relative;height:380px;"><canvas id="stackedChart"></canvas></div></div>
+  </div>
+  <div id="tab-table" style="display:none;">
+    <div class="table-wrap"><table id="data-table"><thead></thead><tbody></tbody></table></div>
+  </div>
+  <div id="tab-bytype" style="display:none;">
+    <div class="chart-wrap"><div class="chart-title">Supply by Source Type (kt LCE/yr)</div><div style="position:relative;height:340px;"><canvas id="typeChart"></canvas></div></div>
+  </div>
+  <div id="tab-byregion" style="display:none;">
+    <div class="chart-wrap"><div class="chart-title">Supply by Region (kt LCE/yr)</div><div style="position:relative;height:340px;"><canvas id="regionChart"></canvas></div></div>
+  </div>
+  <div id="tab-company" style="display:none;">
+    <div class="chart-wrap"><div class="chart-title">Top 15 Companies by 2026E Production (kt LCE)</div><div style="position:relative;height:420px;"><canvas id="companyChart"></canvas></div></div>
+  </div>
+
+  <div id="tab-costcurve" style="display:none;">
+    <div class="chart-wrap">
+      <div class="chart-title">Lithium Industry Cost Curve — Cash Cost vs Cumulative Production (2026E)</div>
+      <div style="display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap;align-items:center;">
+        <div class="filter-group"><label>Year</label>
+          <select id="cc-year" onchange="renderCostCurve()">
+            <option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026E</option><option value="2027">2027E</option><option value="2028">2028E</option><option value="2029">2029E</option><option value="2030">2030E</option><option value="2035">2035E</option><option value="2040">2040E</option>
+          </select>
+        </div>
+        <div class="filter-group"><label>LCE Price (US$/t)</label>
+          <input type="range" id="cc-price" min="2000" max="50000" value="21000" step="500" oninput="renderCostCurve();document.getElementById('cc-price-val').textContent='$'+Number(this.value).toLocaleString()" style="width:150px;">
+          <span id="cc-price-val" style="font-family:var(--mono);font-size:11px;color:var(--accent);">$21,000</span>
+        </div>
+        <div class="filter-group">
+          <button class="btn-sm btn" onclick="document.getElementById('cc-price').value=10000;renderCostCurve();document.getElementById('cc-price-val').textContent='$10,000'" style="font-size:9px;">Bear $10k</button>
+          <button class="btn-sm btn" onclick="document.getElementById('cc-price').value=21000;renderCostCurve();document.getElementById('cc-price-val').textContent='$21,000'" style="font-size:9px;">Spot ~$21k</button>
+          <button class="btn-sm btn" onclick="document.getElementById('cc-price').value=30000;renderCostCurve();document.getElementById('cc-price-val').textContent='$30,000'" style="font-size:9px;">Bull $30k</button>
+          <button class="btn-sm btn" onclick="document.getElementById('cc-price').value=45000;renderCostCurve();document.getElementById('cc-price-val').textContent='$45,000'" style="font-size:9px;">Peak $45k</button>
+        </div>
+      </div>
+      <div style="position:relative;height:420px;"><canvas id="costCurveChart"></canvas></div>
+      <div style="margin-top:8px;font-size:10px;color:var(--muted);">Each bar = one asset. Width = production volume (kt LCE). Height = estimated cash cost (US$/t LCE). Assets below the price line are profitable; above are marginal/loss-making. Drag the price slider to model different scenarios.</div>
+    </div>
+  </div>
+
+  <div id="tab-sc6curve" style="display:none;">
+    <div class="chart-wrap">
+      <div class="chart-title">Hard Rock Spodumene Cost Curve — FOB Cash Cost (US$/t SC6)</div>
+      <div style="display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap;align-items:center;">
+        <div class="filter-group"><label>Year</label>
+          <select id="sc6-year" onchange="renderSC6Curve()">
+            <option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026E</option><option value="2027">2027E</option><option value="2028">2028E</option><option value="2029">2029E</option><option value="2030">2030E</option><option value="2035">2035E</option><option value="2040">2040E</option>
+          </select>
+        </div>
+        <div class="filter-group"><label>SC6 Price (US$/t)</label>
+          <input type="range" id="sc6-price" min="200" max="8000" value="2300" step="50" oninput="renderSC6Curve();document.getElementById('sc6-price-val').textContent='$'+Number(this.value).toLocaleString()" style="width:150px;">
+          <span id="sc6-price-val" style="font-family:var(--mono);font-size:11px;color:var(--accent);">$2,300</span>
+        </div>
+        <div class="filter-group">
+          <button class="btn-sm btn" onclick="document.getElementById('sc6-price').value=610;renderSC6Curve();document.getElementById('sc6-price-val').textContent='$610'" style="font-size:9px;">Jun-25 Trough $610</button>
+          <button class="btn-sm btn" onclick="document.getElementById('sc6-price').value=1050;renderSC6Curve();document.getElementById('sc6-price-val').textContent='$1,050'" style="font-size:9px;">Breakeven ~$1,050</button>
+          <button class="btn-sm btn" onclick="document.getElementById('sc6-price').value=2300;renderSC6Curve();document.getElementById('sc6-price-val').textContent='$2,300'" style="font-size:9px;">Spot ~$2,300</button>
+          <button class="btn-sm btn" onclick="document.getElementById('sc6-price').value=2500;renderSC6Curve();document.getElementById('sc6-price-val').textContent='$2,500'" style="font-size:9px;">Jan-26 High $2,500</button>
+          <button class="btn-sm btn" onclick="document.getElementById('sc6-price').value=5500;renderSC6Curve();document.getElementById('sc6-price-val').textContent='$5,500'" style="font-size:9px;">2022 Peak $5,500</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
+        <div style="background:var(--card2);border:1px solid var(--border2);border-radius:6px;padding:8px 12px;font-size:11px;">
+          <span style="color:var(--muted);">Total SC6 Production:</span> <span id="sc6-total" style="color:var(--accent);font-family:var(--mono);"></span>
+        </div>
+        <div style="background:var(--card2);border:1px solid var(--border2);border-radius:6px;padding:8px 12px;font-size:11px;">
+          <span style="color:var(--muted);">Profitable at current price:</span> <span id="sc6-profitable" style="color:var(--green);font-family:var(--mono);"></span>
+        </div>
+        <div style="background:var(--card2);border:1px solid var(--border2);border-radius:6px;padding:8px 12px;font-size:11px;">
+          <span style="color:var(--muted);">Marginal / Loss-making:</span> <span id="sc6-marginal" style="color:var(--red);font-family:var(--mono);"></span>
+        </div>
+      </div>
+      <div style="position:relative;height:420px;"><canvas id="sc6CurveChart"></canvas></div>
+      <div style="margin-top:8px;font-size:10px;color:var(--muted);">Hard rock only. FOB cash cost per tonne SC6 (6% Li₂O). Excludes brine, lepidolite, and clay. Production shown in kt SC6 (multiply by 7.5 for approximate kt of ore at SC6 input). The marginal producer sets the floor price — when spod drops below their cost, they shut down and supply tightens.</div>
+    </div>
+  </div>
+
+  <div id="tab-demand" style="display:none;">
+    <div class="chart-wrap">
+      <div class="chart-title">Supply vs Demand — Historical Actuals (2015-2024) + Forward Scenarios</div>
+      <div style="display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap;align-items:flex-start;">
+        <div style="background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:12px;flex:1;min-width:280px;">
+          <div style="font-size:11px;font-weight:600;margin-bottom:8px;color:var(--teal);">DEMAND SCENARIO INPUTS</div>
+          <div style="display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;font-size:11px;">
+            <span style="color:var(--muted);">2024 Base (kt)</span>
+            <input type="range" id="dm-base" min="800" max="1400" value="1100" step="25" oninput="renderDemand()">
+            <span id="dm-base-val" class="editable" style="width:55px;text-align:center;">1100</span>
+
+            <span style="color:var(--muted);">Low CAGR %</span>
+            <input type="range" id="dm-cagr-lo" min="5" max="25" value="12" step="1" oninput="renderDemand()">
+            <span id="dm-cagr-lo-val" class="editable" style="width:55px;text-align:center;">12%</span>
+
+            <span style="color:var(--muted);">Base CAGR %</span>
+            <input type="range" id="dm-cagr-mid" min="8" max="30" value="18" step="1" oninput="renderDemand()">
+            <span id="dm-cagr-mid-val" class="editable" style="width:55px;text-align:center;">18%</span>
+
+            <span style="color:var(--muted);">High CAGR %</span>
+            <input type="range" id="dm-cagr-hi" min="12" max="40" value="25" step="1" oninput="renderDemand()">
+            <span id="dm-cagr-hi-val" class="editable" style="width:55px;text-align:center;">25%</span>
+          </div>
+          <div style="margin-top:8px;font-size:9px;color:var(--dim);">Defaults: IEA STEPS ~18% CAGR; Albemarle bull case ~25%; conservative ~12%</div>
+        </div>
+        <div style="background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:12px;min-width:200px;">
+          <div style="font-size:11px;font-weight:600;margin-bottom:8px;color:var(--accent);">DEMAND BREAKDOWN (2026E)</div>
+          <div id="dm-breakdown" style="font-size:11px;line-height:1.8;"></div>
+        </div>
+        <div style="background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:12px;min-width:200px;">
+          <div style="font-size:11px;font-weight:600;margin-bottom:8px;color:var(--green);">SURPLUS / DEFICIT</div>
+          <div id="dm-balance" style="font-size:11px;line-height:1.8;"></div>
+        </div>
+      </div>
+      <div style="position:relative;height:380px;"><canvas id="demandChart"></canvas></div>
+      <div style="margin-top:8px;font-size:10px;color:var(--muted);">Circles = actuals (USGS/IEA/Benchmark). Triangles = estimates/forecasts. Dashed vertical line marks the actual/estimate boundary. Supply before 2024 from USGS aggregated data; 2024+ from your asset-level model. Demand scenarios only diverge after 2024. Tooltip shows surplus/deficit balance.</div>
+    </div>
+    <div class="chart-wrap" style="margin-top:16px;">
+      <div class="chart-title">Demand by End Use (2026E Base Case)</div>
+      <div style="position:relative;height:280px;"><canvas id="demandPieChart"></canvas></div>
+    </div>
+  </div>
+
+  <div id="tab-gwh" style="display:none;">
+    <div class="chart-wrap">
+      <div class="chart-title">Global Battery Deployment (GWh) → Implied Lithium Demand</div>
+      <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;align-items:flex-start;">
+        <div style="background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:12px;flex:1;min-width:260px;">
+          <div style="font-size:11px;font-weight:600;margin-bottom:8px;color:var(--teal);">GWh SCENARIO INPUTS</div>
+          <div style="display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;font-size:11px;">
+            <span style="color:var(--muted);">Li intensity (kg LCE/kWh)</span>
+            <input type="range" id="gwh-intensity" min="0.5" max="1.2" value="0.85" step="0.05" oninput="renderGWh()">
+            <span id="gwh-int-val" style="font-family:var(--mono);font-size:11px;color:var(--accent);">0.85</span>
+
+            <span style="color:var(--muted);">GWh CAGR % (fwd)</span>
+            <input type="range" id="gwh-cagr" min="10" max="40" value="25" step="1" oninput="renderGWh()">
+            <span id="gwh-cagr-val" style="font-family:var(--mono);font-size:11px;color:var(--accent);">25%</span>
+
+            <span style="color:var(--muted);">LFP share % by 2030</span>
+            <input type="range" id="gwh-lfp" min="30" max="80" value="55" step="5" oninput="renderGWh()">
+            <span id="gwh-lfp-val" style="font-family:var(--mono);font-size:11px;color:var(--accent);">55%</span>
+          </div>
+          <div style="margin-top:6px;font-size:9px;color:var(--dim);">NMC ~0.95 kg LCE/kWh | LFP ~0.75 kg LCE/kWh | Blended default ~0.85. IEA projects 25-30% GWh CAGR.</div>
+        </div>
+        <div style="background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:12px;min-width:200px;">
+          <div style="font-size:11px;font-weight:600;margin-bottom:8px;color:var(--green);">KEY METRICS</div>
+          <div id="gwh-metrics" style="font-size:11px;line-height:1.8;"></div>
+        </div>
+      </div>
+      <div style="position:relative;height:380px;"><canvas id="gwhChart"></canvas></div>
+      <div style="margin-top:8px;font-size:10px;color:var(--muted);">Left axis: GWh deployed (EV + storage). Right axis: implied lithium demand in kt LCE. GWh growth is the clearest demand signal — it strips away pricing/inventory noise. Adjust lithium intensity to model cathode chemistry shifts (LFP uses ~20% less Li per kWh than NMC).</div>
+    </div>
+  </div>
+
+  <div id="tab-convert" style="display:none;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="chart-wrap">
+        <div class="chart-title">Quick Converter</div>
+        <div style="display:grid;gap:10px;">
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="number" id="cv-input" value="100" style="width:100px;background:var(--card2);color:var(--text);border:1px solid var(--border2);border-radius:6px;padding:8px;font-family:var(--mono);font-size:14px;" oninput="doConvert()">
+            <select id="cv-from" style="flex:1;" onchange="doConvert()">
+              <option value="sc6">SC6 Concentrate (kt)</option>
+              <option value="sc55">SC5.5 Concentrate (kt)</option>
+              <option value="lce">LCE (kt)</option>
+              <option value="lioh">LiOH·H₂O (kt)</option>
+              <option value="li2o_pct">Li₂O Grade (%)</option>
+              <option value="li_metal">Li Metal (kt)</option>
+              <option value="ore_mt">Ore (Mt @ grade)</option>
+            </select>
+          </div>
+          <div style="font-size:12px;color:var(--muted);text-align:center;">converts to ↓</div>
+          <div id="cv-results" style="background:var(--card2);border-radius:8px;padding:12px;font-size:12px;line-height:2;"></div>
+          <div id="cv-ore-inputs" style="display:none;">
+            <div style="display:flex;gap:8px;align-items:center;margin-top:4px;">
+              <span style="font-size:10px;color:var(--muted);">Grade Li₂O%:</span>
+              <input type="number" id="cv-ore-grade" value="1.3" step="0.1" style="width:70px;background:var(--card2);color:var(--text);border:1px solid var(--border2);border-radius:6px;padding:4px 8px;font-family:var(--mono);" oninput="doConvert()">
+              <span style="font-size:10px;color:var(--muted);">Recovery %:</span>
+              <input type="number" id="cv-ore-rec" value="75" step="5" style="width:60px;background:var(--card2);color:var(--text);border:1px solid var(--border2);border-radius:6px;padding:4px 8px;font-family:var(--mono);" oninput="doConvert()">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-title">Standard Conversion Factors</div>
+        <div style="font-size:12px;line-height:2.2;color:var(--text);">
+          <div><span style="color:var(--accent);font-family:var(--mono);">1 kt SC6</span> (6% Li₂O) = <span style="color:var(--green);font-family:var(--mono);">0.133 kt LCE</span></div>
+          <div><span style="color:var(--accent);font-family:var(--mono);">7.5 kt SC6</span> ≈ <span style="color:var(--green);font-family:var(--mono);">1 kt LCE</span></div>
+          <div><span style="color:var(--accent);font-family:var(--mono);">1 kt LCE</span> = <span style="color:var(--green);font-family:var(--mono);">1.095 kt LiOH·H₂O</span></div>
+          <div><span style="color:var(--accent);font-family:var(--mono);">1 kt LCE</span> = <span style="color:var(--green);font-family:var(--mono);">0.188 kt Li metal</span></div>
+          <div><span style="color:var(--accent);font-family:var(--mono);">1% Li₂O in ore</span> = <span style="color:var(--green);font-family:var(--mono);">2.153% Li₂CO₃ equivalent</span></div>
+          <div><span style="color:var(--accent);font-family:var(--mono);">1 kt Li metal</span> = <span style="color:var(--green);font-family:var(--mono);">5.323 kt LCE</span></div>
+          <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px;">
+            <span style="color:var(--teal);font-weight:600;">Battery Li Intensity:</span><br>
+            <span style="color:var(--accent);font-family:var(--mono);">NMC811:</span> ~0.95 kg LCE/kWh<br>
+            <span style="color:var(--accent);font-family:var(--mono);">NMC622:</span> ~1.05 kg LCE/kWh<br>
+            <span style="color:var(--accent);font-family:var(--mono);">LFP:</span> ~0.75 kg LCE/kWh<br>
+            <span style="color:var(--accent);font-family:var(--mono);">Blended avg:</span> ~0.85 kg LCE/kWh
+          </div>
+          <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px;">
+            <span style="color:var(--teal);font-weight:600;">Typical EV Battery Sizes:</span><br>
+            <span style="color:var(--muted);">Small EV (BYD Dolphin):</span> ~45 kWh → ~38 kg LCE<br>
+            <span style="color:var(--muted);">Mid EV (Tesla M3 LR):</span> ~75 kWh → ~64 kg LCE<br>
+            <span style="color:var(--muted);">Large EV (Tesla MS):</span> ~100 kWh → ~85 kg LCE<br>
+            <span style="color:var(--muted);">ESS (1 MWh unit):</span> → ~850 kg LCE
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <strong>Methodology & Notes:</strong> All figures converted to lithium carbonate equivalent (LCE) using 7.5:1 SC6-to-LCE conversion. JV assets may appear under multiple owners — use "Exclude JV Doubles" filter to avoid double-counting. Forward estimates from feasibility studies carry timeline risk; operating guidance from latest company reports. Chinese lepidolite aggregated where individual mine data unavailable. Click any production cell in the Data Table to manually update values. Use "Export JSON" to save your modified dataset.<br><br>
+    <strong>Sources:</strong> Company quarterly reports, ASX/TSX/NYSE announcements, feasibility studies (DFS/PFS/PEA), Benchmark Minerals, Fastmarkets, S&P Global, IEA Critical Minerals Report 2025. Individual source citations in table view.
+  </div>
+</div>
+
+<div class="export-bar">
+  <button class="btn" onclick="exportJSON()">Export JSON</button>
+  <button class="btn btn-sm" onclick="exportCSV()">Export CSV</button>
+  <button class="btn btn-sm" onclick="resetData()">Reset to Original</button>
+  <span style="margin-left:auto;font-size:10px;color:var(--muted);" id="edit-status"></span>
+</div>
+
+<div id="add-modal">
+  <div class="modal-box">
+    <h3>Add New Asset</h3>
+    <div class="form-row"><label>Company</label><input id="new-company"></div>
+    <div class="form-row"><label>Asset Name</label><input id="new-asset"></div>
+    <div class="form-row"><label>Country</label><input id="new-country"></div>
+    <div class="form-row"><label>Region</label>
+      <select id="new-region"><option>Australia</option><option>South America</option><option>North America</option><option>Africa</option><option>China</option><option>Europe</option></select>
+    </div>
+    <div class="form-row"><label>Type</label>
+      <select id="new-type"><option>Hard Rock</option><option>Brine</option><option>Lepidolite</option><option>Clay</option></select>
+    </div>
+    <div class="form-row"><label>Stage</label>
+      <select id="new-stage"><option>Operating</option><option>Construction</option><option>Care & Maintenance</option><option>DFS</option><option>PFS</option><option>Permitting</option><option>Exploration</option></select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+    <div class="form-row"><label>2024</label><input id="new-2024" type="number" value="0"></div>
+    <div class="form-row"><label>2025E</label><input id="new-2025" type="number" value="0"></div>
+    <div class="form-row"><label>2026E</label><input id="new-2026" type="number" value="0"></div>
+    <div class="form-row"><label>2027E</label><input id="new-2027" type="number" value="0"></div>
+    <div class="form-row"><label>2028E</label><input id="new-2028" type="number" value="0"></div>
+    <div class="form-row"><label>2029E</label><input id="new-2029" type="number" value="0"></div>
+    <div class="form-row"><label>2030E</label><input id="new-2030" type="number" value="0"></div>
+    <div class="form-row"><label>2035E</label><input id="new-2035" type="number" value="0"></div>
+    <div class="form-row"><label>2040E</label><input id="new-2040" type="number" value="0"></div>
+    </div>
+    <div class="form-row"><label>Source</label><input id="new-source" placeholder="e.g. Company DFS 2025"></div>
+    <div class="modal-actions">
+      <button class="btn btn-sm" onclick="hideAddModal()">Cancel</button>
+      <button class="btn" onclick="addAsset()">Add Asset</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const YEARS = [2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040];
+
+// ─── SUPPLY DATA ───
+// All production in kt LCE/yr. Sources noted per asset.
+// Helper: extend production. If rate value > 1 treat as absolute kt, otherwise as growth rate
+function ext(base,rates){const o={...base};for(let y=2031;y<=2040;y++){const r=rates[y]||0;const prev=o[y-1]||0;if(r>1){o[y]=r;}else{o[y]=Math.round(prev*(1+r));}}return o;}
+const G0=y=>({});// plateau
+const G2=()=>{const r={};for(let y=2031;y<=2040;y++)r[y]=0.02;return r;}; // 2% growth
+const G3=()=>{const r={};for(let y=2031;y<=2040;y++)r[y]=0.03;return r;};
+const GM=()=>{const r={};for(let y=2031;y<=2040;y++)r[y]=-0.03;return r;}; // -3% decline
+
+const ORIGINAL_DATA = [
+  // ── AUSTRALIA ──
+  {company:"Talison (Albemarle/Tianqi/IGO JV)",asset:"Greenbushes",country:"Australia",region:"Australia",type:"Hard Rock",stage:"Operating",prod:ext({2024:190,2025:200,2026:230,2027:250,2028:260,2029:270,2030:280},G2()),source:"IGO/Albemarle FY25 reports; CGP3 commissioned Dec 2025; 2031+ extrapolated at 2% growth",jv:false},
+  {company:"Pilbara Minerals",asset:"Pilgangoora",country:"Australia",region:"Australia",type:"Hard Rock",stage:"Operating",prod:ext({2024:96,2025:100,2026:110,2027:115,2028:120,2029:125,2030:130},G2()),source:"PLS FY25 report; P1000 expansion; 2031+ extrapolated",jv:false},
+  {company:"Mineral Resources",asset:"Mt Marion (MinRes 50%)",country:"Australia",region:"Australia",type:"Hard Rock",stage:"Operating",prod:ext({2024:24,2025:26,2026:28,2027:30,2028:30,2029:30,2030:30},G0()),source:"MinRes FY25; steady state from 2028",jv:false},
+  {company:"Mineral Resources",asset:"Wodgina (MinRes 50%)",country:"Australia",region:"Australia",type:"Hard Rock",stage:"Operating",prod:ext({2024:28,2025:30,2026:35,2027:40,2028:45,2029:50,2030:55},G2()),source:"MinRes FY25; 3-train 820kt capacity",jv:false},
+  {company:"Mineral Resources",asset:"Bald Hill",country:"Australia",region:"Australia",type:"Hard Rock",stage:"Care & Maintenance",prod:ext({2024:0,2025:0,2026:0,2027:5,2028:10,2029:12,2030:12},G0()),source:"Restart contingent on price recovery",jv:false},
+  {company:"Liontown Resources",asset:"Kathleen Valley",country:"Australia",region:"Australia",type:"Hard Rock",stage:"Operating",prod:ext({2024:5,2025:20,2026:45,2027:67,2028:67,2029:67,2030:67},G0()),source:"LTR: 500kt SC6 nameplate; steady state",jv:false},
+  {company:"Core Lithium",asset:"Finniss",country:"Australia",region:"Australia",type:"Hard Rock",stage:"Construction",prod:ext({2024:0,2025:0,2026:8,2027:14,2028:18,2029:18,2030:18},G0()),source:"CXO: FID approved; 134kt SC6 target",jv:false},
+  {company:"IGO Limited",asset:"Greenbushes (IGO 24.99%)",country:"Australia",region:"Australia",type:"Hard Rock",stage:"Operating",prod:ext({2024:47,2025:50,2026:57,2027:62,2028:65,2029:67,2030:70},G2()),source:"IGO equity share of Talison JV",jv:true},
+  {company:"Albemarle",asset:"Kemerton (Hydroxide)",country:"Australia",region:"Australia",type:"Hard Rock",stage:"Care & Maintenance",prod:ext({2024:5,2025:0,2026:0,2027:10,2028:25,2029:25,2030:25},G0()),source:"Albemarle; restart TBD",jv:false},
+
+  // ── SOUTH AMERICA ──
+  {company:"SQM",asset:"Salar de Atacama",country:"Chile",region:"South America",type:"Brine",stage:"Operating",prod:ext({2024:205,2025:225,2026:240,2027:250,2028:260,2029:270,2030:280},G2()),source:"SQM FY24; capacity expansion path",jv:false},
+  {company:"Albemarle",asset:"La Negra (Chile)",country:"Chile",region:"South America",type:"Brine",stage:"Operating",prod:ext({2024:45,2025:48,2026:50,2027:55,2028:60,2029:65,2030:70},G2()),source:"Albemarle Chile operations",jv:false},
+  {company:"Rio Tinto (ex-Arcadium)",asset:"Olaroz",country:"Argentina",region:"South America",type:"Brine",stage:"Operating",prod:ext({2024:18,2025:22,2026:30,2027:40,2028:40,2029:40,2030:40},G0()),source:"Rio Tinto: Stage 2 at 40kt capacity",jv:false},
+  {company:"Rio Tinto (ex-Arcadium)",asset:"Sal de Vida",country:"Argentina",region:"South America",type:"Brine",stage:"Construction",prod:ext({2024:0,2025:0,2026:5,2027:15,2028:25,2029:30,2030:30},G2()),source:"Rio Tinto: Phase 1+2 expansion path",jv:false},
+  {company:"Sigma Lithium",asset:"Grota do Cirilo",country:"Brazil",region:"South America",type:"Hard Rock",stage:"Operating",prod:ext({2024:32,2025:36,2026:40,2027:45,2028:50,2029:55,2030:55},G0()),source:"SGML; nameplate capacity",jv:false},
+  {company:"Arcadium/Rio Tinto",asset:"Mt Cattlin",country:"Australia",region:"Australia",type:"Hard Rock",stage:"Care & Maintenance",prod:ext({2024:8,2025:0,2026:0,2027:0,2028:0,2029:0,2030:0},G0()),source:"Wound down; unlikely restart",jv:false},
+  {company:"Livent/Arcadium/Rio Tinto",asset:"Fénix (Argentina)",country:"Argentina",region:"South America",type:"Brine",stage:"Operating",prod:ext({2024:22,2025:22,2026:22,2027:25,2028:25,2029:25,2030:25},G0()),source:"Legacy Livent brine; now Rio Tinto",jv:false},
+
+  // ── NORTH AMERICA ──
+  {company:"Albemarle",asset:"Silver Peak",country:"USA",region:"North America",type:"Brine",stage:"Operating",prod:ext({2024:5,2025:5,2026:8,2027:10,2028:10,2029:10,2030:10},G0()),source:"ALB: expansion to 10kt then plateau",jv:false},
+  {company:"Lithium Americas",asset:"Thacker Pass",country:"USA",region:"North America",type:"Clay",stage:"Construction",prod:ext({2024:0,2025:0,2026:0,2027:5,2028:30,2029:40,2030:40},{2031:0.25,2032:0.15,2033:0.05,2034:0,2035:0,2036:0,2037:0,2038:0,2039:0,2040:0}),source:"LAC: Phase 1 40kt; Phase 2 potential 80kt by ~2033",jv:false},
+  {company:"Sayona Mining",asset:"NAL (North American Lithium)",country:"Canada",region:"North America",type:"Hard Rock",stage:"Operating",prod:ext({2024:12,2025:15,2026:18,2027:20,2028:22,2029:22,2030:22},G0()),source:"Sayona 75%; steady state",jv:false},
+  {company:"Nemaska Lithium",asset:"Whabouchi",country:"Canada",region:"North America",type:"Hard Rock",stage:"Construction",prod:ext({2024:0,2025:0,2026:5,2027:18,2028:34,2029:34,2030:34},G0()),source:"Nemaska: 34kt LiOH steady state",jv:false},
+  {company:"Patriot Battery Metals",asset:"Shaakichiuwaanaan",country:"Canada",region:"North America",type:"Hard Rock",stage:"PFS",prod:ext({2024:0,2025:0,2026:0,2027:0,2028:0,2029:20,2030:53},{2031:0.25,2032:0.10,2033:0,2034:0,2035:0,2036:0,2037:0,2038:0,2039:0,2040:0}),source:"PMET: 400kt SC6 target; ramping to full capacity ~2032",jv:false},
+  {company:"Q2 Metals",asset:"Cisco",country:"Canada",region:"North America",type:"Hard Rock",stage:"Exploration",prod:ext({2024:0,2025:0,2026:0,2027:0,2028:0,2029:0,2030:0},{2031:0,2032:0,2033:5,2034:15,2035:30,2036:40,2037:50,2038:50,2039:50,2040:50}),source:"QTWO.V: MRE pending; 215-329Mt resource; production speculative ~2033+ if developed",jv:false},
+  {company:"Critical Elements",asset:"Rose",country:"Canada",region:"North America",type:"Hard Rock",stage:"DFS",prod:ext({2024:0,2025:0,2026:0,2027:0,2028:5,2029:15,2030:20},{2031:0.05,2032:0,2033:0,2034:0,2035:0,2036:0,2037:0,2038:0,2039:0,2040:0}),source:"CRE: 173kt SC6/yr; ramping",jv:false},
+  {company:"Frontier Lithium",asset:"PAK",country:"Canada",region:"North America",type:"Hard Rock",stage:"PFS",prod:ext({2024:0,2025:0,2026:0,2027:0,2028:0,2029:5,2030:15},{2031:0.33,2032:0.10,2033:0,2034:0,2035:0,2036:0,2037:0,2038:0,2039:0,2040:0}),source:"FL: PFS; ramping to nameplate ~2032",jv:false},
+  {company:"Piedmont Lithium",asset:"NAL Offtake & Ghana",country:"USA/Ghana",region:"North America",type:"Hard Rock",stage:"Operating",prod:ext({2024:15,2025:15,2026:16,2027:18,2028:20,2029:20,2030:20},G0()),source:"PLL: offtake volumes; steady state",jv:false},
+  {company:"ioneer",asset:"Rhyolite Ridge",country:"USA",region:"North America",type:"Clay",stage:"Permitting",prod:ext({2024:0,2025:0,2026:0,2027:0,2028:5,2029:12,2030:22},G0()),source:"INR: DFS 22kt LCE/yr; plateau at nameplate",jv:false},
+  {company:"Atlantic Lithium",asset:"Ewoyaa",country:"Ghana",region:"Africa",type:"Hard Rock",stage:"DFS",prod:ext({2024:0,2025:0,2026:0,2027:3,2028:10,2029:16,2030:16},G0()),source:"ALL: steady state at nameplate",jv:false},
+
+  // ── CHINA ──
+  {company:"Ganfeng Lithium",asset:"Mt Marion (Ganfeng 50%)",country:"Australia",region:"Australia",type:"Hard Rock",stage:"Operating",prod:ext({2024:24,2025:26,2026:28,2027:30,2028:30,2029:30,2030:30},G0()),source:"Ganfeng 50% JV; steady state",jv:true},
+  {company:"Tianqi Lithium",asset:"Greenbushes (Tianqi 26.01%)",country:"Australia",region:"Australia",type:"Hard Rock",stage:"Operating",prod:ext({2024:49,2025:52,2026:60,2027:65,2028:68,2029:70,2030:73},G2()),source:"Tianqi equity share of Talison JV",jv:true},
+  {company:"Ganfeng Lithium",asset:"Chinese Lepidolite Ops",country:"China",region:"China",type:"Lepidolite",stage:"Operating",prod:ext({2024:60,2025:55,2026:50,2027:45,2028:40,2029:35,2030:30},GM()),source:"Chinese lepidolite; declining as high-cost closes",jv:false},
+  {company:"Tianqi Lithium",asset:"Chinese Operations",country:"China",region:"China",type:"Lepidolite",stage:"Operating",prod:ext({2024:35,2025:32,2026:28,2027:25,2028:22,2029:20,2030:18},GM()),source:"Tianqi domestic; declining",jv:false},
+  {company:"Other Chinese",asset:"Aggregated Lepidolite",country:"China",region:"China",type:"Lepidolite",stage:"Operating",prod:ext({2024:120,2025:110,2026:100,2027:90,2028:80,2029:70,2030:60},GM()),source:"Multiple small-scale; high-cost, declining",jv:false},
+  {company:"CATL/CMOC",asset:"Chinese Brine & Mica",country:"China",region:"China",type:"Brine",stage:"Operating",prod:ext({2024:40,2025:45,2026:50,2027:55,2028:60,2029:65,2030:70},G3()),source:"Qinghai/Tibet brine; steady expansion",jv:false},
+
+  // ── AFRICA ──
+  {company:"Sinomine (Bikita)",asset:"Bikita",country:"Zimbabwe",region:"Africa",type:"Hard Rock",stage:"Operating",prod:ext({2024:33,2025:40,2026:45,2027:50,2028:50,2029:50,2030:50},G0()),source:"Sinomine: steady state",jv:false},
+  {company:"Huayou Cobalt",asset:"Arcadia",country:"Zimbabwe",region:"Africa",type:"Hard Rock",stage:"Operating",prod:ext({2024:35,2025:45,2026:53,2027:53,2028:53,2029:53,2030:53},G0()),source:"Huayou; nameplate capacity",jv:false},
+  {company:"Ganfeng Lithium",asset:"Goulamina",country:"Mali",region:"Africa",type:"Hard Rock",stage:"Operating",prod:ext({2024:5,2025:35,2026:60,2027:67,2028:67,2029:67,2030:67},{2031:0.20,2032:0.15,2033:0.05,2034:0,2035:0,2036:0,2037:0,2038:0,2039:0,2040:0}),source:"Ganfeng: Phase 1+2; 1Mtpa SC6 total capacity",jv:false},
+  {company:"Andrada Mining",asset:"Karibib (Lithium Ridge)",country:"Namibia",region:"Africa",type:"Hard Rock",stage:"Operating",prod:ext({2024:2,2025:4,2026:6,2027:8,2028:10,2029:10,2030:10},G0()),source:"Small-scale; plateau",jv:false},
+
+  // ── EUROPE ──
+  {company:"Savannah Resources",asset:"Barroso",country:"Portugal",region:"Europe",type:"Hard Rock",stage:"Permitting",prod:ext({2024:0,2025:0,2026:0,2027:0,2028:5,2029:15,2030:20},{2031:0.05,2032:0,2033:0,2034:0,2035:0,2036:0,2037:0,2038:0,2039:0,2040:0}),source:"SAV: 175kt SC6/yr; plateau at nameplate",jv:false},
+  {company:"European Lithium",asset:"Wolfsberg",country:"Austria",region:"Europe",type:"Hard Rock",stage:"DFS",prod:ext({2024:0,2025:0,2026:0,2027:0,2028:3,2029:8,2030:10},{2031:0.10,2032:0.05,2033:0,2034:0,2035:0,2036:0,2037:0,2038:0,2039:0,2040:0}),source:"EUR: 97kt SC6/yr; ramping",jv:false},
+  {company:"Vulcan Energy",asset:"Upper Rhine Valley",country:"Germany",region:"Europe",type:"Brine",stage:"Construction",prod:ext({2024:0,2025:0,2026:2,2027:8,2028:15,2029:24,2030:24},{2031:0.15,2032:0.10,2033:0.05,2034:0,2035:0,2036:0,2037:0,2038:0,2039:0,2040:0}),source:"VUL: DLE; Phase 1+2 expansion",jv:false},
+
+  // ── SQM/Albemarle JV ──
+  {company:"SQM/Albemarle",asset:"Mt Holland (Covalent JV)",country:"Australia",region:"Australia",type:"Hard Rock",stage:"Operating",prod:ext({2024:3,2025:10,2026:25,2027:40,2028:50,2029:50,2030:50},G0()),source:"SQM/ALB 50/50 JV; 50kt LiOH steady state",jv:false},
+];
+
+let data = JSON.parse(JSON.stringify(ORIGINAL_DATA));
+let editCount = 0;
+let charts = {};
+let sortCol = null;
+let sortDir = 1;
+
+// ─── PROBABILITY BY STAGE ───
+// Default probability of reaching production on schedule
+const STAGE_PROB = {
+  'Operating':1.0,'Construction':0.90,'Care & Maintenance':0.40,
+  'DFS':0.50,'PFS':0.35,'Permitting':0.60,'Exploration':0.15
+};
+// Per-asset overrides (optional — add here if you want custom probabilities)
+const ASSET_PROB_OVERRIDE = {};
+
+function getProb(d){
+  if(ASSET_PROB_OVERRIDE[d.asset]!==undefined) return ASSET_PROB_OVERRIDE[d.asset];
+  return STAGE_PROB[d.stage]||0.5;
+}
+
+function isRiskAdj(){ return document.getElementById('f-prob').checked; }
+
+function filtered(){
+  const t = document.getElementById('f-type').value;
+  const s = document.getElementById('f-stage').value;
+  const r = document.getElementById('f-region').value;
+  const q = document.getElementById('f-search').value.toLowerCase();
+  const dedup = document.getElementById('f-dedup').checked;
+  return data.filter(d=>{
+    if(t!=='all' && d.type!==t) return false;
+    if(s!=='all' && d.stage!==s) return false;
+    if(r!=='all' && d.region!==r) return false;
+    if(q && !d.company.toLowerCase().includes(q) && !d.asset.toLowerCase().includes(q) && !d.country.toLowerCase().includes(q)) return false;
+    if(dedup && d.jv) return false;
+    return true;
+  });
+}
+
+function getProd(d,y){
+  const raw = d.prod[y]||0;
+  if(!isRiskAdj()) return raw;
+  // Operating assets at 100% regardless; apply probability to future/ramping production
+  if(d.stage==='Operating' && y<=2025) return raw;
+  return raw * getProb(d);
+}
+
+function totals(subset){
+  const t={};
+  YEARS.forEach(y=>t[y]=0);
+  subset.forEach(d=>YEARS.forEach(y=>t[y]+=getProd(d,y)));
+  return t;
+}
+
+function renderKPIs(){
+  const f = filtered();
+  const t = totals(f);
+  const cagr = t[2024]>0 ? ((Math.pow(t[2040]/t[2024],1/16)-1)*100).toFixed(1) : 'N/A';
+  const raLabel = isRiskAdj() ? ' <span style="color:var(--orange);font-size:8px;">RISK-ADJ</span>' : '';
+  document.getElementById('kpis').innerHTML=`
+    <div class="kpi"><div class="kpi-val" style="color:var(--accent)">${f.length}</div><div class="kpi-lbl">Assets${raLabel}</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--green)">${t[2024].toFixed(0)}</div><div class="kpi-lbl">2024 kt LCE</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--teal)">${t[2030].toFixed(0)}</div><div class="kpi-lbl">2030E kt LCE</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--blue)">${t[2035].toFixed(0)}</div><div class="kpi-lbl">2035E kt LCE</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--purple)">${t[2040].toFixed(0)}</div><div class="kpi-lbl">2040E kt LCE</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--orange)">${cagr}%</div><div class="kpi-lbl">CAGR 24-40</div></div>
+  `;
+}
+
+function switchTab(btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  ['chart','table','bytype','byregion','company','costcurve','sc6curve','demand','gwh','convert'].forEach(id=>{
+    document.getElementById('tab-'+id).style.display = btn.dataset.tab===id?'block':'none';
+  });
+  renderAll();
+}
+
+function applyFilters(){ renderAll(); }
+
+function renderAll(){
+  renderKPIs();
+  renderStackedChart();
+  renderTable();
+  renderTypeChart();
+  renderRegionChart();
+  renderCompanyChart();
+  renderCostCurve();
+  renderSC6Curve();
+  renderDemand();
+  renderGWh();
+  doConvert();
+}
+
+const COMPANY_COLORS = [
+  '#ffc107','#26c6da','#69f0ae','#64b5f6','#b39dff','#f48fb1','#ffab40','#ff5252',
+  '#80cbc4','#fff176','#a5d6a7','#90caf9','#ce93d8','#ffcc80','#ef9a9a','#80deea',
+  '#c5e1a5','#ffe082','#b0bec5','#bcaaa4','#e6ee9c','#f8bbd0','#81d4fa','#dce775'
+];
+
+function renderStackedChart(){
+  const f = filtered();
+  const companies = [...new Set(f.map(d=>d.company))];
+  const datasets = companies.map((co,i)=>{
+    const coData = f.filter(d=>d.company===co);
+    return {
+      label:co,
+      data:YEARS.map(y=>coData.reduce((s,d)=>s+getProd(d,y),0)),
+      backgroundColor:COMPANY_COLORS[i%COMPANY_COLORS.length]+'cc',
+      borderColor:COMPANY_COLORS[i%COMPANY_COLORS.length],
+      borderWidth:1
+    };
+  });
+  if(charts.stacked) charts.stacked.destroy();
+  charts.stacked = new Chart(document.getElementById('stackedChart'),{
+    type:'bar',
+    data:{labels:YEARS.map(y=>y<=2024?y:y+'E'),datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'bottom',labels:{color:'#94a3b8',font:{size:10},boxWidth:12,padding:8}},
+        tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.raw.toFixed(1)+' kt LCE'}}
+      },
+      scales:{
+        x:{stacked:true,ticks:{color:'#64748b'},grid:{color:'rgba(255,255,255,.04)'}},
+        y:{stacked:true,ticks:{color:'#64748b',callback:v=>v+'kt'},grid:{color:'rgba(255,255,255,.06)'},title:{display:true,text:'kt LCE/yr',color:'#64748b'}}
+      }
+    }
+  });
+}
+
+function stageClass(s){return 'stage-'+(s||'').toLowerCase().replace(/[^a-z]/g,'').replace('careampamp','care').replace('caremaintenance','care');}
+function typeClass(t){return 'type-'+(t||'').toLowerCase().replace(' ','-');}
+
+function renderTable(){
+  const f = filtered();
+  if(sortCol!==null){
+    f.sort((a,b)=>{
+      let va,vb;
+      if(sortCol==='company'){va=a.company;vb=b.company;}
+      else if(sortCol==='asset'){va=a.asset;vb=b.asset;}
+      else if(sortCol==='country'){va=a.country;vb=b.country;}
+      else if(sortCol==='type'){va=a.type;vb=b.type;}
+      else if(sortCol==='stage'){va=a.stage;vb=b.stage;}
+      else if(sortCol==='prob'){va=getProb(a);vb=getProb(b);}
+      else{va=getProd(a,sortCol);vb=getProd(b,sortCol);}
+      if(typeof va==='string') return sortDir*va.localeCompare(vb);
+      return sortDir*(va-vb);
+    });
+  }
+  const thead = document.querySelector('#data-table thead');
+  const tbody = document.querySelector('#data-table tbody');
+  const ra = isRiskAdj();
+  thead.innerHTML=`<tr>
+    <th onclick="sortBy('company')">Company</th>
+    <th onclick="sortBy('asset')">Asset</th>
+    <th onclick="sortBy('country')">Country</th>
+    <th onclick="sortBy('type')">Type</th>
+    <th onclick="sortBy('stage')">Stage</th>
+    <th onclick="sortBy('prob')">Prob%</th>
+    ${YEARS.map(y=>`<th onclick="sortBy(${y})">${y<=2024?y:y+'E'}</th>`).join('')}
+    <th>Source</th>
+  </tr>`;
+  tbody.innerHTML = f.map((d,ri)=>{
+    const idx = data.indexOf(d);
+    const prob = getProb(d);
+    const probColor = prob>=0.8?'var(--green)':prob>=0.5?'var(--accent)':prob>=0.3?'var(--orange)':'var(--red)';
+    return `<tr>
+      <td style="font-weight:600;color:var(--accent)">${d.company}</td>
+      <td>${d.asset}${d.jv?' <span style="color:var(--orange);font-size:9px">JV</span>':''}</td>
+      <td>${d.country}</td>
+      <td><span class="type-badge ${typeClass(d.type)}">${d.type}</span></td>
+      <td><span class="stage-badge ${stageClass(d.stage)}">${d.stage}</span></td>
+      <td style="color:${probColor};font-family:var(--mono);font-size:11px;text-align:center;">${Math.round(prob*100)}%</td>
+      ${YEARS.map(y=>{
+        const raw = d.prod[y]||0;
+        const adj = getProd(d,y);
+        const display = ra ? adj.toFixed(1) : raw.toFixed(1);
+        return `<td><input class="editable${ra&&prob<1?' changed':''}" value="${display}" data-idx="${idx}" data-year="${y}" onchange="editCell(this)"></td>`;
+      }).join('')}
+      <td class="source-cell" title="${d.source}">${d.source}</td>
+    </tr>`;
+  }).join('');
+}
+
+function sortBy(col){
+  if(sortCol===col) sortDir*=-1; else {sortCol=col;sortDir=1;}
+  renderTable();
+}
+
+function editCell(el){
+  const idx = parseInt(el.dataset.idx);
+  const yr = parseInt(el.dataset.year);
+  const val = parseFloat(el.value)||0;
+  data[idx].prod[yr]=val;
+  el.classList.add('changed');
+  editCount++;
+  document.getElementById('edit-status').textContent=`${editCount} edit(s) — unsaved`;
+  renderKPIs();
+  renderStackedChart();
+  renderTypeChart();
+  renderRegionChart();
+  renderCompanyChart();
+}
+
+function renderTypeChart(){
+  const f = filtered();
+  const types = [...new Set(f.map(d=>d.type))];
+  const colors = {'Hard Rock':'#ffc107','Brine':'#26c6da','Lepidolite':'#b39dff','Clay':'#f48fb1'};
+  const datasets = types.map(t=>({
+    label:t,
+    data:YEARS.map(y=>f.filter(d=>d.type===t).reduce((s,d)=>s+getProd(d,y),0)),
+    backgroundColor:(colors[t]||'#fff')+'99',
+    borderColor:colors[t]||'#fff',
+    borderWidth:2,
+    fill:true,tension:.3
+  }));
+  if(charts.type) charts.type.destroy();
+  charts.type = new Chart(document.getElementById('typeChart'),{
+    type:'line',
+    data:{labels:YEARS.map(y=>y<=2024?y:y+'E'),datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:11},boxWidth:12}}},
+      scales:{
+        x:{ticks:{color:'#64748b'},grid:{color:'rgba(255,255,255,.04)'}},
+        y:{ticks:{color:'#64748b',callback:v=>v+'kt'},grid:{color:'rgba(255,255,255,.06)'}}
+      }
+    }
+  });
+}
+
+function renderRegionChart(){
+  const f = filtered();
+  const regions = [...new Set(f.map(d=>d.region))];
+  const rColors = {'Australia':'#ffc107','South America':'#26c6da','North America':'#69f0ae','Africa':'#ffab40','China':'#ff5252','Europe':'#64b5f6'};
+  const datasets = regions.map(r=>({
+    label:r,
+    data:YEARS.map(y=>f.filter(d=>d.region===r).reduce((s,d)=>s+getProd(d,y),0)),
+    backgroundColor:(rColors[r]||'#fff')+'99',
+    borderColor:rColors[r]||'#fff',
+    borderWidth:2,
+    fill:true,tension:.3
+  }));
+  if(charts.region) charts.region.destroy();
+  charts.region = new Chart(document.getElementById('regionChart'),{
+    type:'line',
+    data:{labels:YEARS.map(y=>y<=2024?y:y+'E'),datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:11},boxWidth:12}}},
+      scales:{
+        x:{ticks:{color:'#64748b'},grid:{color:'rgba(255,255,255,.04)'}},
+        y:{ticks:{color:'#64748b',callback:v=>v+'kt'},grid:{color:'rgba(255,255,255,.06)'}}
+      }
+    }
+  });
+}
+
+function renderCompanyChart(){
+  const f = filtered();
+  const compMap={};
+  f.forEach(d=>{
+    if(!compMap[d.company]) compMap[d.company]=0;
+    compMap[d.company]+=getProd(d,2026);
+  });
+  const sorted = Object.entries(compMap).sort((a,b)=>b[1]-a[1]).slice(0,15);
+  if(charts.company) charts.company.destroy();
+  charts.company = new Chart(document.getElementById('companyChart'),{
+    type:'bar',
+    data:{
+      labels:sorted.map(s=>s[0]),
+      datasets:[{data:sorted.map(s=>s[1]),backgroundColor:sorted.map((_,i)=>COMPANY_COLORS[i%COMPANY_COLORS.length]+'cc'),borderColor:sorted.map((_,i)=>COMPANY_COLORS[i%COMPANY_COLORS.length]),borderWidth:1}]
+    },
+    options:{
+      indexAxis:'y',
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw.toFixed(1)+' kt LCE'}}},
+      scales:{
+        x:{ticks:{color:'#64748b',callback:v=>v+'kt'},grid:{color:'rgba(255,255,255,.06)'}},
+        y:{ticks:{color:'#e2e8f0',font:{size:11}},grid:{display:false}}
+      }
+    }
+  });
+}
+
+function showAddModal(){document.getElementById('add-modal').classList.add('show');}
+function hideAddModal(){document.getElementById('add-modal').classList.remove('show');}
+
+function addAsset(){
+  const d={
+    company:document.getElementById('new-company').value||'Unknown',
+    asset:document.getElementById('new-asset').value||'New Asset',
+    country:document.getElementById('new-country').value||'',
+    region:document.getElementById('new-region').value,
+    type:document.getElementById('new-type').value,
+    stage:document.getElementById('new-stage').value,
+    prod:{},
+    source:document.getElementById('new-source').value||'Manual entry',
+    jv:false
+  };
+  // Set known years
+  [2024,2025,2026,2027,2028,2029,2030].forEach(y=>d.prod[y]=parseFloat(document.getElementById('new-'+y).value)||0);
+  const v2030=d.prod[2030], v2035=parseFloat(document.getElementById('new-2035').value)||v2030, v2040=parseFloat(document.getElementById('new-2040').value)||v2035;
+  // Interpolate 2031-2034 and 2036-2039
+  for(let y=2031;y<=2034;y++) d.prod[y]=Math.round(v2030+(v2035-v2030)*((y-2030)/5));
+  d.prod[2035]=v2035;
+  for(let y=2036;y<=2039;y++) d.prod[y]=Math.round(v2035+(v2040-v2035)*((y-2035)/5));
+  d.prod[2040]=v2040;
+  data.push(d);
+  hideAddModal();
+  renderAll();
+}
+
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='lithium_supply_data.json';
+  a.click();
+  document.getElementById('edit-status').textContent='Exported!';
+}
+
+function exportCSV(){
+  let csv='Company,Asset,Country,Region,Type,Stage,'+YEARS.join(',')+',Source\n';
+  filtered().forEach(d=>{
+    csv+=`"${d.company}","${d.asset}","${d.country}","${d.region}","${d.type}","${d.stage}",${YEARS.map(y=>d.prod[y]||0).join(',')},"${d.source}"\n`;
+  });
+  const blob = new Blob([csv],{type:'text/csv'});
+  const a = document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='lithium_supply_data.csv';
+  a.click();
+}
+
+function resetData(){
+  data = JSON.parse(JSON.stringify(ORIGINAL_DATA));
+  editCount=0;
+  document.getElementById('edit-status').textContent='Reset to original';
+  renderAll();
+}
+
+// ─── COST CURVE DATA ───
+// All-in sustaining cost (AISC) per tonne LCE (US$/t)
+// Includes: mining + processing + conversion to chemical grade + G&A + sustaining capex
+// Sources: Company reports, S&P Global, Benchmark Minerals cost curves, Citi research
+// Note: SC6 FOB costs converted at 7.5x plus ~$2,500-4,000/t conversion cost to LCE
+const COST_DATA = {
+  // Tier 1 — lowest cost
+  'Salar de Atacama':4500,           // SQM brine; world's lowest cost (~$3k cash + sustaining)
+  'Greenbushes':5800,                // Talison; A$338/t SC6 FOB → ~$1,650 + $4,150 conversion
+  'Greenbushes (IGO 24.99%)':5800,
+  'Greenbushes (Tianqi 26.01%)':5800,
+  'La Negra (Chile)':6200,           // Albemarle Chile brine+processing
+  'Fénix (Argentina)':7500,          // Livent/Rio Tinto legacy brine
+  'Grota do Cirilo':7800,            // Sigma; $592/t SC6 AISC → ~$4,440 + $3,360 conversion
+
+  // Tier 2 — mid cost
+  'Pilgangoora':8200,                // PLS; $499/t SC6 delivered → ~$3,740 + $4,460 conversion
+  'Goulamina':8500,                  // Ganfeng; new operation, ramping
+  'Sal de Vida':8800,                // Rio Tinto; new brine, higher early costs
+  'Olaroz':9200,                     // Arcadium/Rio Tinto; ~$6,500 cash cost reported
+  'Mt Holland (Covalent JV)':9500,   // New operation; higher initial costs
+  'Kathleen Valley':9800,            // Liontown; $576/t SC6 → ~$4,320 + $5,480 conversion (ramping)
+  'Chinese Brine & Mica':9800,       // Qinghai/Tibet operations
+  'Bikita':10000,                    // Sinomine Zimbabwe
+  'Silver Peak':10200,               // Albemarle; old, small, high cost
+  'Wodgina (MinRes 50%)':10500,      // MinRes; A$800-890/t SC6
+
+  // Tier 3 — higher cost
+  'Ewoyaa':10800,                    // Atlantic; DFS estimate
+  'Arcadia':11000,                   // Huayou Zimbabwe
+  'Whabouchi':11200,                 // Nemaska; DFS estimate
+  'Mt Marion (MinRes 50%)':11500,    // MinRes; A$870-970/t SC4.1 + upgrade costs
+  'Mt Marion (Ganfeng 50%)':11500,
+  'Shaakichiuwaanaan':11800,         // PMET; PFS estimate
+  'Rose':12000,                      // Critical Elements DFS
+  'NAL (North American Lithium)':12200, // Sayona; $791/t SC6 opex (above breakeven)
+  'PAK':12500,                       // Frontier; PFS estimate
+  'Barroso':12800,                   // Savannah DFS
+  'Finniss':13000,                   // Core; restart costs higher
+  'NAL Offtake & Ghana':13200,       // Piedmont offtake margins
+  'Thacker Pass':13500,              // LAC; novel clay process, higher initial costs
+  'Kemerton (Hydroxide)':13800,      // Albemarle; suspended for cost reasons
+  'Upper Rhine Valley':14000,        // Vulcan; DLE geothermal, novel process
+
+  // Tier 4 — marginal / high cost
+  'Wolfsberg':14500,                 // European Lithium; small European project
+  'Karibib (Lithium Ridge)':15000,   // Andrada; small scale
+  'Rhyolite Ridge':15500,            // ioneer; novel clay process
+  'Bald Hill':16000,                 // Suspended; would need high prices
+  'Mt Cattlin':17000,                // Wound down; uneconomic at current prices
+  'Chinese Lepidolite Ops':18000,    // Ganfeng; high cost lepidolite
+  'Chinese Operations':19000,        // Tianqi domestic lepidolite
+  'Aggregated Lepidolite':22000,     // Marginal Chinese lepidolite; many shutting down
+  'Cisco':0                          // No cost data yet (exploration)
+};
+
+function renderCostCurve(){
+  const yr = parseInt(document.getElementById('cc-year').value);
+  const priceLine = parseInt(document.getElementById('cc-price').value);
+  const f = filtered().filter(d=>(d.prod[yr]||0)>0 && COST_DATA[d.asset]);
+
+  // Sort by cash cost ascending
+  const sorted = f.map(d=>({
+    asset:d.asset,company:d.company,type:d.type,
+    prod:d.prod[yr]||0,
+    cost:COST_DATA[d.asset]||8000
+  })).sort((a,b)=>a.cost-b.cost);
+
+  // Build cumulative x positions
+  let cumProd = 0;
+  const bars = sorted.map(d=>{
+    const x0 = cumProd;
+    cumProd += d.prod;
+    return {...d,x0,x1:cumProd};
+  });
+
+  // Use a scatter chart with custom drawing for the waterfall bars
+  if(charts.costcurve) charts.costcurve.destroy();
+
+  const labels = bars.map(b=>b.asset);
+  const barColors = bars.map(b=>b.cost<=priceLine?'rgba(105,240,174,0.7)':'rgba(255,82,82,0.7)');
+  const borderColors = bars.map(b=>b.cost<=priceLine?'#69f0ae':'#ff5252');
+
+  charts.costcurve = new Chart(document.getElementById('costCurveChart'),{
+    type:'bar',
+    data:{
+      labels:labels,
+      datasets:[{
+        label:'Cash Cost (US$/t LCE)',
+        data:bars.map(b=>b.cost),
+        backgroundColor:barColors,
+        borderColor:borderColors,
+        borderWidth:1,
+        barPercentage:1.0,
+        categoryPercentage:1.0
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{
+          title:ctx=>{const b=bars[ctx[0].dataIndex];return b.asset+' ('+b.company+')';},
+          label:ctx=>{const b=bars[ctx.dataIndex];return ['Cost: US$'+b.cost.toLocaleString()+'/t LCE','Production: '+b.prod.toFixed(1)+' kt LCE','Type: '+b.type,b.cost<=priceLine?'✅ Profitable':'❌ Marginal/Loss'];}
+        }},
+        annotation:undefined
+      },
+      scales:{
+        x:{ticks:{color:'#64748b',font:{size:9},maxRotation:60,minRotation:30},grid:{color:'rgba(255,255,255,.04)'}},
+        y:{
+          ticks:{color:'#64748b',callback:v=>'$'+v.toLocaleString()},
+          grid:{color:'rgba(255,255,255,.06)'},
+          title:{display:true,text:'Cash Cost (US$/t LCE)',color:'#64748b'},
+          min:0,
+          max:Math.max(25000,priceLine+3000)
+        }
+      }
+    },
+    plugins:[{
+      id:'priceLine',
+      afterDraw:(chart)=>{
+        const yScale = chart.scales.y;
+        const yPos = yScale.getPixelForValue(priceLine);
+        const ctx = chart.ctx;
+        ctx.save();
+        ctx.strokeStyle='#ffc107';
+        ctx.lineWidth=2;
+        ctx.setLineDash([8,4]);
+        ctx.beginPath();
+        ctx.moveTo(chart.chartArea.left,yPos);
+        ctx.lineTo(chart.chartArea.right,yPos);
+        ctx.stroke();
+        ctx.fillStyle='#ffc107';
+        ctx.font='11px Space Grotesk';
+        ctx.fillText('LCE Price: US$'+priceLine.toLocaleString()+'/t',chart.chartArea.right-200,yPos-6);
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+// ─── HISTORICAL ACTUALS (kt LCE) ───
+// Sources: USGS MCS 2020-2025, IEA, Benchmark Minerals, Fastmarkets, S&P Global
+const HIST_SUPPLY = {2015:177,2016:202,2017:302,2018:420,2019:410,2020:410,2021:540,2022:695,2023:890,2024:1090};
+const HIST_DEMAND = {2015:173,2016:201,2017:260,2018:320,2019:365,2020:292,2021:490,2022:660,2023:715,2024:920};
+// Note: 2020 demand dip = COVID. 2023 surplus ~175kt. USGS figures in Li content converted via 5.323x to LCE.
+const HIST_YEARS = [2015,2016,2017,2018,2019,2020,2021,2022,2023];
+const ALL_DEMAND_YEARS = [...HIST_YEARS,2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040];
+
+// ─── HARD ROCK SC6 COST CURVE ───
+// FOB cash cost per tonne SC6 concentrate (US$/t)
+// Sources: Company quarterly reports, Citi research, Fastmarkets, MarketIndex
+const SC6_COST = {
+  'Greenbushes':220,                // Talison; A$338/t → ~US$220/t. World's lowest.
+  'Greenbushes (IGO 24.99%)':220,
+  'Greenbushes (Tianqi 26.01%)':220,
+  'Pilgangoora':500,                // PLS; $499/t delivered basis Q1 2025
+  'Grota do Cirilo':520,            // Sigma; $592/t AISC but ~$520 cash cost
+  'Goulamina':550,                  // Ganfeng; new, ramping — estimated
+  'Kathleen Valley':576,            // Liontown; $576/t reported Q2 2025
+  'Mt Holland (Covalent JV)':620,   // SQM/ALB JV; ramping, early higher costs
+  'Wodgina (MinRes 50%)':650,       // MinRes; A$800-890/t → ~$520-580 + royalties
+  'Bikita':680,                     // Sinomine; lower labour costs but logistics
+  'Ewoyaa':700,                     // Atlantic; DFS estimate
+  'Arcadia':720,                    // Huayou Zimbabwe
+  'Mt Marion (MinRes 50%)':750,     // MinRes; A$870-970/t SC4.1; upgrade to SC6 adds cost
+  'Mt Marion (Ganfeng 50%)':750,
+  'NAL (North American Lithium)':791, // Sayona; $791/t reported — above breakeven at trough
+  'Whabouchi':780,                  // Nemaska; DFS estimate
+  'Shaakichiuwaanaan':700,          // PMET; PFS estimate — large scale advantage
+  'Rose':820,                       // Critical Elements; DFS
+  'Finniss':840,                    // Core; restart, smaller scale
+  'PAK':850,                        // Frontier; PFS
+  'Barroso':870,                    // Savannah; European costs
+  'NAL Offtake & Ghana':880,        // Piedmont
+  'Wolfsberg':950,                  // European Lithium; small, European cost base
+  'Karibib (Lithium Ridge)':1000,   // Andrada; small scale
+  'Bald Hill':1050,                 // Suspended; high strip ratio
+  'Kemerton (Hydroxide)':0,         // Hydroxide plant, not SC6
+  'Mt Cattlin':1100,                // Wound down; depleting, high cost
+};
+
+// Convert LCE kt to SC6 kt (multiply by 7.5)
+function renderSC6Curve(){
+  const yr = parseInt(document.getElementById('sc6-year').value);
+  const priceLine = parseInt(document.getElementById('sc6-price').value);
+
+  // Filter to hard rock only with SC6 cost data and production
+  const f = data.filter(d=>{
+    if(d.type!=='Hard Rock') return false;
+    if(!SC6_COST[d.asset] || SC6_COST[d.asset]===0) return false;
+    const dedup = document.getElementById('f-dedup').checked;
+    if(dedup && d.jv) return false;
+    const prod = d.prod[yr]||0;
+    if(prod<=0) return false;
+    return true;
+  });
+
+  const sorted = f.map(d=>({
+    asset:d.asset,company:d.company,stage:d.stage,
+    prodLCE:d.prod[yr]||0,
+    prodSC6:(d.prod[yr]||0)*7.5, // convert kt LCE to kt SC6
+    cost:SC6_COST[d.asset]||800,
+    prob:getProb(d)
+  })).sort((a,b)=>a.cost-b.cost);
+
+  // Totals
+  const totalSC6 = sorted.reduce((s,b)=>s+b.prodSC6,0);
+  const profitableSC6 = sorted.filter(b=>b.cost<=priceLine).reduce((s,b)=>s+b.prodSC6,0);
+  const marginalSC6 = totalSC6-profitableSC6;
+
+  document.getElementById('sc6-total').textContent=totalSC6.toFixed(0)+' kt SC6';
+  document.getElementById('sc6-profitable').textContent=profitableSC6.toFixed(0)+' kt SC6 ('+Math.round(profitableSC6/totalSC6*100)+'%)';
+  document.getElementById('sc6-marginal').textContent=marginalSC6.toFixed(0)+' kt SC6 ('+Math.round(marginalSC6/totalSC6*100)+'%)';
+
+  const labels = sorted.map(b=>b.asset);
+  const barColors = sorted.map(b=>b.cost<=priceLine?'rgba(105,240,174,0.7)':'rgba(255,82,82,0.7)');
+  const borderColors = sorted.map(b=>b.cost<=priceLine?'#69f0ae':'#ff5252');
+
+  if(charts.sc6curve) charts.sc6curve.destroy();
+  charts.sc6curve = new Chart(document.getElementById('sc6CurveChart'),{
+    type:'bar',
+    data:{
+      labels:labels,
+      datasets:[{
+        label:'FOB Cash Cost (US$/t SC6)',
+        data:sorted.map(b=>b.cost),
+        backgroundColor:barColors,
+        borderColor:borderColors,
+        borderWidth:1,
+        barPercentage:1.0,
+        categoryPercentage:1.0
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{
+          title:ctx=>{const b=sorted[ctx[0].dataIndex];return b.asset+' ('+b.company+')';},
+          label:ctx=>{const b=sorted[ctx.dataIndex];return [
+            'SC6 Cost: US$'+b.cost.toLocaleString()+'/t',
+            'SC6 Production: '+b.prodSC6.toFixed(0)+' kt',
+            '('+b.prodLCE.toFixed(1)+' kt LCE)',
+            'Stage: '+b.stage+' ('+Math.round(b.prob*100)+'% prob)',
+            'Margin: '+(b.cost<=priceLine?'US$'+(priceLine-b.cost).toLocaleString()+'/t profit':'US$'+(b.cost-priceLine).toLocaleString()+'/t loss')
+          ];}
+        }}
+      },
+      scales:{
+        x:{ticks:{color:'#64748b',font:{size:9},maxRotation:55,minRotation:30},grid:{color:'rgba(255,255,255,.04)'}},
+        y:{
+          min:0,
+          max:Math.max(1800,priceLine+300),
+          ticks:{color:'#64748b',callback:v=>'$'+v.toLocaleString()},
+          grid:{color:'rgba(255,255,255,.06)'},
+          title:{display:true,text:'FOB Cash Cost (US$/t SC6)',color:'#64748b'}
+        }
+      }
+    },
+    plugins:[{
+      id:'sc6PriceLine',
+      afterDraw:(chart)=>{
+        const yScale=chart.scales.y;
+        const yPos=yScale.getPixelForValue(priceLine);
+        const ctx=chart.ctx;
+        ctx.save();
+        ctx.strokeStyle='#ffc107';
+        ctx.lineWidth=2;
+        ctx.setLineDash([8,4]);
+        ctx.beginPath();
+        ctx.moveTo(chart.chartArea.left,yPos);
+        ctx.lineTo(chart.chartArea.right,yPos);
+        ctx.stroke();
+        ctx.fillStyle='#ffc107';
+        ctx.font='11px Space Grotesk';
+        ctx.fillText('SC6 Spot: US$'+priceLine.toLocaleString()+'/t',chart.chartArea.right-200,yPos-6);
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+// ─── DEMAND MODEL ───
+const DEMAND_BREAKDOWN_PCT = {ev:0.68,ess:0.13,electronics:0.07,ceramics:0.05,other:0.07};
+// Historical EV share was much lower — rough approximation
+const HIST_EV_SHARE = {2015:0.15,2016:0.18,2017:0.22,2018:0.30,2019:0.35,2020:0.38,2021:0.50,2022:0.56,2023:0.62,2024:0.68};
+
+function renderDemand(){
+  const base = parseInt(document.getElementById('dm-base').value);
+  const cagrLo = parseInt(document.getElementById('dm-cagr-lo').value)/100;
+  const cagrMid = parseInt(document.getElementById('dm-cagr-mid').value)/100;
+  const cagrHi = parseInt(document.getElementById('dm-cagr-hi').value)/100;
+
+  document.getElementById('dm-base-val').textContent=base;
+  document.getElementById('dm-cagr-lo-val').textContent=document.getElementById('dm-cagr-lo').value+'%';
+  document.getElementById('dm-cagr-mid-val').textContent=document.getElementById('dm-cagr-mid').value+'%';
+  document.getElementById('dm-cagr-hi-val').textContent=document.getElementById('dm-cagr-hi').value+'%';
+
+  // Build full supply & demand arrays across all years
+  const f = filtered();
+  const supplyAll = ALL_DEMAND_YEARS.map(y=>{
+    if(y<=2023) return HIST_SUPPLY[y]||0;
+    return f.reduce((s,d)=>s+getProd(d,y),0);
+  });
+
+  const demLo=ALL_DEMAND_YEARS.map((y,i)=>{
+    if(y<=2024) return HIST_DEMAND[y]||0;
+    const fwdIdx = y-2024;
+    return Math.round(base*Math.pow(1+cagrLo,fwdIdx));
+  });
+  const demMid=ALL_DEMAND_YEARS.map((y,i)=>{
+    if(y<=2024) return HIST_DEMAND[y]||0;
+    const fwdIdx = y-2024;
+    return Math.round(base*Math.pow(1+cagrMid,fwdIdx));
+  });
+  const demHi=ALL_DEMAND_YEARS.map((y,i)=>{
+    if(y<=2024) return HIST_DEMAND[y]||0;
+    const fwdIdx = y-2024;
+    return Math.round(base*Math.pow(1+cagrHi,fwdIdx));
+  });
+
+  const supply = supplyAll;
+  // For the forward-only YEARS array used elsewhere
+  const supplyFwd = YEARS.map(y=>f.reduce((s,d)=>s+getProd(d,y),0));
+
+  // Breakdown panel — use 2026E (index 11 in ALL_DEMAND_YEARS)
+  const idx2026 = ALL_DEMAND_YEARS.indexOf(2026);
+  const mid2026 = demMid[idx2026];
+  document.getElementById('dm-breakdown').innerHTML=`
+    <div style="color:var(--blue)">EVs: ${Math.round(mid2026*DEMAND_BREAKDOWN_PCT.ev)} kt (${Math.round(DEMAND_BREAKDOWN_PCT.ev*100)}%)</div>
+    <div style="color:var(--teal)">Energy Storage: ${Math.round(mid2026*DEMAND_BREAKDOWN_PCT.ess)} kt (${Math.round(DEMAND_BREAKDOWN_PCT.ess*100)}%)</div>
+    <div style="color:var(--purple)">Electronics: ${Math.round(mid2026*DEMAND_BREAKDOWN_PCT.electronics)} kt (${Math.round(DEMAND_BREAKDOWN_PCT.electronics*100)}%)</div>
+    <div style="color:var(--orange)">Ceramics/Glass: ${Math.round(mid2026*DEMAND_BREAKDOWN_PCT.ceramics)} kt (${Math.round(DEMAND_BREAKDOWN_PCT.ceramics*100)}%)</div>
+    <div style="color:var(--muted)">Other: ${Math.round(mid2026*DEMAND_BREAKDOWN_PCT.other)} kt (${Math.round(DEMAND_BREAKDOWN_PCT.other*100)}%)</div>
+  `;
+
+  // Balance panel — show recent history + forward
+  let balanceHtml='';
+  const balanceYears = [2020,2021,2022,2023,2024,2025,2026,2027,2028,2029,2030];
+  balanceYears.forEach(y=>{
+    const i = ALL_DEMAND_YEARS.indexOf(y);
+    if(i<0) return;
+    const diff = supply[i]-demMid[i];
+    const col = diff>=0?'var(--green)':'var(--red)';
+    const sign = diff>=0?'+':'';
+    const label = y<=2024?y:y+'E';
+    const isActual = y<=2024?' ✓':'';
+    balanceHtml+=`<div style="color:${col}">${label}: ${sign}${diff.toFixed(0)} kt${isActual}</div>`;
+  });
+  document.getElementById('dm-balance').innerHTML=balanceHtml;
+
+  // Chart — full history + forward
+  const chartLabels = ALL_DEMAND_YEARS.map(y=>y<=2024?String(y):y+'E');
+  // Mark the boundary between actuals and estimates
+  const actualBoundary = ALL_DEMAND_YEARS.indexOf(2024);
+
+  if(charts.demand) charts.demand.destroy();
+  charts.demand = new Chart(document.getElementById('demandChart'),{
+    type:'line',
+    data:{
+      labels:chartLabels,
+      datasets:[
+        {label:'Demand High',data:demHi,borderColor:'rgba(255,82,82,0.3)',backgroundColor:'rgba(255,82,82,0.05)',fill:'+1',borderWidth:1,borderDash:[4,4],pointRadius:0,tension:.3},
+        {label:'Demand (Actual + Base)',data:demMid,borderColor:'#ff5252',backgroundColor:'transparent',borderWidth:2.5,pointRadius:ALL_DEMAND_YEARS.map(y=>y<=2024?5:3),pointBackgroundColor:ALL_DEMAND_YEARS.map(y=>y<=2024?'#ff5252':'rgba(255,82,82,0.5)'),pointStyle:ALL_DEMAND_YEARS.map(y=>y<=2024?'circle':'triangle'),tension:.3},
+        {label:'Demand Low',data:demLo,borderColor:'rgba(255,82,82,0.3)',backgroundColor:'rgba(255,82,82,0.05)',fill:'-1',borderWidth:1,borderDash:[4,4],pointRadius:0,tension:.3},
+        {label:'Supply (Actual + Tracked)',data:supply,borderColor:'#69f0ae',backgroundColor:'rgba(105,240,174,0.08)',fill:true,borderWidth:2.5,pointRadius:ALL_DEMAND_YEARS.map(y=>y<=2024?5:3),pointBackgroundColor:ALL_DEMAND_YEARS.map(y=>y<=2024?'#69f0ae':'rgba(105,240,174,0.5)'),pointStyle:ALL_DEMAND_YEARS.map(y=>y<=2024?'circle':'triangle'),tension:.3}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:11},boxWidth:12,padding:12}},
+        tooltip:{mode:'index',intersect:false,callbacks:{
+          title:ctx=>{const y=ALL_DEMAND_YEARS[ctx[0].dataIndex];return y<=2024?y+' (Actual)':y+'E (Estimate)';},
+          label:ctx=>ctx.dataset.label+': '+ctx.raw.toLocaleString()+' kt LCE',
+          afterBody:ctx=>{const i=ctx[0].dataIndex;const bal=supply[i]-demMid[i];return ['Balance: '+(bal>=0?'+':'')+bal.toFixed(0)+' kt'];}
+        }}
+      },
+      interaction:{mode:'index',intersect:false},
+      scales:{
+        x:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},
+        y:{ticks:{color:'#64748b',callback:v=>v.toLocaleString()+'kt'},grid:{color:'rgba(255,255,255,.06)'},title:{display:true,text:'kt LCE/yr',color:'#64748b'}}
+      }
+    },
+    plugins:[{
+      id:'actualLine',
+      afterDraw:(chart)=>{
+        const xScale=chart.scales.x;
+        const xPos=xScale.getPixelForValue(actualBoundary);
+        const ctx=chart.ctx;
+        ctx.save();
+        ctx.strokeStyle='rgba(255,255,255,0.2)';
+        ctx.lineWidth=1;
+        ctx.setLineDash([6,4]);
+        ctx.beginPath();
+        ctx.moveTo(xPos,chart.chartArea.top);
+        ctx.lineTo(xPos,chart.chartArea.bottom);
+        ctx.stroke();
+        ctx.fillStyle='rgba(255,255,255,0.3)';
+        ctx.font='10px Space Grotesk';
+        ctx.fillText('← Actuals | Estimates →',xPos-45,chart.chartArea.top+12);
+        ctx.restore();
+      }
+    }]
+  });
+
+  // Pie chart
+  if(charts.pie) charts.pie.destroy();
+  charts.pie = new Chart(document.getElementById('demandPieChart'),{
+    type:'doughnut',
+    data:{
+      labels:['EVs','Energy Storage','Electronics','Ceramics/Glass','Other'],
+      datasets:[{
+        data:[DEMAND_BREAKDOWN_PCT.ev,DEMAND_BREAKDOWN_PCT.ess,DEMAND_BREAKDOWN_PCT.electronics,DEMAND_BREAKDOWN_PCT.ceramics,DEMAND_BREAKDOWN_PCT.other].map(p=>Math.round(mid2026*p)),
+        backgroundColor:['#64b5f6cc','#26c6dacc','#b39dffcc','#ffab40cc','#607d8bcc'],
+        borderColor:['#64b5f6','#26c6da','#b39dff','#ffab40','#607d8b'],
+        borderWidth:1
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'right',labels:{color:'#94a3b8',font:{size:11},padding:12}},
+        tooltip:{callbacks:{label:ctx=>ctx.label+': '+ctx.raw+' kt LCE ('+Math.round(ctx.raw/(mid2026||1)*100)+'%)'}}
+      }
+    }
+  });
+}
+
+// ─── GWh TRACKER ───
+// Historical GWh: EV + stationary storage (IEA, Benchmark Minerals, BloombergNEF)
+const HIST_GWH = {2015:50,2016:70,2017:110,2018:170,2019:200,2020:230,2021:450,2022:700,2023:950,2024:1300};
+
+function renderGWh(){
+  const intensity = parseFloat(document.getElementById('gwh-intensity').value);
+  const cagr = parseInt(document.getElementById('gwh-cagr').value)/100;
+  const lfpShare = parseInt(document.getElementById('gwh-lfp').value)/100;
+
+  document.getElementById('gwh-int-val').textContent=intensity.toFixed(2);
+  document.getElementById('gwh-cagr-val').textContent=document.getElementById('gwh-cagr').value+'%';
+  document.getElementById('gwh-lfp-val').textContent=document.getElementById('gwh-lfp').value+'%';
+
+  // Blended intensity shifts over time as LFP share changes
+  const lfp2024=0.45; // ~45% LFP in 2024
+  const nmcIntensity=0.95, lfpIntensity=0.75;
+
+  const gwhYears = ALL_DEMAND_YEARS;
+  const gwhData = gwhYears.map((y,i)=>{
+    if(y<=2024) return HIST_GWH[y]||0;
+    const fwdIdx=y-2024;
+    return Math.round(1300*Math.pow(1+cagr,fwdIdx));
+  });
+
+  // Calculate blended intensity per year (LFP share linearly interpolates)
+  const impliedLCE = gwhYears.map((y,i)=>{
+    let lfpPct;
+    if(y<=2024) lfpPct=lfp2024;
+    else if(y<=2030) lfpPct=lfp2024+(lfpShare-lfp2024)*((y-2024)/6);
+    else lfpPct=lfpShare+0.005*(y-2030); // slow continued LFP growth
+    lfpPct=Math.min(lfpPct,0.85);
+    const blended = lfpPct*lfpIntensity + (1-lfpPct)*nmcIntensity;
+    return Math.round(gwhData[i]*blended/1000); // GWh * kg/kWh / 1000 = kt LCE
+  });
+
+  // Metrics
+  const idx2030=gwhYears.indexOf(2030), idx2035=gwhYears.indexOf(2035), idx2040=gwhYears.indexOf(2040);
+  document.getElementById('gwh-metrics').innerHTML=`
+    <div style="color:var(--teal)">2024: ${gwhData[gwhYears.indexOf(2024)].toLocaleString()} GWh → ${impliedLCE[gwhYears.indexOf(2024)]} kt LCE</div>
+    <div style="color:var(--blue)">2030E: ${gwhData[idx2030].toLocaleString()} GWh → ${impliedLCE[idx2030]} kt LCE</div>
+    <div style="color:var(--purple)">2035E: ${gwhData[idx2035].toLocaleString()} GWh → ${impliedLCE[idx2035]} kt LCE</div>
+    <div style="color:var(--accent)">2040E: ${gwhData[idx2040].toLocaleString()} GWh → ${impliedLCE[idx2040]} kt LCE</div>
+    <div style="color:var(--green);margin-top:4px;">Battery Li: ${(impliedLCE[idx2030]/impliedLCE[gwhYears.indexOf(2024)]*100-100).toFixed(0)}% growth 24→30</div>
+  `;
+
+  const chartLabels = gwhYears.map(y=>y<=2024?String(y):y+'E');
+
+  if(charts.gwh) charts.gwh.destroy();
+  charts.gwh = new Chart(document.getElementById('gwhChart'),{
+    type:'bar',
+    data:{
+      labels:chartLabels,
+      datasets:[
+        {label:'GWh Deployed',data:gwhData,backgroundColor:gwhYears.map(y=>y<=2024?'rgba(38,198,218,0.7)':'rgba(38,198,218,0.35)'),borderColor:'#26c6da',borderWidth:1,yAxisID:'y',order:2},
+        {label:'Implied Li Demand (kt LCE)',data:impliedLCE,type:'line',borderColor:'#ffc107',backgroundColor:'rgba(255,193,7,0.1)',fill:true,borderWidth:2.5,pointRadius:gwhYears.map(y=>y<=2024?4:2),pointBackgroundColor:'#ffc107',tension:.3,yAxisID:'y1',order:1}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:11},boxWidth:12}},
+        tooltip:{mode:'index',intersect:false,callbacks:{
+          title:ctx=>{const y=gwhYears[ctx[0].dataIndex];return y<=2024?y+' (Actual)':y+'E';},
+          label:ctx=>{
+            if(ctx.datasetIndex===0) return 'GWh: '+ctx.raw.toLocaleString();
+            return 'Li Demand: '+ctx.raw+' kt LCE';
+          }
+        }}
+      },
+      interaction:{mode:'index',intersect:false},
+      scales:{
+        x:{ticks:{color:'#64748b',font:{size:9},maxRotation:45},grid:{color:'rgba(255,255,255,.04)'}},
+        y:{position:'left',ticks:{color:'#26c6da',callback:v=>v.toLocaleString()},grid:{color:'rgba(255,255,255,.06)'},title:{display:true,text:'GWh',color:'#26c6da'}},
+        y1:{position:'right',ticks:{color:'#ffc107',callback:v=>v+'kt'},grid:{drawOnChartArea:false},title:{display:true,text:'kt LCE',color:'#ffc107'}}
+      }
+    }
+  });
+}
+
+// ─── CONVERTER ───
+function doConvert(){
+  const val = parseFloat(document.getElementById('cv-input').value)||0;
+  const from = document.getElementById('cv-from').value;
+  const oreGrade = parseFloat(document.getElementById('cv-ore-grade').value)||1.3;
+  const oreRec = (parseFloat(document.getElementById('cv-ore-rec').value)||75)/100;
+
+  document.getElementById('cv-ore-inputs').style.display = from==='ore_mt'?'block':'none';
+
+  let lce; // normalize to kt LCE first
+  switch(from){
+    case 'sc6': lce=val/7.5; break;
+    case 'sc55': lce=val/8.18; break;
+    case 'lce': lce=val; break;
+    case 'lioh': lce=val/1.095; break;
+    case 'li2o_pct': lce=val*2.153; // this is a grade conversion, show factor only
+      document.getElementById('cv-results').innerHTML=`
+        <div><span style="color:var(--accent);font-family:var(--mono)">${val}% Li₂O</span> = <span style="color:var(--green);font-family:var(--mono)">${(val*2.153).toFixed(2)}%</span> Li₂CO₃ equiv</div>
+        <div><span style="color:var(--accent);font-family:var(--mono)">${val}% Li₂O</span> = <span style="color:var(--green);font-family:var(--mono)">${(val*0.4645).toFixed(3)}%</span> Li metal</div>
+        <div style="margin-top:8px;color:var(--muted);">For tonnage conversions, use SC6 or Ore inputs</div>`;
+      return;
+    case 'li_metal': lce=val*5.323; break;
+    case 'ore_mt': lce=val*1000*(oreGrade/100)*0.4645*5.323*oreRec; break; // Mt ore → kt Li₂O → kt Li → kt LCE with recovery
+  }
+
+  const sc6 = lce*7.5;
+  const lioh = lce*1.095;
+  const liMetal = lce*0.188;
+  const gwh = lce*1000/0.85; // at avg 0.85 kg LCE/kWh
+  const evs = Math.round(gwh/65); // avg 65kWh per EV
+
+  document.getElementById('cv-results').innerHTML=`
+    <div><span style="color:var(--green);font-family:var(--mono)">${lce.toFixed(2)}</span> kt LCE (Li₂CO₃)</div>
+    <div><span style="color:var(--green);font-family:var(--mono)">${sc6.toFixed(1)}</span> kt SC6 spodumene concentrate</div>
+    <div><span style="color:var(--green);font-family:var(--mono)">${lioh.toFixed(2)}</span> kt LiOH·H₂O</div>
+    <div><span style="color:var(--green);font-family:var(--mono)">${liMetal.toFixed(3)}</span> kt lithium metal</div>
+    <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px;">
+      <span style="color:var(--teal);font-family:var(--mono)">${Math.round(gwh).toLocaleString()}</span> GWh of batteries (@ 0.85 kg/kWh)<br>
+      <span style="color:var(--teal);font-family:var(--mono)">≈ ${evs.toLocaleString()}</span> average EVs (@ 65 kWh)
+    </div>`;
+}
+
+// Init
+renderAll();
+</script>
+</body>
+</html>
