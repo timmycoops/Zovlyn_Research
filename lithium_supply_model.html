@@ -172,7 +172,49 @@ tbody tr:hover{background:rgba(255,193,7,.04);}
     <label>Risk-Adjusted Supply</label>
     <input type="checkbox" id="f-prob" onchange="applyFilters()">
   </div>
+  <button class="btn btn-sm" onclick="toggleProbPanel()" id="prob-toggle-btn" style="font-size:10px;">Adjust Weights</button>
   <button class="btn" onclick="showAddModal()">+ Add Asset</button>
+</div>
+
+<div id="prob-panel" style="display:none;padding:10px 28px;background:var(--surface);border-bottom:1px solid var(--border);">
+  <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;">
+    <div style="flex:1;min-width:300px;">
+      <div style="font-size:10px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">Stage Probability Defaults</div>
+      <div style="display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:center;font-size:11px;">
+        <span style="color:var(--green);">Operating</span>
+        <input type="range" id="prob-Operating" min="0" max="100" value="100" step="5" oninput="updateStageProb(this)" style="width:100%;">
+        <span id="prob-Operating-val" style="font-family:var(--mono);width:35px;text-align:right;">100%</span>
+
+        <span style="color:var(--blue);">Construction</span>
+        <input type="range" id="prob-Construction" min="0" max="100" value="90" step="5" oninput="updateStageProb(this)">
+        <span id="prob-Construction-val" style="font-family:var(--mono);width:35px;text-align:right;">90%</span>
+
+        <span style="color:var(--orange);">Permitting</span>
+        <input type="range" id="prob-Permitting" min="0" max="100" value="60" step="5" oninput="updateStageProb(this)">
+        <span id="prob-Permitting-val" style="font-family:var(--mono);width:35px;text-align:right;">60%</span>
+
+        <span style="color:var(--purple);">DFS</span>
+        <input type="range" id="prob-DFS" min="0" max="100" value="50" step="5" oninput="updateStageProb(this)">
+        <span id="prob-DFS-val" style="font-family:var(--mono);width:35px;text-align:right;">50%</span>
+
+        <span style="color:var(--orange);">Care & Maint.</span>
+        <input type="range" id="prob-CareampMaintenance" min="0" max="100" value="40" step="5" oninput="updateStageProb(this)">
+        <span id="prob-CareampMaintenance-val" style="font-family:var(--mono);width:35px;text-align:right;">40%</span>
+
+        <span style="color:var(--pink);">PFS</span>
+        <input type="range" id="prob-PFS" min="0" max="100" value="35" step="5" oninput="updateStageProb(this)">
+        <span id="prob-PFS-val" style="font-family:var(--mono);width:35px;text-align:right;">35%</span>
+
+        <span style="color:var(--red);">Exploration</span>
+        <input type="range" id="prob-Exploration" min="0" max="100" value="15" step="5" oninput="updateStageProb(this)">
+        <span id="prob-Exploration-val" style="font-family:var(--mono);width:35px;text-align:right;">15%</span>
+      </div>
+    </div>
+    <div style="flex:1;min-width:300px;max-height:180px;overflow-y:auto;">
+      <div style="font-size:10px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">Per-Asset Overrides <span style="color:var(--dim);font-weight:400;">(leave blank for stage default)</span></div>
+      <div id="asset-overrides" style="font-size:11px;"></div>
+    </div>
+  </div>
 </div>
 
 <div class="content">
@@ -257,30 +299,49 @@ tbody tr:hover{background:rgba(255,193,7,.04);}
   <div id="tab-demand" style="display:none;">
     <div class="chart-wrap">
       <div class="chart-title">Supply vs Demand — Historical Actuals (2015-2024) + Forward Scenarios</div>
-      <div style="display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap;align-items:flex-start;">
-        <div style="background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:12px;flex:1;min-width:280px;">
-          <div style="font-size:11px;font-weight:600;margin-bottom:8px;color:var(--teal);">DEMAND SCENARIO INPUTS</div>
-          <div style="display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;font-size:11px;">
-            <span style="color:var(--muted);">2024 Base (kt)</span>
-            <input type="range" id="dm-base" min="800" max="1400" value="1100" step="25" oninput="renderDemand()">
-            <span id="dm-base-val" class="editable" style="width:55px;text-align:center;">1100</span>
+      <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;align-items:flex-start;">
+        <div style="background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:12px;flex:1.5;min-width:380px;">
+          <div style="font-size:11px;font-weight:600;margin-bottom:8px;color:var(--teal);">DEMAND BY CATEGORY — 2024 Base (kt LCE) & Growth Rate</div>
+          <div style="display:grid;grid-template-columns:140px 60px 1fr 40px;gap:4px 8px;align-items:center;font-size:11px;">
+            <span style="color:var(--muted);font-size:9px;font-weight:600;">CATEGORY</span>
+            <span style="color:var(--muted);font-size:9px;font-weight:600;">2024 kt</span>
+            <span style="color:var(--muted);font-size:9px;font-weight:600;">CAGR</span>
+            <span style="color:var(--muted);font-size:9px;font-weight:600;"></span>
 
-            <span style="color:var(--muted);">Low CAGR %</span>
-            <input type="range" id="dm-cagr-lo" min="5" max="25" value="12" step="1" oninput="renderDemand()">
-            <span id="dm-cagr-lo-val" class="editable" style="width:55px;text-align:center;">12%</span>
+            <span style="color:#64b5f6;">Passenger EVs</span>
+            <input type="number" id="dm-cat-pev-base" value="580" class="editable" style="width:55px;" oninput="renderDemand()">
+            <input type="range" id="dm-cat-pev-cagr" min="5" max="35" value="20" step="1" oninput="renderDemand()" style="width:100%;">
+            <span id="dm-cat-pev-cagr-val" style="font-family:var(--mono);font-size:10px;">20%</span>
 
-            <span style="color:var(--muted);">Base CAGR %</span>
-            <input type="range" id="dm-cagr-mid" min="8" max="30" value="18" step="1" oninput="renderDemand()">
-            <span id="dm-cagr-mid-val" class="editable" style="width:55px;text-align:center;">18%</span>
+            <span style="color:#26c6da;">Commercial EV/Trucks</span>
+            <input type="number" id="dm-cat-cev-base" value="65" class="editable" style="width:55px;" oninput="renderDemand()">
+            <input type="range" id="dm-cat-cev-cagr" min="5" max="50" value="30" step="1" oninput="renderDemand()">
+            <span id="dm-cat-cev-cagr-val" style="font-family:var(--mono);font-size:10px;">30%</span>
 
-            <span style="color:var(--muted);">High CAGR %</span>
-            <input type="range" id="dm-cagr-hi" min="12" max="40" value="25" step="1" oninput="renderDemand()">
-            <span id="dm-cagr-hi-val" class="editable" style="width:55px;text-align:center;">25%</span>
+            <span style="color:#ffc107;">BESS / Grid Storage</span>
+            <input type="number" id="dm-cat-bess-base" value="140" class="editable" style="width:55px;" oninput="renderDemand()">
+            <input type="range" id="dm-cat-bess-cagr" min="10" max="60" value="35" step="1" oninput="renderDemand()">
+            <span id="dm-cat-bess-cagr-val" style="font-family:var(--mono);font-size:10px;">35%</span>
+
+            <span style="color:#b39dff;">E-bikes / Micro</span>
+            <input type="number" id="dm-cat-ebike-base" value="55" class="editable" style="width:55px;" oninput="renderDemand()">
+            <input type="range" id="dm-cat-ebike-cagr" min="0" max="25" value="10" step="1" oninput="renderDemand()">
+            <span id="dm-cat-ebike-cagr-val" style="font-family:var(--mono);font-size:10px;">10%</span>
+
+            <span style="color:#ce93d8;">Consumer Electronics</span>
+            <input type="number" id="dm-cat-ce-base" value="75" class="editable" style="width:55px;" oninput="renderDemand()">
+            <input type="range" id="dm-cat-ce-cagr" min="0" max="15" value="3" step="1" oninput="renderDemand()">
+            <span id="dm-cat-ce-cagr-val" style="font-family:var(--mono);font-size:10px;">3%</span>
+
+            <span style="color:#607d8b;">Ceramics/Glass/Industrial</span>
+            <input type="number" id="dm-cat-ind-base" value="85" class="editable" style="width:55px;" oninput="renderDemand()">
+            <input type="range" id="dm-cat-ind-cagr" min="-5" max="10" value="2" step="1" oninput="renderDemand()">
+            <span id="dm-cat-ind-cagr-val" style="font-family:var(--mono);font-size:10px;">2%</span>
           </div>
-          <div style="margin-top:8px;font-size:9px;color:var(--dim);">Defaults: IEA STEPS ~18% CAGR; Albemarle bull case ~25%; conservative ~12%</div>
+          <div style="margin-top:6px;font-size:9px;color:var(--dim);">Total 2024 base: <span id="dm-total-base" style="color:var(--accent);">1,000</span> kt. BESS is the fastest grower at 35%+ CAGR. Commercial EV/trucks lagging passenger but accelerating.</div>
         </div>
         <div style="background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:12px;min-width:200px;">
-          <div style="font-size:11px;font-weight:600;margin-bottom:8px;color:var(--accent);">DEMAND BREAKDOWN (2026E)</div>
+          <div style="font-size:11px;font-weight:600;margin-bottom:8px;color:var(--accent);">DEMAND MIX</div>
           <div id="dm-breakdown" style="font-size:11px;line-height:1.8;"></div>
         </div>
         <div style="background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:12px;min-width:200px;">
@@ -288,11 +349,24 @@ tbody tr:hover{background:rgba(255,193,7,.04);}
           <div id="dm-balance" style="font-size:11px;line-height:1.8;"></div>
         </div>
       </div>
-      <div style="position:relative;height:380px;"><canvas id="demandChart"></canvas></div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center;">
+        <span style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em;">Benchmark Overlays:</span>
+        <label style="font-size:11px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;">
+          <input type="checkbox" id="bm-alb-d" onchange="renderDemand()"><span style="color:#f48fb1;">Albemarle (Demand)</span></label>
+        <label style="font-size:11px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;">
+          <input type="checkbox" id="bm-iea-d" onchange="renderDemand()"><span style="color:#64b5f6;">IEA STEPS (Demand)</span></label>
+        <label style="font-size:11px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;">
+          <input type="checkbox" id="bm-fm-d" onchange="renderDemand()"><span style="color:#ce93d8;">Fastmarkets (Demand)</span></label>
+        <label style="font-size:11px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;">
+          <input type="checkbox" id="bm-alb-s" onchange="renderDemand()"><span style="color:#f48fb1;">Albemarle (Supply)</span></label>
+        <label style="font-size:11px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;">
+          <input type="checkbox" id="bm-sp-s" onchange="renderDemand()"><span style="color:#80cbc4;">S&P Global (Supply)</span></label>
+      </div>
+      <div style="position:relative;height:400px;"><canvas id="demandChart"></canvas></div>
       <div style="margin-top:8px;font-size:10px;color:var(--muted);">Circles = actuals (USGS/IEA/Benchmark). Triangles = estimates/forecasts. Dashed vertical line marks the actual/estimate boundary. Supply before 2024 from USGS aggregated data; 2024+ from your asset-level model. Demand scenarios only diverge after 2024. Tooltip shows surplus/deficit balance.</div>
     </div>
     <div class="chart-wrap" style="margin-top:16px;">
-      <div class="chart-title">Demand by End Use (2026E Base Case)</div>
+      <div class="chart-title">Demand by Category — 2030E Projection</div>
       <div style="position:relative;height:280px;"><canvas id="demandPieChart"></canvas></div>
     </div>
   </div>
@@ -524,6 +598,43 @@ function getProb(d){
 }
 
 function isRiskAdj(){ return document.getElementById('f-prob').checked; }
+
+function toggleProbPanel(){
+  const p=document.getElementById('prob-panel');
+  p.style.display=p.style.display==='none'?'block':'none';
+  if(p.style.display==='block') buildAssetOverrides();
+}
+
+function updateStageProb(el){
+  const stage=el.id.replace('prob-','').replace('amp','& ');
+  const val=parseInt(el.value);
+  document.getElementById(el.id+'-val').textContent=val+'%';
+  STAGE_PROB[stage]=val/100;
+  if(isRiskAdj()) renderAll();
+}
+
+function buildAssetOverrides(){
+  const container=document.getElementById('asset-overrides');
+  // Show non-operating assets
+  const assets=data.filter(d=>d.stage!=='Operating').sort((a,b)=>a.asset.localeCompare(b.asset));
+  container.innerHTML=assets.map(d=>{
+    const override=ASSET_PROB_OVERRIDE[d.asset];
+    const defaultP=Math.round((STAGE_PROB[d.stage]||0.5)*100);
+    return `<div style="display:flex;gap:6px;align-items:center;margin-bottom:3px;">
+      <span style="width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);" title="${d.company} — ${d.asset}">${d.asset}</span>
+      <input type="number" min="0" max="100" step="5" placeholder="${defaultP}" value="${override!==undefined?Math.round(override*100):''}"
+        style="width:55px;background:var(--card);color:var(--text);border:1px solid var(--border2);border-radius:4px;padding:2px 6px;font-family:var(--mono);font-size:10px;text-align:right;"
+        oninput="setAssetOverride('${d.asset.replace(/'/g,"\\'")}',this.value)">
+      <span style="font-size:9px;color:var(--dim);">%</span>
+    </div>`;
+  }).join('');
+}
+
+function setAssetOverride(asset,val){
+  if(val===''||val===null) delete ASSET_PROB_OVERRIDE[asset];
+  else ASSET_PROB_OVERRIDE[asset]=parseInt(val)/100;
+  if(isRiskAdj()) renderAll();
+}
 
 function filtered(){
   const t = document.getElementById('f-type').value;
@@ -1126,59 +1237,134 @@ function renderSC6Curve(){
   });
 }
 
+// ─── BENCHMARK FORECASTS (kt LCE) ───
+// Published supply and demand forecasts from major analysts for overlay comparison
+const BENCHMARKS = {
+  // Demand benchmarks
+  'Albemarle (Demand)':{type:'demand',color:'#f48fb1',dash:[6,3],
+    data:{2024:1100,2025:1300,2026:1600,2027:1900,2028:2300,2029:2700,2030:3300,2035:5500}},
+  'IEA STEPS (Demand)':{type:'demand',color:'#64b5f6',dash:[8,4],
+    data:{2024:1100,2025:1250,2026:1450,2027:1650,2028:1900,2029:2200,2030:2500,2035:3700}},
+  'Fastmarkets (Demand)':{type:'demand',color:'#ce93d8',dash:[4,4],
+    data:{2024:1100,2025:1250,2026:1400,2027:1600,2028:1800,2029:2050,2030:2300}},
+  // Supply benchmarks
+  'Albemarle (Supply)':{type:'supply',color:'#f48fb1',dash:[6,3],
+    data:{2024:1090,2025:1250,2026:1450,2027:1650,2028:1900,2029:2200,2030:2500}},
+  'S&P Global (Supply)':{type:'supply',color:'#80cbc4',dash:[8,4],
+    data:{2024:1090,2025:1200,2026:1380,2027:1550,2028:1750,2029:1950,2030:2100}},
+};
+
 // ─── DEMAND MODEL ───
 const DEMAND_BREAKDOWN_PCT = {ev:0.68,ess:0.13,electronics:0.07,ceramics:0.05,other:0.07};
-// Historical EV share was much lower — rough approximation
 const HIST_EV_SHARE = {2015:0.15,2016:0.18,2017:0.22,2018:0.30,2019:0.35,2020:0.38,2021:0.50,2022:0.56,2023:0.62,2024:0.68};
 
+function getBenchmarkDatasets(){
+  const bmMap = {
+    'bm-alb-d':'Albemarle (Demand)','bm-iea-d':'IEA STEPS (Demand)',
+    'bm-fm-d':'Fastmarkets (Demand)','bm-alb-s':'Albemarle (Supply)',
+    'bm-sp-s':'S&P Global (Supply)'
+  };
+  const datasets=[];
+  Object.entries(bmMap).forEach(([id,name])=>{
+    const el=document.getElementById(id);
+    if(!el||!el.checked) return;
+    const bm=BENCHMARKS[name];
+    if(!bm) return;
+    const bmData=ALL_DEMAND_YEARS.map(y=>{
+      if(bm.data[y]!==undefined) return bm.data[y];
+      // Interpolate between known points
+      const known=Object.keys(bm.data).map(Number).sort((a,b)=>a-b);
+      const below=known.filter(k=>k<y).pop();
+      const above=known.filter(k=>k>y).shift();
+      if(!below&&!above) return null;
+      if(!below) return bm.data[above];
+      if(!above) return null; // don't extrapolate beyond last point
+      const frac=(y-below)/(above-below);
+      return Math.round(bm.data[below]+(bm.data[above]-bm.data[below])*frac);
+    });
+    datasets.push({
+      label:name,data:bmData,
+      borderColor:bm.color,backgroundColor:'transparent',
+      borderWidth:1.5,borderDash:bm.dash,
+      pointRadius:2,pointBackgroundColor:bm.color,
+      tension:.3,spanGaps:true
+    });
+  });
+  return datasets;
+}
+
 function renderDemand(){
-  const base = parseInt(document.getElementById('dm-base').value);
-  const cagrLo = parseInt(document.getElementById('dm-cagr-lo').value)/100;
-  const cagrMid = parseInt(document.getElementById('dm-cagr-mid').value)/100;
-  const cagrHi = parseInt(document.getElementById('dm-cagr-hi').value)/100;
+  // ── Read category inputs ──
+  const CATS=[
+    {id:'pev',label:'Passenger EVs',color:'#64b5f6'},
+    {id:'cev',label:'Commercial EV/Trucks',color:'#26c6da'},
+    {id:'bess',label:'BESS / Grid Storage',color:'#ffc107'},
+    {id:'ebike',label:'E-bikes / Micro',color:'#b39dff'},
+    {id:'ce',label:'Consumer Electronics',color:'#ce93d8'},
+    {id:'ind',label:'Ceramics/Glass/Industrial',color:'#607d8b'}
+  ];
 
-  document.getElementById('dm-base-val').textContent=base;
-  document.getElementById('dm-cagr-lo-val').textContent=document.getElementById('dm-cagr-lo').value+'%';
-  document.getElementById('dm-cagr-mid-val').textContent=document.getElementById('dm-cagr-mid').value+'%';
-  document.getElementById('dm-cagr-hi-val').textContent=document.getElementById('dm-cagr-hi').value+'%';
+  const catData={};
+  let totalBase=0;
+  CATS.forEach(c=>{
+    const base=parseFloat(document.getElementById('dm-cat-'+c.id+'-base').value)||0;
+    const cagr=parseInt(document.getElementById('dm-cat-'+c.id+'-cagr').value)/100;
+    document.getElementById('dm-cat-'+c.id+'-cagr-val').textContent=Math.round(cagr*100)+'%';
+    catData[c.id]={base,cagr,label:c.label,color:c.color};
+    totalBase+=base;
+  });
+  document.getElementById('dm-total-base').textContent=totalBase.toLocaleString();
 
-  // Build full supply & demand arrays across all years
+  // ── Build demand arrays per category ──
+  const catArrays={};
+  CATS.forEach(c=>{
+    const cd=catData[c.id];
+    catArrays[c.id]=ALL_DEMAND_YEARS.map(y=>{
+      if(y<=2024) return null; // historicals handled separately
+      const fwdIdx=y-2024;
+      return Math.round(cd.base*Math.pow(1+cd.cagr,fwdIdx));
+    });
+  });
+
+  // Total demand = sum of categories (forward), historicals for past
+  const demMid=ALL_DEMAND_YEARS.map((y,i)=>{
+    if(y<=2024) return HIST_DEMAND[y]||0;
+    return CATS.reduce((s,c)=>s+(catArrays[c.id][i]||0),0);
+  });
+
+  // Build low/high as +/-20% of the category-based total
+  const demLo=ALL_DEMAND_YEARS.map((y,i)=>{
+    if(y<=2024) return HIST_DEMAND[y]||0;
+    return Math.round(demMid[i]*0.82);
+  });
+  const demHi=ALL_DEMAND_YEARS.map((y,i)=>{
+    if(y<=2024) return HIST_DEMAND[y]||0;
+    return Math.round(demMid[i]*1.22);
+  });
+
+  // ── Supply ──
   const f = filtered();
   const supplyAll = ALL_DEMAND_YEARS.map(y=>{
     if(y<=2023) return HIST_SUPPLY[y]||0;
     return f.reduce((s,d)=>s+getProd(d,y),0);
   });
-
-  const demLo=ALL_DEMAND_YEARS.map((y,i)=>{
-    if(y<=2024) return HIST_DEMAND[y]||0;
-    const fwdIdx = y-2024;
-    return Math.round(base*Math.pow(1+cagrLo,fwdIdx));
-  });
-  const demMid=ALL_DEMAND_YEARS.map((y,i)=>{
-    if(y<=2024) return HIST_DEMAND[y]||0;
-    const fwdIdx = y-2024;
-    return Math.round(base*Math.pow(1+cagrMid,fwdIdx));
-  });
-  const demHi=ALL_DEMAND_YEARS.map((y,i)=>{
-    if(y<=2024) return HIST_DEMAND[y]||0;
-    const fwdIdx = y-2024;
-    return Math.round(base*Math.pow(1+cagrHi,fwdIdx));
-  });
-
   const supply = supplyAll;
-  // For the forward-only YEARS array used elsewhere
   const supplyFwd = YEARS.map(y=>f.reduce((s,d)=>s+getProd(d,y),0));
 
-  // Breakdown panel — use 2026E (index 11 in ALL_DEMAND_YEARS)
+  // Breakdown panel — show 2026E and 2030E side by side
   const idx2026 = ALL_DEMAND_YEARS.indexOf(2026);
+  const idx2030 = ALL_DEMAND_YEARS.indexOf(2030);
   const mid2026 = demMid[idx2026];
-  document.getElementById('dm-breakdown').innerHTML=`
-    <div style="color:var(--blue)">EVs: ${Math.round(mid2026*DEMAND_BREAKDOWN_PCT.ev)} kt (${Math.round(DEMAND_BREAKDOWN_PCT.ev*100)}%)</div>
-    <div style="color:var(--teal)">Energy Storage: ${Math.round(mid2026*DEMAND_BREAKDOWN_PCT.ess)} kt (${Math.round(DEMAND_BREAKDOWN_PCT.ess*100)}%)</div>
-    <div style="color:var(--purple)">Electronics: ${Math.round(mid2026*DEMAND_BREAKDOWN_PCT.electronics)} kt (${Math.round(DEMAND_BREAKDOWN_PCT.electronics*100)}%)</div>
-    <div style="color:var(--orange)">Ceramics/Glass: ${Math.round(mid2026*DEMAND_BREAKDOWN_PCT.ceramics)} kt (${Math.round(DEMAND_BREAKDOWN_PCT.ceramics*100)}%)</div>
-    <div style="color:var(--muted)">Other: ${Math.round(mid2026*DEMAND_BREAKDOWN_PCT.other)} kt (${Math.round(DEMAND_BREAKDOWN_PCT.other*100)}%)</div>
-  `;
+  const mid2030 = demMid[idx2030];
+  let breakdownHtml='<div style="font-size:9px;color:var(--dim);margin-bottom:4px;">2026E → 2030E</div>';
+  CATS.forEach(c=>{
+    const v26=catArrays[c.id][idx2026]||0;
+    const v30=catArrays[c.id][idx2030]||0;
+    const pct26=mid2026>0?Math.round(v26/mid2026*100):0;
+    const pct30=mid2030>0?Math.round(v30/mid2030*100):0;
+    breakdownHtml+=`<div style="color:${catData[c.id].color}">${catData[c.id].label}: ${v26}→${v30} kt (${pct26}%→${pct30}%)</div>`;
+  });
+  document.getElementById('dm-breakdown').innerHTML=breakdownHtml;
 
   // Balance panel — show recent history + forward
   let balanceHtml='';
@@ -1209,7 +1395,9 @@ function renderDemand(){
         {label:'Demand High',data:demHi,borderColor:'rgba(255,82,82,0.3)',backgroundColor:'rgba(255,82,82,0.05)',fill:'+1',borderWidth:1,borderDash:[4,4],pointRadius:0,tension:.3},
         {label:'Demand (Actual + Base)',data:demMid,borderColor:'#ff5252',backgroundColor:'transparent',borderWidth:2.5,pointRadius:ALL_DEMAND_YEARS.map(y=>y<=2024?5:3),pointBackgroundColor:ALL_DEMAND_YEARS.map(y=>y<=2024?'#ff5252':'rgba(255,82,82,0.5)'),pointStyle:ALL_DEMAND_YEARS.map(y=>y<=2024?'circle':'triangle'),tension:.3},
         {label:'Demand Low',data:demLo,borderColor:'rgba(255,82,82,0.3)',backgroundColor:'rgba(255,82,82,0.05)',fill:'-1',borderWidth:1,borderDash:[4,4],pointRadius:0,tension:.3},
-        {label:'Supply (Actual + Tracked)',data:supply,borderColor:'#69f0ae',backgroundColor:'rgba(105,240,174,0.08)',fill:true,borderWidth:2.5,pointRadius:ALL_DEMAND_YEARS.map(y=>y<=2024?5:3),pointBackgroundColor:ALL_DEMAND_YEARS.map(y=>y<=2024?'#69f0ae':'rgba(105,240,174,0.5)'),pointStyle:ALL_DEMAND_YEARS.map(y=>y<=2024?'circle':'triangle'),tension:.3}
+        {label:'Supply (Actual + Tracked)',data:supply,borderColor:'#69f0ae',backgroundColor:'rgba(105,240,174,0.08)',fill:true,borderWidth:2.5,pointRadius:ALL_DEMAND_YEARS.map(y=>y<=2024?5:3),pointBackgroundColor:ALL_DEMAND_YEARS.map(y=>y<=2024?'#69f0ae':'rgba(105,240,174,0.5)'),pointStyle:ALL_DEMAND_YEARS.map(y=>y<=2024?'circle':'triangle'),tension:.3},
+        // Benchmark overlays — only shown when toggled
+        ...getBenchmarkDatasets()
       ]
     },
     options:{
@@ -1250,24 +1438,21 @@ function renderDemand(){
     }]
   });
 
-  // Pie chart
+  // Pie chart — by category for 2030E
   if(charts.pie) charts.pie.destroy();
+  const pieLabels=CATS.map(c=>catData[c.id].label);
+  const pieData=CATS.map(c=>catArrays[c.id][idx2030]||0);
+  const pieColors=CATS.map(c=>catData[c.id].color+'cc');
+  const pieBorders=CATS.map(c=>catData[c.id].color);
+  const pieTotal=pieData.reduce((s,v)=>s+v,0);
   charts.pie = new Chart(document.getElementById('demandPieChart'),{
     type:'doughnut',
-    data:{
-      labels:['EVs','Energy Storage','Electronics','Ceramics/Glass','Other'],
-      datasets:[{
-        data:[DEMAND_BREAKDOWN_PCT.ev,DEMAND_BREAKDOWN_PCT.ess,DEMAND_BREAKDOWN_PCT.electronics,DEMAND_BREAKDOWN_PCT.ceramics,DEMAND_BREAKDOWN_PCT.other].map(p=>Math.round(mid2026*p)),
-        backgroundColor:['#64b5f6cc','#26c6dacc','#b39dffcc','#ffab40cc','#607d8bcc'],
-        borderColor:['#64b5f6','#26c6da','#b39dff','#ffab40','#607d8b'],
-        borderWidth:1
-      }]
-    },
+    data:{labels:pieLabels,datasets:[{data:pieData,backgroundColor:pieColors,borderColor:pieBorders,borderWidth:1}]},
     options:{
       responsive:true,maintainAspectRatio:false,
       plugins:{
         legend:{position:'right',labels:{color:'#94a3b8',font:{size:11},padding:12}},
-        tooltip:{callbacks:{label:ctx=>ctx.label+': '+ctx.raw+' kt LCE ('+Math.round(ctx.raw/(mid2026||1)*100)+'%)'}}
+        tooltip:{callbacks:{label:ctx=>ctx.label+': '+ctx.raw+' kt LCE ('+Math.round(ctx.raw/(pieTotal||1)*100)+'%)'}}
       }
     }
   });
