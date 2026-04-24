@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Lithium Projects — Resources, Reserves & Exploration</title>
+<style>
+:root {
+  --bg:#0a0d12; --surface:#111620; --card:#171d28; --border:#22293a;
+  --accent:#f0a500; --teal:#2db8b0; --text:#dde2ec; --muted:#6b7585;
+  --green:#3B6D11; --amber:#BA7517; --blue:#185FA5; --purple:#534AB7;
+  --green-bg:rgba(59,109,17,.12); --amber-bg:rgba(186,117,23,.12);
+  --blue-bg:rgba(24,95,165,.12); --purple-bg:rgba(83,75,183,.12);
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; }
+h1 { font-size:22px; font-weight:600; }
+
+/* HEADER */
+.hdr { padding:16px 24px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; background:var(--surface); }
+.hdr-sub { font-size:11px; font-family:monospace; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }
+.hdr-meta { font-size:11px; font-family:monospace; color:var(--muted); text-align:right; }
+
+/* TABS */
+.tabs { display:flex; padding:0 24px; border-bottom:1px solid var(--border); background:var(--surface); overflow-x:auto; }
+.tab { background:none; border:none; border-bottom:2px solid transparent; cursor:pointer; padding:10px 16px; font-size:13px; color:var(--muted); font-family:inherit; white-space:nowrap; transition:all .15s; }
+.tab.on { color:var(--text); border-bottom-color:var(--accent); font-weight:600; }
+.tab:hover:not(.on) { color:var(--text); }
+
+/* FILTERS */
+.filters { padding:10px 24px; border-bottom:1px solid var(--border); display:flex; flex-wrap:wrap; gap:6px; align-items:center; background:var(--card); }
+.flabel { font-size:11px; font-family:monospace; color:var(--muted); margin-right:4px; }
+.fb { background:none; border:1px solid var(--border); border-radius:20px; padding:4px 12px; font-size:12px; cursor:pointer; color:var(--muted); font-family:inherit; transition:all .15s; white-space:nowrap; }
+.fb.on { color:var(--text); border-color:var(--text); font-weight:600; }
+.fb:hover:not(.on) { color:var(--text); border-color:var(--muted); }
+.fsep { width:1px; height:20px; background:var(--border); margin:0 4px; flex-shrink:0; }
+
+/* MAP */
+#map-wrap { position:relative; background:#141c28; }
+#map-svg { display:block; width:100%; height:auto; }
+#tooltip { display:none; position:absolute; background:var(--card); border:1px solid var(--border); border-radius:8px; padding:12px 14px; font-size:12px; z-index:30; max-width:240px; pointer-events:none; box-shadow:0 4px 20px rgba(0,0,0,.6); }
+.tt-name { font-size:14px; font-weight:600; margin-bottom:4px; color:var(--text); }
+.tt-sub { color:var(--muted); margin-bottom:2px; }
+.tt-lce { font-family:monospace; font-size:13px; font-weight:600; color:var(--accent); margin:5px 0; }
+.tt-note { font-size:11px; color:var(--muted); line-height:1.5; margin-top:5px; }
+
+/* LEGEND */
+.legend { padding:10px 24px; display:flex; flex-wrap:wrap; gap:14px; font-size:12px; background:var(--card); border-top:1px solid var(--border); }
+.leg-item { display:flex; align-items:center; gap:6px; color:var(--muted); }
+.leg-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+
+/* TABLE */
+#v-tbl { padding:0 24px 24px; display:none; }
+.t-controls { padding:14px 0; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.t-controls input, .t-controls select { padding:7px 12px; border:1px solid var(--border); border-radius:6px; background:var(--card); color:var(--text); font-family:inherit; font-size:13px; }
+.t-controls input { flex:1; min-width:200px; }
+.ptable { width:100%; border-collapse:collapse; }
+.ptable th { text-align:left; padding:9px 10px; color:var(--muted); border-bottom:1px solid var(--border); font-weight:500; font-size:11px; font-family:monospace; text-transform:uppercase; letter-spacing:.05em; white-space:nowrap; }
+.ptable td { padding:8px 10px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; font-size:12px; }
+.ptable tr:hover td { background:rgba(255,255,255,.02); }
+.pill { display:inline-block; font-size:10px; font-family:monospace; padding:2px 8px; border-radius:20px; font-weight:600; }
+.p-P { background:rgba(82,196,26,.15); color:#52c41a; }
+.p-R { background:rgba(240,165,0,.15); color:#f0a500; }
+.p-M { background:rgba(74,154,222,.15); color:#4a9ade; }
+.p-E { background:rgba(168,156,247,.15); color:#a89cf7; }
+
+/* COUNTRY CARDS */
+#v-cty { padding:24px; display:none; }
+.ctry-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; }
+.ctry-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; }
+.ctry-name { font-size:16px; font-weight:600; margin-bottom:2px; }
+.ctry-total { font-size:11px; font-family:monospace; color:var(--muted); margin-bottom:10px; }
+.ctry-lce { font-size:22px; font-weight:700; color:var(--accent); float:right; font-family:monospace; }
+.ctry-pills { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; }
+.ctry-items div { font-size:11px; color:var(--muted); padding:3px 0; border-top:1px solid rgba(255,255,255,.06); }
+.ctry-items span { color:var(--text); }
+.ctry-more { font-size:10px; color:var(--muted); margin-top:4px; }
+
+/* Stats bar */
+.stats-bar { display:flex; flex-wrap:wrap; gap:20px; padding:16px 24px; background:var(--surface); border-bottom:1px solid var(--border); }
+.stat { text-align:center; }
+.stat-val { font-size:26px; font-weight:700; font-family:monospace; line-height:1; }
+.stat-lbl { font-size:11px; color:var(--muted); margin-top:2px; }
+
+@media (max-width:600px) { .hdr, .filters, .legend { padding-left:12px; padding-right:12px; } }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="hdr-sub">Resource &amp; reserve intelligence · JORC / NI 43-101 / SK-1300</div>
+    <h1>Global lithium projects — all stages</h1>
+    <div style="font-size:13px;color:#6b7585;margin-top:4px">Producing · Reserves declared · JORC/NI 43-101 resources · Pre-resource exploration · 55+ projects</div>
+  </div>
+  <div class="hdr-meta">
+    <div style="color:#3B6D11;font-size:12px;margin-bottom:4px">● Q1 2026 data</div>
+    <div>Circle size ∝ Mt LCE resource</div>
+    <div>Hover markers for full details</div>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat"><div class="stat-val" style="color:#52c41a">25</div><div class="stat-lbl">Producing mines</div></div>
+  <div class="stat"><div class="stat-val" style="color:#f0a500">9</div><div class="stat-lbl">Reserves decl.</div></div>
+  <div class="stat"><div class="stat-val" style="color:#4a9ade">19</div><div class="stat-lbl">Resource decl.</div></div>
+  <div class="stat"><div class="stat-val" style="color:#a89cf7">9</div><div class="stat-lbl">Exploration</div></div>
+  <div class="stat"><div class="stat-val" style="color:#ff7d45">16</div><div class="stat-lbl">Processing plants</div></div>
+  <div class="stat"><div class="stat-val" style="color:#e040fb">26</div><div class="stat-lbl">Gigafactories</div></div>
+  <div class="stat"><div class="stat-val" style="color:var(--accent)" id="s-lce">-</div><div class="stat-lbl">Total Mt LCE</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="sv('map')">World map</button>
+  <button class="tab" onclick="sv('tbl')">Project table</button>
+  <button class="tab" onclick="sv('cty')">By country</button>
+</div>
+
+<div id="v-map">
+  <div class="filters">
+    <span class="flabel">LAYER:</span>
+    <button class="fb on" onclick="sl('all')" id="l-all">All layers</button>
+    <button class="fb" onclick="sl('mine')" id="l-mine">⬤ Mining</button>
+    <button class="fb" onclick="sl('proc')" id="l-proc">◆ Processing</button>
+    <button class="fb" onclick="sl('giga')" id="l-giga">▲ Gigafactories</button>
+    <div class="fsep"></div>
+    <span class="flabel">STAGE:</span>
+    <button class="fb on" onclick="sf('all')" id="f-all">All</button>
+    <button class="fb" onclick="sf('P')" id="f-P">● Producing</button>
+    <button class="fb" onclick="sf('R')" id="f-R">◆ Reserves (FS)</button>
+    <button class="fb" onclick="sf('M')" id="f-M">■ Resource (JORC)</button>
+    <button class="fb" onclick="sf('E')" id="f-E">○ Exploration</button>
+    <div class="fsep"></div>
+    <span class="flabel">TYPE:</span>
+    <button class="fb on" onclick="st('all')" id="t-all">All</button>
+    <button class="fb" onclick="st('h')" id="t-h">Hard-rock</button>
+    <button class="fb" onclick="st('b')" id="t-b">Brine/DLE</button>
+    <button class="fb" onclick="st('c')" id="t-c">Clay/Sed.</button>
+  </div>
+  <div id="map-wrap">
+    <div id="tooltip"></div>
+    <svg id="map-svg" viewBox="0 0 960 500"></svg>
+  </div>
+  <div class="legend">
+    <span class="leg-item" style="font-weight:600;color:#ccc;font-size:11px">MINING:</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#52c41a"></span>Producing</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#f0a500"></span>Reserves (FS)</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#4a9ade"></span>Resource (JORC)</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#a89cf7"></span>Exploration</span>
+    <span style="display:inline-block;width:1px;height:14px;background:#444;margin:0 2px;flex-shrink:0"></span>
+    <span class="leg-item"><span style="display:inline-block;width:10px;height:10px;background:#ff7d45;transform:rotate(45deg);margin-right:2px;flex-shrink:0"></span>Processing/Refinery</span>
+    <span class="leg-item"><span style="display:inline-block;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:11px solid #e040fb;margin-right:2px;flex-shrink:0"></span>Gigafactory/Consumer</span>
+    <span style="margin-left:auto;font-family:monospace;font-size:10px;color:#555">⬤ Mt LCE  ◆ kt/yr  ▲ GWh</span>
+  </div>
+</div>
+
+<div id="v-tbl">
+  <div class="t-controls">
+    <input id="srch" oninput="bt()" placeholder="Search project, company, country, ticker…">
+    <select id="ssel" onchange="bt()">
+      <option value="">All stages</option>
+      <option value="P">Producing</option>
+      <option value="R">Reserves declared</option>
+      <option value="M">Resource declared</option>
+      <option value="E">Exploration</option>
+    </select>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="ptable">
+      <thead><tr>
+        <th>Project</th><th>Country</th><th>Stage</th><th>Type</th><th>Mt LCE</th><th>Grade / Resource</th><th>Company / Ticker</th><th>Key note</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="v-cty">
+  <div class="ctry-grid" id="ctry-grid"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+const SC={P:'#52c41a',R:'#f0a500',M:'#4a9ade',E:'#a89cf7'};
+const SL={P:'Producing',R:'Reserves decl.',M:'Resource decl.',E:'Exploration'};
+const SPC={P:'p-P',R:'p-R',M:'p-M',E:'p-E'};
+
+const PROJ=[
+  // PRODUCING
+  {n:'Greenbushes',la:-33.85,lo:116.67,s:'P',t:'h',co:'Tianqi/Albemarle/IGO (Talison)',ct:'Australia',lce:18.5,gr:'86.4Mt @ 2.35% Li₂O P+P',no:"World's largest, highest-grade hard-rock lithium mine. CGP1+2: 1.34M t SC6/yr. CGP3 targeting Q4 2025. Resource ~26Mt LCE total. Owner: Tianqi (51%) / Albemarle (25%) / IGO (24.99% indirect)."},
+  {n:'Pilgangoora',la:-21.64,lo:118.47,s:'P',t:'h',co:'Pilbara Minerals (ASX: PLS)',ct:'Australia',lce:9.3,gr:'157.5Mt @ 1.19% Li₂O P+P',no:'P680 expansion: 680kt SC6/yr. Wholly owned by Pilbara. Ngungaju plant + Pilgan plant. Battery grade offtake with POSCO.'},
+  {n:'Wodgina',la:-21.02,lo:118.68,s:'P',t:'h',co:'Albemarle/MinRes (MARBL JV)',ct:'Australia',lce:12.0,gr:'Large resource, 750kt SC6/yr',no:'One of world\'s largest hard-rock deposits. 3 processing trains. Partly idled in 2019, restarted 2022. Albemarle 50%, MinRes 50%.'},
+  {n:'Mt Marion',la:-29.60,lo:120.99,s:'P',t:'h',co:'MinRes/Ganfeng JV',ct:'Australia',lce:1.6,gr:'23.24Mt @ 1.39% Li₂O',no:'JORC resource declared. ~450kt SC6/yr. MinRes 50%, Ganfeng 50%. FY2025 production target raised by 70kt.'},
+  {n:'Kathleen Valley',la:-27.39,lo:120.50,s:'P',t:'h',co:'Liontown Resources (ASX: LTR)',ct:'Australia',lce:10.2,gr:'156Mt @ 1.36% Li₂O M+I',no:'Ramping to 500kt SC6/yr. Full-rate expansion deferred to FY2027 due to low prices. Originally target Q1 2025 full rate.'},
+  {n:'Mt Holland',la:-31.82,lo:119.30,s:'P',t:'h',co:'SQM/Wesfarmers JV',ct:'Australia',lce:8.5,gr:'Large resource + Kwinana LiOH',no:'Integrated mine + Kwinana lithium hydroxide plant (50kt LiOH/yr). Fire early 2025, LiOH plant at 26% utilisation. SQM 50%, Wesfarmers 50%.'},
+  {n:'Bald Hill',la:-30.81,lo:121.82,s:'P',t:'h',co:'MinRes (ASX: MIN)',ct:'Australia',lce:1.3,gr:'26.1Mt @ 1.04% Li₂O',no:'Mothballed November 2024 due to spodumene price crash. 300 job losses. Restart study H1 2025 pending.'},
+  {n:'Finniss',la:-12.68,lo:131.83,s:'P',t:'h',co:'Core Lithium (ASX: CXO)',ct:'Australia',lce:0.6,gr:'18.8Mt @ 1.34% Li₂O',no:'Mining suspended 2024. Stockpile processing only. 8-yr mine life design. Restart study underway.'},
+  {n:'Mt Cattlin',la:-33.57,lo:119.60,s:'P',t:'h',co:'Arcadium/Rio Tinto',ct:'Australia',lce:0.4,gr:'11.3Mt @ 0.82% Li₂O',no:'Entering care & maintenance H1 2025. Highest-cost Australian operation. Phase 4A waste strip cancelled.'},
+  {n:'Atacama (SQM)',la:-23.11,lo:-68.24,s:'P',t:'b',co:'SQM (NYSE: SQM)',ct:'Chile',lce:35.0,gr:'Salar de Atacama, 2,000+ ppm',no:'Chile\'s national reserves ~9.2Mt. 210kt LCE/yr capacity. Nationalization framework under Boric; new public-private partnership agreement.'},
+  {n:'Atacama (Albemarle)',la:-23.50,lo:-68.57,s:'P',t:'b',co:'Albemarle (NYSE: ALB)',ct:'Chile',lce:18.0,gr:'Same salar, La Negra processing',no:'100kt LCE/yr capacity. ALB signed updated Chile govt deal 2024. Expanding La Negra plant.'},
+  {n:'Cauchari-Olaroz',la:-23.59,lo:-66.47,s:'P',t:'b',co:'Lithium Argentina/Ganfeng',ct:'Argentina',lce:3.1,gr:'477kt Li probable + 1.65Mt indicated',no:'Stage 1: 40kt LCE/yr. Delayed from H2 2022 to Q3 2023. Stage 2 targeting 85kt by 2029. Lithium Argentina 44.8%, Ganfeng 46.7%.'},
+  {n:'Fenix/Olaroz',la:-23.62,lo:-66.49,s:'P',t:'b',co:'Arcadium (Rio Tinto)/Toyota',ct:'Argentina',lce:1.8,gr:'Stage 1+2 ~19.5kt LCE/yr',no:'Original Orocobre→Allkem→Arcadium operation. Rio Tinto acquired Arcadium Oct 2024.'},
+  {n:'Sal de Vida',la:-24.80,lo:-66.27,s:'P',t:'b',co:'Arcadium (Rio Tinto)',ct:'Argentina',lce:2.8,gr:'Large brine resource, 32kt/yr',no:'Stage 1 operating. Delayed from 2022. Stage 2 expansion toward 60kt planned. Now under Rio Tinto ownership.'},
+  {n:'Mariana',la:-25.19,lo:-67.22,s:'P',t:'b',co:'Ganfeng Lithium',ct:'Argentina',lce:2.2,gr:'LiCl, 20kt LCE/yr',no:'Ganfeng self-funded and operating. Lithium chloride product route.'},
+  {n:'Hombre Muerto (POSCO)',la:-25.46,lo:-67.06,s:'P',t:'b',co:'POSCO Holdings (PKX)',ct:'Argentina',lce:3.5,gr:'DLE, 25kt LCE/yr Ph1',no:'$1B+ Korean investment. DLE technology. Phase 1 operating. Adjacent to Rio Tinto Rincon operation.'},
+  {n:'Rincon (pilot)',la:-24.60,lo:-67.00,s:'P',t:'b',co:'Rio Tinto (NYSE: RIO)',ct:'Argentina',lce:5.0,gr:'3kt/yr pilot, 60kt approved',no:'DLE pilot operational. RIGI approved Mar 2025 for full 60kt expansion. Full-scale production expected 2028.'},
+  {n:'Silver Peak',la:37.75,lo:-117.60,s:'P',t:'b',co:'Albemarle (NYSE: ALB)',ct:'USA',lce:0.18,gr:'Brine, ~5kt LCE/yr',no:"USA's only operating lithium mine since 1966. Clayton Valley, NV. Albemarle expanding well capacity for ~7kt by 2025."},
+  {n:'Grota do Cirilo',la:-16.70,lo:-41.17,s:'P',t:'h',co:'Sigma Lithium (TSXV: SGML)',ct:'Brazil',lce:1.6,gr:'77.9Mt @ 1.43% Li₂O',no:'Phase 1: 33kt LCE/yr. Vertically integrated "green lithium hydroxide." Minas Gerais state.'},
+  {n:'Mibra',la:-19.94,lo:-44.14,s:'P',t:'h',co:'AMG Advanced Metallurgy',ct:'Brazil',lce:0.5,gr:'Spodumene + tantalum',no:'Long-operating small-scale mine. Tantalum as key co-product.'},
+  {n:'Jiajika, Sichuan',la:29.95,lo:101.52,s:'P',t:'h',co:'Tianqi/Ganfeng',ct:'China',lce:4.0,gr:'Hard-rock spodumene',no:'Major domestic hard-rock source. Multiple deposits in Ganzi Prefecture, Sichuan.'},
+  {n:'Lepidolite, Jiangxi',la:26.50,lo:114.02,s:'P',t:'h',co:'CATL/Ganfeng/Yichun',ct:'China',lce:3.5,gr:'Lepidolite ~3.5Mt LCE',no:'CATL\'s Yichun mine halted Sep 2024, 3 processing plants shut. High-cost marginal supply.'},
+  {n:'Zhabuye Salt Lake',la:31.37,lo:84.07,s:'P',t:'b',co:'Tibet Mineral Development',ct:'China',lce:2.5,gr:'~6.6Mt LCE, 15kt/yr',no:'High-altitude remote brine. Chinese strategic asset. Harsh operating conditions.'},
+  {n:'Arcadia',la:-18.01,lo:31.02,s:'P',t:'h',co:'Huayou Cobalt',ct:'Zimbabwe',lce:1.1,gr:'~64Mt @ 0.92% Li₂O',no:'Multiple lithium minerals (spodumene, petalite, lepidolite). 58kt SC6/yr. Chinese-owned since 2022.'},
+  {n:'Bikita',la:-20.14,lo:31.90,s:'P',t:'h',co:'Sinomine Resource',ct:'Zimbabwe',lce:0.8,gr:'Historic mine, 100kt/yr',no:'Massively expanded by Chinese investment. Multiple lithium minerals. Petalite + spodumene + lepidolite.'},
+  {n:'Goulamina',la:10.71,lo:-7.48,s:'P',t:'h',co:'Ganfeng/Leo Lithium',ct:'Mali',lce:3.8,gr:"174.4Mt @ 1.37% Li₂O — Africa's largest",no:"Africa's largest hard-rock lithium resource. 83kt SC6/yr initial capacity. Ramping through 2024-25. Ganfeng 50%, Leo Lithium (now fully Ganfeng)."},
+  // RESERVES
+  {n:'Thacker Pass Ph1',la:41.83,lo:-118.02,s:'R',t:'c',co:'Lithium Americas/GM (NYSE: LAC)',ct:'USA',lce:27.0,gr:'P+P 3.1Mt LCE; M+I ~27Mt LCE',no:'NI 43-101 & SK-1300 filed Dec 2024. Under construction 2023+. 40kt/yr Ph1. CAPEX $2.93B. Target late 2027. Originally guided H2 2026. $2.23B DOE loan.'},
+  {n:'Rhyolite Ridge',la:37.95,lo:-118.40,s:'R',t:'b',co:'Ioneer (ASX: INR)',ct:'USA',lce:3.1,gr:'146Mt @ 900ppm Li+B',no:'Lithium-boron deposit. 22kt LCE/yr target. DOE conditional loan. Construction originally 2023, now 2025. First production ~2028.'},
+  {n:'Whabouchi',la:49.31,lo:-76.64,s:'R',t:'h',co:'Nemaska Lithium (Livent+QC gov)',ct:'Canada',lce:2.5,gr:'27.99Mt @ 1.57% Li₂O M+I',no:'205kt concentrate/yr. Integrated with Shawinigan conversion facility. Part of Quebec battery supply chain vision.'},
+  {n:'Shaakichiuwaanaan (CV5+CV13)',la:53.17,lo:-75.95,s:'R',t:'h',co:'PMET Resources (TSX: PMET)',ct:'Canada',lce:7.9,gr:'108Mt @ 1.40% Li₂O Indicated',no:'Updated MRE May 2025: 108Mt Indicated + 33.3Mt Inferred. Largest pegmatite resource in Americas, 8th largest globally. Feasibility Study target Sep 2025. All-season road access.'},
+  {n:'Jadar',la:44.21,lo:19.22,s:'R',t:'h',co:'Rio Tinto (NYSE: RIO)',ct:'Serbia',lce:2.7,gr:'~136Mt jadarite @ 1.8% Li',no:'Unique jadarite mineral (Li+Na+B). 58kt LCE/yr plan. Permits revoked Jan 2022 after protests. Re-approved post-2024 elections. Target 2028+. Potentially 5+ year delay.'},
+  {n:'Ewoyaa',la:5.26,lo:-0.70,s:'R',t:'h',co:'Atlantic Lithium/Piedmont',ct:'Ghana',lce:1.3,gr:'35.3Mt @ 1.25% Li₂O M+I',no:'DFS 2024 complete. 35kt SC6/yr target. Ghana govt MDA (Master Development Agreement) not yet signed. Originally expected 2024, now 2027.'},
+  {n:'Rose Project',la:54.19,lo:-75.36,s:'R',t:'h',co:'Critical Elements Lithium (TSXV: CRE)',ct:'Canada',lce:1.1,gr:'26.8Mt @ 0.98% Li₂O',no:'DFS complete. 130kt SC5 concentrate/yr. James Bay, QC. Seeking project financing.'},
+  {n:'Centenario-Ratones',la:-25.70,lo:-67.40,s:'R',t:'b',co:'Eramet (Paris: ERA)',ct:'Argentina',lce:2.4,gr:'10Mt LCE resource',no:'24kt LCE/yr. 140-yr-old French mining group. Construction began 2023, ramping 2025. EIA reserves status.'},
+  {n:'Piedmont Carolina',la:35.38,lo:-80.60,s:'R',t:'h',co:'Piedmont Lithium (NASDAQ: PLL)',ct:'USA',lce:0.8,gr:'Spodumene pegmatite, PFS',no:'Resource defined. PFS complete. Local opposition + permitting delays. Tesla offtake signed.'},
+  // RESOURCE ONLY
+  {n:'Cinovec',la:50.41,lo:13.03,s:'M',t:'h',co:'European Metals (ASX/AIM: EMH)',ct:'Czechia',lce:3.5,gr:"354Mt @ 0.42% Li₂O — Europe's largest",no:"Europe's largest hard-rock lithium resource. 26kt LCE/yr DFS target. Cross-border deposit with Germany's Zinnwald. Permitting ongoing under EU CRMA."},
+  {n:'Wolfsberg',la:46.79,lo:14.98,s:'M',t:'h',co:'Critical Metals (NASDAQ: CRML)',ct:'Austria',lce:0.5,gr:'Resource + PFS, 9kt/yr',no:'European Lithium spun out Critical Metals. Good existing road/rail. Mining licence held.'},
+  {n:'Barroso',la:41.81,lo:-7.56,s:'M',t:'h',co:'Savannah Resources (AIM: SAV)',ct:'Portugal',lce:0.8,gr:'27Mt @ 0.64% Li₂O resource',no:"EU's most advanced Portuguese project. EIA rejected, resubmitted. Portugal holds Europe's largest reserves."},
+  {n:'Zinnwald',la:50.73,lo:13.65,s:'M',t:'h',co:'Zinnwald Lithium (AIM: ZNWD)',ct:'Germany',lce:0.6,gr:'12.9Mt @ 0.64% Li₂O',no:'Zinnwaldite ore type. 10kt LCE/yr target. Cross-border deposit connecting to Czech Cinovec.'},
+  {n:'Vulcan Rhine Valley',la:48.32,lo:7.44,s:'M',t:'b',co:'Vulcan Energy Resources (ASX: VUL)',ct:'Germany',lce:15.0,gr:'Geothermal DLE, 15Mt+ LCE',no:'CLEOP pilot plant near Frankfurt producing LiOH 2024. Licences in France and Germany. Zero-carbon claim using co-generated geothermal power.'},
+  {n:'San José Spain',la:39.19,lo:-5.98,s:'M',t:'h',co:'Infinity Lithium (ASX: INF)',ct:'Spain',lce:1.1,gr:'PFS stage, EU CRMA',no:'6Mt Li₂SO₄ equivalent resource. EU Critical Raw Materials Act support.'},
+  {n:'Sonora',la:29.34,lo:-109.21,s:'M',t:'c',co:'Ganfeng/Bacanora',ct:'Mexico',lce:8.8,gr:'8.8Mt LCE clay resource',no:"World's largest clay resource outside Thacker Pass. 250-yr mine life. 35kt LCE/yr plan. Nationalization risk under 2023 Mexican law."},
+  {n:'Falchani',la:-14.68,lo:-69.79,s:'M',t:'h',co:'American Lithium (TSXV: LI)',ct:'Peru',lce:8.0,gr:'3.2Bt @ 1,346ppm Li',no:'Among world\'s largest resources by ore mass. EIS submitted to Peru Ministry of Energy 2024. Low prices deferred full PFS update.'},
+  {n:'Arizaro',la:-24.17,lo:-67.42,s:'M',t:'b',co:'Lithium Chile (TSXV: LITH)',ct:'Argentina',lce:4.12,gr:'4.12Mt LCE (+24% in 2024)',no:'Salta province. 261kt measured, 2.24Mt indicated, 1.62Mt inferred. PEA ongoing.'},
+  {n:'HMN Project',la:-25.52,lo:-67.05,s:'M',t:'b',co:'Lithium South/POSCO',ct:'Argentina',lce:1.58,gr:'1.58Mt LCE NI 43-101',no:'15.6kt/yr PEA. Salar del Hombre Muerto, adjacent to POSCO and Rio Tinto. POSCO acquisition offer $62M USD in 2025.'},
+  {n:'Zeus (Clayton Valley)',la:37.62,lo:-117.55,s:'M',t:'c',co:'Noram Lithium (TSXV: NRM)',ct:'USA',lce:4.4,gr:'3Mt M+I @ 957ppm clay',no:'Adjacent to Albemarle Silver Peak. PEA stage. Byproduct credits: rubidium, cesium, potash, molybdenum identified 2025.'},
+  {n:'Smackover (Standard Li)',la:33.35,lo:-93.15,s:'M',t:'b',co:'Standard Lithium (NYSE: SLI)',ct:'USA',lce:6.2,gr:'3.14Mt LCE M+I DLE brine',no:'Largest DLE project in North America. Arkansas formation. ExxonMobil entered adjacent area 2023.'},
+  {n:'Salton Sea (CTR)',la:33.20,lo:-115.55,s:'M',t:'b',co:'Controlled Thermal Resources',ct:'USA',lce:2.5,gr:'Geothermal DLE, 25kt LiOH/yr',no:'Geothermal + DLE integration. GM + Stellantis offtake signed. Pilot 2024. California.'},
+  {n:'Manono DRC',la:-7.31,lo:27.44,s:'M',t:'h',co:'AVZ Minerals [disputed] (ASX: AVZ)',ct:'DRC',lce:4.5,gr:'400Mt+ @ 1.65% Li₂O',no:'Enormous resource but ownership bitterly disputed since 2022 between AVZ, Congolese interests, and Chinese investors. Development completely stalled.'},
+  {n:'Bandeira (Lithium Ionic)',la:-15.59,lo:-41.99,s:'M',t:'h',co:'Lithium Ionic (TSXV: LTH)',ct:'Brazil',lce:2.4,gr:'36.76Mt @ 1.31% Li₂O M+I',no:'Minas Gerais. Bandeira + Baixa Grande deposits. Feasibility stage. 2026 construction target.'},
+  {n:'Uis',la:-21.03,lo:14.86,s:'M',t:'h',co:'Montero Mining (TSXV: MON)',ct:'Namibia',lce:1.0,gr:'Pegmatite resource, advancing DFS',no:'Road-accessible. Well-structured deposit. Namibia increasingly favourable mining jurisdiction.'},
+  {n:'Maricunga',la:-26.85,lo:-68.85,s:'M',t:'b',co:'Codelco/Minera Salar Blanco',ct:'Chile',lce:1.5,gr:'Highest-grade undeveloped brine CL',no:'0.82Mt Li reserves. Nationalization drive under President Boric. High grade vs rest of Chile outside Atacama.'},
+  {n:'Norra Kärr',la:57.42,lo:14.52,s:'M',t:'h',co:'Leading Edge Materials (TSXV: LEM)',ct:'Sweden',lce:1.2,gr:'Eudialyte Zr-REE+Li resource',no:'Advanced resource stage. Scandinavian jurisdiction. Li credits alongside zirconium and REE.'},
+  // EXPLORATION
+  {n:'Uyuni (Bolivia)',la:-20.27,lo:-67.62,s:'E',t:'b',co:'YLB (state-owned)',ct:'Bolivia',lce:21.0,gr:'21Mt Li national reserve',no:"World's largest reserve but complex Mg:Li ratio, state monopoly, altitude, lack of infrastructure. <2kt LCE/yr actual commercial output. Technically a resource but commercially pre-development."},
+  {n:'James Bay (Winsome)',la:53.25,lo:-76.40,s:'E',t:'h',co:'Winsome Resources (ASX: WR1)',ct:'Canada',lce:null,gr:'Active drilling, pre-resource',no:'Adina & Cancet pegmatites. High-grade intercepts. Prolific James Bay belt.'},
+  {n:'La Corne cluster',la:48.70,lo:-79.24,s:'E',t:'h',co:'Consolidated Lithium/multiple',ct:'Canada',lce:null,gr:'Multiple junior explorers',no:'Multiple companies in La Corne-Authier area. Quebec spodumene belt. Post-Sayona restart interest.'},
+  {n:'Omaruru',la:-21.43,lo:15.92,s:'E',t:'h',co:'Prospect Resources (ASX: PSC)',ct:'Namibia',lce:null,gr:'Phase 2 drill ongoing',no:'Phase 2 drill results 2024 showed strong mineralisation. Approaching maiden resource.'},
+  {n:'Step Aside',la:-19.83,lo:30.33,s:'E',t:'h',co:'Prospect Resources (ASX: PSC)',ct:'Zimbabwe',lce:null,gr:'Phase 4 drill complete',no:'Phase 4 diamond drilling 2024 positive results. Pre-resource, advancing toward MRE.'},
+  {n:'Manono (Tantalex)',la:-7.36,lo:27.20,s:'E',t:'h',co:'Tantalex Lithium (CSE: TTX)',ct:'DRC',lce:null,gr:'"Lithium Alley" exploration',no:'Manono region, distinct from AVZ claims. Ta+Sn+Li target. Restructured management 2025.'},
+  {n:'Vulcan Alsace',la:49.02,lo:7.52,s:'E',t:'b',co:'Vulcan Energy (ASX: VUL)',ct:'France',lce:null,gr:'New DLE licences 2024',no:'Expanding Rhine Valley DLE footprint into Alsace. 463 km² licences in France.'},
+  {n:'Smackover (ExxonMobil)',la:33.56,lo:-93.25,s:'E',t:'b',co:'ExxonMobil (NYSE: XOM)',ct:'USA',lce:null,gr:'Large Arkansas DLE claim block',no:'XOM entered Arkansas DLE brine 2023 with significant claim block adjacent to Standard Lithium. Early exploration.'},
+  {n:'Power Metals (Ontario)',la:46.83,lo:-80.12,s:'E',t:'h',co:'Power Metals (TSXV: PWM)',ct:'Canada',lce:null,gr:'Case Lake, Phase 2 survey',no:'Hard-rock pegmatite. Phase 2 drone magnetic survey + 2,000m drill program underway.'},
+];
+
+// ── PROCESSING FACILITIES (diamonds, orange) ────────────────────────────────
+const PROC=[
+  {n:'Tianqi Kwinana LiOH',la:-32.02,lo:115.77,product:'LiOH',cap:24,co:'Tianqi Lithium',ct:'Australia',no:'World\'s first fully automated battery-grade LiOH plant outside China. 24kt/yr Ph1. Phase 2 paused on low prices. Spodumene feed from Greenbushes.'},
+  {n:'Albemarle Kemerton',la:-33.18,lo:115.95,product:'LiOH',cap:50,co:'Albemarle (NYSE: ALB)',ct:'Australia',no:'50kt LiOH/yr target. Two processing trains. Kemerton Industrial Park, WA. Expanding to capture value from Greenbushes spodumene.'},
+  {n:'SQM Salar del Carmen',la:-23.52,lo:-70.40,product:'LiCO₃/LiOH',cap:210,co:'SQM (NYSE: SQM)',ct:'Chile',no:'Near Antofagasta. Converts Atacama brine LiCl to battery-grade Li₂CO₃ and LiOH. 210kt LCE/yr. Largest non-China processing hub.'},
+  {n:'Albemarle La Negra',la:-23.58,lo:-70.38,product:'LiCO₃/LiOH',cap:100,co:'Albemarle (NYSE: ALB)',ct:'Chile',no:'La Negra Chemical Plant, Antofagasta. 100kt LCE/yr. Processing Atacama brine chloride into battery-grade chemicals.'},
+  {n:'Livent/Arcadium Fenix',la:-24.38,lo:-66.79,product:'LiCO₃',cap:28,co:'Arcadium/Rio Tinto',ct:'Argentina',no:'Salta province, Argentina. In-situ brine processing. 28kt LCE/yr. Now owned by Rio Tinto post Arcadium acquisition 2024.'},
+  {n:'Albemarle Bessemer City',la:35.29,lo:-81.28,product:'LiOH',cap:50,co:'Albemarle (NYSE: ALB)',ct:'USA',no:'Kings Mountain area, North Carolina. 50kt LiOH/yr expanding. Largest battery-grade LiOH facility outside China. Historic lithium belt.'},
+  {n:'Arcadium Bessemer City',la:35.31,lo:-81.30,product:'LiOH',cap:25,co:'Arcadium/Rio Tinto',ct:'USA',no:'Bessemer City, NC. 25kt LiOH/yr. Former Livent. Now Rio Tinto. Adjacent to Albemarle facility.'},
+  {n:'Ganfeng Xinyu (Main Base)',la:27.80,lo:114.93,product:'LiOH/LiCO₃/Li metal',cap:120,co:'Ganfeng Lithium (SZSE: 002460)',ct:'China',no:'Xinyu, Jiangxi. Headquarters + world\'s largest lithium salt complex. 120kt+ LiOH/LiCO₃/yr. Processes ore, brine and recycled material. Clients: Tesla, BMW, LG Chem.'},
+  {n:'Tianqi Shehong',la:30.99,lo:105.37,product:'LiCO₃/LiOH',cap:20,co:'Tianqi Lithium',ct:'China',no:'Shehong, Sichuan. Operating since 1995. 14.5kt LiCO₃ + 5kt LiOH/yr. Greenbushes spodumene feed.'},
+  {n:'Tianqi Zhangjiagang',la:31.87,lo:120.56,product:'LiCO₃',cap:20,co:'Tianqi Lithium',ct:'China',no:'Zhangjiagang, Jiangsu. 20kt battery-grade LiCO₃. World\'s first fully automated battery-grade carbonate plant.'},
+  {n:'Chengxin Lithium Ya\'an',la:30.01,lo:102.99,product:'LiOH/LiCO₃',cap:40,co:'Chengxin Lithium Group',ct:'China',no:'Ya\'an, Sichuan. 40kt LiOH/LiCO₃. Major domestic spodumene converter. Offtake with Pilbara Minerals.'},
+  {n:'Sichuan Yahua Ya\'an',la:29.98,lo:103.01,product:'LiOH',cap:30,co:'Sichuan Yahua Industrial',ct:'China',no:'Ya\'an, Sichuan. 30kt LiOH/yr. Major LiOH producer. Significant Albemarle offtake. Spodumene-based.'},
+  {n:'Salt Lake Qinghai',la:36.79,lo:100.65,product:'LiCO₃',cap:40,co:'Salt Lake Industry / Qinghai Li',ct:'China',no:'Qaidam Basin, Qinghai. 40kt LiCO₃/yr from brine. Multiple state-owned plants. 8Mt LiCl equivalent reserves in Chaerhan Lake.'},
+  {n:'Albemarle Langelsheim',la:51.93,lo:10.34,product:'BuLi/specialty',cap:5,co:'Albemarle',ct:'Germany',no:'Langelsheim, Lower Saxony. Specialty lithium chemicals (butyllithium, lithium chloride) for pharma and industrial.'},
+  {n:'POSCO HY Clean Metal',la:36.01,lo:129.35,product:'LiOH',cap:43,co:'POSCO Holdings (PKX)',ct:'South Korea',no:'Pohang, South Korea. 43kt LiOH/yr. Opened late 2024. Korea\'s first large-scale LiOH conversion plant. Feed from Pilbara Minerals (PLS).'},
+  {n:'Umicore Olen (cathode)',la:51.23,lo:4.74,product:'NMC cathode',cap:15,co:'Umicore (Euronext: UMI)',ct:'Belgium',no:'Olen, Belgium. Cathode active materials (NMC). Umicore supplies BMW, VW. Europe\'s most established cathode precursor plant.'},
+];
+
+// ── GIGAFACTORIES / PRIMARY CONSUMERS (triangles, magenta) ──────────────────
+const GIGA=[
+  // China
+  {n:'CATL Ningde',la:26.67,lo:119.53,ghw:120,co:'CATL',ct:'China',no:'HQ. 120GWh/yr. Tesla, BMW, VW supply. CATL holds 37% global market share (2024).'},
+  {n:'CATL Liyang',la:31.43,lo:119.48,ghw:126,co:'CATL',ct:'China',no:'Liyang, Jiangsu. 126GWh — world\'s single largest battery plant. LFP and NMC cells.'},
+  {n:'CATL Yibin',la:28.75,lo:104.64,ghw:100,co:'CATL',ct:'China',no:'Yibin, Sichuan. 100GWh. Green power from local hydro.'},
+  {n:'BYD Shenzhen Hub',la:22.55,lo:114.06,ghw:180,co:'BYD',ct:'China',no:'HQ + Blade Battery flagship plant. 180GWh+ combined. Second largest global battery producer.'},
+  {n:'BYD Chongqing',la:29.56,lo:106.55,ghw:60,co:'BYD',ct:'China',no:'Chongqing. 60GWh battery manufacturing.'},
+  {n:'CALB Changzhou',la:31.77,lo:119.97,ghw:50,co:'CALB',ct:'China',no:'Changzhou, Jiangsu. Significant LFP capacity. EU expansion planned (Portugal zero-carbon plant).'},
+  {n:'Gotion Hefei',la:31.82,lo:117.23,ghw:45,co:'Gotion High-Tech (VW-backed)',ct:'China',no:'Hefei, Anhui. VW major investor. US expansion blocked by NDAA.'},
+  // South Korea
+  {n:'LG Energy Solution Cheongju',la:36.61,lo:127.48,ghw:80,co:'LG Energy Solution (KRX: 373220)',ct:'South Korea',no:'Ochang, North Chungcheong. Largest LGES plant globally. Supply Tesla, GM, Hyundai/Kia, VW.'},
+  {n:'Samsung SDI Cheonan',la:36.79,lo:127.16,ghw:35,co:'Samsung SDI',ct:'South Korea',no:'Cheonan, South Chungcheong. Primary BMW cell supplier. Cylindrical + prismatic cells.'},
+  {n:'SK On Seosan',la:36.78,lo:126.48,ghw:25,co:'SK On',ct:'South Korea',no:'Seosan. Ford, Hyundai, VW supply. Financial difficulties 2024 — cost restructuring underway.'},
+  // Japan
+  {n:'Panasonic Energy Japan',la:34.07,lo:134.55,ghw:18,co:'Panasonic',ct:'Japan',no:'Tokushima + Sanda. Cylindrical cells for Tesla and others. HQ base before US expansion.'},
+  // USA
+  {n:'Tesla Gigafactory Nevada',la:39.53,lo:-119.44,ghw:100,co:'Tesla / Panasonic',ct:'USA',no:'Sparks, Nevada. 100GWh. 2170 + 4680 cylindrical cells. First and largest US gigafactory.'},
+  {n:'Panasonic De Soto Kansas',la:38.98,lo:-94.97,ghw:32,co:'Panasonic',ct:'USA',no:'De Soto, Kansas. 32GWh. Production started July 2025. 2170 cells. $4B investment, 4,000 jobs.'},
+  {n:'Tesla Gigafactory Texas',la:30.22,lo:-97.62,ghw:40,co:'Tesla',ct:'USA',no:'Austin, Texas. 40GWh. EV assembly (Cybertruck, Model Y) + 4680 cell production ramp.'},
+  {n:'LG/GM Ultium Spring Hill',la:35.75,lo:-87.02,ghw:35,co:'LG Energy / GM',ct:'USA',no:'Spring Hill, Tennessee. 35GWh. GM Ultium EV platform battery supply.'},
+  {n:'LG/Honda Ohio',la:40.09,lo:-82.99,ghw:40,co:'LG Energy / Honda',ct:'USA',no:'Jeffersonville, Ohio. 40GWh. Started 2025. Honda Prologue and Acura battery supply.'},
+  {n:'Samsung SDI / Stellantis Kokomo',la:40.49,lo:-86.13,ghw:33,co:'Samsung SDI / Stellantis',ct:'USA',no:'Kokomo, Indiana. 33GWh. First Samsung SDI US plant. Stellantis EV battery supply.'},
+  {n:'SK On / Hyundai Georgia',la:34.33,lo:-83.83,ghw:35,co:'SK On / Hyundai Meta',ct:'USA',no:'Commerce, Georgia. 35GWh. Hyundai/Kia Metaplant battery. Started 2025.'},
+  {n:'Ford BlueOval KY',la:37.63,lo:-85.38,ghw:86,co:'Ford / SK On',ct:'USA',no:'Glendale, Kentucky. 86GWh. Largest US battery plant. F-150 Lightning battery supply.'},
+  // Europe
+  {n:'LG Energy Wroclaw',la:51.10,lo:17.03,ghw:65,co:'LG Energy Solution',ct:'Poland',no:'Kobierzyce, Wroclaw. 65GWh. Largest battery plant in Europe. Audi, VW, Jaguar supply.'},
+  {n:'CATL Erfurt',la:51.07,lo:10.97,ghw:100,co:'CATL',ct:'Germany',no:'Arnstadt/Erfurt, Thuringia. 100GWh target. BMW, Stellantis supply. China\'s first European gigafactory.'},
+  {n:'Tesla Gigafactory Berlin',la:52.40,lo:13.75,ghw:50,co:'Tesla',ct:'Germany',no:'Grünheide, Brandenburg. 50GWh. Model Y hub for Europe. 4680 cell production expanding.'},
+  {n:'PowerCo Salzgitter',la:52.15,lo:10.33,ghw:40,co:'PowerCo (Volkswagen)',ct:'Germany',no:'Salzgitter, Germany. 40GWh. First of 6 planned VW Group gigafactories in Europe.'},
+  {n:'Samsung SDI Göd Hungary',la:47.68,lo:19.13,ghw:30,co:'Samsung SDI',ct:'Hungary',no:'Göd, Hungary. 30GWh. BMW, Stellantis supply. Significant expansion planned.'},
+  {n:'SK On Komárom Hungary',la:47.74,lo:18.11,ghw:30,co:'SK On',ct:'Hungary',no:'Komárom, Hungary. 30GWh. Ford and VW battery supply.'},
+  {n:'ACC Douvrin France',la:50.49,lo:2.82,ghw:40,co:'ACC (Stellantis/Mercedes/TotalEnergies)',ct:'France',no:'Douvrin, France. 40GWh. JV plant. Construction delays; ramp slower than planned.'},
+  {n:'Northvolt Skellefteå',la:64.75,lo:20.95,ghw:60,co:'Northvolt',ct:'Sweden',no:'Skellefteå, Sweden. 60GWh. BMW, VW supply. CHAPTER 11 filed Nov 2024. Assets being sold. Major European battery failure.'},
+  {n:'AESC Sunderland',la:54.91,lo:-1.38,ghw:9,co:'AESC / Nissan',ct:'UK',no:'Sunderland, UK. 9GWh (expanding to 36GWh). Nissan LEAF + Ariya. UK\'s first and only gigafactory.'},
+];
+
+const W=960, H=500;
+let af='all', at='all', al='all';
+
+const prj=d3.geoNaturalEarth1().scale(160).translate([W/2,H/2]);
+const path=d3.geoPath(prj);
+const rS=d3.scaleSqrt().domain([0,d3.max(PROJ,p=>p.lce||0)]).range([5,22]);
+const tt=document.getElementById('tooltip');
+const mw=document.getElementById('map-wrap');
+
+// ── SVG setup ──────────────────────────────────────────────────────────────
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const svgEl  = document.getElementById('map-svg');
+svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+// Ocean background
+const oceanRect = document.createElementNS(SVG_NS,'rect');
+oceanRect.setAttribute('width', W); oceanRect.setAttribute('height', H);
+oceanRect.setAttribute('fill','#141c28'); svgEl.appendChild(oceanRect);
+
+// Explicit groups: land first, markers on top
+const landEl = document.createElementNS(SVG_NS,'g'); landEl.id='land-layer';  svgEl.appendChild(landEl);
+const markEl = document.createElementNS(SVG_NS,'g'); markEl.id='marker-layer'; svgEl.appendChild(markEl);
+
+// Status bar inside map for debug
+const statusEl = document.createElement('div');
+statusEl.style.cssText='position:absolute;bottom:6px;left:12px;font-size:11px;font-family:monospace;color:#f0a500;pointer-events:none;';
+statusEl.textContent='Loading world topology…';
+mw.appendChild(statusEl);
+
+// ── Marker rendering ────────────────────────────────────────────────────────
+function rm(){
+  while(markEl.firstChild) markEl.removeChild(markEl.firstChild);
+  function showTip(e,html){
+    const br=mw.getBoundingClientRect();
+    const tl=Math.min(e.clientX-br.left+14,br.width-265);
+    const tp=Math.max(e.clientY-br.top-120,8);
+    tt.style.display='block';tt.style.left=tl+'px';tt.style.top=tp+'px';tt.innerHTML=html;
+  }
+  // MINING circles
+  if(al==='all'||al==='mine'){
+    const vis=PROJ.filter(p=>{
+      const sf=af==='all'||p.s===af;
+      const tf=at==='all'||(at==='h'&&p.t==='h')||(at==='b'&&p.t==='b')||(at==='c'&&p.t==='c');
+      return sf&&tf;
+    });
+    vis.sort((a,b)=>(b.lce||0)-(a.lce||0)).forEach(p=>{
+      const xy=prj([p.lo,p.la]);
+      if(!xy||isNaN(xy[0])||isNaN(xy[1]))return;
+      const r=Math.max(5,rS(p.lce||0)),col=SC[p.s]||'#aaa';
+      const c=document.createElementNS(SVG_NS,'circle');
+      c.setAttribute('cx',xy[0].toFixed(2));c.setAttribute('cy',xy[1].toFixed(2));c.setAttribute('r',r.toFixed(1));
+      c.setAttribute('fill',col);c.setAttribute('fill-opacity','0.9');
+      c.setAttribute('stroke','#ffffff');c.setAttribute('stroke-opacity','0.55');c.setAttribute('stroke-width','1.3');
+      c.style.cursor='pointer';
+      c.addEventListener('mousemove',e=>showTip(e,'<div class="tt-name">'+p.n+'</div>'
+        +'<div class="tt-sub">'+p.ct+' · '+(p.t==='h'?'Hard-rock':p.t==='b'?'Brine/DLE':'Clay')
+        +' · <span style="color:'+col+'">'+SL[p.s]+'</span></div>'
+        +'<div class="tt-sub">'+p.co+'</div>'
+        +(p.lce?'<div class="tt-lce">'+p.lce+' Mt LCE</div>':'')
+        +(p.gr?'<div style="font-size:11px;color:#aaa;margin-top:4px;font-family:monospace">'+p.gr+'</div>':'')
+        +'<div class="tt-note">'+p.no.slice(0,160)+'</div>'));
+      c.addEventListener('mouseleave',()=>tt.style.display='none');
+      markEl.appendChild(c);
+    });
+  }
+  // PROCESSING diamonds
+  if(al==='all'||al==='proc'){
+    const pS=d3.scaleSqrt().domain([0,d3.max(PROC,p=>p.cap)]).range([5,18]);
+    PROC.sort((a,b)=>b.cap-a.cap).forEach(p=>{
+      const xy=prj([p.lo,p.la]);
+      if(!xy||isNaN(xy[0])||isNaN(xy[1]))return;
+      const r=Math.max(5,pS(p.cap));
+      const x=+xy[0].toFixed(2),y=+xy[1].toFixed(2);
+      const el=document.createElementNS(SVG_NS,'path');
+      el.setAttribute('d','M'+x+' '+(y-r)+' L'+(x+r)+' '+y+' L'+x+' '+(y+r)+' L'+(x-r)+' '+y+' Z');
+      el.setAttribute('fill','#ff7d45');el.setAttribute('fill-opacity','0.9');
+      el.setAttribute('stroke','rgba(255,255,255,0.7)');el.setAttribute('stroke-width','1.3');el.style.cursor='pointer';
+      el.addEventListener('mousemove',e=>showTip(e,'<div class="tt-name">'+p.n+'</div>'
+        +'<div class="tt-sub">'+p.ct+' · Processing/Refinery</div>'
+        +'<div class="tt-sub">'+p.co+'</div>'
+        +'<div class="tt-lce" style="color:#ff7d45">'+p.cap+' kt/yr · '+p.product+'</div>'
+        +'<div class="tt-note">'+p.no.slice(0,160)+'</div>'));
+      el.addEventListener('mouseleave',()=>tt.style.display='none');
+      markEl.appendChild(el);
+    });
+  }
+  // GIGAFACTORIES triangles
+  if(al==='all'||al==='giga'){
+    const gS=d3.scaleSqrt().domain([0,d3.max(GIGA,p=>p.ghw)]).range([5,18]);
+    GIGA.sort((a,b)=>b.ghw-a.ghw).forEach(p=>{
+      const xy=prj([p.lo,p.la]);
+      if(!xy||isNaN(xy[0])||isNaN(xy[1]))return;
+      const r=Math.max(5,gS(p.ghw));
+      const x=+xy[0].toFixed(2),y=+xy[1].toFixed(2);
+      const h=r*1.1,hw=r*0.95;
+      const el=document.createElementNS(SVG_NS,'path');
+      el.setAttribute('d','M'+x+' '+(y-h)+' L'+(x+hw)+' '+(y+h*0.5)+' L'+(x-hw)+' '+(y+h*0.5)+' Z');
+      el.setAttribute('fill','#e040fb');el.setAttribute('fill-opacity','0.9');
+      el.setAttribute('stroke','rgba(255,255,255,0.7)');el.setAttribute('stroke-width','1.3');el.style.cursor='pointer';
+      el.addEventListener('mousemove',e=>showTip(e,'<div class="tt-name">'+p.n+'</div>'
+        +'<div class="tt-sub">'+p.ct+' · Battery Gigafactory</div>'
+        +'<div class="tt-sub">'+p.co+'</div>'
+        +'<div class="tt-lce" style="color:#e040fb">'+p.ghw+' GWh capacity</div>'
+        +'<div class="tt-note">'+p.no.slice(0,160)+'</div>'));
+      el.addEventListener('mouseleave',()=>tt.style.display='none');
+      markEl.appendChild(el);
+    });
+  }
+  const cnt=PROJ.length+PROC.length+GIGA.length;
+  statusEl.textContent=cnt+' total markers';
+}
+
+
+// ── Load world topology ─────────────────────────────────────────────────────
+d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+  .then(world=>{
+    statusEl.textContent = 'Topology loaded — drawing land…';
+    const features = topojson.feature(world, world.objects.countries).features;
+    features.forEach(f=>{
+      const pathEl = document.createElementNS(SVG_NS,'path');
+      pathEl.setAttribute('d', path(f));
+      pathEl.setAttribute('fill','#2b3038');
+      pathEl.setAttribute('stroke','#3d4655');
+      pathEl.setAttribute('stroke-width','0.4');
+      landEl.appendChild(pathEl);
+    });
+    rm();
+  })
+  .catch(err=>{
+    statusEl.textContent = 'Topology failed (' + err + ') — showing markers only';
+    rm();
+  });
+
+function updateStats(){
+  const tot=PROJ.reduce((s,p)=>s+(p.lce||0),0);
+  document.getElementById('s-lce').textContent=tot.toFixed(0)+' Mt';
+}
+updateStats();
+
+function sf(v){af=v;document.querySelectorAll('[id^="f-"]').forEach(b=>b.classList.toggle('on',b.id==='f-'+v));rm();}
+function st(v){at=v;document.querySelectorAll('[id^="t-"]').forEach(b=>b.classList.toggle('on',b.id==='t-'+v));rm();}
+function sl(v){al=v;document.querySelectorAll('[id^="l-"]').forEach(b=>b.classList.toggle('on',b.id==='l-'+v));rm();}
+
+// TABLE
+function bt(){
+  const q=(document.getElementById('srch').value||'').toLowerCase();
+  const fs=document.getElementById('ssel').value;
+  const tb=document.getElementById('tbody'); tb.innerHTML='';
+  const SO={P:0,R:1,M:2,E:3};
+  PROJ.filter(p=>(!fs||p.s===fs)&&(!q||[p.n,p.co,p.ct,p.gr,p.no].some(x=>x&&x.toLowerCase().includes(q))))
+    .sort((a,b)=>SO[a.s]-SO[b.s]||(b.lce||0)-(a.lce||0))
+    .forEach(p=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td style="font-weight:600;min-width:120px">${p.n}</td>
+        <td style="color:#6b7585">${p.ct}</td>
+        <td><span class="pill ${SPC[p.s]}">${SL[p.s]}</span></td>
+        <td style="font-family:monospace;font-size:11px;color:#6b7585">${p.t==='h'?'Hard-rock':p.t==='b'?'Brine/DLE':'Clay/Sed.'}</td>
+        <td style="font-family:monospace;font-weight:600">${p.lce?p.lce.toFixed(1):'-'}</td>
+        <td style="font-family:monospace;font-size:11px;color:#aaa;min-width:140px">${p.gr||'-'}</td>
+        <td style="color:#6b7585;min-width:140px">${p.co}</td>
+        <td style="color:#6b7585;max-width:200px;font-size:11px">${p.no.slice(0,100)}…</td>`;
+      tb.appendChild(tr);
+    });
+}
+bt();
+
+// COUNTRY
+function bc(){
+  const byC={};
+  PROJ.forEach(p=>{if(!byC[p.ct])byC[p.ct]={P:0,R:0,M:0,E:0,lce:0,items:[]};byC[p.ct][p.s]++;byC[p.ct].lce+=p.lce||0;byC[p.ct].items.push(p);});
+  const cg=document.getElementById('ctry-grid'); cg.innerHTML='';
+  Object.entries(byC).sort((a,b)=>b[1].lce-a[1].lce).forEach(([c,d])=>{
+    const total=d.P+d.R+d.M+d.E;
+    const div=document.createElement('div');
+    div.className='ctry-card';
+    div.innerHTML=`${d.lce>0?`<div class="ctry-lce">${d.lce.toFixed(0)} Mt</div>`:''}
+      <div class="ctry-name">${c}</div>
+      <div class="ctry-total">${total} project${total>1?'s':''} tracked</div>
+      <div class="ctry-pills">
+        ${d.P?`<span class="pill p-P">${d.P} producing</span>`:''} 
+        ${d.R?`<span class="pill p-R">${d.R} reserves</span>`:''} 
+        ${d.M?`<span class="pill p-M">${d.M} resource</span>`:''} 
+        ${d.E?`<span class="pill p-E">${d.E} exploration</span>`:''}
+      </div>
+      <div class="ctry-items">
+        ${d.items.slice(0,5).map(p=>`<div><span>${p.n}</span>${p.lce?` <span style="font-family:monospace;font-size:10px;color:var(--accent)">${p.lce.toFixed(1)} Mt</span>`:''}</div>`).join('')}
+      </div>
+      ${d.items.length>5?`<div class="ctry-more">+${d.items.length-5} more projects…</div>`:''}`;
+    cg.appendChild(div);
+  });
+}
+bc();
+
+let cnt=55;
+function sv(v){
+  ['map','tbl','cty'].forEach(x=>document.getElementById('v-'+x).style.display=x===v?'block':'none');
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',['map','tbl','cty'][i]===v));
+}
+</script>
+</body>
+</html>
