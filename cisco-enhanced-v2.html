@@ -486,7 +486,7 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
         295 Mt @ 1.36% · Q2 Metals (QTWO)<br>
         7.5 Mtpa → ~1.3 Mt SC5.5/yr<br>
         Calibrated to PMET FS Oct 2025<br>
-        All values in USD · FX 0.72 USD/CAD
+        All values in USD · FX 0.72 CAD/USD (1 CAD = US$0.72)
       </div>
     </div>
   </div>
@@ -971,8 +971,8 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
     <div style="padding:8px 18px;border-bottom:1px solid var(--border);display:flex;gap:18px;flex-wrap:wrap;align-items:center;background:rgba(15,25,40,.3);">
       <div class="mv-input-group"><label>LCE resource (Mt)</label><input type="number" id="mv-lce" value="9.9" step="0.1" min="0.1" oninput="updateMV()"></div>
       <div class="mv-input-group"><label>Shares (M)</label><input type="number" id="mv-shares" value="196" step="5" min="50" oninput="updateMV()"></div>
-      <div class="mv-input-group"><label>USD/CAD FX</label><input type="number" id="mv-fx" value="0.72" step="0.01" min="0.55" max="1.0" oninput="updateMV()"></div>
-      <div class="mv-input-group"><label>Current price (C$/sh)</label><input type="number" id="mv-curr-price" value="1.40" step="0.05" min="0.01" oninput="updateMV()"></div>
+      <div class="mv-input-group"><label>CAD→USD FX (1 CAD in USD)</label><input type="number" id="mv-fx" value="0.72" step="0.01" min="0.55" max="1.0" oninput="updateMV()"></div>
+      <div class="mv-input-group"><label>Current price (C$/sh)</label><input type="number" id="mv-curr-price" value="2.80" step="0.05" min="0.01" oninput="updateMV()"></div>
       <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
         <span style="font-size:9px;color:#6e90b0;font-family:var(--font-mono)">Acquisition stage:</span>
         <div id="mv-stages" style="display:flex;gap:4px;"><button onclick="mvSetStage(0)" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:rgba(255,193,7,.15);border:1px solid #ffc107;font-family:var(--font-mono);font-size:9px;font-weight:700;color:#ffc107;transition:all .12s;white-space:nowrap;">Maiden MRE</button><button onclick="mvSetStage(1)" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:transparent;border:1px solid var(--border);font-family:var(--font-mono);font-size:9px;font-weight:700;color:#6e90b0;transition:all .12s;white-space:nowrap;">Post-PEA</button><button onclick="mvSetStage(2)" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:transparent;border:1px solid var(--border);font-family:var(--font-mono);font-size:9px;font-weight:700;color:#6e90b0;transition:all .12s;white-space:nowrap;">Post-PFS</button><button onclick="mvSetStage(3)" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:transparent;border:1px solid var(--border);font-family:var(--font-mono);font-size:9px;font-weight:700;color:#6e90b0;transition:all .12s;white-space:nowrap;">Full FS</button><button onclick="mvSetStage(4)" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:transparent;border:1px solid var(--border);font-family:var(--font-mono);font-size:9px;font-weight:700;color:#6e90b0;transition:all .12s;white-space:nowrap;">Construction</button></div>
@@ -990,7 +990,7 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
         </div>
         <div id="mv-c1-mc" style="font-size:30px;font-weight:700;font-family:var(--font-mono);color:#ffffff;line-height:1;margin-bottom:4px;">$381M</div>
         <div style="font-size:10px;color:#6e90b0;margin-bottom:16px;">market cap (USD)</div>
-        <div id="mv-c1-cad" style="font-size:22px;font-weight:700;font-family:var(--font-mono);color:#e0eaf5;line-height:1;margin-bottom:3px;">C$1.40/sh</div>
+        <div id="mv-c1-cad" style="font-size:22px;font-weight:700;font-family:var(--font-mono);color:#e0eaf5;line-height:1;margin-bottom:3px;">C$2.80/sh</div>
         <div style="font-size:10px;color:#6e90b0;margin-bottom:16px;">per share (CAD)</div>
         <div style="border-top:1px solid var(--border);padding-top:12px;">
           <div id="mv-c1-lce" style="font-size:18px;font-weight:700;font-family:var(--font-mono);color:#ff6b6b;margin-bottom:2px;">$38/t LCE</div>
@@ -1141,7 +1141,7 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
           <div class="fr"><label>Current shares (M)</label><input type="number" id="fnd-shares0" value="196" step="5" min="10"><span class="unit">M</span></div>
           <div class="fr"><label>In-the-money warrants</label><input type="number" id="fnd-warrants" value="15" step="1" min="0"><span class="unit">M</span></div>
           <div class="fr"><label>Warrant strike</label><input type="number" id="fnd-strike" value="1.50" step="0.10" min="0"><span class="unit">C$</span></div>
-          <div class="fr"><label>Current price</label><input type="number" id="fnd-price0" value="1.40" step="0.05" min="0.10"><span class="unit">C$</span></div>
+          <div class="fr"><label>Current price</label><input type="number" id="fnd-price0" value="2.80" step="0.05" min="0.10"><span class="unit">C$</span></div>
 
           <div class="fnd-mini-hdr">Raise pricing discipline</div>
           <div class="fr"><label>Raise pricing (% of stage value)</label><input type="number" id="fnd-raiseDisc" value="75" min="30" max="120"><span class="unit">%</span></div>
@@ -2313,13 +2313,13 @@ function mcTab(tab){
 // CISCO LITHIUM PROJECT — QUEBEC PRESET
 // Calibrated from: PMET Shaakichiuwaanaan FS (Oct 2025) + Q2 Metals Cisco MRE (Apr 20 2026)
 // MRE: 295 Mt @ 1.36% Li₂O Inferred (270 Mt OP + 24 Mt UG) → 9.9 Mt LCE
-// All monetary values in USD. FX assumption: 0.72 USD/CAD
+// All monetary values in USD. FX assumption: 0.72 CAD/USD (1 CAD = US$0.72)
 // Key peer refs: PMET FS OPEX C$729/t SC5.5 (US$525/t) | AISC C$800/t (US$576/t)
 // Cisco advantage: 150km to Matagami rail vs PMET's 834km → ~US$80/t SC5.5 freight saving
 // ══════════════════════════════════════════════════════════════════════
 function loadCiscoPreset(){
   const s = id => document.getElementById(id);
-  const FX = 0.72; // USD/CAD
+  const FX = 0.72; // CAD/USD (1 CAD = US$0.72)
 
   // Project identity
   s('project-name').value = 'Cisco Lithium Project — Eeyou Istchee, Quebec';
@@ -2421,7 +2421,7 @@ function loadCiscoPreset(){
   const mvCurrP = document.getElementById('mv-curr-price');
   if(mvLce) mvLce.value = 9.9;     // 295 Mt @ 1.36% = 9.9 Mt LCE confirmed MRE
   if(mvShares) mvShares.value = 196; // Current shares + minimal dilution assumption
-  if(mvCurrP) mvCurrP.value = 1.40;  // Update when live price known
+  if(mvCurrP) mvCurrP.value = 2.80;  // Current QTWO price (Apr 2026)
   mvSetStage(0); // Maiden MRE stage — correct current stage
 
   // Reset any year-level overrides
@@ -2528,7 +2528,7 @@ function updateMV(){
   const lce    = parseFloat(document.getElementById('mv-lce')?.value || 9.9);
   const shares = parseFloat(document.getElementById('mv-shares')?.value || 196);
   const fx     = parseFloat(document.getElementById('mv-fx')?.value || 0.72);
-  const currP  = parseFloat(document.getElementById('mv-curr-price')?.value || 1.40);
+  const currP  = parseFloat(document.getElementById('mv-curr-price')?.value || 2.80);
   const npvM   = lastNPV;
 
   const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
@@ -2589,6 +2589,25 @@ function mvInit(){
 // SAVE
 // ══════════════════════════════════════════════════════════════════════
 function saveModel(){
+  // ── Sync live DOM state to HTML attributes so outerHTML captures current values ──
+  // (typing in a number input updates .value but NOT the value="" attribute — this fixes that)
+  document.querySelectorAll('input').forEach(el => {
+    const t = (el.type || '').toLowerCase();
+    if (t === 'checkbox' || t === 'radio') {
+      if (el.checked) el.setAttribute('checked', ''); else el.removeAttribute('checked');
+    } else {
+      el.setAttribute('value', el.value);
+    }
+  });
+  document.querySelectorAll('select').forEach(sel => {
+    Array.from(sel.options).forEach(opt => {
+      if (opt.selected) opt.setAttribute('selected', ''); else opt.removeAttribute('selected');
+    });
+  });
+  document.querySelectorAll('textarea').forEach(el => { el.textContent = el.value; });
+  // Persist any scenario-store JSON into the DOM too
+  if (typeof scnSaveToStore === 'function') { try { scnSaveToStore(); } catch(e){} }
+
   const name = (document.getElementById('project-name')?.value || 'lithium-dcf')
     .replace(/[^a-zA-Z0-9 \-_]/g,'').trim().replace(/\s+/g,'-').toLowerCase();
   const btn  = document.getElementById('save-btn');
@@ -2825,7 +2844,7 @@ function renderFunding(){
   const shares0  = parseFloat(document.getElementById('fnd-shares0').value) || 196;
   const warrants = parseFloat(document.getElementById('fnd-warrants').value) || 0;
   const strike   = parseFloat(document.getElementById('fnd-strike').value) || 1.50;
-  const price0   = parseFloat(document.getElementById('fnd-price0').value) || 1.40;
+  const price0   = parseFloat(document.getElementById('fnd-price0').value) || 2.80;
   const raiseDisc = (parseFloat(document.getElementById('fnd-raiseDisc').value) || 75) / 100;
   const debtPct   = (parseFloat(document.getElementById('fnd-debtPct').value) || 50) / 100;
   const streamPct = (parseFloat(document.getElementById('fnd-streamPct').value) || 15) / 100;
@@ -3835,7 +3854,7 @@ function renderCatalystCalendar(){
   const npv = lastNPV || 0;
   const fx = parseFloat(document.getElementById('mv-fx')?.value || 0.72);
   const shares = parseFloat(document.getElementById('mv-shares')?.value || 196);
-  const price0 = parseFloat(document.getElementById('fnd-price0')?.value || 1.40);
+  const price0 = parseFloat(document.getElementById('fnd-price0')?.value || 2.80);
 
   // Stages use MV_STAGES fractions
   const stages = [
