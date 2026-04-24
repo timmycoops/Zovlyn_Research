@@ -2342,9 +2342,13 @@ function loadCiscoPreset(){
 
   // ── Price deck ──────────────────────────────────────────────────
   // PMET FS long-term: US$1,221/t SC5.5. Current spot (Sep 2025): US$830/t SC6 ≈ US$760/t SC5.5
-  // Using US$900/t SC5.5 as realistic base. Update to US$1,100 for bull case.
-  s('sc6Price').value    = 900;
+  // Using US$1,400/t SC5.5 (Mid) as the default — above spot, in line with long-term consensus.
+  s('sc6Price').value    = 1400;
   s('priceEsc').value    = 0;
+  // Sync the Price Deck preset buttons so "Mid" is visually active
+  document.querySelectorAll('.presets .pr').forEach(b => {
+    b.classList.toggle('on', /Mid/.test(b.textContent));
+  });
 
   // ── Operating costs (USD, calibrated to PMET FS at 0.72 FX) ──
   // PMET implied ~US$77/t ore all-in ex-transport on 5.1Mtpa OP+UG hybrid
