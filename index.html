@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lithium Research — Interactive Tools & Analysis</title>
+<meta name="description" content="Independent research tools for lithium project analysis. Interactive DCF models, EV/t LCE valuation charts, and market research.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06090f;
+  --s1: #0a1018;
+  --s2: #0f1923;
+  --s3: #162230;
+  --b1: rgba(255,255,255,.05);
+  --b2: rgba(255,255,255,.09);
+  --b3: rgba(255,255,255,.16);
+  --cisco: #ff3547;
+  --teal: #00cfe0;
+  --amber: #ffb300;
+  --green: #00e09a;
+  --blue: #4499ff;
+  --t1: #eef2f7;
+  --t2: #7fa8c8;
+  --t3: #3d6080;
+  --t4: #1e3a54;
+  --syne: 'Syne', sans-serif;
+  --inst: 'Instrument Sans', sans-serif;
+  --mono: 'Instrument Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--t1);
+  font-family: var(--inst);
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+/* ── Animated grid background ── */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,207,224,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,207,224,.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Animated scan line */
+.scan {
+  position: fixed;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--teal), transparent);
+  opacity: .4;
+  animation: scan 8s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes scan {
+  0%   { top: -2px; opacity: 0; }
+  5%   { opacity: .4; }
+  95%  { opacity: .4; }
+  100% { top: 100vh; opacity: 0; }
+}
+
+/* ── Nav ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  background: rgba(6,9,15,.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--b1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  z-index: 100;
+}
+.nav-logo {
+  font-family: var(--syne);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--t1);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.nav-logo .dot {
+  width: 8px; height: 8px;
+  background: var(--teal);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: .4; transform: scale(.7); }
+}
+.nav-links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--t3);
+  text-decoration: none;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--teal); }
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 120px 80px 80px;
+  z-index: 2;
+  overflow: hidden;
+}
+
+/* Radial glow */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 20%;
+  right: -10%;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(0,207,224,.06) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 10%;
+  left: -5%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255,53,71,.05) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--teal);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  animation: fadeUp .6s ease forwards .2s;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 32px;
+  height: 1px;
+  background: var(--teal);
+}
+
+.hero-h1 {
+  font-family: var(--syne);
+  font-size: clamp(42px, 7vw, 88px);
+  font-weight: 800;
+  line-height: .95;
+  letter-spacing: -.02em;
+  color: var(--t1);
+  max-width: 800px;
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeUp .7s ease forwards .4s;
+}
+.hero-h1 em {
+  font-style: normal;
+  color: var(--teal);
+  position: relative;
+}
+.hero-h1 em::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 0; right: 0;
+  height: 3px;
+  background: var(--teal);
+  opacity: .3;
+}
+
+.hero-sub {
+  font-size: 16px;
+  color: var(--t2);
+  line-height: 1.65;
+  max-width: 520px;
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: fadeUp .7s ease forwards .6s;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp .7s ease forwards .8s;
+}
+.btn-primary {
+  background: var(--teal);
+  color: #000;
+  font-family: var(--syne);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 13px 28px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all .2s;
+  border: none;
+  cursor: pointer;
+}
+.btn-primary:hover {
+  background: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,207,224,.3);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--t2);
+  font-family: var(--syne);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 12px 28px;
+  border-radius: 4px;
+  border: 1px solid var(--b2);
+  text-decoration: none;
+  transition: all .2s;
+  cursor: pointer;
+}
+.btn-secondary:hover {
+  border-color: var(--b3);
+  color: var(--t1);
+  transform: translateY(-2px);
+}
+
+/* Stats strip */
+.hero-stats {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  height: 72px;
+  background: var(--s1);
+  border-top: 1px solid var(--b1);
+  display: flex;
+  align-items: stretch;
+  opacity: 0;
+  animation: fadeIn .8s ease forwards 1s;
+}
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 32px;
+  border-right: 1px solid var(--b1);
+}
+.stat-item:last-child { border-right: none; }
+.stat-v {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--t1);
+  line-height: 1;
+}
+.stat-l {
+  font-size: 9px;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  margin-top: 4px;
+}
+
+/* ── Tools section ── */
+.tools {
+  position: relative;
+  z-index: 2;
+  padding: 100px 80px;
+}
+
+.section-header {
+  margin-bottom: 56px;
+}
+.section-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--teal);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-tag::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--teal);
+}
+.section-h2 {
+  font-family: var(--syne);
+  font-size: clamp(28px, 4vw, 46px);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  color: var(--t1);
+  line-height: 1.05;
+}
+.section-h2 span { color: var(--teal); }
+
+/* Tool cards grid */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+  gap: 2px;
+  background: var(--b1);
+  border: 1px solid var(--b1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tool-card {
+  background: var(--s1);
+  padding: 40px;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  transition: background .2s;
+  overflow: hidden;
+  cursor: pointer;
+}
+.tool-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px;
+  height: 0;
+  background: var(--accent, var(--teal));
+  transition: height .3s ease;
+}
+.tool-card:hover { background: var(--s2); }
+.tool-card:hover::before { height: 100%; }
+
+.tool-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+.tool-icon {
+  width: 44px; height: 44px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.tool-arrow {
+  width: 32px; height: 32px;
+  border: 1px solid var(--b2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--t3);
+  font-size: 14px;
+  transition: all .2s;
+  flex-shrink: 0;
+}
+.tool-card:hover .tool-arrow {
+  border-color: var(--accent, var(--teal));
+  color: var(--accent, var(--teal));
+  transform: translate(2px, -2px);
+}
+
+.tool-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.tool-name {
+  font-family: var(--syne);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--t1);
+  letter-spacing: -.01em;
+  margin-bottom: 10px;
+  line-height: 1.1;
+}
+
+.tool-desc {
+  font-size: 13px;
+  color: var(--t3);
+  line-height: 1.6;
+  margin-bottom: 24px;
+  flex: 1;
+}
+
+.tool-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.feat {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--t3);
+  background: var(--s3);
+  padding: 4px 9px;
+  border-radius: 3px;
+  border: 1px solid var(--b1);
+}
+
+/* ── About strip ── */
+.about {
+  position: relative;
+  z-index: 2;
+  padding: 80px;
+  background: var(--s1);
+  border-top: 1px solid var(--b1);
+  border-bottom: 1px solid var(--b1);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.about-h {
+  font-family: var(--syne);
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+.about-h span { color: var(--teal); }
+.about-p {
+  font-size: 14px;
+  color: var(--t2);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+.about-note {
+  font-size: 11px;
+  color: var(--t3);
+  font-family: var(--mono);
+  padding: 10px 14px;
+  border-left: 2px solid var(--b2);
+  line-height: 1.6;
+  margin-top: 16px;
+}
+.about-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.fact-row {
+  background: var(--s2);
+  border: 1px solid var(--b1);
+  border-radius: 6px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.fact-lbl { font-size: 11px; color: var(--t3); }
+.fact-val {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ── Footer ── */
+footer {
+  position: relative;
+  z-index: 2;
+  padding: 40px 80px;
+  border-top: 1px solid var(--b1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-l {
+  font-family: var(--syne);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--t3);
+  letter-spacing: .06em;
+}
+.footer-r {
+  font-size: 10px;
+  color: var(--t4);
+  font-family: var(--mono);
+  line-height: 1.7;
+  text-align: right;
+}
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Scroll reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .hero { padding: 100px 24px 80px; }
+  .tools { padding: 60px 24px; }
+  .tools-grid { grid-template-columns: 1fr; }
+  .about { padding: 60px 24px; grid-template-columns: 1fr; gap: 40px; }
+  footer { padding: 32px 24px; flex-direction: column; text-align: center; }
+  .footer-r { text-align: center; }
+  .hero-stats { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="scan"></div>
+
+<!-- Nav -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="dot"></div>
+    Lithium Research
+  </a>
+  <ul class="nav-links">
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="https://github.com" target="_blank">GitHub ↗</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="home">
+  <div class="hero-eyebrow">Independent Research · Lithium Markets · April 2026</div>
+  <h1 class="hero-h1">Interactive tools<br>for <em>lithium</em><br>project analysis</h1>
+  <p class="hero-sub">Open-source DCF models, EV/t LCE valuation charts, and market research built for investors and analysts. Free to use, free to share.</p>
+  <div class="hero-cta">
+    <a href="lithium_dcf.html" class="btn-primary">Open DCF Model →</a>
+    <a href="lce_chart.html" class="btn-secondary">Valuation Chart</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-v">9.9 Mt</div>
+      <div class="stat-l">Cisco LCE Resource</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-v">C$2.80</div>
+      <div class="stat-l">QTWO Current Price</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-v">$40/t</div>
+      <div class="stat-l">Implied EV/t LCE</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-v">US$395M</div>
+      <div class="stat-l">Market Cap</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-v">~$103/t</div>
+      <div class="stat-l">VW/PMET M&A Comp</div>
+    </div>
+  </div>
+</section>
+
+<!-- Tools -->
+<section class="tools" id="tools">
+  <div class="section-header reveal">
+    <div class="section-tag">Interactive tools</div>
+    <h2 class="section-h2">Everything in one place.<br><span>Open any tool instantly.</span></h2>
+  </div>
+
+  <div class="tools-grid">
+
+    <!-- DCF Model -->
+    <a href="lithium_dcf.html" class="tool-card reveal" style="--accent: var(--teal)">
+      <div class="tool-card-head">
+        <div class="tool-icon" style="background:rgba(0,207,224,.1);">📊</div>
+        <div class="tool-arrow">↗</div>
+      </div>
+      <div class="tool-tag" style="background:rgba(0,207,224,.1);color:var(--teal)">Post-tax DCF</div>
+      <div class="tool-name">Cisco Lithium<br>DCF Model</div>
+      <div class="tool-desc">Full post-tax discounted cash flow model for the Cisco Lithium Project. Calibrated to PMET Shaakichiuwaanaan FS (Oct 2025). Includes mine plan, operating costs, CAPEX, tax, and financing. Pre-loads with correct Cisco assumptions by default.</div>
+      <div class="tool-features">
+        <span class="feat">Monte Carlo</span>
+        <span class="feat">Sensitivity tables</span>
+        <span class="feat">NPV & IRR</span>
+        <span class="feat">Strip ratio</span>
+        <span class="feat">Market valuation</span>
+        <span class="feat">Mobile friendly</span>
+      </div>
+    </a>
+
+    <!-- LCE Chart -->
+    <a href="lce_chart.html" class="tool-card reveal" style="--accent: var(--amber)">
+      <div class="tool-card-head">
+        <div class="tool-icon" style="background:rgba(255,179,0,.1);">📈</div>
+        <div class="tool-arrow">↗</div>
+      </div>
+      <div class="tool-tag" style="background:rgba(255,179,0,.1);color:var(--amber)">Valuation Comps</div>
+      <div class="tool-name">EV / t LCE<br>Universe Chart</div>
+      <div class="tool-desc">Every significant lithium transaction and listed company plotted by enterprise value per tonne of LCE resource. Stage buckets show the observed range and median at each development tier. Cisco highlighted throughout.</div>
+      <div class="tool-features">
+        <span class="feat">19 data points</span>
+        <span class="feat">Stage buckets</span>
+        <span class="feat">M&A transactions</span>
+        <span class="feat">Re-rate calculator</span>
+        <span class="feat">Bubble chart</span>
+        <span class="feat">Apr 2026 data</span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- About -->
+<section class="about" id="about">
+  <div class="reveal">
+    <h2 class="about-h">Built around the<br><span>Cisco Lithium Project</span></h2>
+    <p class="about-p">Q2 Metals Corp (TSX.V: QTWO) released a maiden NI 43-101 MRE on April 20, 2026 for the Cisco Lithium Project in Eeyou Istchee James Bay, Quebec — one of the largest lithium pegmatite resources ever defined.</p>
+    <p class="about-p">These tools were built to analyse the project's economics, understand where it sits relative to global peers, and model what different development scenarios might imply for shareholder value.</p>
+    <div class="about-note">All models are pre-PEA estimates calibrated to comparable feasibility studies. Not investment advice. Figures sourced from company filings and public M&A data as of April 2026.</div>
+  </div>
+  <div class="about-right reveal">
+    <div class="fact-row">
+      <div class="fact-lbl">Total resource</div>
+      <div class="fact-val" style="color:var(--cisco)">295 Mt @ 1.36% Li₂O</div>
+    </div>
+    <div class="fact-row">
+      <div class="fact-lbl">Contained LCE</div>
+      <div class="fact-val" style="color:var(--teal)">9.9 Mt LCE</div>
+    </div>
+    <div class="fact-row">
+      <div class="fact-lbl">Location</div>
+      <div class="fact-val" style="color:var(--t2)">James Bay, Québec</div>
+    </div>
+    <div class="fact-row">
+      <div class="fact-lbl">Infrastructure</div>
+      <div class="fact-val" style="color:var(--t2)">150km to Matagami CN Rail</div>
+    </div>
+    <div class="fact-row">
+      <div class="fact-lbl">Best intercept</div>
+      <div class="fact-val" style="color:var(--amber)">457.4m @ 1.65% Li₂O</div>
+    </div>
+    <div class="fact-row">
+      <div class="fact-lbl">PEA expected</div>
+      <div class="fact-val" style="color:var(--green)">Late 2026</div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-l">Lithium Research Tools</div>
+  <div class="footer-r">
+    Data: company filings, Bloomberg, public M&A · April 2026<br>
+    Not investment advice · Tools provided for educational purposes only<br>
+    TSX.V: QTWO · Q2 Metals Corp · q2metals.com
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if(e.isIntersecting){
+      setTimeout(() => e.target.classList.add('visible'), i * 100);
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
