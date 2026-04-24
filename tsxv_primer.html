@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TSX.V Primer — How Canada's Junior Exchange Actually Works</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#07101f;color:#c8d8f0;font-family:system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.5}
+.wrap{max-width:960px;margin:0 auto;padding:28px 16px 48px}
+.hdr{border-bottom:1px solid rgba(212,175,55,0.2);padding-bottom:22px;margin-bottom:24px}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:20px;margin-bottom:18px}
+.badge{background:linear-gradient(135deg,#d4af37,#b8962e);color:#07101f;font-size:10px;font-weight:700;letter-spacing:.1em;padding:3px 9px;border-radius:3px;display:inline-block}
+.meta{font-size:11px;color:rgba(212,175,55,0.55);letter-spacing:.07em;margin-left:8px}
+.co-name{font-size:clamp(24px,4.2vw,34px);font-weight:700;color:#fff;margin:12px 0 6px;letter-spacing:-.02em;line-height:1.2}
+.subtitle{font-size:14px;color:#8aa4c8;font-weight:500;letter-spacing:.02em}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:rgba(255,255,255,0.03);border:1px solid rgba(212,175,55,0.12);border-radius:8px;padding:10px 14px}
+.sl{font-size:9px;color:#5a7090;letter-spacing:.1em;font-weight:600}
+.sv{font-size:16px;color:#d4af37;font-weight:700;margin:3px 0 2px}
+.ss{font-size:11px;color:#7a94b0}
+.tabs{display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:22px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{background:none;border:none;cursor:pointer;padding:9px 14px;white-space:nowrap;font-size:12px;letter-spacing:.05em;color:#5a7090;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;font-family:inherit}
+.tab.on{color:#d4af37;border-bottom-color:#d4af37}
+.sec{display:none}
+.sec.on{display:grid;gap:18px}
+.card{background:rgba(255,255,255,0.025);border:1px solid rgba(212,175,55,0.12);border-radius:10px;padding:18px 20px}
+.ct{font-size:11px;letter-spacing:.1em;color:#d4af37;font-weight:600;margin-bottom:14px}
+.cb{font-size:13px;color:#8aa4c8;line-height:1.7}
+.cb strong{color:#c8d8f0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:560px){.g2{grid-template-columns:1fr}}
+.ib{padding:13px 15px;background:rgba(251,191,36,0.06);border-radius:8px;border-left:3px solid #fbbf24;font-size:12px;color:#8aa4c8;line-height:1.7;margin-top:14px}
+.ib strong{color:#fbbf24}
+.disc{padding:13px 16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:8px;font-size:11px;color:#3a4f65;line-height:1.6}
+.foot{margin-top:28px;padding-top:16px;border-top:1px solid rgba(212,175,55,0.15);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:11px;color:#3a4f65}
+
+/* Venue tiles */
+.venue-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:560px){.venue-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.venue-grid{grid-template-columns:1fr}}
+.venue-tile{background:rgba(0,0,0,0.25);border-radius:8px;padding:12px 14px;border:1px solid rgba(255,255,255,0.07)}
+.venue-name{font-size:13px;color:#fff;font-weight:600;margin-bottom:4px}
+.venue-tag{display:inline-block;font-size:9px;letter-spacing:.08em;border-radius:3px;padding:2px 6px;margin-bottom:6px}
+.venue-desc{font-size:11px;color:#5a7090;line-height:1.55}
+.venue-fact{font-size:11px;color:#8aa4c8;margin-top:5px;padding-top:5px;border-top:1px solid rgba(255,255,255,0.06)}
+
+/* Data level tiers */
+.level-row{display:grid;grid-template-columns:80px 1fr;gap:0;margin-bottom:0}
+@media(max-width:500px){.level-row{grid-template-columns:60px 1fr}}
+.level-num{padding:14px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px 0 0 8px;border:1px solid;border-right:none}
+.level-num .ln{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+.level-num .lt{font-size:9px;letter-spacing:.1em;margin-top:2px;font-weight:600}
+.level-body{padding:14px 16px;background:rgba(0,0,0,0.2);border-radius:0 8px 8px 0;border:1px solid rgba(255,255,255,0.08);border-left:none}
+.level-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px}
+.level-what{font-size:12px;color:#8aa4c8;margin-bottom:8px;line-height:1.6}
+.level-who{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}
+.who-tag{font-size:10px;padding:2px 8px;border-radius:3px;background:rgba(255,255,255,0.05);color:#6b82a0}
+.level-cost{font-size:11px;color:#5a7090}
+.level-wrap{display:grid;gap:6px}
+
+/* Order lifecycle */
+.lifecycle{display:grid;gap:0}
+.lc-step{display:grid;grid-template-columns:32px 1fr;gap:0;position:relative}
+.lc-step:not(:last-child)::after{content:'';position:absolute;left:15px;top:36px;width:2px;height:calc(100% - 8px);background:rgba(212,175,55,0.2)}
+.lc-dot{width:32px;height:32px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:4px;background:#07101f}
+.lc-content{padding:4px 0 18px 14px}
+.lc-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:4px}
+.lc-body{font-size:12px;color:#6b82a0;line-height:1.6}
+.lc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.lc-tag{font-size:10px;padding:2px 7px;border-radius:3px}
+
+/* Priority order */
+.priority-grid{display:grid;gap:6px}
+.prio-row{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:10px 12px;background:rgba(0,0,0,0.2);border-radius:6px;border:1px solid rgba(255,255,255,0.06)}
+.prio-rank{font-size:14px;font-weight:800;color:#d4af37}
+.prio-name{font-size:13px;color:#c8d8f0;font-weight:600}
+.prio-sub{font-size:11px;color:#5a7090}
+.prio-note{font-size:11px;color:#5a7090;text-align:right}
+
+/* Settlement flow */
+.settle-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:0;align-items:stretch}
+@media(max-width:700px){.settle-flow{grid-template-columns:1fr}}
+.sf-box{background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.08);padding:12px 10px;text-align:center}
+.sf-box:first-child{border-radius:8px 0 0 8px}
+.sf-box:last-child{border-radius:0 8px 8px 0}
+.sf-arrow{display:flex;align-items:center;justify-content:center;font-size:18px;color:rgba(212,175,55,0.4);background:rgba(0,0,0,0.1);border-top:1px solid rgba(255,255,255,0.08);border-bottom:1px solid rgba(255,255,255,0.08)}
+@media(max-width:700px){.sf-arrow{transform:rotate(90deg);border:none;padding:4px 0}}
+.sf-title{font-size:11px;color:#fff;font-weight:600;margin-bottom:4px}
+.sf-sub{font-size:10px;color:#5a7090;line-height:1.5}
+.sf-time{font-size:11px;color:#d4af37;margin-top:5px;font-weight:600}
+
+/* Hidden layer boxes */
+.hidden-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.hidden-grid{grid-template-columns:1fr}}
+.hid-card{background:rgba(0,0,0,0.2);border-radius:8px;padding:13px 15px;border-left:3px solid}
+.hid-title{font-size:12px;font-weight:700;color:#fff;margin-bottom:5px}
+.hid-body{font-size:12px;color:#5a7090;line-height:1.6}
+.hid-body strong{color:#8aa4c8}
+
+/* Mechanism cards */
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.mg{grid-template-columns:1fr}}
+.mc{background:rgba(255,255,255,0.02);border-radius:8px;padding:13px 15px}
+.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.mn{font-size:13px;color:#c8d8f0;font-weight:600}
+.ms{font-size:9px;letter-spacing:.1em;border-radius:3px;padding:2px 7px}
+.md{font-size:12px;color:#5a7090;line-height:1.6}
+
+/* Data access hierarchy */
+.hr-row{display:grid;grid-template-columns:36px 140px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);align-items:start}
+.hr-row:last-child{border-bottom:none}
+.hn{font-size:13px;font-weight:700}
+.hw{font-size:12px;font-weight:600}
+.hm{font-size:9px;letter-spacing:.08em;font-weight:600;margin-bottom:2px}
+.hd{font-size:11px;color:#7a94b0;line-height:1.5}
+
+/* Participant map */
+.part-table{width:100%;border-collapse:collapse}
+.part-table th{font-size:10px;color:#5a7090;letter-spacing:.08em;font-weight:600;padding:6px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.08)}
+.part-table td{font-size:12px;color:#8aa4c8;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+.part-table td:first-child{color:#c8d8f0;font-weight:500}
+.part-table tr:last-child td{border-bottom:none}
+
+/* Playbook */
+.play-card{border-radius:10px;padding:18px 20px;margin-bottom:0;border:1px solid}
+.play-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.play-name{font-size:14px;font-weight:700;color:#fff}
+.play-badges{display:flex;gap:6px;flex-wrap:wrap}
+.pbadge{font-size:9px;letter-spacing:.09em;border-radius:3px;padding:2px 7px;font-weight:600}
+.play-body{font-size:12px;color:#8aa4c8;line-height:1.7;margin-bottom:12px}
+.play-body strong{color:#c8d8f0}
+.play-mech{background:rgba(0,0,0,0.25);border-radius:6px;padding:10px 13px}
+.play-mech-title{font-size:9px;color:#5a7090;letter-spacing:.1em;font-weight:600;margin-bottom:6px}
+.play-steps{list-style:none;display:grid;gap:4px}
+.play-steps li{font-size:12px;color:#7a94b0;padding-left:14px;position:relative;line-height:1.55}
+.play-steps li::before{content:"→";position:absolute;left:0;color:#d4af37;font-size:11px}
+
+/* Countermoves */
+.risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+@media(max-width:560px){.risk-grid{grid-template-columns:1fr}}
+.risk-card{background:rgba(255,255,255,0.02);border-radius:8px;padding:13px 15px;border:1px solid rgba(255,255,255,0.06)}
+.risk-head{font-size:12px;font-weight:600;margin-bottom:5px}
+.risk-body{font-size:11px;color:#5a7090;line-height:1.6}
+
+.intro-box{padding:16px 18px;background:rgba(212,175,55,0.05);border:1px solid rgba(212,175,55,0.18);border-radius:8px}
+.intro-box p{font-size:13px;color:#c8d8f0;line-height:1.75}
+.intro-box strong{color:#d4af37}
+</style>
+</head>
+<body>
+
+<!-- ← Home link (minimal, consistent across all tool pages) -->
+<a href="index.html" style="position:fixed;top:10px;left:14px;z-index:9999;color:rgba(238,242,247,.38);font:500 10px/1 'Inter','Segoe UI',system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;padding:4px 4px;transition:color .15s ease;" onmouseover="this.style.color='#00cfe0'" onmouseout="this.style.color='rgba(238,242,247,.38)'">← Home</a>
+
+<div class="wrap">
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap">
+        <span class="badge">TSX.V</span>
+        <span class="meta">MARKET PRIMER · A FIELD GUIDE</span>
+      </div>
+      <div class="co-name">How Canada's Junior Exchange Actually Works</div>
+      <div class="subtitle">Venues · Data · Mechanics · The Playbook</div>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="sl">TRADING VENUES</div><div class="sv">14</div><div class="ss">lit + dark + ATS</div></div>
+    <div class="stat"><div class="sl">DATA TIERS</div><div class="sv">5 + CDS</div><div class="ss">L1 → L3+ regulator</div></div>
+    <div class="stat"><div class="sl">SETTLEMENT</div><div class="sv">T+1</div><div class="ss">since May 2024</div></div>
+    <div class="stat"><div class="sl">ANON TRADES</div><div class="sv">~30–40%</div><div class="ss">on active names</div></div>
+  </div>
+</div>
+
+<!-- INTRO -->
+<div class="intro-box" style="margin-bottom:24px">
+  <p>The TSX Venture Exchange looks simple from the retail side — you see a price, a bid, an ask, and a "broker summary" table on Stockwatch showing who bought and sold. That view is a <strong>stripped, aggregated, and time-lagged projection</strong> of a far more complex reality: 14 competing trading venues, five tiers of data visibility, encrypted private order markers, broker preferencing rules that let dealers jump the queue, settlement netting that hides individual failures, and a regulatory feed nobody outside the exchange or CIRO ever sees. This primer walks through each layer in turn.</p>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab on" onclick="show('vn',this)">Venues</button>
+  <button class="tab" onclick="show('lc',this)">Order Lifecycle</button>
+  <button class="tab" onclick="show('dl',this)">Data Levels</button>
+  <button class="tab" onclick="show('ms',this)">Matching & Settlement</button>
+  <button class="tab" onclick="show('hd',this)">What's Hidden</button>
+  <button class="tab" onclick="show('pp',this)">Participants</button>
+  <button class="tab" onclick="show('bk',this)">Broker Playbook</button>
+  <button class="tab" onclick="show('cm',this)">Countermoves</button>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- 1. VENUES                                                        -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="vn" class="sec on">
+  <div class="card">
+    <div class="ct">THE 14 CANADIAN TRADING VENUES</div>
+    <p class="cb" style="margin-bottom:16px">Every TSX and TSX.V-listed security can be traded across all 14 venues simultaneously. A single order placed by a retail investor may execute on TSX, Alpha, or any ATS — whichever offers the best price at that instant. The broker is obligated to achieve <strong>"best execution"</strong> across all venues. This fragmentation is why retail broker summary data often understates actual volume — many platforms only capture their primary venue.</p>
+    <div class="venue-grid">
+      <div class="venue-tile">
+        <div class="venue-name">TSX / TSX.V</div>
+        <div class="venue-tag" style="background:rgba(212,175,55,0.15);color:#d4af37;border:1px solid rgba(212,175,55,0.3)">PRIMARY LIT</div>
+        <div class="venue-desc">The primary listing venue. Price / Broker / Time priority. Broker preferencing active. The official "close" price is set here via Market on Close auction at 4:00pm. Regulated by CIRO.</div>
+        <div class="venue-fact">~55–65% of TSX.V volume</div>
+      </div>
+      <div class="venue-tile">
+        <div class="venue-name">TSX Alpha Exchange</div>
+        <div class="venue-tag" style="background:rgba(96,165,250,0.15);color:#60a5fa;border:1px solid rgba(96,165,250,0.3)">LIT — DELAYED</div>
+        <div class="venue-desc">Pure price-time priority — no broker preferencing. Imposes 1–3ms randomised delay on all orders to reduce predatory HFT. No dark orders. Retail-friendly by design.</div>
+        <div class="venue-fact">~8–12% of TSX.V volume</div>
+      </div>
+      <div class="venue-tile">
+        <div class="venue-name">TSX DRK</div>
+        <div class="venue-tag" style="background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3)">DARK POOL</div>
+        <div class="venue-desc">TMX's own dark pool. Conditional orders allow simultaneous anonymous representation across multiple venues. Minimum block size $30k or 50 board lots. No pre-trade transparency.</div>
+        <div class="venue-fact">Block trades, institutional</div>
+      </div>
+      <div class="venue-tile">
+        <div class="venue-name">NASDAQ CXC / CX2</div>
+        <div class="venue-tag" style="background:rgba(74,222,128,0.15);color:#4ade80;border:1px solid rgba(74,222,128,0.3)">LIT ATS</div>
+        <div class="venue-desc">Alternative Trading Systems operated by Nasdaq in Canada. Price-time priority. Compete with TSX on fee structure to attract order flow. No broker preferencing.</div>
+        <div class="venue-fact">~10–15% of TSX.V volume</div>
+      </div>
+      <div class="venue-tile">
+        <div class="venue-name">MatchNow (Triact)</div>
+        <div class="venue-tag" style="background:rgba(249,115,22,0.15);color:#f97316;border:1px solid rgba(249,115,22,0.3)">DARK ATS</div>
+        <div class="venue-desc">Canada's largest independent dark pool. Matches orders at midpoint of TSX best bid/ask. All orders fully hidden. Institutional focus. No minimum size requirement.</div>
+        <div class="venue-fact">Midpoint crossing</div>
+      </div>
+      <div class="venue-tile">
+        <div class="venue-name">Liquidnet / Instinet / OMEGA / LYNX</div>
+        <div class="venue-tag" style="background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3)">OTHER ATS</div>
+        <div class="venue-desc">Additional lit and dark ATSs. Liquidnet specialises in large institutional block matching. OMEGA and LYNX are additional lit venues competing on fees and features.</div>
+        <div class="venue-fact">Specialist / block flow</div>
+      </div>
+    </div>
+    <div class="ib" style="margin-top:16px"><strong>Key implication:</strong> When you see "100,000 shares traded today" in a broker summary, the actual volume may be 130,000+ once dark pool and ATS crosses are included. Volume data in the public feed is consolidated via the CLS (Consolidated Last Sale) feed — but dark tag details are encrypted and not publicly attributed.</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- 2. ORDER LIFECYCLE                                              -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="lc" class="sec">
+  <div class="card">
+    <div class="ct">THE COMPLETE ORDER LIFECYCLE</div>
+    <p class="cb" style="margin-bottom:16px">Every trade in a TSX or TSX.V-listed security passes through this chain from order entry to settlement. Each step creates opportunities for information asymmetry.</p>
+    <div class="lifecycle">
+
+      <div class="lc-step">
+        <div class="lc-dot" style="border-color:#d4af37;color:#d4af37">1</div>
+        <div class="lc-content">
+          <div class="lc-title">Order Entry — Client to Broker</div>
+          <div class="lc-body">Retail investor places order via app or phone. Broker's system tags the order with: long/short designation, anonymous flag (Y/N), SME flag (if applicable), order type (limit/market/iceberg/dark), DMA flag, duration. These private markers travel with the order through the system but are <strong>never visible to the public or counterparty</strong>. Only the broker and the exchange see them.</div>
+          <div class="lc-tags">
+            <span class="lc-tag" style="background:rgba(212,175,55,0.1);color:#d4af37">Anonymous: Y/N</span>
+            <span class="lc-tag" style="background:rgba(167,139,250,0.1);color:#a78bfa">SME Flag: Y/N</span>
+            <span class="lc-tag" style="background:rgba(96,165,250,0.1);color:#60a5fa">Short: Y/N</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lc-step">
+        <div class="lc-dot" style="border-color:#60a5fa;color:#60a5fa">2</div>
+        <div class="lc-content">
+          <div class="lc-title">Smart Order Router (SOR) — Venue Selection</div>
+          <div class="lc-body">The broker's SOR algorithm scans all 14 venues in real time to find the best available price across the consolidated order book. It may split a 50,000-share order across TSX (30,000), Alpha (10,000), and MatchNow dark (10,000) simultaneously. The client sees one fill. The market sees fragmented prints across venues. This makes it <strong>impossible to reconstruct the full picture from any single venue's data feed</strong> — you need the consolidated feed (CDF).</div>
+          <div class="lc-tags">
+            <span class="lc-tag" style="background:rgba(74,222,128,0.1);color:#4ade80">Best execution obligation</span>
+            <span class="lc-tag" style="background:rgba(249,115,22,0.1);color:#f97316">Multi-venue splitting</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lc-step">
+        <div class="lc-dot" style="border-color:#a78bfa;color:#a78bfa">3</div>
+        <div class="lc-content">
+          <div class="lc-title">Broker Preferencing Check — Internal First</div>
+          <div class="lc-body">Before the order hits the open book on TSX/TSX.V, the matching engine checks: does this broker have contra-side orders at the same price that have time priority over other brokers? If yes — and the order is not marked anonymous — the order is matched internally (broker-preferenced) against its own client orders first. The trade executes at the same price but <strong>never competed with the open market</strong>. Only attributed (non-anonymous) orders can participate in broker preferencing.</div>
+          <div class="lc-tags">
+            <span class="lc-tag" style="background:rgba(251,191,36,0.1);color:#fbbf24">Attributed orders only</span>
+            <span class="lc-tag" style="background:rgba(248,113,113,0.1);color:#f87171">Anonymous orders skip this step</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lc-step">
+        <div class="lc-dot" style="border-color:#4ade80;color:#4ade80">4</div>
+        <div class="lc-content">
+          <div class="lc-title">CLOB Matching — Price/Broker/Time Priority</div>
+          <div class="lc-body">If not preferenced, the order enters the Central Limit Order Book (CLOB). Matching priority on TSX/TSX.V is: (1) Best price, (2) Same broker has priority over other brokers at the same price, (3) Time. Dark orders and iceberg hidden portions execute after all visible same-price orders are filled. The exchange's matching engine runs at sub-100 microsecond latency (TMX Quantum XA). HFT firms co-located at the data centre have ~200 microsecond round-trip advantage over remote participants.</div>
+          <div class="lc-tags">
+            <span class="lc-tag" style="background:rgba(212,175,55,0.1);color:#d4af37">Price → Broker → Time</span>
+            <span class="lc-tag" style="background:rgba(96,165,250,0.1);color:#60a5fa">&lt;100μs execution</span>
+            <span class="lc-tag" style="background:rgba(167,139,250,0.1);color:#a78bfa">Dark fills after visible</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lc-step">
+        <div class="lc-dot" style="border-color:#fbbf24;color:#fbbf24">5</div>
+        <div class="lc-content">
+          <div class="lc-title">Trade Reporting — Public Feed vs. Private Feed</div>
+          <div class="lc-body">On execution, the trade is reported simultaneously to two feeds. The <strong>public CLS (Consolidated Last Sale) feed</strong> broadcasts: price, volume, venue, timestamp, and special markers (VWAP cross, basis cross, etc.) — but the anonymous flag, SME flag, and dark tag are stripped. The <strong>private TMX broadcast feed</strong> contains the full order detail including all private markers, encrypted. Only exchange participants and CIRO receive the private feed. This is the "Level 3" data point — it is what you would need to reconstruct who did what.</div>
+          <div class="lc-tags">
+            <span class="lc-tag" style="background:rgba(74,222,128,0.1);color:#4ade80">Public: price + volume</span>
+            <span class="lc-tag" style="background:rgba(248,113,113,0.1);color:#f87171">Private: all markers encrypted</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lc-step">
+        <div class="lc-dot" style="border-color:#f97316;color:#f97316">6</div>
+        <div class="lc-content">
+          <div class="lc-title">Clearing — CDS Continuous Net Settlement (CNS)</div>
+          <div class="lc-body">All exchange trades flow automatically into CDS (Canadian Depository for Securities, a TMX subsidiary). CDS runs CNS — it novates the trade (replaces broker-to-broker obligation with two broker-to-CDS obligations) and nets all of each broker's buy and sell activity in each security across the entire day into a single net position. A broker who bought 500K and sold 480K of a stock today has a single net CNS obligation to deliver 20K shares. This netting is why naked shorts can persist: individual failures are buried inside the net position and the aggregate may still settle.</div>
+          <div class="lc-tags">
+            <span class="lc-tag" style="background:rgba(212,175,55,0.1);color:#d4af37">Novation: bilateral → CDS-central</span>
+            <span class="lc-tag" style="background:rgba(249,115,22,0.1);color:#f97316">Net position hides individual fails</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lc-step">
+        <div class="lc-dot" style="border-color:#ef4444;color:#ef4444">7</div>
+        <div class="lc-content">
+          <div class="lc-title">Settlement — T+1 Delivery vs. Payment</div>
+          <div class="lc-body">Settlement occurs the next business day (T+1, since May 2024). CDS runs four intraday CNS cycles plus a real-time settlement process. At settlement, securities are delivered from seller's CDS depository account to buyer's, and cash moves in the opposite direction (DVP — Delivery vs. Payment). If a broker's depository account doesn't have enough shares, the position becomes a <strong>fail-to-deliver</strong> — it rolls to the next day and CIRO receives an Extended Failed Trade report if it persists.</div>
+          <div class="lc-tags">
+            <span class="lc-tag" style="background:rgba(74,222,128,0.1);color:#4ade80">T+1 since May 2024</span>
+            <span class="lc-tag" style="background:rgba(248,113,113,0.1);color:#f87171">FTD = potential naked short signal</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- 3. DATA LEVELS                                                   -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="dl" class="sec">
+  <div class="card">
+    <div class="ct">COMPLETE DATA LEVEL FRAMEWORK</div>
+    <p class="cb" style="margin-bottom:18px">Five distinct tiers of market data exist in the Canadian system, plus a separate CDS settlement layer. Each tier reveals progressively more about who is doing what and why. Access is gated by cost, regulatory status, and the physical location of your servers.</p>
+    <div class="level-wrap">
+
+      <div class="level-row">
+        <div class="level-num" style="border-color:rgba(107,130,160,0.3);background:rgba(107,130,160,0.08)">
+          <div class="ln" style="color:#6b82a0">L1</div>
+          <div class="lt" style="color:#6b82a0">PUBLIC</div>
+        </div>
+        <div class="level-body">
+          <div class="level-title">Level 1 — Top of Book</div>
+          <div class="level-what">Best bid price + size, best ask price + size, last trade price, last trade volume, daily OHLCV, 52-week range. This is what every retail investor sees on any free website. No broker attribution. No order depth beyond the best quote. Venue of execution not shown in most retail feeds.</div>
+          <div class="level-who"><span class="who-tag">Retail investors</span><span class="who-tag">Stockwatch subscribers</span><span class="who-tag">Financial media</span><span class="who-tag">Company IR</span></div>
+          <div class="level-cost">Cost: Free (delayed 15min) / ~$20–50/month realtime</div>
+        </div>
+      </div>
+
+      <div class="level-row">
+        <div class="level-num" style="border-color:rgba(96,165,250,0.3);background:rgba(96,165,250,0.08)">
+          <div class="ln" style="color:#60a5fa">L2</div>
+          <div class="lt" style="color:#60a5fa">DEPTH</div>
+        </div>
+        <div class="level-body">
+          <div class="level-title">Level 2 — Full Order Book Depth</div>
+          <div class="level-what">All visible bids and asks at every price level, with broker attribution (on TSX/TSX.V — broker numbers shown against each order). Iceberg hidden portions not visible. Dark orders not visible. Anonymous orders show as "001". On Alpha Exchange, broker attribution is not shown (pure price-time, no broker numbers). This is the Stockwatch "depth of market" view.</div>
+          <div class="level-who"><span class="who-tag">Active traders</span><span class="who-tag">Institutional desks</span><span class="who-tag">Corporate IR teams</span></div>
+          <div class="level-cost">Cost: ~$50–300/month depending on platform</div>
+        </div>
+      </div>
+
+      <div class="level-row">
+        <div class="level-num" style="border-color:rgba(212,175,55,0.3);background:rgba(212,175,55,0.08)">
+          <div class="ln" style="color:#d4af37">L2+</div>
+          <div class="lt" style="color:#d4af37">ISSUER</div>
+        </div>
+        <div class="level-body">
+          <div class="level-title">Level 2+ — Issuer Anonymous Attribution</div>
+          <div class="level-what">Available only to listed companies via TSX InfoSuite Premium. Identical to Level 2 public data PLUS: the Anonymous Broker Summary (monthly report identifying which real broker was behind each anonymous trade) and the Enhanced Broker Summary (full monthly house position attributed including previously-anonymous trades). Does not reveal end client — only identifies the broker behind "001" trades. Published on the 6th business day of each month.</div>
+          <div class="level-who"><span class="who-tag">Listed companies only</span><span class="who-tag">IR departments</span></div>
+          <div class="level-cost">Cost: ~$500–1,500/month (TSX InfoSuite Premium)</div>
+        </div>
+      </div>
+
+      <div class="level-row">
+        <div class="level-num" style="border-color:rgba(249,115,22,0.3);background:rgba(249,115,22,0.08)">
+          <div class="ln" style="color:#f97316">L3</div>
+          <div class="lt" style="color:#f97316">RAW FEED</div>
+        </div>
+        <div class="level-body">
+          <div class="level-title">Level 3 — Full Order-by-Order Feed</div>
+          <div class="level-what">Every individual order event: entry, amendment, cancellation, and execution with nanosecond timestamps, broker IDs (attributed orders only — anonymous still shows as "001"), order type, all visible markers. Two versions: (a) Real-time direct feed from TMX via co-location or SFTP — requires exchange membership or direct feed agreement. (b) Historical archive via LSEG Tick History (PCAP format, captured at exchange data centres, going back to 1996, 20+ petabytes). Enables reconstruction of the exact order book state at any point in time. Used to detect spoofing, layering, front-running, and quote stuffing.</div>
+          <div class="level-who"><span class="who-tag">HFT firms</span><span class="who-tag">Institutional desks</span><span class="who-tag">Quant funds</span><span class="who-tag">Academic researchers</span><span class="who-tag">LSEG subscribers</span></div>
+          <div class="level-cost">Real-time: Exchange membership + $5k–30k/month feed fees. Historical: LSEG Tick History $50k–150k/year</div>
+        </div>
+      </div>
+
+      <div class="level-row">
+        <div class="level-num" style="border-color:rgba(167,139,250,0.3);background:rgba(167,139,250,0.08)">
+          <div class="ln" style="color:#a78bfa">L3+</div>
+          <div class="lt" style="color:#a78bfa">PRIVATE</div>
+        </div>
+        <div class="level-body">
+          <div class="level-title">Level 3+ — Private Markers (Exchange & CIRO Only)</div>
+          <div class="level-what">The full Level 3 feed PLUS all encrypted private markers: anonymous flag with true broker ID behind "001", Short Marking Exempt (SME) flag with account designation, dark order tag details, DMA (Direct Market Access) client identifiers, DAO (Direct Access Order) markers, broker preferencing allocation details, and the Market Regulation Feed which CIRO receives including broker preferencing outcome data. This layer is <strong>never sold commercially</strong>. TMX receives it as the exchange operator. CIRO receives it as the regulator. No third party has ever been granted access to the unencrypted private marker layer.</div>
+          <div class="level-who"><span class="who-tag">TMX Group (exchange operator)</span><span class="who-tag">CIRO (regulator — full access)</span></div>
+          <div class="level-cost">Not commercially available at any price</div>
+        </div>
+      </div>
+
+      <div class="level-row">
+        <div class="level-num" style="border-color:rgba(74,222,128,0.3);background:rgba(74,222,128,0.08)">
+          <div class="ln" style="color:#4ade80">CDS</div>
+          <div class="lt" style="color:#4ade80">SETTLEMENT</div>
+        </div>
+        <div class="level-body">
+          <div class="level-title">CDS Depository — Settlement Layer (Separate from Trading Data)</div>
+          <div class="level-what">CDS holds the authoritative record of which broker-participant holds how many shares of each security in their depository account. This is entirely separate from the trading data above — it is the settlement and custody layer. Each CDS participant (every licensed broker-dealer) can see their own depository position. The transfer agent can see the total shares in each CDS participant account. The <strong>gap between "broker's depository account total" and "broker's client records total"</strong> is the naked short detection methodology. CDS participant account data is not publicly available — accessible only to: the participant themselves, CDS, CIRO, and the securities regulators.</div>
+          <div class="level-who"><span class="who-tag">Each broker (own account only)</span><span class="who-tag">CDS</span><span class="who-tag">Transfer agent (aggregate)</span><span class="who-tag">CIRO</span></div>
+          <div class="level-cost">Not available — regulatory/counterparty access only</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">DATA ACCESS HIERARCHY — WHO SEES WHAT</div>
+    <div id="hierEl"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- 4. MATCHING & SETTLEMENT                                         -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="ms" class="sec">
+  <div class="card">
+    <div class="ct">ORDER MATCHING PRIORITY — TSX/TSX.V vs. OTHER VENUES</div>
+    <p class="cb" style="margin-bottom:16px">The priority rules differ materially between venues. This is why sophisticated traders route specific order types to specific venues.</p>
+    <div class="g2">
+      <div>
+        <div style="font-size:12px;color:#d4af37;font-weight:600;margin-bottom:10px;letter-spacing:.05em">TSX / TSX.V — PRICE/BROKER/TIME</div>
+        <div class="priority-grid">
+          <div class="prio-row">
+            <div class="prio-rank">1</div>
+            <div><div class="prio-name">Best Price</div><div class="prio-sub">Highest bid / lowest offer wins unconditionally</div></div>
+            <div class="prio-note" style="color:#4ade80">All venues</div>
+          </div>
+          <div class="prio-row">
+            <div class="prio-rank">2</div>
+            <div><div class="prio-name">Broker Preference</div><div class="prio-sub">Same broker's contra-side orders jump queue vs. other brokers at same price</div></div>
+            <div class="prio-note" style="color:#fbbf24">TSX/TSX.V only</div>
+          </div>
+          <div class="prio-row">
+            <div class="prio-rank">3</div>
+            <div><div class="prio-name">Time</div><div class="prio-sub">Earlier orders fill before later orders at same price/broker</div></div>
+            <div class="prio-note" style="color:#4ade80">All venues</div>
+          </div>
+          <div class="prio-row">
+            <div class="prio-rank">4</div>
+            <div><div class="prio-name">Visible vs. Dark</div><div class="prio-sub">Visible portions of all orders fill before hidden/iceberg/dark portions at same price</div></div>
+            <div class="prio-note" style="color:#4ade80">All venues</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:#60a5fa;font-weight:600;margin-bottom:10px;letter-spacing:.05em">ALPHA EXCHANGE — PURE PRICE/TIME</div>
+        <div class="priority-grid">
+          <div class="prio-row">
+            <div class="prio-rank">1</div>
+            <div><div class="prio-name">Best Price</div><div class="prio-sub">Same as TSX — unconditional</div></div>
+            <div class="prio-note" style="color:#4ade80">Standard</div>
+          </div>
+          <div class="prio-row" style="opacity:0.4">
+            <div class="prio-rank" style="color:#5a7090">—</div>
+            <div><div class="prio-name" style="color:#5a7090">No Broker Preference</div><div class="prio-sub">Eliminated — retail-protective design</div></div>
+            <div class="prio-note" style="color:#f87171">Absent</div>
+          </div>
+          <div class="prio-row">
+            <div class="prio-rank">2</div>
+            <div><div class="prio-name">Time</div><div class="prio-sub">Pure time priority after price — no dealer advantage</div></div>
+            <div class="prio-note" style="color:#4ade80">Fair queue</div>
+          </div>
+          <div class="prio-row">
+            <div class="prio-rank">+</div>
+            <div><div class="prio-name">1–3ms Delay</div><div class="prio-sub">Randomised processing delay — neutralises HFT co-location advantage</div></div>
+            <div class="prio-note" style="color:#60a5fa">Alpha unique</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ib" style="margin-top:16px"><strong>Practical implication:</strong> A buy order on TSX may wait behind a same-price broker-preferenced order that arrived <em>later</em>. The same buy order on Alpha would have filled first. This is why institutional desks route large passive orders to Alpha — they want pure time priority, not broker preference. Retail investors using platforms that default to TSX routing may systematically lose priority to broker-preferenced institutional orders at identical prices.</div>
+  </div>
+
+  <div class="card">
+    <div class="ct">THE SETTLEMENT CHAIN: TRADE TO DELIVERY</div>
+    <div class="settle-flow">
+      <div class="sf-box">
+        <div class="sf-title">Trade Execution</div>
+        <div class="sf-sub">Order matched on exchange or ATS. Trade confirmed to both broker counterparties.</div>
+        <div class="sf-time">T+0 (real-time)</div>
+      </div>
+      <div class="sf-arrow">→</div>
+      <div class="sf-box">
+        <div class="sf-title">CDS Trade Capture</div>
+        <div class="sf-sub">Exchange sends trade to CDS. CDS confirms, novates, and nets into CNS obligations. Broker-to-broker becomes broker-to-CDS.</div>
+        <div class="sf-time">T+0 (same day)</div>
+      </div>
+      <div class="sf-arrow">→</div>
+      <div class="sf-box">
+        <div class="sf-title">Pre-Settlement Netting</div>
+        <div class="sf-sub">All of a broker's buy and sell obligations in each security netted to a single number. Large two-way flow collapses to small net obligation.</div>
+        <div class="sf-time">T+0 (EOD batch)</div>
+      </div>
+      <div class="sf-arrow">→</div>
+      <div class="sf-box">
+        <div class="sf-title">DVP Settlement</div>
+        <div class="sf-sub">Securities delivered from seller's CDS account to buyer's. Cash moves simultaneously (Delivery vs. Payment). Fail if insufficient shares in account.</div>
+        <div class="sf-time">T+1 (next day)</div>
+      </div>
+      <div class="sf-arrow">→</div>
+      <div class="sf-box">
+        <div class="sf-title">Fail / Roll / Buy-In</div>
+        <div class="sf-sub">Failed positions roll to next day. CIRO notified at Extended Failed Trade threshold. CDS can force buy-in. Naked short detected if position persists.</div>
+        <div class="sf-time">T+2+ (if fail)</div>
+      </div>
+    </div>
+    <div style="margin-top:14px;padding:12px 14px;background:rgba(239,68,68,0.06);border-radius:8px;border-left:3px solid #ef4444">
+      <p style="font-size:12px;color:#fca5a5;line-height:1.65"><strong style="color:#fff">The naked short gap:</strong> Because CNS nets all positions, a broker who sold 500K shares they don't own (naked short) may still settle their net position if they also bought 600K legitimately that same day. The 500K naked short is invisible — it nets out. Only if the broker is a <em>net</em> fail-to-deliver does CIRO see a signal. This is why the CDS depository imbalance method (total client-reported holdings vs. actual depository holdings) is the only reliable detection method — it looks at the cumulative stock of uncovered shorts, not the daily flow.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- 5. WHAT'S HIDDEN                                                 -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="hd" class="sec">
+  <div class="card">
+    <div class="ct">WHAT THE PUBLIC TAPE HIDES</div>
+    <p class="cb" style="margin-bottom:14px">Every trade that appears in a public broker summary is a stripped, aggregated version of reality. Here is what is systematically removed before you see it.</p>
+    <div class="hidden-grid">
+      <div class="hid-card" style="border-color:#f87171">
+        <div class="hid-title" style="color:#f87171">Anonymous Flag</div>
+        <div class="hid-body">The real broker behind "001" is known to: the exchange, CIRO, and the broker themselves. Issuer can unmask it monthly via InfoSuite. Removed from every other public feed. <strong>Affects: ~30–40% of TSX.V trades on active names.</strong></div>
+      </div>
+      <div class="hid-card" style="border-color:#fbbf24">
+        <div class="hid-title" style="color:#fbbf24">SME (Short-Marking Exempt) Flag</div>
+        <div class="hid-body">Orders marked SME do not appear in the public short interest data (CSPR). A market maker shorting 500K shares SME-flagged is invisible to every short interest report. <strong>Affects: all market maker and arbitrage activity.</strong></div>
+      </div>
+      <div class="hid-card" style="border-color:#a78bfa">
+        <div class="hid-title" style="color:#a78bfa">Dark Order Tag</div>
+        <div class="hid-body">Trades that execute against dark orders show on the consolidated tape as normal prints — price, volume, venue. The fact that one or both sides was a dark order is stripped. <strong>Affects: all TSX DRK, MatchNow, Liquidnet executions.</strong></div>
+      </div>
+      <div class="hid-card" style="border-color:#60a5fa">
+        <div class="hid-title" style="color:#60a5fa">Broker Preferencing Outcome</div>
+        <div class="hid-body">When two orders from the same broker match via preferencing, the trade appears identical on tape to any other trade. The fact that it jumped queue over time-priority orders from other dealers is not recorded in any public data. <strong>Affects: ~15–25% of TSX/TSX.V volume.</strong></div>
+      </div>
+      <div class="hid-card" style="border-color:#f97316">
+        <div class="hid-title" style="color:#f97316">Iceberg Hidden Portion</div>
+        <div class="hid-body">An iceberg order displaying 5,000 shares may have 500,000 shares hidden. When it executes, the tape shows the execution volume but the hidden tip-to-total ratio is never revealed. <strong>Affects: all large passive accumulation programs.</strong></div>
+      </div>
+      <div class="hid-card" style="border-color:#4ade80">
+        <div class="hid-title" style="color:#4ade80">Multi-Venue Fragmentation</div>
+        <div class="hid-body">A single 100,000-share order split across 6 venues generates 6 separate prints on 6 separate tapes. Without the consolidated CDF, the order appears to be 6 unrelated small trades from 6 different participants. <strong>Affects: all institutional VWAP programs.</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">OPACITY MECHANISMS — LEGAL TO ILLEGAL</div>
+    <p class="cb" style="margin-bottom:14px">A spectrum of tools and techniques that reduce transparency in the market. Most are legal and structural features of the exchange design; a few are outright illegal but persist because they are hard to detect from public data alone.</p>
+    <div class="mg" id="mechEl"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- 6. PARTICIPANTS                                                  -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="pp" class="sec">
+  <div class="card">
+    <div class="ct">WHO IS IN THE MARKET AND WHAT THEY WANT</div>
+    <p class="cb" style="margin-bottom:14px">Seven distinct participant types compete on the TSX.V. They have different goals, time horizons, tool access, and information edges. Understanding who is across the tape from you is the first step to understanding why a price is moving.</p>
+    <table class="part-table">
+      <tr>
+        <th>Participant</th>
+        <th>Primary Goal</th>
+        <th>Time Horizon</th>
+        <th>Tools Used</th>
+        <th>Information Edge</th>
+      </tr>
+      <tr>
+        <td>Retail Investor</td>
+        <td>Capital appreciation</td>
+        <td>Months–years</td>
+        <td>Level 1, broker app</td>
+        <td>None — last to know</td>
+      </tr>
+      <tr>
+        <td>Junior Mining Broker</td>
+        <td>Placement fees, commission, proprietary gains</td>
+        <td>Deal cycle (3–12mo)</td>
+        <td>All levels, co-lo, dark</td>
+        <td>Pre-placement accumulation window</td>
+      </tr>
+      <tr>
+        <td>Retained Market Maker</td>
+        <td>Spread income + directional position</td>
+        <td>Intraday to months</td>
+        <td>SME flag, Level 3, direct feed</td>
+        <td>SME invisibility, order flow visibility</td>
+      </tr>
+      <tr>
+        <td>HFT / Algo Firm</td>
+        <td>Sub-millisecond arbitrage, latency edge</td>
+        <td>Microseconds–seconds</td>
+        <td>Co-location, Level 3, SOR</td>
+        <td>200μs speed advantage vs. remote</td>
+      </tr>
+      <tr>
+        <td>Institutional Fund</td>
+        <td>Risk-adjusted return for clients</td>
+        <td>Quarters–years</td>
+        <td>Dark pools, VWAP algos, Level 2</td>
+        <td>Scale — can absorb illiquid supply</td>
+      </tr>
+      <tr>
+        <td>Short Seller (activist)</td>
+        <td>Profit from price decline</td>
+        <td>Weeks–months</td>
+        <td>Borrow desk, dark orders, Level 2</td>
+        <td>Research asymmetry, borrow availability</td>
+      </tr>
+      <tr>
+        <td>CIRO (Regulator)</td>
+        <td>Market integrity</td>
+        <td>Continuous surveillance</td>
+        <td>Level 3+ private feed, full CDS access</td>
+        <td>Sees everything — acts on little</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- 7. BROKER PLAYBOOK                                               -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="bk" class="sec">
+  <div class="intro-box" style="border-color:rgba(239,68,68,0.25);background:rgba(239,68,68,0.06)">
+    <p style="color:#fca5a5"><strong style="color:#fff">Perspective: you are the broker.</strong> Your job is to maximise revenue for your firm. You have zero fiduciary duty to the issuer. The mechanisms below are all available to you — ranging from fully legal and structural, to grey-zone, to outright illegal. Understanding them from this side is the only way to recognise them when they appear in the tape.</p>
+  </div>
+
+  <div class="play-card" style="background:rgba(212,175,55,0.04);border-color:rgba(212,175,55,0.2)">
+    <div class="play-head">
+      <div>
+        <div class="play-name">Play 1 — The Placement Arbitrage</div>
+        <div class="play-badges"><span class="pbadge" style="background:rgba(74,222,128,0.15);color:#4ade80;border:1px solid rgba(74,222,128,0.3)">LEGAL</span><span class="pbadge" style="background:rgba(212,175,55,0.15);color:#d4af37;border:1px solid rgba(212,175,55,0.3)">INFORMATION EDGE</span></div>
+      </div>
+    </div>
+    <p class="play-body">You are running a flow-through or private placement at price $P. You know about this deal <strong>weeks before the market does</strong>. The stock is trading at roughly $P × 0.6. You accumulate for your favoured institutional clients before the announcement — anonymous VWAP orders through TSX DRK. Those clients get in at ~$P × 0.64. Placement subscribers later pay $P. On announcement the stock rerates. Your pre-placement clients are immediately 50%+ ahead; they become stickier clients and tell friends.</p>
+    <div class="play-mech">
+      <div class="play-mech-title">MECHANICS</div>
+      <ul class="play-steps">
+        <li>Pre-deal window: accumulate anonymously via dark pool — no visible buyer in the book</li>
+        <li>Placement close: earn typical agent commission (5–7%) plus broker warrants</li>
+        <li>Favoured clients enter at pre-deal cost basis; placement at announced price</li>
+        <li>Revenue stack: commission + warrant value + client stickiness</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="play-card" style="background:rgba(96,165,250,0.04);border-color:rgba(96,165,250,0.2)">
+    <div class="play-head">
+      <div>
+        <div class="play-name">Play 2 — Market Maker Spread + Directional Accumulation</div>
+        <div class="play-badges"><span class="pbadge" style="background:rgba(74,222,128,0.15);color:#4ade80;border:1px solid rgba(74,222,128,0.3)">LEGAL</span><span class="pbadge" style="background:rgba(96,165,250,0.15);color:#60a5fa;border:1px solid rgba(96,165,250,0.3)">STRUCTURAL</span></div>
+      </div>
+    </div>
+    <p class="play-body">You are the retained market maker — paid a small annual fee by the issuer to provide two-sided quotes. The SME (Short Marking Exempt) flag lets your orders bypass short sale reporting. You quote two-sided, capture the bid/ask spread on volume, and <strong>simultaneously accumulate a directional long position</strong> — which is invisible in short interest data and covered (nominally) by your market making obligations.</p>
+    <div class="play-mech">
+      <div class="play-mech-title">MECHANICS</div>
+      <ul class="play-steps">
+        <li>Spread capture: ~20% of daily volume × typical spread × trading days</li>
+        <li>Directional build: SME-flagged so position doesn't show in CSPR short interest</li>
+        <li>On rerate: close the directional long at profit, resume pure market-making</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="play-card" style="background:rgba(167,139,250,0.04);border-color:rgba(167,139,250,0.2)">
+    <div class="play-head">
+      <div>
+        <div class="play-name">Play 3 — Internalization / Broker Preferencing Cross</div>
+        <div class="play-badges"><span class="pbadge" style="background:rgba(74,222,128,0.15);color:#4ade80;border:1px solid rgba(74,222,128,0.3)">LEGAL</span></div>
+      </div>
+    </div>
+    <p class="play-body">You are a large Schedule-I bank broker. You match your own institutional buyers against your own retail or post-hold sellers <em>internally</em> via broker preferencing — same price as the public book but without ever exposing the flow. Charge commission on both sides. Optionally insert yourself as principal for an extra cent of spread. The trade appears identical to any other trade on the public tape.</p>
+    <div class="play-mech">
+      <div class="play-mech-title">MECHANICS</div>
+      <ul class="play-steps">
+        <li>Client A: institutional fund wants to buy</li>
+        <li>Client B: retail or post-hold seller wants out</li>
+        <li>Broker preferencing matches them internally — neither sees the counterparty</li>
+        <li>Double commission + optional principal spread</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="play-card" style="background:rgba(248,113,113,0.04);border-color:rgba(248,113,113,0.2)">
+    <div class="play-head">
+      <div>
+        <div class="play-name">Play 4 — FT / PP Calendar Short</div>
+        <div class="play-badges"><span class="pbadge" style="background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3)">GREY ZONE</span></div>
+      </div>
+    </div>
+    <p class="play-body">You ran a flow-through or private placement. You know the exact date the hold period expires and the cost basis of the subscribers. One to two weeks before expiry, you short anonymously. FT holders sell into the open market on expiry, price drops, you cover. <strong>The short has a "reasonable expectation to settle" because you know the supply is coming.</strong> Legal — but information you obtained as placement agent is the only reason you can time it this precisely.</p>
+    <div class="play-mech">
+      <div class="play-mech-title">MECHANICS</div>
+      <ul class="play-steps">
+        <li>Short anonymously in the 1–2 weeks before hold expiry</li>
+        <li>Hold expiry: subscriber selling arrives, price drops</li>
+        <li>Cover at lower price; SME-flagged short never appears in CSPR</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="play-card" style="background:rgba(249,115,22,0.04);border-color:rgba(249,115,22,0.2)">
+    <div class="play-head">
+      <div>
+        <div class="play-name">Play 5 — Hard-to-Borrow Stock Lending</div>
+        <div class="play-badges"><span class="pbadge" style="background:rgba(74,222,128,0.15);color:#4ade80;border:1px solid rgba(74,222,128,0.3)">LEGAL</span><span class="pbadge" style="background:rgba(249,115,22,0.15);color:#f97316;border:1px solid rgba(249,115,22,0.3)">PASSIVE INCOME</span></div>
+      </div>
+    </div>
+    <p class="play-body">You lend your retail margin clients' shares to short sellers. Margin account terms (which almost no one reads) permit this. You keep the borrow fee. On an illiquid junior, hard-to-borrow rates can run 5–20% annually. <strong>Your own clients' shares are being used to bet against their own position</strong> — and the fee you collect is not shared with them.</p>
+    <div class="play-mech">
+      <div class="play-mech-title">MECHANICS</div>
+      <ul class="play-steps">
+        <li>Retail client holds shares in a margin account</li>
+        <li>Shares automatically enrolled in lending pool unless client opts out in writing</li>
+        <li>Shares lent to short seller at annual borrow rate</li>
+        <li>Broker keeps 100% of fee; client receives nothing</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="play-card" style="background:rgba(251,191,36,0.04);border-color:rgba(251,191,36,0.2)">
+    <div class="play-head">
+      <div>
+        <div class="play-name">Play 6 — End-of-Day Price Depression</div>
+        <div class="play-badges"><span class="pbadge" style="background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3)">GREY ZONE</span><span class="pbadge" style="background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3)">DOCUMENTED TSX.V</span></div>
+      </div>
+    </div>
+    <p class="play-body">Sell anonymously in the final 5 minutes of trading to depress the closing price. The close is used for: margin calculations, fund NAVs, stop-loss triggers, covenant tests. <strong>Depressed close = forced sellers tomorrow morning = cheaper accumulation.</strong> Documented in detail by Terry Lynch (Power Nickel / PNPN) and the Generation IACP research team.</p>
+    <div class="play-mech">
+      <div class="play-mech-title">MECHANICS</div>
+      <ul class="play-steps">
+        <li>3:55pm: small anonymous sell at market depresses the close</li>
+        <li>Margin holders' ratios slightly worse → triggered sells next morning</li>
+        <li>Buy those forced shares at a lower average next day</li>
+        <li>Repeated over weeks: materially lower accumulation cost on multi-million share programs</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="play-card" style="background:rgba(239,68,68,0.04);border-color:rgba(239,68,68,0.25)">
+    <div class="play-head">
+      <div>
+        <div class="play-name">Play 7 — VWAP Front-Running Your Own Client</div>
+        <div class="play-badges"><span class="pbadge" style="background:rgba(239,68,68,0.2);color:#ef4444;border:1px solid rgba(239,68,68,0.4)">ILLEGAL</span></div>
+      </div>
+    </div>
+    <p class="play-body">Client gives you a large VWAP buy order. You know it will move the price in an illiquid stock. Prop desk buys ahead of the client's order. Price moves up. You sell the prop position back into your own client's demand. <strong>Client overpays. You capture the spread. This is front-running — a criminal offence under provincial securities legislation.</strong> Still happens, because enforcement requires proving intent.</p>
+    <div class="play-mech">
+      <div class="play-mech-title">WHY IT STILL HAPPENS</div>
+      <ul class="play-steps">
+        <li>Compliance "information barriers" are a policy — enforcement requires proving intent</li>
+        <li>In small brokers, the "wall" is one person's ethics</li>
+        <li>CIRO surveillance flags egregious cases — misses subtle ones</li>
+        <li>Cross-broker version: tip a favoured client about a pending large buy. Same offence, harder to prove.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="play-card" style="background:rgba(239,68,68,0.04);border-color:rgba(239,68,68,0.25)">
+    <div class="play-head">
+      <div>
+        <div class="play-name">Play 8 — Naked Short + Coordinated Selling</div>
+        <div class="play-badges"><span class="pbadge" style="background:rgba(239,68,68,0.2);color:#ef4444;border:1px solid rgba(239,68,68,0.4)">ILLEGAL</span></div>
+      </div>
+    </div>
+    <p class="play-body">Sell shares you don't own and can't actually borrow. The SME flag prevents CSPR disclosure. The position imbalance grows in CDS: broker depository holdings &lt; client-reported holdings. Only detectable via the CDS depository imbalance method (Generation IACP). <strong>Power Nickel found 9M phantom shares — from 3M to 9M over 8 weeks — across the 80% of float they could monitor.</strong></p>
+    <div class="play-mech">
+      <div class="play-mech-title">DETECTION METHOD</div>
+      <ul class="play-steps">
+        <li>Transfer agent + broker CDS depository data: sum all broker depository holdings</li>
+        <li>Compare against total shares issued (SEDAR+)</li>
+        <li>Shortfall = synthetic shares created by uncovered short selling</li>
+        <li>Generation IACP: generationiacp.com / (416) 361-1498</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- 8. COUNTERMOVES                                                  -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="cm" class="sec">
+  <div class="card">
+    <div class="ct">AS THE INFORMED INVESTOR — YOUR COUNTERMOVES</div>
+    <p class="cb" style="margin-bottom:14px">None of the mechanisms above can be eliminated by a retail investor. But they can be recognised, timed around, and — for issuers — partially disclosed. The list below is practical, not theoretical.</p>
+    <div class="risk-grid">
+      <div class="risk-card"><div class="risk-head" style="color:#4ade80">Don't be the exit liquidity</div><div class="risk-body">When a broker accumulates anonymously and then closes a placement, the placement buyers fund the pre-placement clients' exit. Identify the placement agent and assume they accumulated before announcement. Size your own entry around that fact.</div></div>
+      <div class="risk-card"><div class="risk-head" style="color:#60a5fa">Map hold-period calendars</div><div class="risk-body">Every private placement and flow-through has a hold expiry (usually 4 months). Mark these dates. Expect selling pressure in the 2–4 weeks around expiry. Don't fight it — time your buying into the distribution wave.</div></div>
+      <div class="risk-card"><div class="risk-head" style="color:#a78bfa">Watch broker role switching</div><div class="risk-body">A broker flipping from consistent net buyer to consistent net seller is a major signal. Distribution has begun. Either they're unwinding client gains or the placement failed to find permanent homes.</div></div>
+      <div class="risk-card"><div class="risk-head" style="color:#fbbf24">Push issuers to buy InfoSuite</div><div class="risk-body">TSX InfoSuite Premium (~$1k/month) identifies the broker behind anonymous trades. Most junior boards don't know it exists. Ask IR to subscribe and disclose the monthly Anonymous Broker Summary. This is standard in Australia — rare in Canada.</div></div>
+      <div class="risk-card"><div class="risk-head" style="color:#f97316">Remove shares from the lendable pool</div><div class="risk-body">Move long-term holdings from margin to a cash account or registered position (TFSA/RRSP). This removes them from your broker's lendable pool — they can no longer be lent to short sellers betting against your own position.</div></div>
+      <div class="risk-card"><div class="risk-head" style="color:#f87171">Commission a position imbalance study</div><div class="risk-body">If anonymous selling persists without explanation, an issuer can commission a Generation IACP analysis. ~$15–30K cost is trivial vs. capital at risk if naked shorts are confirmed at PNPN-scale.</div></div>
+      <div class="risk-card"><div class="risk-head" style="color:#60a5fa">Use Alpha for large passive orders</div><div class="risk-body">Large passive limit orders on TSX can be leapfrogged by same-price broker-preferenced orders. Alpha has no broker preferencing — pure price-time. Route patient orders there when your platform allows.</div></div>
+      <div class="risk-card"><div class="risk-head" style="color:#4ade80">Treat L1 data as insufficient</div><div class="risk-body">Broker summary data on free sites is delayed, aggregated, and stripped of anonymous / SME / dark markers. It is a useful signal — not a reliable record. Layer Level 2 depth, multi-venue volume, and insider filings before committing real capital.</div></div>
+    </div>
+  </div>
+
+  <div class="disc"><strong style="color:#5a7090">Disclaimer:</strong> This primer is for informational and educational purposes only and does not constitute financial, legal, or investment advice. The mechanisms described exist in the Canadian market structure; the inclusion of any specific mechanism does not allege that any named broker, dealer, or market participant has engaged in illegal or improper conduct. Where named case studies appear (e.g. Power Nickel / Generation IACP), they refer to publicly documented examples.</div>
+</div>
+
+<div class="foot">
+  <span>TSX.V Primer · April 2026</span>
+  <span>Sources: TMX · CIRO · CDS · Stockwatch · SEDAR+ · Generation IACP · Terry Lynch / Power Nickel research</span>
+</div>
+
+</div>
+
+<script>
+const mechs=[
+  {n:"Anonymous Flag",s:"LEGAL",sc:"#4ade80",d:"Broker elects #001 per order. Issuer can unmask via InfoSuite Premium. Retail cannot. Used by ~30–40% of active TSX.V trades."},
+  {n:"Broker Preferencing",s:"LEGAL",sc:"#4ade80",d:"Same-broker orders jump queue over other brokers at same price. Enables silent internal crossing at market price. TSX/TSX.V only — Alpha and ATS do not permit it."},
+  {n:"Dark Orders (TSX DRK)",s:"LEGAL",sc:"#4ade80",d:"Hidden resting buys. Absorbs supply without showing demand in the visible book. Minimum block size $30k or 50 board lots."},
+  {n:"VWAP / Iceberg Algos",s:"LEGAL",sc:"#4ade80",d:"Spread accumulation across intraday volume. Displays a small tip; hidden body fills as the tip gets taken. Multi-venue routing across all 14 venues."},
+  {n:"SME Flag Misuse",s:"GREY ZONE",sc:"#fbbf24",d:"Short Marking Exempt orders bypass CSPR short-interest disclosure. Intended for market making and arbitrage — open to directional-position abuse. ~29.5% of TSX.V trades potentially affected."},
+  {n:"End-of-Day Marking",s:"GREY ZONE",sc:"#fbbf24",d:"Anonymous sells in the final 5 mins depress the closing price. Triggers margin calls, stop-losses, fund NAV impact. Documented in PNPN case."},
+  {n:"Short + Accumulate Loop",s:"GREY ZONE",sc:"#fbbf24",d:"Short to suppress price, accumulate at target, cover with bought shares. Legal mechanics, but when orchestrated across connected accounts crosses into manipulation."},
+  {n:"Naked Short Selling",s:"ILLEGAL",sc:"#f87171",d:"Sell without any borrow. Creates a CDS depository imbalance — client-reported holdings exceed actual depository holdings. Generation IACP has documented cases up to 9M phantom shares on a single name."},
+];
+const hier=[
+  {t:"01",w:"Retail Investor",c:"#6b82a0",s:"Level 1 price + Stockwatch broker summaries",x:"Anonymous identity, dark orders, order sequence"},
+  {t:"02",w:"Issuer (Company)",c:"#60a5fa",s:"Anonymous broker ID via InfoSuite Premium (~$1k/mo)",x:"End client identity behind broker"},
+  {t:"03",w:"Institutional / HFT",c:"#a78bfa",s:"Level 2 full order book + direct TMX feed",x:"Other brokers' client identities"},
+  {t:"04",w:"LSEG Tick History",c:"#fbbf24",s:"Level 3 order-by-order archive ($50–150k/yr)",x:"Real-time data; client identity"},
+  {t:"05",w:"CIRO (Regulator)",c:"#4ade80",s:"Complete unredacted data — every flag, marker, client",x:"Nothing — full access"},
+];
+
+const me=document.getElementById('mechEl');
+mechs.forEach(m=>{me.innerHTML+=`<div class="mc" style="border:1px solid ${m.sc}20"><div class="mh"><span class="mn">${m.n}</span><span class="ms" style="background:${m.sc}18;border:1px solid ${m.sc}44;color:${m.sc}">${m.s}</span></div><div class="md">${m.d}</div></div>`;});
+
+const he=document.getElementById('hierEl');
+hier.forEach(h=>{he.innerHTML+=`<div class="hr-row"><div class="hn" style="color:${h.c}">${h.t}</div><div class="hw" style="color:${h.c}">${h.w}</div><div><div class="hm" style="color:#4ade80">CAN SEE</div><div class="hd">${h.s}</div><div class="hm" style="color:#f87171;margin-top:6px">CANNOT</div><div class="hd">${h.x}</div></div></div>`;});
+
+function show(id,btn){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+}
+</script>
+</body>
+</html>
