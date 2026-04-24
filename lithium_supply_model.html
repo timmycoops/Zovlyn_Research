@@ -360,12 +360,14 @@ tbody tr:hover{background:rgba(255,193,7,.04);}
       <div class="chart-wrap">
         <div class="chart-title">Standard Conversion Factors</div>
         <div style="font-size:12px;line-height:2.2;color:var(--text);">
-          <div><span style="color:var(--accent);font-family:var(--mono);">1 kt SC6</span> (6% Li₂O) = <span style="color:var(--green);font-family:var(--mono);">0.133 kt LCE</span></div>
-          <div><span style="color:var(--accent);font-family:var(--mono);">7.5 kt SC6</span> ≈ <span style="color:var(--green);font-family:var(--mono);">1 kt LCE</span></div>
-          <div><span style="color:var(--accent);font-family:var(--mono);">1 kt LCE</span> = <span style="color:var(--green);font-family:var(--mono);">1.095 kt LiOH·H₂O</span></div>
+          <div><span style="color:var(--accent);font-family:var(--mono);">1 kt SC6</span> (6% Li₂O) = <span style="color:var(--green);font-family:var(--mono);">0.1484 kt LCE</span> <span style="color:var(--dim);font-size:10px;">(theoretical)</span></div>
+          <div><span style="color:var(--accent);font-family:var(--mono);">6.74 kt SC6</span> = <span style="color:var(--green);font-family:var(--mono);">1 kt LCE</span> <span style="color:var(--dim);font-size:10px;">(theoretical)</span></div>
+          <div><span style="color:var(--accent);font-family:var(--mono);">7.5 kt SC6</span> ≈ <span style="color:var(--green);font-family:var(--mono);">1 kt LCE</span> <span style="color:var(--dim);font-size:10px;">(industry, ~90% recovery)</span></div>
+          <div><span style="color:var(--accent);font-family:var(--mono);">1 kt LCE</span> = <span style="color:var(--green);font-family:var(--mono);">1.136 kt LiOH·H₂O</span></div>
           <div><span style="color:var(--accent);font-family:var(--mono);">1 kt LCE</span> = <span style="color:var(--green);font-family:var(--mono);">0.188 kt Li metal</span></div>
-          <div><span style="color:var(--accent);font-family:var(--mono);">1% Li₂O in ore</span> = <span style="color:var(--green);font-family:var(--mono);">2.153% Li₂CO₃ equivalent</span></div>
+          <div><span style="color:var(--accent);font-family:var(--mono);">1% Li₂O in ore</span> = <span style="color:var(--green);font-family:var(--mono);">2.473% Li₂CO₃ equivalent</span></div>
           <div><span style="color:var(--accent);font-family:var(--mono);">1 kt Li metal</span> = <span style="color:var(--green);font-family:var(--mono);">5.323 kt LCE</span></div>
+          <div style="margin-top:4px;font-size:10px;color:var(--dim);">All from molecular weights: Li₂CO₃=73.89, Li₂O=29.88, LiOH·H₂O=41.96, Li=6.94</div>
           <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px;">
             <span style="color:var(--teal);font-weight:600;">Battery Li Intensity:</span><br>
             <span style="color:var(--accent);font-family:var(--mono);">NMC811:</span> ~0.95 kg LCE/kWh<br>
@@ -1359,31 +1361,45 @@ function doConvert(){
 
   document.getElementById('cv-ore-inputs').style.display = from==='ore_mt'?'block':'none';
 
+  // ── Conversion constants (from molecular weights) ──
+  // Li₂CO₃ = 73.89, Li₂O = 29.88, LiOH·H₂O = 41.96, Li = 6.94
+  // SC6 = 6% Li₂O → theoretical: 1t SC6 = 0.1484t LCE (6.74:1)
+  // Industry uses ~7.5:1 including ~90% conversion recovery
+  const SC6_TO_LCE = 6.74;     // theoretical (no losses)
+  const SC6_TO_LCE_IND = 7.5;  // industry standard (with ~90% recovery)
+  const LI2O_TO_LCE = 2.473;   // Li₂CO₃/Li₂O = 73.89/29.88
+  const LIOH_TO_LCE = 1.136;   // 2×LiOH·H₂O/Li₂CO₃ = 83.92/73.89
+  const LI_TO_LCE = 5.323;     // Li₂CO₃/(2×Li) = 73.89/13.88
+  const LCE_TO_LI = 0.1878;    // inverse: 13.88/73.89
+
   let lce; // normalize to kt LCE first
   switch(from){
-    case 'sc6': lce=val/7.5; break;
-    case 'sc55': lce=val/8.18; break;
+    case 'sc6': lce=val/SC6_TO_LCE_IND; break;  // industry standard with losses
+    case 'sc55': lce=val/(SC6_TO_LCE_IND*(6/5.5)); break;  // adjust for lower grade
     case 'lce': lce=val; break;
-    case 'lioh': lce=val/1.095; break;
-    case 'li2o_pct': lce=val*2.153; // this is a grade conversion, show factor only
+    case 'lioh': lce=val/LIOH_TO_LCE; break;
+    case 'li2o_pct': // grade conversion only
       document.getElementById('cv-results').innerHTML=`
-        <div><span style="color:var(--accent);font-family:var(--mono)">${val}% Li₂O</span> = <span style="color:var(--green);font-family:var(--mono)">${(val*2.153).toFixed(2)}%</span> Li₂CO₃ equiv</div>
+        <div><span style="color:var(--accent);font-family:var(--mono)">${val}% Li₂O</span> = <span style="color:var(--green);font-family:var(--mono)">${(val*LI2O_TO_LCE).toFixed(2)}%</span> Li₂CO₃ equiv</div>
         <div><span style="color:var(--accent);font-family:var(--mono)">${val}% Li₂O</span> = <span style="color:var(--green);font-family:var(--mono)">${(val*0.4645).toFixed(3)}%</span> Li metal</div>
-        <div style="margin-top:8px;color:var(--muted);">For tonnage conversions, use SC6 or Ore inputs</div>`;
+        <div style="margin-top:8px;font-size:10px;color:var(--muted);">Molecular basis: Li₂CO₃(73.89) / Li₂O(29.88) = 2.473</div>
+        <div style="font-size:10px;color:var(--muted);">For tonnage conversions, use SC6 or Ore inputs</div>`;
       return;
-    case 'li_metal': lce=val*5.323; break;
-    case 'ore_mt': lce=val*1000*(oreGrade/100)*0.4645*5.323*oreRec; break; // Mt ore → kt Li₂O → kt Li → kt LCE with recovery
+    case 'li_metal': lce=val*LI_TO_LCE; break;
+    case 'ore_mt': lce=val*1000*(oreGrade/100)*0.4645*LI_TO_LCE*oreRec; break;
   }
 
-  const sc6 = lce*7.5;
-  const lioh = lce*1.095;
-  const liMetal = lce*0.188;
+  const sc6_theo = lce*SC6_TO_LCE;
+  const sc6_ind = lce*SC6_TO_LCE_IND;
+  const lioh = lce*LIOH_TO_LCE;
+  const liMetal = lce*LCE_TO_LI;
   const gwh = lce*1000/0.85; // at avg 0.85 kg LCE/kWh
   const evs = Math.round(gwh/65); // avg 65kWh per EV
 
   document.getElementById('cv-results').innerHTML=`
     <div><span style="color:var(--green);font-family:var(--mono)">${lce.toFixed(2)}</span> kt LCE (Li₂CO₃)</div>
-    <div><span style="color:var(--green);font-family:var(--mono)">${sc6.toFixed(1)}</span> kt SC6 spodumene concentrate</div>
+    <div><span style="color:var(--green);font-family:var(--mono)">${sc6_ind.toFixed(1)}</span> kt SC6 <span style="color:var(--dim);font-size:10px;">(industry 7.5:1)</span></div>
+    <div><span style="color:var(--muted);font-family:var(--mono);font-size:10px">${sc6_theo.toFixed(1)} kt SC6 theoretical (6.74:1)</span></div>
     <div><span style="color:var(--green);font-family:var(--mono)">${lioh.toFixed(2)}</span> kt LiOH·H₂O</div>
     <div><span style="color:var(--green);font-family:var(--mono)">${liMetal.toFixed(3)}</span> kt lithium metal</div>
     <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px;">
