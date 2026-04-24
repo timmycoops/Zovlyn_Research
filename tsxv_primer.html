@@ -4,38 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TSX.V Primer — How Canada's Junior Exchange Actually Works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#07101f;color:#c8d8f0;font-family:system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.5}
+body{background:#07101f;color:#e2eaf5;font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 .wrap{max-width:960px;margin:0 auto;padding:28px 16px 48px}
 .hdr{border-bottom:1px solid rgba(212,175,55,0.2);padding-bottom:22px;margin-bottom:24px}
 .hdr-top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:20px;margin-bottom:18px}
 .badge{background:linear-gradient(135deg,#d4af37,#b8962e);color:#07101f;font-size:10px;font-weight:700;letter-spacing:.1em;padding:3px 9px;border-radius:3px;display:inline-block}
 .meta{font-size:11px;color:rgba(212,175,55,0.55);letter-spacing:.07em;margin-left:8px}
 .co-name{font-size:clamp(24px,4.2vw,34px);font-weight:700;color:#fff;margin:12px 0 6px;letter-spacing:-.02em;line-height:1.2}
-.subtitle{font-size:14px;color:#8aa4c8;font-weight:500;letter-spacing:.02em}
+.subtitle{font-size:14px;color:#b4c5dd;font-weight:500;letter-spacing:.02em}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
 @media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
 .stat{background:rgba(255,255,255,0.03);border:1px solid rgba(212,175,55,0.12);border-radius:8px;padding:10px 14px}
-.sl{font-size:9px;color:#5a7090;letter-spacing:.1em;font-weight:600}
+.sl{font-size:9px;color:#8fa4bf;letter-spacing:.1em;font-weight:600}
 .sv{font-size:16px;color:#d4af37;font-weight:700;margin:3px 0 2px}
-.ss{font-size:11px;color:#7a94b0}
+.ss{font-size:11px;color:#a4b8d0}
 .tabs{display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:22px;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
-.tab{background:none;border:none;cursor:pointer;padding:9px 14px;white-space:nowrap;font-size:12px;letter-spacing:.05em;color:#5a7090;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;font-family:inherit}
+.tab{background:none;border:none;cursor:pointer;padding:9px 14px;white-space:nowrap;font-size:12px;letter-spacing:.05em;color:#8fa4bf;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;font-family:inherit}
 .tab.on{color:#d4af37;border-bottom-color:#d4af37}
 .sec{display:none}
 .sec.on{display:grid;gap:18px}
 .card{background:rgba(255,255,255,0.025);border:1px solid rgba(212,175,55,0.12);border-radius:10px;padding:18px 20px}
 .ct{font-size:11px;letter-spacing:.1em;color:#d4af37;font-weight:600;margin-bottom:14px}
-.cb{font-size:13px;color:#8aa4c8;line-height:1.7}
-.cb strong{color:#c8d8f0}
+.cb{font-size:13px;color:#b4c5dd;line-height:1.7}
+.cb strong{color:#e2eaf5}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:560px){.g2{grid-template-columns:1fr}}
-.ib{padding:13px 15px;background:rgba(251,191,36,0.06);border-radius:8px;border-left:3px solid #fbbf24;font-size:12px;color:#8aa4c8;line-height:1.7;margin-top:14px}
+.ib{padding:13px 15px;background:rgba(251,191,36,0.06);border-radius:8px;border-left:3px solid #fbbf24;font-size:12px;color:#b4c5dd;line-height:1.7;margin-top:14px}
 .ib strong{color:#fbbf24}
-.disc{padding:13px 16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:8px;font-size:11px;color:#3a4f65;line-height:1.6}
-.foot{margin-top:28px;padding-top:16px;border-top:1px solid rgba(212,175,55,0.15);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:11px;color:#3a4f65}
+.disc{padding:13px 16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:8px;font-size:11px;color:#6d8199;line-height:1.6}
+.foot{margin-top:28px;padding-top:16px;border-top:1px solid rgba(212,175,55,0.15);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:11px;color:#6d8199}
 
 /* Venue tiles */
 .venue-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -44,8 +47,8 @@ body{background:#07101f;color:#c8d8f0;font-family:system-ui,-apple-system,sans-s
 .venue-tile{background:rgba(0,0,0,0.25);border-radius:8px;padding:12px 14px;border:1px solid rgba(255,255,255,0.07)}
 .venue-name{font-size:13px;color:#fff;font-weight:600;margin-bottom:4px}
 .venue-tag{display:inline-block;font-size:9px;letter-spacing:.08em;border-radius:3px;padding:2px 6px;margin-bottom:6px}
-.venue-desc{font-size:11px;color:#5a7090;line-height:1.55}
-.venue-fact{font-size:11px;color:#8aa4c8;margin-top:5px;padding-top:5px;border-top:1px solid rgba(255,255,255,0.06)}
+.venue-desc{font-size:11px;color:#8fa4bf;line-height:1.55}
+.venue-fact{font-size:11px;color:#b4c5dd;margin-top:5px;padding-top:5px;border-top:1px solid rgba(255,255,255,0.06)}
 
 /* Data level tiers */
 .level-row{display:grid;grid-template-columns:80px 1fr;gap:0;margin-bottom:0}
@@ -55,10 +58,10 @@ body{background:#07101f;color:#c8d8f0;font-family:system-ui,-apple-system,sans-s
 .level-num .lt{font-size:9px;letter-spacing:.1em;margin-top:2px;font-weight:600}
 .level-body{padding:14px 16px;background:rgba(0,0,0,0.2);border-radius:0 8px 8px 0;border:1px solid rgba(255,255,255,0.08);border-left:none}
 .level-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px}
-.level-what{font-size:12px;color:#8aa4c8;margin-bottom:8px;line-height:1.6}
+.level-what{font-size:12px;color:#b4c5dd;margin-bottom:8px;line-height:1.6}
 .level-who{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}
-.who-tag{font-size:10px;padding:2px 8px;border-radius:3px;background:rgba(255,255,255,0.05);color:#6b82a0}
-.level-cost{font-size:11px;color:#5a7090}
+.who-tag{font-size:10px;padding:2px 8px;border-radius:3px;background:rgba(255,255,255,0.05);color:#9bafc9}
+.level-cost{font-size:11px;color:#8fa4bf}
 .level-wrap{display:grid;gap:6px}
 
 /* Order lifecycle */
@@ -68,7 +71,7 @@ body{background:#07101f;color:#c8d8f0;font-family:system-ui,-apple-system,sans-s
 .lc-dot{width:32px;height:32px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:4px;background:#07101f}
 .lc-content{padding:4px 0 18px 14px}
 .lc-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:4px}
-.lc-body{font-size:12px;color:#6b82a0;line-height:1.6}
+.lc-body{font-size:12px;color:#9bafc9;line-height:1.6}
 .lc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
 .lc-tag{font-size:10px;padding:2px 7px;border-radius:3px}
 
@@ -76,9 +79,9 @@ body{background:#07101f;color:#c8d8f0;font-family:system-ui,-apple-system,sans-s
 .priority-grid{display:grid;gap:6px}
 .prio-row{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:10px 12px;background:rgba(0,0,0,0.2);border-radius:6px;border:1px solid rgba(255,255,255,0.06)}
 .prio-rank{font-size:14px;font-weight:800;color:#d4af37}
-.prio-name{font-size:13px;color:#c8d8f0;font-weight:600}
-.prio-sub{font-size:11px;color:#5a7090}
-.prio-note{font-size:11px;color:#5a7090;text-align:right}
+.prio-name{font-size:13px;color:#e2eaf5;font-weight:600}
+.prio-sub{font-size:11px;color:#8fa4bf}
+.prio-note{font-size:11px;color:#8fa4bf;text-align:right}
 
 /* Settlement flow */
 .settle-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:0;align-items:stretch}
@@ -89,7 +92,7 @@ body{background:#07101f;color:#c8d8f0;font-family:system-ui,-apple-system,sans-s
 .sf-arrow{display:flex;align-items:center;justify-content:center;font-size:18px;color:rgba(212,175,55,0.4);background:rgba(0,0,0,0.1);border-top:1px solid rgba(255,255,255,0.08);border-bottom:1px solid rgba(255,255,255,0.08)}
 @media(max-width:700px){.sf-arrow{transform:rotate(90deg);border:none;padding:4px 0}}
 .sf-title{font-size:11px;color:#fff;font-weight:600;margin-bottom:4px}
-.sf-sub{font-size:10px;color:#5a7090;line-height:1.5}
+.sf-sub{font-size:10px;color:#8fa4bf;line-height:1.5}
 .sf-time{font-size:11px;color:#d4af37;margin-top:5px;font-weight:600}
 
 /* Hidden layer boxes */
@@ -97,17 +100,17 @@ body{background:#07101f;color:#c8d8f0;font-family:system-ui,-apple-system,sans-s
 @media(max-width:560px){.hidden-grid{grid-template-columns:1fr}}
 .hid-card{background:rgba(0,0,0,0.2);border-radius:8px;padding:13px 15px;border-left:3px solid}
 .hid-title{font-size:12px;font-weight:700;color:#fff;margin-bottom:5px}
-.hid-body{font-size:12px;color:#5a7090;line-height:1.6}
-.hid-body strong{color:#8aa4c8}
+.hid-body{font-size:12px;color:#8fa4bf;line-height:1.6}
+.hid-body strong{color:#b4c5dd}
 
 /* Mechanism cards */
 .mg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:560px){.mg{grid-template-columns:1fr}}
 .mc{background:rgba(255,255,255,0.02);border-radius:8px;padding:13px 15px}
 .mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.mn{font-size:13px;color:#c8d8f0;font-weight:600}
+.mn{font-size:13px;color:#e2eaf5;font-weight:600}
 .ms{font-size:9px;letter-spacing:.1em;border-radius:3px;padding:2px 7px}
-.md{font-size:12px;color:#5a7090;line-height:1.6}
+.md{font-size:12px;color:#8fa4bf;line-height:1.6}
 
 /* Data access hierarchy */
 .hr-row{display:grid;grid-template-columns:36px 140px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);align-items:start}
@@ -115,13 +118,13 @@ body{background:#07101f;color:#c8d8f0;font-family:system-ui,-apple-system,sans-s
 .hn{font-size:13px;font-weight:700}
 .hw{font-size:12px;font-weight:600}
 .hm{font-size:9px;letter-spacing:.08em;font-weight:600;margin-bottom:2px}
-.hd{font-size:11px;color:#7a94b0;line-height:1.5}
+.hd{font-size:11px;color:#a4b8d0;line-height:1.5}
 
 /* Participant map */
 .part-table{width:100%;border-collapse:collapse}
-.part-table th{font-size:10px;color:#5a7090;letter-spacing:.08em;font-weight:600;padding:6px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.08)}
-.part-table td{font-size:12px;color:#8aa4c8;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
-.part-table td:first-child{color:#c8d8f0;font-weight:500}
+.part-table th{font-size:10px;color:#8fa4bf;letter-spacing:.08em;font-weight:600;padding:6px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.08)}
+.part-table td{font-size:12px;color:#b4c5dd;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+.part-table td:first-child{color:#e2eaf5;font-weight:500}
 .part-table tr:last-child td{border-bottom:none}
 
 /* Playbook */
@@ -130,12 +133,12 @@ body{background:#07101f;color:#c8d8f0;font-family:system-ui,-apple-system,sans-s
 .play-name{font-size:14px;font-weight:700;color:#fff}
 .play-badges{display:flex;gap:6px;flex-wrap:wrap}
 .pbadge{font-size:9px;letter-spacing:.09em;border-radius:3px;padding:2px 7px;font-weight:600}
-.play-body{font-size:12px;color:#8aa4c8;line-height:1.7;margin-bottom:12px}
-.play-body strong{color:#c8d8f0}
+.play-body{font-size:12px;color:#b4c5dd;line-height:1.7;margin-bottom:12px}
+.play-body strong{color:#e2eaf5}
 .play-mech{background:rgba(0,0,0,0.25);border-radius:6px;padding:10px 13px}
-.play-mech-title{font-size:9px;color:#5a7090;letter-spacing:.1em;font-weight:600;margin-bottom:6px}
+.play-mech-title{font-size:9px;color:#8fa4bf;letter-spacing:.1em;font-weight:600;margin-bottom:6px}
 .play-steps{list-style:none;display:grid;gap:4px}
-.play-steps li{font-size:12px;color:#7a94b0;padding-left:14px;position:relative;line-height:1.55}
+.play-steps li{font-size:12px;color:#a4b8d0;padding-left:14px;position:relative;line-height:1.55}
 .play-steps li::before{content:"→";position:absolute;left:0;color:#d4af37;font-size:11px}
 
 /* Countermoves */
@@ -143,10 +146,10 @@ body{background:#07101f;color:#c8d8f0;font-family:system-ui,-apple-system,sans-s
 @media(max-width:560px){.risk-grid{grid-template-columns:1fr}}
 .risk-card{background:rgba(255,255,255,0.02);border-radius:8px;padding:13px 15px;border:1px solid rgba(255,255,255,0.06)}
 .risk-head{font-size:12px;font-weight:600;margin-bottom:5px}
-.risk-body{font-size:11px;color:#5a7090;line-height:1.6}
+.risk-body{font-size:11px;color:#8fa4bf;line-height:1.6}
 
 .intro-box{padding:16px 18px;background:rgba(212,175,55,0.05);border:1px solid rgba(212,175,55,0.18);border-radius:8px}
-.intro-box p{font-size:13px;color:#c8d8f0;line-height:1.75}
+.intro-box p{font-size:13px;color:#e2eaf5;line-height:1.75}
 .intro-box strong{color:#d4af37}
 </style>
 </head>
@@ -353,8 +356,8 @@ body{background:#07101f;color:#c8d8f0;font-family:system-ui,-apple-system,sans-s
 
       <div class="level-row">
         <div class="level-num" style="border-color:rgba(107,130,160,0.3);background:rgba(107,130,160,0.08)">
-          <div class="ln" style="color:#6b82a0">L1</div>
-          <div class="lt" style="color:#6b82a0">PUBLIC</div>
+          <div class="ln" style="color:#9bafc9">L1</div>
+          <div class="lt" style="color:#9bafc9">PUBLIC</div>
         </div>
         <div class="level-body">
           <div class="level-title">Level 1 — Top of Book</div>
@@ -480,8 +483,8 @@ body{background:#07101f;color:#c8d8f0;font-family:system-ui,-apple-system,sans-s
             <div class="prio-note" style="color:#4ade80">Standard</div>
           </div>
           <div class="prio-row" style="opacity:0.4">
-            <div class="prio-rank" style="color:#5a7090">—</div>
-            <div><div class="prio-name" style="color:#5a7090">No Broker Preference</div><div class="prio-sub">Eliminated — retail-protective design</div></div>
+            <div class="prio-rank" style="color:#8fa4bf">—</div>
+            <div><div class="prio-name" style="color:#8fa4bf">No Broker Preference</div><div class="prio-sub">Eliminated — retail-protective design</div></div>
             <div class="prio-note" style="color:#f87171">Absent</div>
           </div>
           <div class="prio-row">
@@ -827,7 +830,7 @@ body{background:#07101f;color:#c8d8f0;font-family:system-ui,-apple-system,sans-s
     </div>
   </div>
 
-  <div class="disc"><strong style="color:#5a7090">Disclaimer:</strong> This primer is for informational and educational purposes only and does not constitute financial, legal, or investment advice. The mechanisms described exist in the Canadian market structure; the inclusion of any specific mechanism does not allege that any named broker, dealer, or market participant has engaged in illegal or improper conduct. Where named case studies appear (e.g. Power Nickel / Generation IACP), they refer to publicly documented examples.</div>
+  <div class="disc"><strong style="color:#8fa4bf">Disclaimer:</strong> This primer is for informational and educational purposes only and does not constitute financial, legal, or investment advice. The mechanisms described exist in the Canadian market structure; the inclusion of any specific mechanism does not allege that any named broker, dealer, or market participant has engaged in illegal or improper conduct. Where named case studies appear (e.g. Power Nickel / Generation IACP), they refer to publicly documented examples.</div>
 </div>
 
 <div class="foot">
@@ -849,7 +852,7 @@ const mechs=[
   {n:"Naked Short Selling",s:"ILLEGAL",sc:"#f87171",d:"Sell without any borrow. Creates a CDS depository imbalance — client-reported holdings exceed actual depository holdings. Generation IACP has documented cases up to 9M phantom shares on a single name."},
 ];
 const hier=[
-  {t:"01",w:"Retail Investor",c:"#6b82a0",s:"Level 1 price + Stockwatch broker summaries",x:"Anonymous identity, dark orders, order sequence"},
+  {t:"01",w:"Retail Investor",c:"#9bafc9",s:"Level 1 price + Stockwatch broker summaries",x:"Anonymous identity, dark orders, order sequence"},
   {t:"02",w:"Issuer (Company)",c:"#60a5fa",s:"Anonymous broker ID via InfoSuite Premium (~$1k/mo)",x:"End client identity behind broker"},
   {t:"03",w:"Institutional / HFT",c:"#a78bfa",s:"Level 2 full order book + direct TMX feed",x:"Other brokers' client identities"},
   {t:"04",w:"LSEG Tick History",c:"#fbbf24",s:"Level 3 order-by-order archive ($50–150k/yr)",x:"Real-time data; client identity"},
