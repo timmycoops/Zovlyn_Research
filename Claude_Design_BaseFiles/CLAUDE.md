@@ -6,10 +6,12 @@ This project is a working research desk for an independent mining/lithium analys
 
 The system is documented in **`system.html`** (open it before designing anything new). It is the source of truth for tokens, type, components, voice, and templates. Read it.
 
-Two files are the **canonical implementations** to copy-fork from:
+Four files are the **canonical implementations** to copy-fork from:
 
 - **`index.html`** — tool index / homepage. Use as the starting point for any landing/directory page.
-- **`QTWO_Research_Report_v7.html`** — long-form research report. Use as the starting point for any deep-dive report, calculator, or data-heavy tool. Strip the QTWO content, keep the chrome and patterns.
+- **`QTWO_Research_Report_v7.html`** — long-form research report. Use for any deep-dive report. Strip the QTWO content, keep the chrome and patterns.
+- **`lce_converter.html`** — calculator template. Use for any conversion, DCF, or sensitivity tool. Inputs left, outputs/charts right.
+- **`lithium_screener.html`** — screener / data table template. Use for any sortable, filterable list of projects, peers, or assets.
 
 Always inherit from these. Never start a new page from a blank file.
 
@@ -81,12 +83,21 @@ Palette is semantic only: accent green = our subject, red = downside, amber = re
 **Shipped templates:**
 - Tool index (`index.html`)
 - Research report (`QTWO_Research_Report_v7.html`)
+- Calculator (`lce_converter.html`)
+- Screener / data table (`lithium_screener.html`)
 - System reference (`system.html`)
 
 **Roadmap — needs templating:**
-- Calculator template (LCE converter, DCF) — *next*
-- Screener / data table — *next*
-- Map view, Primer/explainer, Investment thesis one-pager, Watchlist dashboard — later
+- Map view — *next*
+- Primer / explainer — *next*
+- Investment thesis one-pager, Watchlist dashboard — later
+
+**Existing root pages still on the old design** (need re-skin to inherit from a canonical above):
+- `cisco-enhanced-v2.html` → Research report template
+- `lce_chart_2.html` → Calculator template
+- `lithium_supply_model.html` → Calculator template (heavy data variant)
+- `lithium_projects_map_8.html` → waiting on Map template
+- `tsxv_primer.html` → waiting on Primer template
 
 When asked to build something matching one of these archetypes, design the **template** first (reusable patterns), then fill it with the specific content.
 

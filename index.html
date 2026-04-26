@@ -3,885 +3,753 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lithium Research — Interactive Tools & Analysis</title>
-<meta name="description" content="Independent research tools for lithium project analysis. Interactive DCF models, EV/t LCE valuation charts, and market research.">
+<title>Zovlyn Research — Mining research, at primary-source depth</title>
+<meta name="description" content="Independent mining research. Models you can break, comps you can audit, primers that explain how the plumbing actually works.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #06090f;
-  --s1: #0a1018;
-  --s2: #0f1923;
-  --s3: #162230;
-  --b1: rgba(255,255,255,.05);
-  --b2: rgba(255,255,255,.09);
-  --b3: rgba(255,255,255,.16);
-  --cisco: #ff3547;
-  --teal: #00cfe0;
-  --amber: #ffb300;
-  --green: #00e09a;
-  --blue: #4499ff;
-  --gold: #d4af37;
-  --t1: #eef2f7;
-  --t2: #7fa8c8;
-  --t3: #3d6080;
-  --t4: #1e3a54;
-  --syne: 'Syne', sans-serif;
-  --inst: 'Instrument Sans', sans-serif;
-  --mono: 'Instrument Mono', monospace;
+  --bg: #0c0d0a;
+  --bg-2: #131410;
+  --bg-3: #1a1c16;
+  --line: #2a2c24;
+  --line-2: #3a3d33;
+  --fg: #d8d4c2;
+  --fg-2: #8a8773;
+  --fg-3: #5d5b4d;
+  --accent: #5dd3a8;
+  --accent-2: #3aa881;
+  --accent-dim: rgba(93,211,168,0.10);
+  --accent-soft: rgba(93,211,168,0.18);
+  --green: #5dd380;
+  --red: #ff5f56;
+  --r: 4px;
+  --mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 html { scroll-behavior: smooth; }
-
 body {
-  background: var(--bg);
-  color: var(--t1);
-  font-family: var(--inst);
-  overflow-x: hidden;
-  cursor: crosshair;
+  background: var(--bg); color: var(--fg);
+  font-family: var(--mono); font-size: 13px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+
+/* ── Status bar ── */
+.t-top {
+  background: var(--bg-2); border-bottom: 1px solid var(--line);
+  padding: 8px 24px; display: flex; align-items: center;
+  gap: 24px; font-size: 11px; color: var(--fg-2); flex-wrap: wrap;
+}
+.t-top .session { color: var(--accent); font-weight: 600; }
+.t-spacer { flex: 1; }
+@media (max-width: 720px) {
+  .t-top { gap: 14px; padding: 8px 16px; }
+  .t-top .hide-sm { display: none; }
 }
 
-/* ── Animated grid background ── */
-.grid-bg {
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(0,207,224,.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,207,224,.03) 1px, transparent 1px);
-  background-size: 48px 48px;
-  pointer-events: none;
-  z-index: 0;
+/* ── Ticker tape ── */
+.t-tape {
+  background: var(--bg); border-bottom: 1px solid var(--line);
+  padding: 10px 24px;
+  display: flex; align-items: center; gap: 16px;
+  font-size: 11.5px; overflow: hidden; white-space: nowrap;
 }
-
-/* Animated scan line */
-.scan {
-  position: fixed;
-  top: -2px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--teal), transparent);
-  opacity: .4;
-  animation: scan 8s linear infinite;
-  pointer-events: none;
-  z-index: 1;
+.t-tape-status {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--fg-3); font-size: 10px; letter-spacing: 0.12em;
+  flex-shrink: 0; text-transform: uppercase;
 }
-@keyframes scan {
-  0%   { top: -2px; opacity: 0; }
-  5%   { opacity: .4; }
-  95%  { opacity: .4; }
-  100% { top: 100vh; opacity: 0; }
+.t-tape-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--fg-3);
 }
+.t-tape-dot.live   { background: var(--green); animation: blink 1.6s ease-in-out infinite; }
+.t-tape-dot.static { background: var(--accent); animation: blink 2.4s ease-in-out infinite; }
+@keyframes blink { 50% { opacity: 0.3; } }
+.t-tape-sep { color: var(--line-2); flex-shrink: 0; }
+.t-tape-strip { display: flex; gap: 28px; flex: 1; overflow: hidden; }
+.t-tape-item { display: inline-flex; gap: 8px; align-items: baseline; flex-shrink: 0; }
+.t-tape-sym { color: var(--fg); font-weight: 600; letter-spacing: 0.04em; }
+.t-tape-px { color: var(--fg-2); font-feature-settings: 'tnum'; }
+.t-tape-d.up { color: var(--green); }
+.t-tape-d.dn { color: var(--red); }
+.t-tape-d.flat { color: var(--fg-3); }
 
 /* ── Nav ── */
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 56px;
-  background: rgba(6,9,15,.85);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--b1);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 40px;
-  z-index: 100;
+.t-nav {
+  padding: 18px 24px; display: flex; align-items: center;
+  justify-content: space-between; border-bottom: 1px solid var(--line);
+  flex-wrap: wrap; gap: 12px;
 }
-.nav-logo {
-  font-family: var(--syne);
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--t1);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.nav-logo .dot {
-  width: 8px; height: 8px;
-  background: var(--teal);
-  border-radius: 50%;
-  animation: pulse 2s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: .4; transform: scale(.7); }
-}
-.nav-links {
-  display: flex;
-  gap: 28px;
-  list-style: none;
-}
-.nav-links a {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--t3);
-  text-decoration: none;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  transition: color .2s;
-}
-.nav-links a:hover { color: var(--teal); }
-
-/* ── Hero ── */
-.hero {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 120px 80px 80px;
-  z-index: 2;
-  overflow: hidden;
-}
-
-/* Radial glow */
-.hero::before {
-  content: '';
-  position: absolute;
-  top: 20%;
-  right: -10%;
-  width: 700px;
-  height: 700px;
-  background: radial-gradient(circle, rgba(0,207,224,.06) 0%, transparent 65%);
-  pointer-events: none;
-}
-.hero::after {
-  content: '';
-  position: absolute;
-  bottom: 10%;
-  left: -5%;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(255,53,71,.05) 0%, transparent 65%);
-  pointer-events: none;
-}
-
-.hero-eyebrow {
+.t-mark { display: flex; align-items: center; gap: 12px; }
+.t-badge {
+  width: 36px; height: 36px;
+  background: var(--accent); color: var(--bg);
+  display: grid; place-items: center;
+  font-weight: 800; font-size: 18px;
   font-family: var(--mono);
-  font-size: 11px;
-  color: var(--teal);
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  opacity: 0;
-  animation: fadeUp .6s ease forwards .2s;
+  border-radius: var(--r);
 }
-.hero-eyebrow::before {
-  content: '';
-  width: 32px;
+.t-mark-text { display: flex; flex-direction: column; line-height: 1.05; }
+.t-mark-name {
+  font-family: var(--mono); font-weight: 700;
+  font-size: 14px; color: var(--fg); letter-spacing: 0.14em;
+}
+.t-mark-sub {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--fg-3); letter-spacing: 0.22em; font-weight: 500;
+}
+.t-nav-r { display: flex; gap: 22px; font-size: 11px; color: var(--fg-2); align-items: center; }
+.t-nav-r a {
+  color: var(--fg-2); letter-spacing: 0.08em;
+  transition: color 0.15s; text-transform: uppercase;
+}
+.t-nav-r a:hover, .t-nav-r a.on { color: var(--accent); }
+.t-nav-r a.on { font-weight: 600; }
+.t-nav-action {
+  font-size: 11px; color: var(--bg) !important;
+  background: var(--accent);
+  padding: 7px 14px; border-radius: var(--r); font-weight: 600;
+  letter-spacing: 0.06em; transition: background 0.15s;
+}
+.t-nav-action:hover { background: var(--accent-2); }
+@media (max-width: 720px) {
+  .t-nav-r { gap: 14px; font-size: 10px; }
+  .t-nav-r a:not(.t-nav-action) { display: none; }
+}
+
+/* ── Hero (split) ── */
+.t-hero {
+  padding: 56px 24px 44px;
+  display: grid; grid-template-columns: 1fr 360px; gap: 36px;
+  border-bottom: 1px solid var(--line);
+  max-width: 1280px; margin: 0 auto;
+}
+@media (max-width: 920px) {
+  .t-hero { grid-template-columns: 1fr; padding: 36px 16px; gap: 28px; }
+}
+.t-hero-l .lbl {
+  font-size: 11px; color: var(--accent); margin-bottom: 18px;
+  letter-spacing: 0.16em; font-weight: 500;
+}
+.t-hero-l .lbl::before { content: '// '; color: var(--accent); }
+.t-hero-l h1 {
+  font-family: var(--mono);
+  font-size: clamp(32px, 5.4vw, 60px); font-weight: 500;
+  letter-spacing: -0.025em; line-height: 1.05; color: var(--fg);
+  margin-bottom: 22px;
+}
+.t-hero-l h1 .accent { color: var(--accent); }
+.t-hero-l h1 .dim { color: var(--fg-3); }
+.t-hero-l .sub {
+  font-family: var(--sans); font-size: 15px; line-height: 1.6;
+  color: var(--fg-2); max-width: 580px; margin-bottom: 28px;
+}
+.t-cta { display: flex; gap: 8px; flex-wrap: wrap; }
+.t-btn {
+  font-family: var(--mono); font-size: 12px; font-weight: 600;
+  padding: 12px 18px; cursor: pointer;
+  border-radius: var(--r); letter-spacing: 0.04em;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: all 0.15s; border: 1px solid transparent;
+}
+.t-btn-p { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.t-btn-p:hover { background: var(--accent-2); border-color: var(--accent-2); }
+.t-btn-s { background: transparent; color: var(--fg-2); border-color: var(--line-2); }
+.t-btn-s:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Coverage panel ── */
+.t-panel {
+  background: var(--bg-2); border: 1px solid var(--line);
+  border-radius: var(--r); display: flex; flex-direction: column;
+  align-self: start;
+}
+.t-panel-h {
+  padding: 9px 14px; border-bottom: 1px solid var(--line);
+  font-size: 10px; color: var(--fg-3); letter-spacing: 0.16em;
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--bg-3);
+}
+.t-panel-h .accent { color: var(--accent); }
+.t-stat-row {
+  display: grid; grid-template-columns: 1fr auto;
+  padding: 11px 14px; border-bottom: 1px solid var(--line);
+  font-size: 12px; align-items: baseline;
+}
+.t-stat-row:last-child { border-bottom: none; }
+.t-stat-row .k { color: var(--fg-2); }
+.t-stat-row .v {
+  color: var(--fg); font-weight: 600;
+  font-feature-settings: 'tnum';
+}
+
+/* ── Sections ── */
+.t-sec { padding: 32px 24px 0; max-width: 1280px; margin: 0 auto; }
+.t-sec-h {
+  display: flex; align-items: baseline; gap: 16px;
+  padding: 10px 0; border-bottom: 1px solid var(--line);
+  margin-bottom: 16px; flex-wrap: wrap;
+}
+.t-sec-h .num {
+  font-size: 11px; color: var(--accent); letter-spacing: 0.12em; font-weight: 600;
+}
+.t-sec-h .title {
+  font-size: 15px; font-weight: 600; color: var(--fg); letter-spacing: 0.04em;
+}
+.t-sec-h .title .dim { color: var(--fg-3); font-weight: 400; }
+.t-sec-h .meta { margin-left: auto; font-size: 11px; color: var(--fg-3); }
+
+/* ── Tool grid ── */
+.t-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--line); gap: 1px; overflow: hidden;
+}
+.t-grid.full { grid-template-columns: 1fr; }
+@media (max-width: 720px) { .t-grid { grid-template-columns: 1fr; } }
+.t-card {
+  background: var(--bg); padding: 18px 20px;
+  display: flex; flex-direction: column; gap: 12px;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.t-card:hover { background: var(--bg-2); }
+.t-card:hover .t-card-name { color: var(--accent); }
+.t-card:hover .t-card-arrow { color: var(--accent); transform: translateX(2px); }
+.t-card-top {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.t-card-tag {
+  font-size: 10px; color: var(--accent);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 3px 9px; border: 1px solid var(--accent-dim);
+  background: var(--accent-dim); border-radius: var(--r);
+  font-weight: 600;
+}
+.t-card-glyph {
+  font-size: 10px; color: var(--fg-3); letter-spacing: 0.08em;
+  font-weight: 600; margin-left: auto; margin-right: 12px;
+}
+.t-card-arrow {
+  color: var(--fg-3); font-size: 14px; transition: all 0.15s;
+}
+.t-card-name {
+  font-size: 18px; font-weight: 600; color: var(--fg);
+  letter-spacing: -0.01em; line-height: 1.2;
+  transition: color 0.15s;
+}
+.t-card-name .ticker {
+  color: var(--accent); font-size: 14px; margin-left: 8px; font-weight: 500;
+}
+.t-card-desc {
+  font-family: var(--sans); font-size: 12.5px; line-height: 1.55;
+  color: var(--fg-2); flex: 1;
+}
+.t-card-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  background: var(--bg-2); border: 1px solid var(--line);
+  border-radius: var(--r); overflow: hidden;
+}
+.t-card-stat {
+  padding: 10px 12px; border-right: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 3px;
+}
+.t-card-stat:last-child { border-right: none; }
+.t-card-stat .v {
+  font-size: 15px; font-weight: 600; color: var(--fg);
+  font-feature-settings: 'tnum'; letter-spacing: -0.01em;
+}
+.t-card-stat .k {
+  font-size: 9px; color: var(--fg-3); letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.t-card-foot {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  font-size: 10.5px; color: var(--fg-3); letter-spacing: 0.04em;
+  padding-top: 8px; border-top: 1px dashed var(--line);
+}
+.t-card-foot .updated::before { content: '◆'; color: var(--accent); margin-right: 6px; }
+
+/* Roadmap (placeholder) card — deliberately quieter, signals "coming" */
+.t-card-roadmap {
+  cursor: default;
+  background-image:
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 14px,
+      rgba(93,211,168,0.025) 14px 15px
+    );
+}
+.t-card-roadmap:hover { background: var(--bg); }
+.t-card-roadmap:hover .t-card-name { color: var(--fg); }
+.t-card-roadmap:hover .t-card-arrow { color: var(--fg-3); transform: none; }
+.t-card-roadmap .t-card-name { color: var(--fg-2); }
+.t-card-roadmap .t-card-desc { color: var(--fg-3); }
+.t-card-tag-soon {
+  color: var(--fg-3) !important;
+  border-color: var(--line-2) !important;
+  background: transparent !important;
+}
+
+.t-rule {
   height: 1px;
-  background: var(--teal);
-}
-
-.hero-h1 {
-  font-family: var(--syne);
-  font-size: clamp(42px, 7vw, 88px);
-  font-weight: 800;
-  line-height: .95;
-  letter-spacing: -.02em;
-  color: var(--t1);
-  max-width: 800px;
-  margin-bottom: 28px;
-  opacity: 0;
-  animation: fadeUp .7s ease forwards .4s;
-}
-.hero-h1 em {
-  font-style: normal;
-  color: var(--teal);
-  position: relative;
-}
-.hero-h1 em::after {
-  content: '';
-  position: absolute;
-  bottom: 4px;
-  left: 0; right: 0;
-  height: 3px;
-  background: var(--teal);
-  opacity: .3;
-}
-
-.hero-sub {
-  font-size: 16px;
-  color: var(--t2);
-  line-height: 1.65;
-  max-width: 520px;
-  margin-bottom: 48px;
-  opacity: 0;
-  animation: fadeUp .7s ease forwards .6s;
-}
-
-.hero-cta {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  opacity: 0;
-  animation: fadeUp .7s ease forwards .8s;
-}
-.btn-primary {
-  background: var(--teal);
-  color: #000;
-  font-family: var(--syne);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  padding: 13px 28px;
-  border-radius: 4px;
-  text-decoration: none;
-  transition: all .2s;
-  border: none;
-  cursor: pointer;
-}
-.btn-primary:hover {
-  background: #fff;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,207,224,.3);
-}
-.btn-secondary {
-  background: transparent;
-  color: var(--t2);
-  font-family: var(--syne);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  padding: 12px 28px;
-  border-radius: 4px;
-  border: 1px solid var(--b2);
-  text-decoration: none;
-  transition: all .2s;
-  cursor: pointer;
-}
-.btn-secondary:hover {
-  border-color: var(--b3);
-  color: var(--t1);
-  transform: translateY(-2px);
-}
-
-/* Stats strip */
-.hero-stats {
-  position: absolute;
-  bottom: 0;
-  left: 0; right: 0;
-  height: 72px;
-  background: var(--s1);
-  border-top: 1px solid var(--b1);
-  display: flex;
-  align-items: stretch;
-  opacity: 0;
-  animation: fadeIn .8s ease forwards 1s;
-}
-.stat-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 0 32px;
-  border-right: 1px solid var(--b1);
-}
-.stat-item:last-child { border-right: none; }
-.stat-v {
-  font-family: var(--mono);
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--t1);
-  line-height: 1;
-}
-.stat-l {
-  font-size: 9px;
-  color: var(--t3);
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  margin-top: 4px;
-}
-
-/* ── Tools section ── */
-.tools {
-  position: relative;
-  z-index: 2;
-  padding: 100px 80px;
-}
-
-.section-header {
-  margin-bottom: 56px;
-}
-.section-tag {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--teal);
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.section-tag::before {
-  content: '';
-  width: 24px; height: 1px;
-  background: var(--teal);
-}
-.section-h2 {
-  font-family: var(--syne);
-  font-size: clamp(28px, 4vw, 46px);
-  font-weight: 800;
-  letter-spacing: -.02em;
-  color: var(--t1);
-  line-height: 1.05;
-}
-.section-h2 span { color: var(--teal); }
-
-/* Sub-section label for grouping grids */
-.sub-label {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--t3);
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  margin: 40px 0 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.sub-label::before {
-  content: '';
-  width: 18px; height: 1px;
-  background: var(--t4);
-}
-.sub-label:first-of-type { margin-top: 8px; }
-
-/* Tool cards grid */
-.tools-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
-  gap: 2px;
-  background: var(--b1);
-  border: 1px solid var(--b1);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.tool-card {
-  background: var(--s1);
-  padding: 40px;
-  text-decoration: none;
-  color: inherit;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  position: relative;
-  transition: background .2s;
-  overflow: hidden;
-  cursor: pointer;
-}
-.tool-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  width: 3px;
-  height: 0;
-  background: var(--accent, var(--teal));
-  transition: height .3s ease;
-}
-.tool-card:hover { background: var(--s2); }
-.tool-card:hover::before { height: 100%; }
-
-.tool-card-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
-}
-.tool-icon {
-  width: 44px; height: 44px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-.tool-arrow {
-  width: 32px; height: 32px;
-  border: 1px solid var(--b2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--t3);
-  font-size: 14px;
-  transition: all .2s;
-  flex-shrink: 0;
-}
-.tool-card:hover .tool-arrow {
-  border-color: var(--accent, var(--teal));
-  color: var(--accent, var(--teal));
-  transform: translate(2px, -2px);
-}
-
-.tool-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 9px;
-  border-radius: 20px;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-
-.tool-name {
-  font-family: var(--syne);
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--t1);
-  letter-spacing: -.01em;
-  margin-bottom: 10px;
-  line-height: 1.1;
-}
-
-.tool-desc {
-  font-size: 13px;
-  color: var(--t3);
-  line-height: 1.6;
-  margin-bottom: 24px;
-  flex: 1;
-}
-
-.tool-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.feat {
-  font-size: 10px;
-  font-family: var(--mono);
-  color: var(--t3);
-  background: var(--s3);
-  padding: 4px 9px;
-  border-radius: 3px;
-  border: 1px solid var(--b1);
+  background-image: repeating-linear-gradient(90deg, var(--line-2) 0 8px, transparent 8px 16px);
+  margin: 28px auto 0; max-width: 1232px;
 }
 
 /* ── About strip ── */
-.about {
-  position: relative;
-  z-index: 2;
-  padding: 80px;
-  background: var(--s1);
-  border-top: 1px solid var(--b1);
-  border-bottom: 1px solid var(--b1);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  align-items: center;
+.t-about {
+  margin-top: 48px; padding: 40px 24px;
+  background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
 }
-.about-h {
-  font-family: var(--syne);
-  font-size: 34px;
-  font-weight: 800;
-  letter-spacing: -.02em;
-  line-height: 1.1;
-  margin-bottom: 16px;
+.t-about-inner {
+  max-width: 1280px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start;
 }
-.about-h span { color: var(--teal); }
-.about-p {
-  font-size: 14px;
-  color: var(--t2);
-  line-height: 1.7;
-  margin-bottom: 12px;
+@media (max-width: 920px) { .t-about-inner { grid-template-columns: 1fr; gap: 24px; } }
+.t-about h2 {
+  font-family: var(--mono); font-size: 24px; font-weight: 500;
+  letter-spacing: -0.02em; color: var(--fg); margin-bottom: 16px;
+  line-height: 1.2;
 }
-.about-note {
-  font-size: 11px;
-  color: var(--t3);
-  font-family: var(--mono);
-  padding: 10px 14px;
-  border-left: 2px solid var(--b2);
-  line-height: 1.6;
-  margin-top: 16px;
+.t-about h2 .accent { color: var(--accent); }
+.t-about p {
+  font-family: var(--sans); font-size: 14px; line-height: 1.65;
+  color: var(--fg-2); margin-bottom: 14px;
 }
-.about-right {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.t-about .meta-list {
+  display: grid; grid-template-columns: 120px 1fr; gap: 8px 16px;
+  font-size: 12px; padding-top: 8px; border-top: 1px solid var(--line);
 }
-.fact-row {
-  background: var(--s2);
-  border: 1px solid var(--b1);
-  border-radius: 6px;
-  padding: 16px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.fact-lbl { font-size: 11px; color: var(--t3); }
-.fact-val {
-  font-family: var(--mono);
-  font-size: 14px;
-  font-weight: 500;
-}
+.t-about .meta-list dt { color: var(--fg-3); letter-spacing: 0.06em; }
+.t-about .meta-list dd { color: var(--fg); }
+.t-about .meta-list dd a { color: var(--accent); }
 
 /* ── Footer ── */
-footer {
-  position: relative;
-  z-index: 2;
-  padding: 40px 80px;
-  border-top: 1px solid var(--b1);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
+.t-foot {
+  padding: 18px 24px;
+  background: var(--bg-2); border-top: 1px solid var(--line);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  font-size: 10.5px; color: var(--fg-3); letter-spacing: 0.06em;
 }
-.footer-l {
-  font-family: var(--syne);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--t3);
-  letter-spacing: .06em;
-}
-.footer-r {
-  font-size: 10px;
-  color: var(--t4);
-  font-family: var(--mono);
-  line-height: 1.7;
-  text-align: right;
-}
+.t-foot a { color: var(--accent); }
 
-/* ── Animations ── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-/* ── Scroll reveal ── */
-.reveal {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity .7s ease, transform .7s ease;
-}
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ── Mobile ── */
-@media (max-width: 768px) {
-  nav { padding: 0 20px; }
-  .nav-links { display: none; }
-  .hero { padding: 100px 24px 80px; }
-  .tools { padding: 60px 24px; }
-  .tools-grid { grid-template-columns: 1fr; }
-  .about { padding: 60px 24px; grid-template-columns: 1fr; gap: 40px; }
-  footer { padding: 32px 24px; flex-direction: column; text-align: center; }
-  .footer-r { text-align: center; }
-  .hero-stats { display: none; }
-}
+/* Reveal */
+.reveal { opacity: 1; transform: none; transition: opacity .5s ease, transform .5s ease; }
 </style>
 </head>
 <body>
 
-<div class="grid-bg"></div>
-<div class="scan"></div>
+<!-- ═══ Status bar ═══ -->
+<div class="t-top">
+  <span class="session" id="t-session">SESSION 00:00:00</span>
+  <span class="hide-sm">NA · CASH · TSX OPEN</span>
+  <span class="hide-sm">FX · CADUSD 1.3845</span>
+  <span class="t-spacer"></span>
+  <span class="hide-sm">USER · zovlyn</span>
+  <span id="t-clock">26-APR-2026 · 11:42 EDT</span>
+</div>
 
-<!-- Nav -->
-<nav>
-  <a href="#" class="nav-logo">
-    <div class="dot"></div>
-    Lithium Research
+<!-- ═══ Ticker tape ═══ -->
+<div class="t-tape">
+  <span class="t-tape-status">
+    <span class="t-tape-dot static" id="t-tape-dot"></span>
+    <span id="t-tape-status-label">CACHED</span>
+  </span>
+  <span class="t-tape-sep">│</span>
+  <div class="t-tape-strip" id="t-tape-strip">
+    <!-- populated by JS -->
+  </div>
+</div>
+
+<!-- ═══ Nav ═══ -->
+<div class="t-nav">
+  <a href="/" class="t-mark" aria-label="Zovlyn Research home">
+    <div class="t-badge">Z</div>
+    <div class="t-mark-text">
+      <div class="t-mark-name">ZOVLYN</div>
+      <div class="t-mark-sub">RESEARCH</div>
+    </div>
   </a>
-  <ul class="nav-links">
-    <li><a href="#tools">Tools</a></li>
-    <li><a href="#library">Research</a></li>
-    <li><a href="#about">About</a></li>
-  </ul>
-</nav>
-
-<!-- Hero -->
-<section class="hero" id="home">
-  <div class="hero-eyebrow">Independent Lithium Research · April 2026</div>
-  <h1 class="hero-h1">Interactive tools<br>for <em>lithium</em><br>project analysis</h1>
-  <p class="hero-sub">Open-source DCF models, EV/t LCE valuation charts, global project mapping, and deep-dive company reports. Built for investors and analysts who want to do their own work.</p>
-  <div class="hero-cta">
-    <a href="#tools" class="btn-primary">Explore Tools →</a>
-    <a href="#library" class="btn-secondary">Research Library</a>
+  <div class="t-nav-r">
+    <a href="#tools" class="on">TOOLS</a>
+    <a href="#research">RESEARCH</a>
+    <a href="#primers">PRIMERS</a>
+    <a href="#about">ABOUT</a>
+    <a href="#sub" class="t-nav-action">SUBSCRIBE</a>
   </div>
+</div>
 
-  <div class="hero-stats">
-    <div class="stat-item">
-      <div class="stat-v">5</div>
-      <div class="stat-l">Interactive Tools</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-v">19</div>
-      <div class="stat-l">Valuation Comps</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-v">Global</div>
-      <div class="stat-l">Project Coverage</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-v">Apr 2026</div>
-      <div class="stat-l">Latest Build</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-v">Open</div>
-      <div class="stat-l">Free to Use & Share</div>
+<!-- ═══ Hero (split) ═══ -->
+<div class="t-hero">
+  <div class="t-hero-l reveal">
+    <div class="lbl">MINING DESK · INDEPENDENT</div>
+    <h1>
+      <span class="accent">Mining</span> research,<br>
+      <span class="dim">at</span> primary-source <span class="accent">depth</span>.
+    </h1>
+    <p class="sub">
+      A working terminal for hard-rock mining analysis. Models you can break,
+      comps you can audit, primers that explain how the plumbing actually works.
+      Built for people who already know what NI 43-101 means.
+    </p>
+    <div class="t-cta">
+      <a href="#tools" class="t-btn t-btn-p">RUN /TOOLS →</a>
+      <a href="#research" class="t-btn t-btn-s">/RESEARCH</a>
+      <a href="#primers" class="t-btn t-btn-s">/PRIMERS</a>
     </div>
   </div>
-</section>
-
-<!-- Tools -->
-<section class="tools" id="tools">
-  <div class="section-header reveal">
-    <div class="section-tag">Interactive tools</div>
-    <h2 class="section-h2">Value. Compare. Map.<br><span>Everything in one place.</span></h2>
+  <div class="t-panel reveal">
+    <div class="t-panel-h">
+      <span>// COVERAGE</span>
+      <span class="accent">Q2 2026</span>
+    </div>
+    <div class="t-stat-row"><span class="k">Live tools</span><span class="v">7</span></div>
+    <div class="t-stat-row"><span class="k">Projects tracked</span><span class="v">55+</span></div>
+    <div class="t-stat-row"><span class="k">LCE under coverage</span><span class="v">9.1 Mt</span></div>
+    <div class="t-stat-row"><span class="k">Coverage updated</span><span class="v">2026</span></div>
+    <div class="t-stat-row"><span class="k">Last build</span><span class="v" style="color:var(--green)">2026-04-26</span></div>
   </div>
+</div>
 
-  <div class="tools-grid">
+<!-- ═══ Models & tools ═══ -->
+<div class="t-sec" id="tools">
+  <div class="t-sec-h reveal">
+    <span class="num">[01]</span>
+    <span class="title">MODELS &amp; TOOLS<span class="dim"> // /tools</span></span>
+    <span class="meta">5 live · interactive · last updated 2026-04-22</span>
+  </div>
+  <div class="t-grid reveal">
 
-    <!-- DCF Model -->
-    <a href="cisco-enhanced-v2.html" class="tool-card reveal" style="--accent: var(--teal)">
-      <div class="tool-card-head">
-        <div class="tool-icon" style="background:rgba(0,207,224,.1);">📊</div>
-        <div class="tool-arrow">↗</div>
+    <a href="cisco-enhanced-v2.html" class="t-card">
+      <div class="t-card-top">
+        <span class="t-card-tag">Post-tax DCF</span>
+        <span class="t-card-glyph">DCF</span>
+        <span class="t-card-arrow">[→]</span>
       </div>
-      <div class="tool-tag" style="background:rgba(0,207,224,.1);color:var(--teal)">Post-tax DCF</div>
-      <div class="tool-name">Cisco Lithium<br>DCF Model</div>
-      <div class="tool-desc">Full post-tax discounted cash flow model for the Cisco Lithium Project. Calibrated to PMET Shaakichiuwaanaan FS (Oct 2025). Includes mine plan, operating costs, CAPEX, tax, and financing. Pre-loads with correct Cisco assumptions by default.</div>
-      <div class="tool-features">
-        <span class="feat">Monte Carlo</span>
-        <span class="feat">Sensitivity tables</span>
-        <span class="feat">NPV & IRR</span>
-        <span class="feat">Strip ratio</span>
-        <span class="feat">Market valuation</span>
-        <span class="feat">Mobile friendly</span>
+      <div class="t-card-name">Cisco Lithium DCF Model</div>
+      <div class="t-card-desc">Full post-tax discounted cash flow model for the Cisco Lithium Project. Calibrated to PMET Shaakichiuwaanaan FS (Oct 2025). Mine plan, opex, capex, tax shields, sensitivity.</div>
+      <div class="t-card-stats">
+        <div class="t-card-stat"><span class="v">$3.4B</span><span class="k">NPV8</span></div>
+        <div class="t-card-stat"><span class="v">32%</span><span class="k">IRR</span></div>
+        <div class="t-card-stat"><span class="v">9.1</span><span class="k">Mt LCE</span></div>
+      </div>
+      <div class="t-card-foot">
+        <span class="updated">updated 2026-04-22</span>
+        <span>· Interactive model</span>
       </div>
     </a>
 
-    <!-- LCE Chart -->
-    <a href="lce_chart_2.html" class="tool-card reveal" style="--accent: var(--amber)">
-      <div class="tool-card-head">
-        <div class="tool-icon" style="background:rgba(255,179,0,.1);">📈</div>
-        <div class="tool-arrow">↗</div>
+    <a href="lce_chart_2.html" class="t-card">
+      <div class="t-card-top">
+        <span class="t-card-tag">Valuation comps</span>
+        <span class="t-card-glyph">EV/t</span>
+        <span class="t-card-arrow">[→]</span>
       </div>
-      <div class="tool-tag" style="background:rgba(255,179,0,.1);color:var(--amber)">Valuation Comps</div>
-      <div class="tool-name">EV / t LCE<br>Universe Chart</div>
-      <div class="tool-desc">Every significant lithium transaction and listed company plotted by enterprise value per tonne of LCE resource. Stage buckets show the observed range and median at each development tier. Cisco highlighted throughout.</div>
-      <div class="tool-features">
-        <span class="feat">19 data points</span>
-        <span class="feat">Stage buckets</span>
-        <span class="feat">M&A transactions</span>
-        <span class="feat">Re-rate calculator</span>
-        <span class="feat">Bubble chart</span>
-        <span class="feat">Apr 2026 data</span>
+      <div class="t-card-name">EV / t LCE Universe</div>
+      <div class="t-card-desc">Every significant lithium transaction and listed company plotted by enterprise value per tonne of LCE resource. Stage buckets show the observed range and median at each development stage.</div>
+      <div class="t-card-stats">
+        <div class="t-card-stat"><span class="v">19</span><span class="k">Comps</span></div>
+        <div class="t-card-stat"><span class="v">4</span><span class="k">Stages</span></div>
+        <div class="t-card-stat"><span class="v">Apr 26</span><span class="k">Updated</span></div>
       </div>
-    </a>
-
-    <!-- LCE Converter -->
-    <a href="lce_converter_5.html" class="tool-card reveal" style="--accent: var(--green)">
-      <div class="tool-card-head">
-        <div class="tool-icon" style="background:rgba(0,224,154,.1);">⚗️</div>
-        <div class="tool-arrow">↗</div>
-      </div>
-      <div class="tool-tag" style="background:rgba(0,224,154,.1);color:var(--green)">Conversion Tool</div>
-      <div class="tool-name">Spodumene → LCE<br>Converter</div>
-      <div class="tool-desc">Convert a spodumene resource tonnage and grade (Li₂O %) into lithium carbonate equivalent (LCE). Handy quick-calc for sense-checking resource announcements or normalising peers onto a single LCE basis.</div>
-      <div class="tool-features">
-        <span class="feat">Li₂O → LCE</span>
-        <span class="feat">Grade sensitivity</span>
-        <span class="feat">Recovery factor</span>
-        <span class="feat">Instant calc</span>
-        <span class="feat">Mobile friendly</span>
+      <div class="t-card-foot">
+        <span class="updated">updated 2026-04-18</span>
+        <span>· Chart</span>
       </div>
     </a>
 
-    <!-- Global Projects Map -->
-    <a href="lithium_projects_map_8.html" class="tool-card reveal" style="--accent: var(--blue)">
-      <div class="tool-card-head">
-        <div class="tool-icon" style="background:rgba(68,153,255,.1);">🗺️</div>
-        <div class="tool-arrow">↗</div>
+    <a href="lce_converter.html" class="t-card">
+      <div class="t-card-top">
+        <span class="t-card-tag">Conversion tool</span>
+        <span class="t-card-glyph">Li₂O</span>
+        <span class="t-card-arrow">[→]</span>
       </div>
-      <div class="tool-tag" style="background:rgba(68,153,255,.1);color:var(--blue)">Global Map</div>
-      <div class="tool-name">Global Lithium<br>Projects Map</div>
-      <div class="tool-desc">Every significant lithium project plotted on a world map — resources, reserves, and exploration assets. Filter by stage and jurisdiction, and hover for resource tonnage, grade, and development notes on each project.</div>
-      <div class="tool-features">
-        <span class="feat">Interactive map</span>
-        <span class="feat">Stage filters</span>
-        <span class="feat">Jurisdiction view</span>
-        <span class="feat">Hard rock + brine</span>
-        <span class="feat">Apr 2026 data</span>
+      <div class="t-card-name">Spodumene → LCE Converter</div>
+      <div class="t-card-desc">Convert spodumene resource tonnage and grade (Li₂O %) into lithium carbonate equivalent. Quick sense-check for resource announcements or normalising peer disclosures.</div>
+      <div class="t-card-stats">
+        <div class="t-card-stat"><span class="v">4</span><span class="k">Inputs</span></div>
+        <div class="t-card-stat"><span class="v">Mt LCE</span><span class="k">Output</span></div>
+        <div class="t-card-stat"><span class="v">90%</span><span class="k">Recovery</span></div>
       </div>
-    </a>
-
-    <!-- Supply Model -->
-    <a href="lithium_supply_model.html" class="tool-card reveal" style="--accent: var(--cisco)">
-      <div class="tool-card-head">
-        <div class="tool-icon" style="background:rgba(255,53,71,.1);">⛏️</div>
-        <div class="tool-arrow">↗</div>
-      </div>
-      <div class="tool-tag" style="background:rgba(255,53,71,.1);color:var(--cisco)">Supply & Demand</div>
-      <div class="tool-name">Global Lithium<br>Supply Model</div>
-      <div class="tool-desc">42 assets across 26 companies with year-by-year LCE production forecasts to 2040. Inducement cost curves (LCE & SC6), category-based demand model with BESS/EV/truck breakdowns, GWh tracker, probability-weighted supply, benchmark overlays (IEA, Albemarle, S&P), and unit converter.</div>
-      <div class="tool-features">
-        <span class="feat">Supply to 2040</span>
-        <span class="feat">Cost curves</span>
-        <span class="feat">Demand by category</span>
-        <span class="feat">GWh tracker</span>
-        <span class="feat">Risk-adjusted</span>
-        <span class="feat">Benchmark overlays</span>
-        <span class="feat">SC6 basis</span>
-        <span class="feat">Editable</span>
+      <div class="t-card-foot">
+        <span class="updated">updated 2026-03-30</span>
+        <span>· Calculator</span>
       </div>
     </a>
 
-  </div>
-</section>
-
-<!-- Research Library -->
-<section class="tools" id="library" style="padding-top:40px;">
-  <div class="section-header reveal">
-    <div class="section-tag">Research library</div>
-    <h2 class="section-h2">Market context &<br><span>company deep dives.</span></h2>
-    <p style="font-size:14px;color:var(--t2);line-height:1.7;margin-top:18px;max-width:640px;">Long-form reference material and full reports on specific companies. The tools above answer <em style="color:var(--t1);font-style:normal;">what's it worth</em> — this section answers <em style="color:var(--t1);font-style:normal;">what do I need to know</em>.</p>
-  </div>
-
-  <!-- Market Research subsection -->
-  <div class="sub-label reveal">Market Research</div>
-  <div class="tools-grid" style="margin-bottom:32px;">
-
-    <!-- TSX.V Market Primer -->
-    <a href="tsxv_primer.html" class="tool-card reveal" style="--accent: var(--gold)">
-      <div class="tool-card-head">
-        <div class="tool-icon" style="background:rgba(212,175,55,.1);">📖</div>
-        <div class="tool-arrow">↗</div>
+    <a href="lithium_projects_map_8.html" class="t-card">
+      <div class="t-card-top">
+        <span class="t-card-tag">Global map</span>
+        <span class="t-card-glyph">MAP</span>
+        <span class="t-card-arrow">[→]</span>
       </div>
-      <div class="tool-tag" style="background:rgba(212,175,55,.1);color:var(--gold)">Primer</div>
-      <div class="tool-name">TSX.V<br>Market Primer</div>
-      <div class="tool-desc">How Canada's junior exchange actually works. Fourteen trading venues, the order lifecycle, the five tiers of market data, settlement mechanics, what's hidden from retail, and the broker playbook used on thin-float juniors. Essential context for anyone researching any TSX.V name.</div>
-      <div class="tool-features">
-        <span class="feat">14 venues</span>
-        <span class="feat">Order lifecycle</span>
-        <span class="feat">Data hierarchy</span>
-        <span class="feat">Broker playbook</span>
-        <span class="feat">Countermoves</span>
+      <div class="t-card-name">Global Lithium Projects Map</div>
+      <div class="t-card-desc">Every significant lithium project on a world map — resources, reserves, and exploration assets. Filter by stage and jurisdiction; tonnage, grade, and ownership on hover.</div>
+      <div class="t-card-stats">
+        <div class="t-card-stat"><span class="v">55+</span><span class="k">Projects</span></div>
+        <div class="t-card-stat"><span class="v">21</span><span class="k">Jurisdictions</span></div>
+        <div class="t-card-stat"><span class="v">4</span><span class="k">Stages</span></div>
+      </div>
+      <div class="t-card-foot">
+        <span class="updated">updated 2026-04-12</span>
+        <span>· Map view</span>
       </div>
     </a>
 
-  </div>
-
-  <!-- Company Deep Dives subsection -->
-  <div class="sub-label reveal">Company Deep Dives</div>
-  <div class="tools-grid">
-
-    <!-- Q2 Metals (QTWO) -->
-    <a href="QTWO_Report_v4.html" class="tool-card reveal" style="--accent: var(--cisco)">
-      <div class="tool-card-head">
-        <div class="tool-icon" style="background:rgba(255,53,71,.1);">🔍</div>
-        <div class="tool-arrow">↗</div>
+    <a href="lithium_supply_model.html" class="t-card">
+      <div class="t-card-top">
+        <span class="t-card-tag">Supply &amp; demand</span>
+        <span class="t-card-glyph">SUP</span>
+        <span class="t-card-arrow">[→]</span>
       </div>
-      <div class="tool-tag" style="background:rgba(255,53,71,.1);color:var(--cisco)">Company Report</div>
-      <div class="tool-name">Q2 Metals Corp<br><span style="color:var(--t3);font-size:16px;font-weight:500;">(TSX.V: QTWO) — Cisco Lithium</span></div>
-      <div class="tool-desc">Full situation report on Q2 Metals and the Cisco Lithium Project in James Bay, Quebec. Covers the 9.9 Mt LCE maiden resource, broker flow analysis across trading venues, narrative phases, and the investigative framework applied to the name.</div>
-      <div class="tool-features">
-        <span class="feat">9.9 Mt LCE</span>
-        <span class="feat">Broker flow</span>
-        <span class="feat">Narrative arc</span>
-        <span class="feat">Case study</span>
-        <span class="feat">Apr 2026</span>
+      <div class="t-card-name">Global Lithium Supply Model</div>
+      <div class="t-card-desc">42 assets across 26 companies with year-by-year LCE production forecasts to 2040. Inducement cost curves (LCE &amp; SC6), category-based demand model with BESS / EV / truck breakdown.</div>
+      <div class="t-card-stats">
+        <div class="t-card-stat"><span class="v">42</span><span class="k">Assets</span></div>
+        <div class="t-card-stat"><span class="v">26</span><span class="k">Cos</span></div>
+        <div class="t-card-stat"><span class="v">2040</span><span class="k">Horizon</span></div>
+      </div>
+      <div class="t-card-foot">
+        <span class="updated">updated 2026-04-08</span>
+        <span>· Model</span>
       </div>
     </a>
 
-    <!-- Placeholder: More deep dives coming -->
-    <div class="tool-card reveal" style="--accent: var(--t3); cursor:default; opacity:.55;">
-      <div class="tool-card-head">
-        <div class="tool-icon" style="background:rgba(127,168,200,.06);color:var(--t3);">＋</div>
-        <div class="tool-arrow" style="border-style:dashed;">…</div>
+    <div class="t-card t-card-roadmap" aria-disabled="true">
+      <div class="t-card-top">
+        <span class="t-card-tag t-card-tag-soon">On the desk</span>
+        <span class="t-card-glyph">WIP</span>
+        <span class="t-card-arrow">[ ]</span>
       </div>
-      <div class="tool-tag" style="background:rgba(127,168,200,.08);color:var(--t3)">In the works</div>
-      <div class="tool-name" style="color:var(--t2)">More deep dives<br>coming soon</div>
-      <div class="tool-desc">Additional company reports on lithium developers and producers will be added here — same framework, same level of detail. Reach out if there's a name you'd like covered.</div>
-      <div class="tool-features">
-        <span class="feat">Developers</span>
-        <span class="feat">Producers</span>
-        <span class="feat">Hard rock</span>
-        <span class="feat">Brine</span>
+      <div class="t-card-name">Roadmap<span class="ticker" style="color:var(--fg-3)">Q3 2026</span></div>
+      <div class="t-card-desc">Next builds in the pipeline. Working on a copper EV/lb screener, a uranium project tracker, and an offtake/financing comp database. Tell me what you'd actually use.</div>
+      <div class="t-card-stats">
+        <div class="t-card-stat"><span class="v" style="color:var(--fg-2)">Cu</span><span class="k">Screener</span></div>
+        <div class="t-card-stat"><span class="v" style="color:var(--fg-2)">U₃O₈</span><span class="k">Tracker</span></div>
+        <div class="t-card-stat"><span class="v" style="color:var(--fg-2)">Comps</span><span class="k">DB</span></div>
+      </div>
+      <div class="t-card-foot">
+        <span class="updated" style="color:var(--fg-3)">in development</span>
+        <span>· <a href="/cdn-cgi/l/email-protection#96fef3fafaf9d6ecf9e0faeff8b8f5f9fb" style="color:var(--accent)">request a tool →</a></span>
       </div>
     </div>
 
   </div>
-</section>
+</div>
 
-<!-- About -->
-<section class="about" id="about">
-  <div class="reveal">
-    <h2 class="about-h">Independent research for<br><span>lithium investors</span></h2>
-    <p class="about-p">The lithium space runs on press releases, unverified assumptions, and recycled broker decks. These tools exist so anyone willing to do the work can sanity-check the economics, compare projects on a consistent basis, and understand the mechanics of the exchanges these names trade on.</p>
-    <p class="about-p">Every model is open — if you disagree with an assumption, change it. The methodology is calibrated against published feasibility studies and real M&A transactions. Where a company-specific deep dive exists, it's a worked example of the framework applied to a single name, not a recommendation.</p>
-    <div class="about-note">All models and reports are independent research, pre-PEA estimates where applicable, and calibrated to comparable feasibility studies. Not investment advice. Figures sourced from company filings, NI 43-101 reports, and public M&A data. Do your own work.</div>
-  </div>
-  <div class="about-right reveal">
-    <div class="fact-row">
-      <div class="fact-lbl">Coverage</div>
-      <div class="fact-val" style="color:var(--teal)">Global · all stages</div>
-    </div>
-    <div class="fact-row">
-      <div class="fact-lbl">Data sources</div>
-      <div class="fact-val" style="color:var(--t2)">Filings · M&A · FS decks</div>
-    </div>
-    <div class="fact-row">
-      <div class="fact-lbl">Methodology</div>
-      <div class="fact-val" style="color:var(--t2)">Calibrated to peer FS</div>
-    </div>
-    <div class="fact-row">
-      <div class="fact-lbl">Licensing</div>
-      <div class="fact-val" style="color:var(--green)">Open · free to share</div>
-    </div>
-    <div class="fact-row">
-      <div class="fact-lbl">Latest build</div>
-      <div class="fact-val" style="color:var(--amber)">April 2026</div>
-    </div>
-    <div class="fact-row">
-      <div class="fact-lbl">Deep dives</div>
-      <div class="fact-val" style="color:var(--cisco)">1 active · more to come</div>
-    </div>
-  </div>
-</section>
+<div class="t-rule"></div>
 
-<!-- Footer -->
-<footer>
-  <div class="footer-l">Lithium Research</div>
-  <div class="footer-r">
-    Data: company filings, NI 43-101 reports, public M&A · April 2026<br>
-    Not investment advice · Tools provided for educational purposes only<br>
-    Independent research · Free to use · Free to share
+<!-- ═══ Research ═══ -->
+<div class="t-sec" id="research">
+  <div class="t-sec-h reveal">
+    <span class="num">[02]</span>
+    <span class="title">COMPANY RESEARCH<span class="dim"> // /research</span></span>
+    <span class="meta">deep dives · long-form</span>
   </div>
-</footer>
+  <div class="t-grid full reveal">
+    <a href="QTWO_Research_Report_v7.html" class="t-card">
+      <div class="t-card-top">
+        <span class="t-card-tag">Company report</span>
+        <span class="t-card-glyph">QTWO.V</span>
+        <span class="t-card-arrow">[→]</span>
+      </div>
+      <div class="t-card-name">Q2 Metals Corp<span class="ticker">QTWO.V</span></div>
+      <div class="t-card-desc">Full situation report on Q2 Metals and the Cisco Lithium Project in James Bay, Quebec. Maiden 9.1 Mt LCE resource, broker flow analysis, comparison vs PMET Shaakichiuwaanaan and Nemaska Whabouchi.</div>
+      <div class="t-card-stats">
+        <div class="t-card-stat"><span class="v">295Mt</span><span class="k">Inferred</span></div>
+        <div class="t-card-stat"><span class="v">1.36% Li₂O</span><span class="k">Grade</span></div>
+        <div class="t-card-stat"><span class="v">9.1Mt</span><span class="k">LCE</span></div>
+      </div>
+      <div class="t-card-foot">
+        <span class="updated">updated 2026-04-22</span>
+        <span>· Deep dive</span>
+      </div>
+    </a>
+  </div>
+</div>
 
-<script>
-// Scroll reveal
-const obs = new IntersectionObserver((entries) => {
-  entries.forEach((e, i) => {
-    if(e.isIntersecting){
-      setTimeout(() => e.target.classList.add('visible'), i * 100);
-      obs.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+<div class="t-rule"></div>
+
+<!-- ═══ Primers ═══ -->
+<div class="t-sec" id="primers">
+  <div class="t-sec-h reveal">
+    <span class="num">[03]</span>
+    <span class="title">PRIMERS &amp; EXPLAINERS<span class="dim"> // /primers</span></span>
+    <span class="meta">market mechanics · methodology</span>
+  </div>
+  <div class="t-grid full reveal">
+    <a href="tsxv_primer.html" class="t-card">
+      <div class="t-card-top">
+        <span class="t-card-tag">Primer</span>
+        <span class="t-card-glyph">TSXV</span>
+        <span class="t-card-arrow">[→]</span>
+      </div>
+      <div class="t-card-name">TSX.V Market Primer</div>
+      <div class="t-card-desc">How Canada's junior exchange actually works. Fourteen trading venues, the order lifecycle, the five tiers of market data, settlement mechanics, what's hidden from retail.</div>
+      <div class="t-card-stats">
+        <div class="t-card-stat"><span class="v">14</span><span class="k">Venues</span></div>
+        <div class="t-card-stat"><span class="v">5</span><span class="k">Data tiers</span></div>
+        <div class="t-card-stat"><span class="v">6</span><span class="k">Pages</span></div>
+      </div>
+      <div class="t-card-foot">
+        <span class="updated">updated 2026-02-15</span>
+        <span>· Explainer</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- ═══ About ═══ -->
+<div class="t-about" id="about">
+  <div class="t-about-inner">
+    <div class="reveal">
+      <h2>An <span class="accent">independent</span> mining research desk.</h2>
+      <p>Zovlyn Research is a one-person operation building tools and writing notes about hard-rock mining — mostly lithium, with the system designed to expand to copper, uranium and other battery materials over time.</p>
+      <p>Everything here is built for an audience that already knows the vocabulary. NI 43-101, JORC, SK-1300, EV/t LCE, SC6 CIF — no glossary, no hand-holding. The goal is to do primary research more carefully than the sell-side does it, and to share the working out.</p>
+      <p>Tools are interactive. Reports are auditable. Numbers come with sources.</p>
+    </div>
+    <div class="reveal">
+      <dl class="meta-list">
+        <dt>STATUS</dt><dd>Independent · not investment advice</dd>
+        <dt>COVERAGE</dt><dd>Hard-rock lithium · expanding</dd>
+        <dt>FRAMEWORKS</dt><dd>NI 43-101 · JORC · SK-1300</dd>
+        <dt>BUILD</dt><dd>v3.1 · 2026.04.26</dd>
+        <dt>CONTACT</dt><dd><a href="/cdn-cgi/l/email-protection#b6ded3dadad9f6ccd9c0dacfd898d5d9db"><span class="__cf_email__" data-cfemail="472f222b2b28073d28312b3e296924282a">[email&#160;protected]</span></a></dd>
+        <dt>FEEDBACK</dt><dd>Spotted an error? <a href="/cdn-cgi/l/email-protection#7b131e1717143b01140d17021555181416">Tell me.</a></dd>
+      </dl>
+    </div>
+  </div>
+</div>
+
+<div class="t-foot">
+  <div>ZOVLYN RESEARCH · NOT INVESTMENT ADVICE · <a href="#disc">/disclaimer</a></div>
+  <div>BUILD 2026.04.26 · v3.1</div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ─── Live clock ───────────────────────────────────────
+(function () {
+  const clock = document.getElementById('t-clock');
+  const session = document.getElementById('t-session');
+  const sessionStart = Date.now();
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function tick() {
+    const now = new Date();
+    const dd = String(now.getDate()).padStart(2,'0');
+    const mm = months[now.getMonth()];
+    const yyyy = now.getFullYear();
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mn = String(now.getMinutes()).padStart(2,'0');
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone.split('/').pop().slice(0,3).toUpperCase();
+    clock.textContent = dd + '-' + mm + '-' + yyyy + ' · ' + hh + ':' + mn + ' ' + tz;
+
+    const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+    const eh = String(Math.floor(elapsed / 3600)).padStart(2,'0');
+    const em = String(Math.floor((elapsed % 3600) / 60)).padStart(2,'0');
+    const es = String(elapsed % 60).padStart(2,'0');
+    session.textContent = 'SESSION ' + eh + ':' + em + ':' + es;
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+// ─── Ticker tape (live with graceful fallback) ────────
+(function () {
+  const fallback = [
+    { sym: 'QTWO.V',     px: 0.42,  d: +0.04 },
+    { sym: 'PMET.TO',    px: 5.12,  d: -0.18 },
+    { sym: 'LAC.TO',     px: 4.88,  d: +0.12 },
+    { sym: 'NMX.TO',     px: 0.71,  d:  0.00 },
+    { sym: 'ALB',        px: 92.34, d: -1.06 },
+    { sym: 'SQM',        px: 48.20, d: +0.65 },
+    { sym: 'LI₂CO₃·CN',  px: 74500, d: -500  },
+    { sym: 'SC6·CIF',    px: 1140,  d: +15   },
+  ];
+  let data = fallback.slice();
+  let live = false;
+  const strip = document.getElementById('t-tape-strip');
+  const dot = document.getElementById('t-tape-dot');
+  const label = document.getElementById('t-tape-status-label');
+
+  function fmtPx(n, sym) {
+    if (sym && (sym.indexOf('CO₃') >= 0 || sym.indexOf('SC6') >= 0)) return Math.round(n).toLocaleString();
+    return n.toFixed(2);
+  }
+  function fmtD(d) {
+    const sign = d > 0 ? '+' : '';
+    if (Math.abs(d) >= 100) return sign + Math.round(d).toLocaleString();
+    return sign + d.toFixed(2);
+  }
+  function dirClass(d) { return d > 0 ? 'up' : d < 0 ? 'dn' : 'flat'; }
+
+  function render() {
+    strip.innerHTML = data.map(r =>
+      '<span class="t-tape-item">' +
+        '<span class="t-tape-sym">' + r.sym + '</span>' +
+        '<span class="t-tape-px">' + fmtPx(r.px, r.sym) + '</span>' +
+        '<span class="t-tape-d ' + dirClass(r.d) + '">' + fmtD(r.d) + '</span>' +
+      '</span>'
+    ).join('');
+  }
+  render();
+
+  // Try real fetch via CORS proxy
+  const symbols = ['QTWO.V','PMET.TO','LAC.TO','NMX.TO','ALB','SQM'];
+  const url = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + symbols.join(',');
+  fetch('https://corsproxy.io/?' + encodeURIComponent(url))
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function (j) {
+      const result = j && j.quoteResponse && j.quoteResponse.result;
+      if (!Array.isArray(result) || !result.length) throw new Error('no data');
+      const liveRows = result.map(function (q) {
+        return {
+          sym: q.symbol,
+          px: Number(q.regularMarketPrice || q.postMarketPrice || 0),
+          d:  Number(q.regularMarketChange || 0),
+        };
+      });
+      data = liveRows.concat([fallback[6], fallback[7]]);
+      live = true;
+      dot.className = 't-tape-dot live';
+      label.textContent = 'LIVE';
+      render();
+    })
+    .catch(function () {
+      dot.className = 't-tape-dot static';
+      label.textContent = 'CACHED';
+    });
+
+  // Gentle jitter on the static fallback so it feels alive
+  setInterval(function () {
+    if (live) return;
+    data = data.map(function (r) {
+      if (Math.random() > 0.35) return r;
+      const jitter = (Math.random() - 0.5) * 0.02;
+      const newPx = Math.max(0.01, r.px * (1 + jitter));
+      const d = newPx - r.px + (r.d || 0);
+      return { sym: r.sym, px: newPx, d: d };
+    });
+    render();
+  }, 4000);
+})();
+
+// ─── Reveal on scroll ─────────────────────────────────
+(function () {
+  if (!('IntersectionObserver' in window)) {
+    document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+    return;
+  }
+  const io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+})();
 </script>
 </body>
 </html>
+                                                         

@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System / Zovlyn Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c0d0a;
+  --bg-2: #131410;
+  --bg-3: #1a1c16;
+  --line: #2a2c24;
+  --line-2: #3a3d33;
+  --fg: #d8d4c2;
+  --fg-2: #8a8773;
+  --fg-3: #5d5b4d;
+  --accent: #5dd3a8;
+  --accent-2: #3aa881;
+  --accent-dim: rgba(93,211,168,0.10);
+  --accent-soft: rgba(93,211,168,0.18);
+  --green: #5dd380;
+  --amber: #e8b658;
+  --red: #ff5f56;
+  --cyan: #6acfe0;
+  --r: 4px;
+  --mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--mono); font-size: 13px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+
+/* Status bar */
+.t-top {
+  background: var(--bg-2); border-bottom: 1px solid var(--line);
+  padding: 8px 24px; display: flex; align-items: center;
+  gap: 24px; font-size: 11px; color: var(--fg-2); flex-wrap: wrap;
+}
+.t-top .session { color: var(--accent); font-weight: 600; }
+.t-spacer { flex: 1; }
+
+/* Nav */
+.t-nav {
+  padding: 14px 24px; display: flex; align-items: center;
+  justify-content: space-between; border-bottom: 1px solid var(--line);
+  flex-wrap: wrap; gap: 12px;
+}
+.t-mark { display: flex; align-items: center; gap: 12px; }
+.t-badge {
+  width: 32px; height: 32px;
+  background: var(--accent); color: var(--bg);
+  display: grid; place-items: center;
+  font-weight: 800; font-size: 16px;
+  font-family: var(--mono); border-radius: var(--r);
+}
+.t-mark-text { display: flex; flex-direction: column; line-height: 1.05; }
+.t-mark-name { font-family: var(--mono); font-weight: 700; font-size: 13px; color: var(--fg); letter-spacing: 0.14em; }
+.t-mark-sub  { font-family: var(--mono); font-size: 9.5px; color: var(--fg-3); letter-spacing: 0.22em; font-weight: 500; }
+.t-nav-r { display: flex; gap: 18px; font-size: 11px; color: var(--fg-2); align-items: center; font-family: var(--mono); }
+.t-nav-r a { color: var(--fg-2); letter-spacing: 0.08em; transition: color 0.15s; text-transform: uppercase; }
+.t-nav-r a:hover { color: var(--accent); }
+.t-nav-r a.home::before { content: '← '; }
+
+/* Page layout — 2 col w/ sticky toc */
+.shell {
+  display: grid; grid-template-columns: 220px 1fr;
+  max-width: 1280px; margin: 0 auto;
+}
+@media (max-width: 920px) { .shell { grid-template-columns: 1fr; } }
+
+.toc {
+  position: sticky; top: 0; align-self: start;
+  border-right: 1px solid var(--line);
+  padding: 32px 0 32px 24px;
+  height: 100vh; overflow-y: auto;
+}
+@media (max-width: 920px) {
+  .toc { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--line); padding: 16px 24px; }
+}
+.toc-h {
+  font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+  color: var(--fg-3); letter-spacing: 0.14em; margin: 14px 0 6px;
+  text-transform: uppercase;
+}
+.toc-h:first-child { margin-top: 0; }
+.toc a {
+  display: block; padding: 4px 0;
+  font-size: 12px; color: var(--fg-2);
+  border-left: 2px solid transparent;
+  padding-left: 10px; margin-left: -2px;
+  transition: all 0.15s;
+}
+.toc a:hover { color: var(--fg); border-left-color: var(--line-2); }
+.toc a.on { color: var(--accent); border-left-color: var(--accent); }
+.toc a .num { color: var(--fg-3); margin-right: 6px; font-family: var(--mono); }
+.toc a.on .num { color: var(--accent); }
+
+/* Main column */
+.main { padding: 48px 32px 80px; max-width: 980px; }
+@media (max-width: 720px) { .main { padding: 32px 16px 40px; } }
+
+/* Cover for the system page */
+.dsystem-cover { padding-bottom: 36px; border-bottom: 1px solid var(--line); margin-bottom: 36px; }
+.dsystem-cover .tags {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 10.5px; color: var(--fg-3);
+  letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 18px;
+}
+.dsystem-cover .tags .accent { color: var(--accent); }
+.dsystem-cover .tags .sep { color: var(--line-2); }
+.dsystem-cover h1 {
+  font-family: var(--mono); font-weight: 500;
+  font-size: clamp(32px, 5vw, 52px); line-height: 1.05;
+  letter-spacing: -0.025em; color: var(--fg); margin-bottom: 14px;
+}
+.dsystem-cover h1 .accent { color: var(--accent); }
+.dsystem-cover .sub {
+  font-family: var(--sans); font-size: 16px; color: var(--fg-2);
+  max-width: 640px; line-height: 1.55; margin-bottom: 22px;
+}
+.dsystem-cover .meta {
+  display: flex; gap: 24px; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 11px; color: var(--fg-3);
+  letter-spacing: 0.06em; padding-top: 14px; border-top: 1px dashed var(--line-2);
+}
+.dsystem-cover .meta strong { color: var(--fg); font-weight: 500; }
+
+/* Sections */
+.sec { margin-bottom: 56px; scroll-margin-top: 24px; }
+.sec-h {
+  display: flex; align-items: baseline; gap: 14px;
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--line); margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+.sec-h .num { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.12em; font-weight: 600; }
+.sec-h .title { font-family: var(--mono); font-size: 17px; font-weight: 600; color: var(--fg); letter-spacing: 0.02em; }
+.sec-h .meta { margin-left: auto; font-family: var(--mono); font-size: 10.5px; color: var(--fg-3); }
+.sec p {
+  font-family: var(--sans); font-size: 14px; color: var(--fg-2);
+  line-height: 1.65; margin-bottom: 12px; max-width: 720px;
+}
+.sec p strong { color: var(--fg); font-weight: 600; }
+.sec p code, .sec p .code {
+  font-family: var(--mono); font-size: 12px; color: var(--accent);
+  background: var(--bg-2); padding: 1px 6px; border-radius: 3px;
+  border: 1px solid var(--line);
+}
+
+.sub-h {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  color: var(--fg-3); letter-spacing: 0.14em; text-transform: uppercase;
+  margin: 28px 0 12px;
+}
+.sub-h::before { content: '▸ '; color: var(--accent); }
+
+/* Specimen blocks */
+.spec {
+  background: var(--bg-2); border: 1px solid var(--line);
+  border-radius: var(--r); margin: 14px 0;
+  overflow: hidden;
+}
+.spec-h {
+  padding: 8px 14px; border-bottom: 1px dashed var(--line-2);
+  font-family: var(--mono); font-size: 10px; color: var(--fg-3);
+  letter-spacing: 0.14em; text-transform: uppercase;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.spec-h .copy {
+  cursor: pointer; color: var(--fg-3); font-size: 9.5px;
+  letter-spacing: 0.1em; padding: 2px 8px;
+  border: 1px solid var(--line-2); border-radius: 3px;
+  transition: all 0.15s;
+}
+.spec-h .copy:hover { color: var(--accent); border-color: var(--accent); }
+.spec-h .copy.copied { color: var(--green); border-color: var(--green); }
+.spec-body { padding: 18px 14px; }
+.spec-body.flush { padding: 0; }
+
+/* Code samples */
+pre.code-block {
+  background: var(--bg); padding: 14px;
+  font-family: var(--mono); font-size: 11.5px; line-height: 1.55;
+  color: var(--fg-2); overflow-x: auto;
+  border-top: 1px dashed var(--line-2);
+}
+pre.code-block .k { color: var(--cyan); }       /* keyword */
+pre.code-block .s { color: var(--accent); }     /* string */
+pre.code-block .n { color: var(--amber); }      /* number */
+pre.code-block .c { color: var(--fg-3); font-style: italic; } /* comment */
+pre.code-block .p { color: var(--fg); }         /* punct/property */
+
+/* Color tokens */
+.col-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1px; background: var(--line);
+  border: 1px solid var(--line); border-radius: var(--r);
+  overflow: hidden;
+}
+.col {
+  background: var(--bg-2); padding: 14px;
+  display: flex; flex-direction: column; gap: 8px;
+  cursor: pointer; transition: background 0.15s;
+}
+.col:hover { background: var(--bg-3); }
+.col.copied .swatch::after {
+  content: 'COPIED'; position: absolute; inset: 0;
+  display: grid; place-items: center;
+  background: rgba(0,0,0,0.7); color: var(--green);
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; font-weight: 600;
+}
+.swatch {
+  height: 56px; border-radius: var(--r);
+  border: 1px solid var(--line-2);
+  position: relative; overflow: hidden;
+}
+.col-name { font-family: var(--mono); font-size: 12px; color: var(--fg); font-weight: 600; }
+.col-token { font-family: var(--mono); font-size: 10px; color: var(--fg-3); letter-spacing: 0.04em; }
+.col-hex { font-family: var(--mono); font-size: 10.5px; color: var(--fg-2); font-feature-settings: 'tnum'; }
+
+/* Type specimens */
+.type-spec {
+  display: grid; grid-template-columns: 220px 1fr;
+  gap: 24px; align-items: center;
+  padding: 18px 0; border-bottom: 1px dashed var(--line-2);
+}
+@media (max-width: 720px) { .type-spec { grid-template-columns: 1fr; gap: 8px; } }
+.type-meta { font-family: var(--mono); font-size: 11px; color: var(--fg-3); line-height: 1.65; }
+.type-meta .role { color: var(--accent); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; display: block; }
+.type-meta .stack { color: var(--fg-2); }
+.type-meta .size { color: var(--fg); font-feature-settings: 'tnum'; }
+
+/* Type display variations */
+.t-display { font-family: var(--mono); font-weight: 500; font-size: 48px; letter-spacing: -0.025em; color: var(--fg); line-height: 1.05; }
+.t-display .accent { color: var(--accent); }
+.t-h1 { font-family: var(--mono); font-weight: 500; font-size: 32px; letter-spacing: -0.02em; color: var(--fg); line-height: 1.1; }
+.t-h2 { font-family: var(--mono); font-weight: 600; font-size: 17px; color: var(--fg); letter-spacing: 0.02em; }
+.t-h3 { font-family: var(--mono); font-weight: 600; font-size: 14px; color: var(--accent); letter-spacing: 0.04em; text-transform: uppercase; }
+.t-eyebrow { font-family: var(--mono); font-size: 10.5px; color: var(--accent); letter-spacing: 0.16em; text-transform: uppercase; font-weight: 500; }
+.t-body { font-family: var(--sans); font-size: 14px; color: var(--fg-2); line-height: 1.65; max-width: 540px; }
+.t-body strong { color: var(--fg); font-weight: 600; }
+.t-data { font-family: var(--mono); font-size: 22px; font-weight: 600; color: var(--fg); font-feature-settings: 'tnum'; letter-spacing: -0.02em; }
+.t-meta { font-family: var(--mono); font-size: 10px; color: var(--fg-3); letter-spacing: 0.12em; text-transform: uppercase; }
+
+/* Spacing / radius scale */
+.scale-grid {
+  display: grid; grid-template-columns: 80px 80px 1fr;
+  gap: 14px; align-items: center;
+  padding: 8px 0; border-bottom: 1px dashed var(--line-2);
+}
+.scale-grid:last-child { border-bottom: none; }
+.scale-name { font-family: var(--mono); font-size: 11px; color: var(--fg); }
+.scale-val  { font-family: var(--mono); font-size: 11px; color: var(--fg-3); font-feature-settings: 'tnum'; }
+.scale-vis  { height: 22px; }
+.scale-vis .bar { height: 100%; background: var(--accent-soft); border: 1px solid var(--accent); }
+.scale-vis .box { width: 80px; height: 100%; background: var(--bg-3); border: 1px solid var(--line-2); }
+
+/* Component demo grid (1/2/3 col) */
+.demo-grid { display: grid; gap: 12px; margin-bottom: 12px; }
+.demo-1 { grid-template-columns: 1fr; }
+.demo-2 { grid-template-columns: 1fr 1fr; }
+.demo-3 { grid-template-columns: 1fr 1fr 1fr; }
+@media (max-width: 720px) { .demo-2, .demo-3 { grid-template-columns: 1fr; } }
+
+/* Buttons */
+.t-btn {
+  font-family: var(--mono); font-size: 12px; font-weight: 600;
+  padding: 10px 16px; cursor: pointer;
+  border-radius: var(--r); letter-spacing: 0.04em;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: all 0.15s; border: 1px solid transparent;
+}
+.t-btn-p { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.t-btn-p:hover { background: var(--accent-2); border-color: var(--accent-2); }
+.t-btn-s { background: transparent; color: var(--fg-2); border-color: var(--line-2); }
+.t-btn-s:hover { border-color: var(--accent); color: var(--accent); }
+.t-btn-g { background: transparent; color: var(--fg-3); border-color: transparent; }
+.t-btn-g:hover { color: var(--accent); }
+
+/* Pills (status chips) */
+.pill {
+  font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+  padding: 3px 9px; border-radius: var(--r);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  border: 1px solid var(--accent-dim); background: var(--accent-dim); color: var(--accent);
+  display: inline-block;
+}
+.pill.pill-cyan { color: var(--cyan); border-color: rgba(106,207,224,0.2); background: rgba(106,207,224,0.08); }
+.pill.pill-amber { color: var(--amber); border-color: rgba(232,182,88,0.2); background: rgba(232,182,88,0.08); }
+.pill.pill-red { color: var(--red); border-color: rgba(255,95,86,0.2); background: rgba(255,95,86,0.08); }
+.pill.pill-dim { color: var(--fg-3); border-color: var(--line-2); background: transparent; }
+
+/* KPI */
+.kpi-strip {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--line); gap: 1px; overflow: hidden;
+}
+@media (max-width: 720px) { .kpi-strip { grid-template-columns: repeat(2, 1fr); } }
+.kpi {
+  background: var(--bg-2); padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.kpi-v {
+  font-family: var(--mono); font-size: 22px; font-weight: 600;
+  color: var(--fg); font-feature-settings: 'tnum'; letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.kpi-v.hl { color: var(--accent); }
+.kpi-v.dim { color: var(--fg-2); }
+.kpi-v.amber { color: var(--amber); }
+.kpi-v.cyan { color: var(--cyan); }
+.kpi-v.red { color: var(--red); }
+.kpi-l {
+  font-family: var(--mono); font-size: 9.5px; color: var(--fg-3);
+  text-transform: uppercase; letter-spacing: 0.12em; font-weight: 500;
+}
+
+/* Card */
+.card {
+  background: var(--bg-2); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 18px 20px;
+}
+.card-h {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+  color: var(--accent); text-transform: uppercase; letter-spacing: 0.14em;
+  margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px dashed var(--line-2);
+}
+.irow {
+  display: grid; grid-template-columns: 160px 1fr;
+  gap: 12px; padding: 5px 0; font-size: 13px;
+  border-bottom: 1px solid var(--line);
+}
+.irow:last-child { border-bottom: none; }
+.irow-l { font-family: var(--mono); font-size: 11px; color: var(--fg-3); letter-spacing: 0.04em; align-self: center; }
+.irow-v { color: var(--fg); font-feature-settings: 'tnum'; font-family: var(--sans); }
+
+/* Table */
+.tbl-demo { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+table.demo {
+  width: 100%; border-collapse: collapse; font-size: 12px;
+  font-feature-settings: 'tnum';
+}
+table.demo thead th {
+  background: var(--bg-3); padding: 10px 14px;
+  text-align: left; font-family: var(--mono); font-weight: 600; font-size: 9.5px;
+  text-transform: uppercase; letter-spacing: 0.12em; color: var(--fg-3);
+  border-bottom: 1px solid var(--line);
+}
+table.demo tbody td { padding: 8px 14px; border-bottom: 1px solid var(--line); color: var(--fg-2); }
+table.demo tbody tr:last-child td { border-bottom: none; }
+table.demo tbody tr:hover td { background: var(--bg-3); color: var(--fg); }
+table.demo .t-hl td { color: var(--fg) !important; background: var(--accent-dim); }
+table.demo .t-hl td strong { color: var(--accent); }
+
+/* Sparkline */
+.spark-row {
+  display: grid; grid-template-columns: 100px 1fr 80px;
+  gap: 14px; align-items: center;
+  padding: 8px 0; border-bottom: 1px solid var(--line);
+}
+.spark-row:last-child { border-bottom: none; }
+.spark-tk { font-family: var(--mono); font-size: 12px; color: var(--fg); font-weight: 600; letter-spacing: 0.04em; }
+.spark-tk .tag { font-size: 9px; color: var(--fg-3); margin-left: 6px; letter-spacing: 0.1em; }
+.spark-px { font-family: var(--mono); font-size: 12px; color: var(--fg); text-align: right; font-feature-settings: 'tnum'; }
+.spark-px .d { display: block; font-size: 9.5px; }
+.spark-px .d.up { color: var(--green); }
+.spark-px .d.dn { color: var(--red); }
+
+/* Inputs */
+.t-input {
+  background: var(--bg-2); border: 1px solid var(--line-2);
+  color: var(--fg); padding: 8px 12px;
+  font-family: var(--mono); font-size: 12px;
+  border-radius: var(--r); width: 100%;
+  outline: none; transition: border-color 0.15s;
+}
+.t-input:focus { border-color: var(--accent); }
+.t-input::placeholder { color: var(--fg-3); }
+
+input[type=range].t-range { width: 100%; accent-color: var(--accent); }
+
+/* Wordmark variants on system page */
+.mark-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden;
+}
+@media (max-width: 720px) { .mark-grid { grid-template-columns: 1fr; } }
+.mark-cell {
+  background: var(--bg-2); padding: 32px 20px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 18px;
+  min-height: 130px;
+}
+.mark-cell .lbl {
+  font-family: var(--mono); font-size: 9.5px; color: var(--fg-3);
+  letter-spacing: 0.14em; text-transform: uppercase;
+}
+.mark-cell .lbl.use { color: var(--accent); }
+.mark-cell .lbl.dont { color: var(--red); }
+
+/* Patterns: do / don't */
+.do-dont {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  margin: 14px 0;
+}
+@media (max-width: 720px) { .do-dont { grid-template-columns: 1fr; } }
+.do-dont-cell {
+  background: var(--bg-2); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 14px;
+}
+.do-dont-cell.do { border-left: 2px solid var(--accent); }
+.do-dont-cell.dont { border-left: 2px solid var(--red); }
+.do-dont-cell .lbl {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; font-weight: 600;
+  margin-bottom: 8px; text-transform: uppercase;
+}
+.do-dont-cell.do .lbl { color: var(--accent); }
+.do-dont-cell.dont .lbl { color: var(--red); }
+.do-dont-cell p {
+  font-family: var(--sans); font-size: 13px; color: var(--fg-2);
+  line-height: 1.55; margin: 0;
+}
+
+/* Roadmap list */
+.rm-list { display: flex; flex-direction: column; }
+.rm-item {
+  display: grid; grid-template-columns: 90px 1fr 110px;
+  gap: 16px; padding: 14px 0;
+  border-bottom: 1px dashed var(--line-2); align-items: center;
+}
+.rm-item:last-child { border-bottom: none; }
+.rm-status { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; }
+.rm-status.shipped { color: var(--accent); }
+.rm-status.next { color: var(--cyan); }
+.rm-status.later { color: var(--fg-3); }
+.rm-name { font-family: var(--mono); font-size: 13px; color: var(--fg); font-weight: 600; }
+.rm-name .desc { display: block; font-family: var(--sans); font-size: 12px; color: var(--fg-2); margin-top: 2px; font-weight: 400; }
+.rm-link { text-align: right; }
+.rm-link a { font-family: var(--mono); font-size: 10.5px; color: var(--accent); letter-spacing: 0.06em; }
+.rm-link a:hover { text-decoration: underline; }
+.rm-link .none { color: var(--fg-3); font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; }
+
+/* Footer */
+.foot {
+  margin-top: 60px; padding: 24px 0;
+  border-top: 1px solid var(--line);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+  font-family: var(--mono); font-size: 10.5px; color: var(--fg-3);
+  letter-spacing: 0.06em;
+}
+.foot a { color: var(--accent); }
+
+/* Reveal */
+.reveal { opacity: 1; transform: none; transition: opacity .5s ease, transform .5s ease; }
+</style>
+</head>
+<body>
+
+<!-- Status bar -->
+<div class="t-top">
+  <span class="session" id="t-session">SESSION 00:00:00</span>
+  <span>SYSTEM · v1.0</span>
+  <span>BUILD · 2026.04.26</span>
+  <span class="t-spacer"></span>
+  <span id="t-clock">26-APR-2026 · 11:42 EDT</span>
+</div>
+
+<!-- Nav -->
+<div class="t-nav">
+  <a href="index.html" class="t-mark">
+    <div class="t-badge">Z</div>
+    <div class="t-mark-text">
+      <div class="t-mark-name">ZOVLYN</div>
+      <div class="t-mark-sub">RESEARCH</div>
+    </div>
+  </a>
+  <div class="t-nav-r">
+    <a href="index.html" class="home">ALL TOOLS</a>
+    <a href="QTWO_Research_Report_v7.html">REPORT</a>
+    <a href="lithium_supply_model.html">SUPPLY</a>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- ─── TOC ─── -->
+  <aside class="toc" id="toc">
+    <div class="toc-h">Foundations</div>
+    <a href="#overview"><span class="num">[01]</span>Overview</a>
+    <a href="#voice"><span class="num">[02]</span>Voice &amp; tone</a>
+    <a href="#naming"><span class="num">[03]</span>Naming</a>
+
+    <div class="toc-h">Tokens</div>
+    <a href="#color"><span class="num">[04]</span>Color</a>
+    <a href="#type"><span class="num">[05]</span>Typography</a>
+    <a href="#scale"><span class="num">[06]</span>Spacing &amp; radius</a>
+
+    <div class="toc-h">Brand</div>
+    <a href="#wordmark"><span class="num">[07]</span>Wordmark</a>
+
+    <div class="toc-h">Components</div>
+    <a href="#chrome"><span class="num">[08]</span>Page chrome</a>
+    <a href="#buttons"><span class="num">[09]</span>Buttons &amp; inputs</a>
+    <a href="#pills"><span class="num">[10]</span>Status pills</a>
+    <a href="#kpi"><span class="num">[11]</span>KPI tiles</a>
+    <a href="#cards"><span class="num">[12]</span>Cards</a>
+    <a href="#tables"><span class="num">[13]</span>Tables</a>
+    <a href="#charts"><span class="num">[14]</span>Charts</a>
+
+    <div class="toc-h">Templates</div>
+    <a href="#templates"><span class="num">[15]</span>Page templates</a>
+    <a href="#roadmap"><span class="num">[16]</span>Roadmap</a>
+  </aside>
+
+  <!-- ─── MAIN ─── -->
+  <main class="main">
+
+    <!-- COVER -->
+    <header class="dsystem-cover reveal">
+      <div class="tags">
+        <span class="accent">// ZOVLYN/SYSTEM</span>
+        <span class="sep">│</span>
+        <span>v1.0 · 2026.04.26</span>
+        <span class="sep">│</span>
+        <span>SOURCE OF TRUTH</span>
+      </div>
+      <h1>The <span class="accent">Zovlyn</span> system.</h1>
+      <p class="sub">
+        A working design system for an independent mining research desk. Tokens, components and templates that any tool on this site &mdash; existing or future &mdash; should inherit from. Built terminal-first, content-second, decoration last.
+      </p>
+      <div class="meta">
+        <span>OWNERS · <strong>Zovlyn</strong></span>
+        <span>VERSION · <strong>1.0</strong></span>
+        <span>STATUS · <strong>Live</strong></span>
+        <span>SCOPE · <strong>Web · dark only</strong></span>
+      </div>
+    </header>
+
+    <!-- 01 OVERVIEW -->
+    <section class="sec reveal" id="overview">
+      <div class="sec-h">
+        <span class="num">[01]</span>
+        <span class="title">OVERVIEW</span>
+        <span class="meta">read first</span>
+      </div>
+      <p>The Zovlyn system is built around three convictions:</p>
+      <p><strong>1. Density is respect.</strong> Our audience already knows what NI 43-101, JORC, EV/t LCE and SC6 mean. They don't need glossaries, they need data per square inch. The system favours small type, monospace numbers, and terminal vocabulary because it treats the reader as a peer.</p>
+      <p><strong>2. The accent earns its place.</strong> One signature color &mdash; lithium green &mdash; carries every emphasis. Multi-color "data slop" is forbidden. Status colors (green/red/amber/cyan) appear only when they signal something semantic.</p>
+      <p><strong>3. Templates over tools.</strong> Every recurring artifact has a template: home, research report, calculator, screener, map, primer. Once a template is defined, new content <em>fills it</em> rather than re-deriving the design.</p>
+      <p style="margin-top:14px">When in doubt: copy <span class="code">index.html</span> or <span class="code">QTWO_Research_Report_v7.html</span> as a starting point. They are the canonical implementations.</p>
+    </section>
+
+    <!-- 02 VOICE -->
+    <section class="sec reveal" id="voice">
+      <div class="sec-h">
+        <span class="num">[02]</span>
+        <span class="title">VOICE &amp; TONE</span>
+      </div>
+      <div class="do-dont">
+        <div class="do-dont-cell do">
+          <div class="lbl">DO</div>
+          <p>"At ~$7/t LCE on an EV basis, QTWO trades at a significant discount to peers. PMET peaked at ~$50/t LCE pre-resource."</p>
+        </div>
+        <div class="do-dont-cell dont">
+          <div class="lbl">DON'T</div>
+          <p>"QTWO is an exciting opportunity in the high-growth lithium space! With its world-class asset, the company is well-positioned to deliver shareholder value 🚀"</p>
+        </div>
+      </div>
+      <p><strong>House voice</strong> is independent, contrarian, technical, calm. Sharp without being loud. State the number, state the comparison, state the caveat. No exclamation marks, no emoji, no superlatives that aren't earned by data.</p>
+      <p><strong>Numbers are sacred.</strong> Always include unit, source, and as-of date when context allows. <span class="code">$2,000/t SC6</span>, not "around $2k". <span class="code">295 Mt @ 1.36% Li<sub>2</sub>O</span>, not "huge resource".</p>
+      <p><strong>"Not investment advice"</strong> is non-negotiable on every page that discusses a position or company.</p>
+    </section>
+
+    <!-- 03 NAMING -->
+    <section class="sec reveal" id="naming">
+      <div class="sec-h">
+        <span class="num">[03]</span>
+        <span class="title">NAMING</span>
+      </div>
+      <div class="sub-h">In the product</div>
+      <p>Tools are named by what they do, not codenames. <span class="code">EV / t LCE Universe</span>, not <span class="code">LCE-08</span>. The brand is "ZOVLYN RESEARCH" written as a quiet badge in nav, never the page title.</p>
+      <div class="sub-h">In files</div>
+      <p>Production files use snake_case or kebab-case: <span class="code">lithium_supply_model.html</span>, <span class="code">cisco-enhanced-v2.html</span>. Versioned files (<span class="code">v6</span>, <span class="code">v7</span>) are kept until the new version is verified, then the old one is removed.</p>
+      <div class="sub-h">In type</div>
+      <p>Tickers always uppercase with exchange suffix: <span class="code">QTWO.V</span>, <span class="code">PMET.TO</span>. Units are SI with the standard chemistry suffixes: <span class="code">Li<sub>2</sub>O</span>, <span class="code">Li<sub>2</sub>CO<sub>3</sub></span>, <span class="code">SC6</span>.</p>
+    </section>
+
+    <!-- 04 COLOR -->
+    <section class="sec reveal" id="color">
+      <div class="sec-h">
+        <span class="num">[04]</span>
+        <span class="title">COLOR</span>
+        <span class="meta">click any swatch to copy</span>
+      </div>
+
+      <div class="sub-h">Surfaces · the canvas</div>
+      <p>Five tones from deepest (page) to lightest (table-row hover). Stay in this lane. Never invent a sixth gray.</p>
+      <div class="col-grid" id="surfaces"></div>
+
+      <div class="sub-h">Lines · separation</div>
+      <div class="col-grid" id="lines"></div>
+
+      <div class="sub-h">Foreground · text on dark</div>
+      <div class="col-grid" id="fgs"></div>
+
+      <div class="sub-h">Accent · lithium green</div>
+      <p>One color does the work of three. Used for: brand badge, primary buttons, section numbers, "winning" data, hover, focus, KPI emphasis, links, checkmarks.</p>
+      <div class="col-grid" id="accents"></div>
+
+      <div class="sub-h">Semantic · only when meaning is signaled</div>
+      <p>These are NOT decoration. <span class="code">--green</span> = positive change/cash flow. <span class="code">--red</span> = negative/risk/alert. <span class="code">--amber</span> = watch/caution/exogenous. <span class="code">--cyan</span> = peer/neutral comparison.</p>
+      <div class="col-grid" id="semantics"></div>
+    </section>
+
+    <!-- 05 TYPE -->
+    <section class="sec reveal" id="type">
+      <div class="sec-h">
+        <span class="num">[05]</span>
+        <span class="title">TYPOGRAPHY</span>
+        <span class="meta">2 families · 7 roles</span>
+      </div>
+
+      <p><strong>JetBrains Mono</strong> sets every header, every number, every UI label. <strong>Inter</strong> handles prose paragraphs and explanatory copy. Nothing else.</p>
+
+      <div class="type-spec">
+        <div class="type-meta">
+          <span class="role">Display</span>
+          <div class="stack">JetBrains Mono · 500</div>
+          <div class="size">48–60px / -2.5%</div>
+        </div>
+        <div class="t-display"><span class="accent">Mining</span> research</div>
+      </div>
+
+      <div class="type-spec">
+        <div class="type-meta">
+          <span class="role">H1</span>
+          <div class="stack">JetBrains Mono · 500</div>
+          <div class="size">32px / -2%</div>
+        </div>
+        <div class="t-h1">Cisco Lithium Project</div>
+      </div>
+
+      <div class="type-spec">
+        <div class="type-meta">
+          <span class="role">H2 · section</span>
+          <div class="stack">JetBrains Mono · 600</div>
+          <div class="size">17px / +2%</div>
+        </div>
+        <div class="t-h2">PROJECT OVERVIEW</div>
+      </div>
+
+      <div class="type-spec">
+        <div class="type-meta">
+          <span class="role">H3 · card</span>
+          <div class="stack">JetBrains Mono · 600 · uppercase</div>
+          <div class="size">14px / +4%</div>
+        </div>
+        <div class="t-h3">▸ Mineral Resource Estimate</div>
+      </div>
+
+      <div class="type-spec">
+        <div class="type-meta">
+          <span class="role">Eyebrow</span>
+          <div class="stack">JetBrains Mono · 500 · uppercase</div>
+          <div class="size">10.5px / +16%</div>
+        </div>
+        <div class="t-eyebrow">// COMPANY REPORT</div>
+      </div>
+
+      <div class="type-spec">
+        <div class="type-meta">
+          <span class="role">Body</span>
+          <div class="stack">Inter · 400/600</div>
+          <div class="size">14px / 1.65</div>
+        </div>
+        <div class="t-body">At ~<strong>$7/t LCE</strong> on an EV basis, QTWO trades at a significant discount to peers. The re-rate thesis hinges on the market pricing Cisco's 9.1 Mt closer to peer multiples as the project de-risks.</div>
+      </div>
+
+      <div class="type-spec">
+        <div class="type-meta">
+          <span class="role">Data</span>
+          <div class="stack">JetBrains Mono · 600 · tnum</div>
+          <div class="size">22px / -2%</div>
+        </div>
+        <div class="t-data">295 Mt</div>
+      </div>
+
+      <div class="type-spec">
+        <div class="type-meta">
+          <span class="role">Meta · label</span>
+          <div class="stack">JetBrains Mono · 500 · uppercase</div>
+          <div class="size">9.5–11px / +12%</div>
+        </div>
+        <div class="t-meta">UPDATED 2026-04-22 · NOT INVESTMENT ADVICE</div>
+      </div>
+    </section>
+
+    <!-- 06 SCALE -->
+    <section class="sec reveal" id="scale">
+      <div class="sec-h">
+        <span class="num">[06]</span>
+        <span class="title">SPACING &amp; RADIUS</span>
+      </div>
+
+      <div class="sub-h">Spacing scale</div>
+      <p>Multiples of 4. Never invent values between steps.</p>
+      <div class="spec">
+        <div class="spec-body">
+          <div class="scale-grid"><span class="scale-name">--s-1</span><span class="scale-val">4px</span><div class="scale-vis"><div class="bar" style="width:4px"></div></div></div>
+          <div class="scale-grid"><span class="scale-name">--s-2</span><span class="scale-val">8px</span><div class="scale-vis"><div class="bar" style="width:8px"></div></div></div>
+          <div class="scale-grid"><span class="scale-name">--s-3</span><span class="scale-val">12px</span><div class="scale-vis"><div class="bar" style="width:12px"></div></div></div>
+          <div class="scale-grid"><span class="scale-name">--s-4</span><span class="scale-val">16px</span><div class="scale-vis"><div class="bar" style="width:16px"></div></div></div>
+          <div class="scale-grid"><span class="scale-name">--s-5</span><span class="scale-val">24px</span><div class="scale-vis"><div class="bar" style="width:24px"></div></div></div>
+          <div class="scale-grid"><span class="scale-name">--s-6</span><span class="scale-val">32px</span><div class="scale-vis"><div class="bar" style="width:32px"></div></div></div>
+          <div class="scale-grid"><span class="scale-name">--s-7</span><span class="scale-val">48px</span><div class="scale-vis"><div class="bar" style="width:48px"></div></div></div>
+          <div class="scale-grid"><span class="scale-name">--s-8</span><span class="scale-val">64px</span><div class="scale-vis"><div class="bar" style="width:64px"></div></div></div>
+        </div>
+      </div>
+
+      <div class="sub-h">Radius — soft 4px, system-wide</div>
+      <p>Single token. Sharp would have been more terminal; pill would have been less serious. Soft hits the middle and ages well.</p>
+      <div class="spec">
+        <div class="spec-body">
+          <div class="scale-grid">
+            <span class="scale-name">--r</span><span class="scale-val">4px</span>
+            <div class="scale-vis"><div class="box" style="border-radius:4px"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 WORDMARK -->
+    <section class="sec reveal" id="wordmark">
+      <div class="sec-h">
+        <span class="num">[07]</span>
+        <span class="title">WORDMARK</span>
+      </div>
+      <p>The "Z badge + stacked ZOVLYN / RESEARCH" lockup is the only approved primary mark. Three sizes only. Never separate the badge from the wordmark on web; never recolor the badge anything other than <span class="code">--accent</span> on <span class="code">--bg</span>.</p>
+
+      <div class="mark-grid">
+        <div class="mark-cell">
+          <div class="lbl use">USE · S</div>
+          <a href="#" class="t-mark">
+            <div class="t-badge" style="width:24px;height:24px;font-size:12px">Z</div>
+            <div class="t-mark-text">
+              <div class="t-mark-name" style="font-size:11px">ZOVLYN</div>
+              <div class="t-mark-sub" style="font-size:8px">RESEARCH</div>
+            </div>
+          </a>
+        </div>
+        <div class="mark-cell">
+          <div class="lbl use">USE · M (default)</div>
+          <a href="#" class="t-mark">
+            <div class="t-badge">Z</div>
+            <div class="t-mark-text">
+              <div class="t-mark-name">ZOVLYN</div>
+              <div class="t-mark-sub">RESEARCH</div>
+            </div>
+          </a>
+        </div>
+        <div class="mark-cell">
+          <div class="lbl use">USE · L</div>
+          <a href="#" class="t-mark">
+            <div class="t-badge" style="width:48px;height:48px;font-size:24px">Z</div>
+            <div class="t-mark-text">
+              <div class="t-mark-name" style="font-size:18px">ZOVLYN</div>
+              <div class="t-mark-sub" style="font-size:12px">RESEARCH</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="do-dont" style="margin-top:18px">
+        <div class="do-dont-cell do">
+          <div class="lbl">DO</div>
+          <p>Use the Z badge alone (favicon, social avatar) when space is too tight for the wordmark — but always over the same accent green on the same dark background.</p>
+        </div>
+        <div class="do-dont-cell dont">
+          <div class="lbl">DON'T</div>
+          <p>Place the wordmark on white. Add a tagline. Animate the badge. Use the badge in any color other than lithium green. Use "Zovlyn" lowercase in body copy &mdash; always small-caps style "ZOVLYN".</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 PAGE CHROME -->
+    <section class="sec reveal" id="chrome">
+      <div class="sec-h">
+        <span class="num">[08]</span>
+        <span class="title">PAGE CHROME</span>
+      </div>
+      <p>Every page begins with the same two horizontal strips: <strong>status bar</strong> (session timer + meta + clock) and <strong>nav bar</strong> (wordmark left, links right). On the homepage a third <strong>ticker tape</strong> strip sits between them. Tools without market data omit the tape.</p>
+      <div class="spec">
+        <div class="spec-h"><span>Status bar</span><span>--bg-2 · --line bottom</span></div>
+        <div class="spec-body flush">
+          <div class="t-top" style="border-bottom:none;border-top:1px solid var(--line)">
+            <span class="session">SESSION 00:01:42</span>
+            <span>TOOL · DEMO</span>
+            <span>VERSION · 1.0</span>
+            <span class="t-spacer"></span>
+            <span>26-APR-2026 · 11:42 EDT</span>
+          </div>
+        </div>
+      </div>
+      <div class="spec">
+        <div class="spec-h"><span>Nav bar</span><span>--bg · --line bottom</span></div>
+        <div class="spec-body flush">
+          <div class="t-nav" style="border-bottom:none;border-top:1px solid var(--line)">
+            <a href="#" class="t-mark">
+              <div class="t-badge">Z</div>
+              <div class="t-mark-text">
+                <div class="t-mark-name">ZOVLYN</div>
+                <div class="t-mark-sub">RESEARCH</div>
+              </div>
+            </a>
+            <div class="t-nav-r">
+              <a href="#" class="home">ALL TOOLS</a>
+              <a href="#">REPORT</a>
+              <a href="#">SUPPLY</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 BUTTONS -->
+    <section class="sec reveal" id="buttons">
+      <div class="sec-h">
+        <span class="num">[09]</span>
+        <span class="title">BUTTONS &amp; INPUTS</span>
+      </div>
+      <div class="sub-h">Buttons</div>
+      <div class="spec">
+        <div class="spec-body">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <button class="t-btn t-btn-p">RUN /TOOLS →</button>
+            <button class="t-btn t-btn-s">/SECONDARY</button>
+            <button class="t-btn t-btn-g">/GHOST</button>
+            <button class="t-btn t-btn-p" disabled style="opacity:0.4;cursor:not-allowed">DISABLED</button>
+          </div>
+        </div>
+      </div>
+      <div class="sub-h">Inputs</div>
+      <div class="spec">
+        <div class="spec-body">
+          <div class="demo-grid demo-2">
+            <div>
+              <div class="t-meta" style="margin-bottom:6px">SEARCH</div>
+              <input class="t-input" placeholder="QTWO, PMET, LAC...">
+            </div>
+            <div>
+              <div class="t-meta" style="margin-bottom:6px">SC6 PRICE · $/T</div>
+              <input class="t-input" type="text" value="$2,000" style="font-feature-settings:'tnum'">
+            </div>
+          </div>
+          <div style="margin-top:14px">
+            <div class="t-meta" style="margin-bottom:6px">SC6 RANGE · 1,000–4,000</div>
+            <input type="range" class="t-range" min="1000" max="4000" value="2000">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 PILLS -->
+    <section class="sec reveal" id="pills">
+      <div class="sec-h">
+        <span class="num">[10]</span>
+        <span class="title">STATUS PILLS</span>
+      </div>
+      <p>Five variants. Use sparingly &mdash; one or two per card, never as decoration.</p>
+      <div class="spec">
+        <div class="spec-body">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span class="pill">PRIMARY</span>
+            <span class="pill pill-cyan">PEER</span>
+            <span class="pill pill-amber">EXOGENOUS</span>
+            <span class="pill pill-red">RISK</span>
+            <span class="pill pill-dim">SOON</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 KPI -->
+    <section class="sec reveal" id="kpi">
+      <div class="sec-h">
+        <span class="num">[11]</span>
+        <span class="title">KPI TILES</span>
+      </div>
+      <p>The single most-used component on the site. 4-up or 6-up grid. <span class="code">--accent</span> for emphasis ("the headline number"); other tiles default to neutral fg unless they signal status.</p>
+      <div class="spec">
+        <div class="spec-h"><span>4-UP STRIP</span><span>kpi-strip · grid-cols-4</span></div>
+        <div class="spec-body">
+          <div class="kpi-strip">
+            <div class="kpi"><div class="kpi-v hl">295Mt</div><div class="kpi-l">MRE Inferred</div></div>
+            <div class="kpi"><div class="kpi-v">1.36%</div><div class="kpi-l">Li₂O Grade</div></div>
+            <div class="kpi"><div class="kpi-v">9.1Mt</div><div class="kpi-l">Contained LCE</div></div>
+            <div class="kpi"><div class="kpi-v cyan">$7/t</div><div class="kpi-l">EV/t LCE</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="spec">
+        <div class="spec-h"><span>SEMANTIC VARIANTS</span></div>
+        <div class="spec-body">
+          <div class="kpi-strip">
+            <div class="kpi"><div class="kpi-v hl">$3.4B</div><div class="kpi-l">NPV (positive)</div></div>
+            <div class="kpi"><div class="kpi-v red">-$280M</div><div class="kpi-l">NPV (negative)</div></div>
+            <div class="kpi"><div class="kpi-v amber">7 yrs</div><div class="kpi-l">Payback (watch)</div></div>
+            <div class="kpi"><div class="kpi-v cyan">PMET</div><div class="kpi-l">Peer (neutral)</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 CARDS -->
+    <section class="sec reveal" id="cards">
+      <div class="sec-h">
+        <span class="num">[12]</span>
+        <span class="title">CARDS</span>
+      </div>
+      <p>Containers for grouped data. Always <span class="code">--bg-2</span> on <span class="code">--bg</span>, hairline border, accent-colored uppercase header with <span class="code">▸</span> marker, dashed underline below header.</p>
+      <div class="spec">
+        <div class="spec-body">
+          <div class="demo-grid demo-2">
+            <div class="card">
+              <div class="card-h">▸ Mine Plan</div>
+              <div class="irow"><span class="irow-l">Resource</span><span class="irow-v">270 Mt @ 1.36% Li<sub>2</sub>O</span></div>
+              <div class="irow"><span class="irow-l">Mine life</span><span class="irow-v">20 years · 13.5 Mtpa</span></div>
+              <div class="irow"><span class="irow-l">Strip ratio</span><span class="irow-v">2.5:1</span></div>
+              <div class="irow"><span class="irow-l">Recovery</span><span class="irow-v">75% · DMS</span></div>
+            </div>
+            <div class="card">
+              <div class="card-h">▸ Financials</div>
+              <div class="irow"><span class="irow-l">SC6 base case</span><span class="irow-v">$2,000/t</span></div>
+              <div class="irow"><span class="irow-l">Opex (FOB)</span><span class="irow-v">$700/t</span></div>
+              <div class="irow"><span class="irow-l">Initial CAPEX</span><span class="irow-v">$800M</span></div>
+              <div class="irow"><span class="irow-l">Discount rate</span><span class="irow-v">8% real, post-tax</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 TABLES -->
+    <section class="sec reveal" id="tables">
+      <div class="sec-h">
+        <span class="num">[13]</span>
+        <span class="title">TABLES</span>
+        <span class="meta">tnum · uppercase headers</span>
+      </div>
+      <p>Tables are how mining research lives. Default table: small mono headers, 13px body, hairline rows, hover highlight, <span class="code">.t-hl</span> class to highlight a "winning" row in accent green.</p>
+      <div class="spec">
+        <div class="spec-body" style="padding:0">
+          <div class="tbl-demo" style="border:none;border-radius:0">
+            <table class="demo">
+              <thead><tr><th>Project</th><th>Company</th><th>Best (m)</th><th>Grade</th><th>Note</th></tr></thead>
+              <tbody>
+                <tr class="t-hl"><td><strong>Cisco</strong></td><td>Q2 Metals</td><td><strong>457.4</strong></td><td><strong>1.65%</strong></td><td>Highlighted "winner" row</td></tr>
+                <tr><td>Shaakichiuwaanaan</td><td>PMET</td><td>159.7</td><td>1.65%</td><td>FS-stage peer</td></tr>
+                <tr><td>Pilgangoora</td><td>Pilbara</td><td>113.0</td><td>1.31%</td><td>Producing comp</td></tr>
+                <tr><td>Greenbushes</td><td>Talison</td><td>~80</td><td>2.40%</td><td>Reference benchmark</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-h">Sparkline rows · for screeners &amp; watchlists</div>
+      <div class="spec">
+        <div class="spec-body">
+          <div class="spark-row">
+            <span class="spark-tk">QTWO.V <span class="tag">EXP</span></span>
+            <svg viewBox="0 0 200 32" width="100%" height="32" preserveAspectRatio="none">
+              <polyline fill="none" stroke="#5dd3a8" stroke-width="1.5" points="0,22 14,20 28,21 42,18 56,19 70,15 84,16 98,12 112,14 126,10 140,11 154,8 168,9 182,5 200,6"/>
+            </svg>
+            <span class="spark-px">$0.42<span class="d up">+0.04 · +10.5%</span></span>
+          </div>
+          <div class="spark-row">
+            <span class="spark-tk">PMET.TO <span class="tag">FS</span></span>
+            <svg viewBox="0 0 200 32" width="100%" height="32" preserveAspectRatio="none">
+              <polyline fill="none" stroke="#ff5f56" stroke-width="1.5" points="0,8 14,10 28,9 42,12 56,11 70,15 84,14 98,18 112,17 126,20 140,19 154,22 168,21 182,24 200,23"/>
+            </svg>
+            <span class="spark-px">$5.12<span class="d dn">-0.18 · -3.4%</span></span>
+          </div>
+          <div class="spark-row">
+            <span class="spark-tk">LAC.TO <span class="tag">PROD</span></span>
+            <svg viewBox="0 0 200 32" width="100%" height="32" preserveAspectRatio="none">
+              <polyline fill="none" stroke="#5dd3a8" stroke-width="1.5" points="0,18 14,17 28,19 42,16 56,15 70,17 84,14 98,12 112,15 126,11 140,13 154,9 168,10 182,7 200,8"/>
+            </svg>
+            <span class="spark-px">$4.88<span class="d up">+0.12 · +2.5%</span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 14 CHARTS -->
+    <section class="sec reveal" id="charts">
+      <div class="sec-h">
+        <span class="num">[14]</span>
+        <span class="title">CHARTS</span>
+        <span class="meta">Chart.js · custom defaults</span>
+      </div>
+      <p>Every Chart.js instance must reset to system defaults at the top of the file. Palette below is canonical &mdash; do not invent new colors for new chart types.</p>
+
+      <div class="sub-h">Palette &mdash; semantic only</div>
+      <div class="col-grid" id="chart-pal"></div>
+
+      <div class="sub-h">Defaults &mdash; paste into every page that uses Chart.js</div>
+      <div class="spec">
+        <div class="spec-h"><span>chart-defaults.js</span><button class="copy" data-copy="defaults">COPY</button></div>
+<pre class="code-block" id="defaults-code"><span class="c">// Zovlyn chart defaults — set once per page</span>
+<span class="p">Chart.defaults.color</span> = <span class="s">'#8a8773'</span>;       <span class="c">// --fg-2</span>
+<span class="p">Chart.defaults.font.family</span> = <span class="s">"'JetBrains Mono', monospace"</span>;
+<span class="p">Chart.defaults.font.size</span> = <span class="n">10.5</span>;
+<span class="p">Chart.defaults.borderColor</span> = <span class="s">'rgba(58,61,51,0.5)'</span>; <span class="c">// --line-2 @ 50%</span>
+
+<span class="k">const</span> CHART_OPTS = {
+  <span class="p">responsive</span>: <span class="k">true</span>,
+  <span class="p">maintainAspectRatio</span>: <span class="k">false</span>,
+  <span class="p">plugins</span>: { <span class="p">legend</span>: { <span class="p">position</span>: <span class="s">'bottom'</span> } },
+};</pre>
+      </div>
+    </section>
+
+    <!-- 15 TEMPLATES -->
+    <section class="sec reveal" id="templates">
+      <div class="sec-h">
+        <span class="num">[15]</span>
+        <span class="title">PAGE TEMPLATES</span>
+      </div>
+      <p>Two templates are live. Both are linked here as canonical implementations &mdash; copy-fork these instead of starting fresh.</p>
+
+      <div class="spec">
+        <div class="spec-body">
+          <div class="rm-list">
+            <div class="rm-item">
+              <span class="rm-status shipped">SHIPPED</span>
+              <span class="rm-name">Tool index / home<span class="desc">Status bar · ticker tape · split hero · 2-up tool grid · about strip · footer.</span></span>
+              <span class="rm-link"><a href="index.html">open →</a></span>
+            </div>
+            <div class="rm-item">
+              <span class="rm-status shipped">SHIPPED</span>
+              <span class="rm-name">Research report · v7<span class="desc">Cover · KPI strip · sticky page nav · numbered sections · NPV scenario tool · catalysts &amp; risks · disclosure.</span></span>
+              <span class="rm-link"><a href="QTWO_Research_Report_v7.html">open →</a></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 16 ROADMAP -->
+    <section class="sec reveal" id="roadmap">
+      <div class="sec-h">
+        <span class="num">[16]</span>
+        <span class="title">ROADMAP</span>
+        <span class="meta">archetypes still to template</span>
+      </div>
+      <p>The system isn't finished. Six remaining archetypes need to be formally templated so future tools inherit instead of re-invent. Pick one to design next.</p>
+
+      <div class="spec">
+        <div class="spec-body">
+          <div class="rm-list">
+            <div class="rm-item">
+              <span class="rm-status shipped">SHIPPED</span>
+              <span class="rm-name">Calculator template<span class="desc">Inputs left · KPI strip + sensitivity chart + matrix table right. Live recalc, presets, copy-formula.</span></span>
+              <span class="rm-link"><a href="lce_converter.html">open →</a></span>
+            </div>
+            <div class="rm-item">
+              <span class="rm-status shipped">SHIPPED</span>
+              <span class="rm-name">Screener / data table<span class="desc">Filterable, sortable universe table with stage/type/region chips, KPI roll-up, search, LCE bars.</span></span>
+              <span class="rm-link"><a href="lithium_screener.html">open →</a></span>
+            </div>
+            <div class="rm-item">
+              <span class="rm-status later">LATER</span>
+              <span class="rm-name">Map view<span class="desc">Project locations with hover cards, stage legend, jurisdiction filter chrome.</span></span>
+              <span class="rm-link"><span class="none">PROPOSED</span></span>
+            </div>
+            <div class="rm-item">
+              <span class="rm-status later">LATER</span>
+              <span class="rm-name">Primer / explainer<span class="desc">Long-form editorial template — TOC, pull quotes, footnotes, diagrams.</span></span>
+              <span class="rm-link"><span class="none">PROPOSED</span></span>
+            </div>
+            <div class="rm-item">
+              <span class="rm-status later">LATER</span>
+              <span class="rm-name">Investment thesis<span class="desc">One-pager. Hero number, 3 pillars, "why now", "what could go wrong", position size disclosure.</span></span>
+              <span class="rm-link"><span class="none">PROPOSED</span></span>
+            </div>
+            <div class="rm-item">
+              <span class="rm-status later">LATER</span>
+              <span class="rm-name">Watchlist / portfolio dashboard<span class="desc">Sparkline rows, sector pivots, news strip, P&amp;L card.</span></span>
+              <span class="rm-link"><span class="none">PROPOSED</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <div class="foot">
+      <div>ZOVLYN/SYSTEM · v1.0 · 2026.04.26 · NOT INVESTMENT ADVICE</div>
+      <div><a href="index.html">← back to tools</a></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// Live clock
+(function () {
+  const clock = document.getElementById('t-clock');
+  const session = document.getElementById('t-session');
+  const sessionStart = Date.now();
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function tick() {
+    const now = new Date();
+    const dd = String(now.getDate()).padStart(2,'0');
+    const mm = months[now.getMonth()];
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mn = String(now.getMinutes()).padStart(2,'0');
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone.split('/').pop().slice(0,3).toUpperCase();
+    clock.textContent = dd + '-' + mm + '-' + now.getFullYear() + ' · ' + hh + ':' + mn + ' ' + tz;
+    const e = Math.floor((Date.now() - sessionStart) / 1000);
+    session.textContent = 'SESSION ' +
+      String(Math.floor(e/3600)).padStart(2,'0') + ':' +
+      String(Math.floor((e%3600)/60)).padStart(2,'0') + ':' +
+      String(e%60).padStart(2,'0');
+  }
+  tick(); setInterval(tick, 1000);
+})();
+
+// ─── Token swatches ───
+const surfaces = [
+  ['Page',     '--bg',   '#0c0d0a', 'Body / canvas'],
+  ['Surface',  '--bg-2', '#131410', 'Cards · panels'],
+  ['Sunken',   '--bg-3', '#1a1c16', 'Headers · hovers'],
+];
+const lines = [
+  ['Hairline', '--line',   '#2a2c24', 'All borders, dividers'],
+  ['Hover',    '--line-2', '#3a3d33', 'Hover, dashed rules, focus'],
+];
+const fgs = [
+  ['Primary',   '--fg',   '#d8d4c2', 'Body text, data, headings'],
+  ['Secondary', '--fg-2', '#8a8773', 'Subtitles, table cells'],
+  ['Tertiary',  '--fg-3', '#5d5b4d', 'Meta, labels, axis ticks'],
+];
+const accents = [
+  ['Accent',     '--accent',     '#5dd3a8', 'Lithium green · primary'],
+  ['Accent +',   '--accent-2',   '#3aa881', 'Hover state'],
+  ['Accent dim', '--accent-dim', 'rgba(93,211,168,0.10)', 'Tints, fills'],
+];
+const semantics = [
+  ['Green',  '--green', '#5dd380', 'Positive · cash flow'],
+  ['Red',    '--red',   '#ff5f56', 'Negative · risk · alert'],
+  ['Amber',  '--amber', '#e8b658', 'Watch · caution · exogenous'],
+  ['Cyan',   '--cyan',  '#6acfe0', 'Peer · neutral · comparison'],
+];
+const chartPal = [
+  ['Highlight',  '--accent', '#5dd3a8', 'Our subject / winning data'],
+  ['Negative',   '--red',    '#ff5f56', 'Loss · downside · deficit'],
+  ['Watch',      '--amber',  '#e8b658', 'Reference lines · caution'],
+  ['Peer',       '--cyan',   '#6acfe0', 'Comparison sets'],
+  ['Generic',    '--fg-2',   '#8a8773', 'Background series'],
+];
+
+function renderSwatches(targetId, items) {
+  const el = document.getElementById(targetId);
+  if (!el) return;
+  el.innerHTML = items.map(([name, token, hex, desc]) =>
+    `<div class="col" data-copy="${token}">
+       <div class="swatch" style="background:${hex}"></div>
+       <div class="col-name">${name}</div>
+       <div class="col-token">${token}</div>
+       <div class="col-hex">${hex}</div>
+       <div class="col-token" style="color:var(--fg-3)">${desc}</div>
+     </div>`
+  ).join('');
+}
+renderSwatches('surfaces', surfaces);
+renderSwatches('lines', lines);
+renderSwatches('fgs', fgs);
+renderSwatches('accents', accents);
+renderSwatches('semantics', semantics);
+renderSwatches('chart-pal', chartPal);
+
+// Click-to-copy on swatches
+document.addEventListener('click', function (e) {
+  const col = e.target.closest('.col[data-copy]');
+  if (col) {
+    const text = col.dataset.copy;
+    navigator.clipboard?.writeText(text).then(() => {
+      col.classList.add('copied');
+      setTimeout(() => col.classList.remove('copied'), 900);
+    });
+  }
+  const copyBtn = e.target.closest('.copy[data-copy]');
+  if (copyBtn) {
+    const codeId = copyBtn.dataset.copy + '-code';
+    const codeEl = document.getElementById(codeId);
+    if (codeEl) {
+      navigator.clipboard?.writeText(codeEl.innerText);
+      copyBtn.classList.add('copied');
+      copyBtn.textContent = 'COPIED';
+      setTimeout(() => { copyBtn.classList.remove('copied'); copyBtn.textContent = 'COPY'; }, 1100);
+    }
+  }
+});
+
+// Reveal
+(function () {
+  if (!('IntersectionObserver' in window)) {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+    return;
+  }
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+})();
+
+// TOC scrollspy
+(function () {
+  const links = document.querySelectorAll('.toc a');
+  const sections = [...links].map(a => document.querySelector(a.getAttribute('href')));
+  if (!('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        const id = '#' + en.target.id;
+        links.forEach(a => a.classList.toggle('on', a.getAttribute('href') === id));
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(s => s && io.observe(s));
+})();
+</script>
+</body>
+</html>
+                           
