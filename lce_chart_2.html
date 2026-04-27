@@ -3,422 +3,649 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EV / t LCE — Global Lithium Valuation Universe</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<title>EV / t LCE / Zovlyn Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
-:root{
-  --bg:#080d14;--surface:#0e1620;--card:#131e2e;--card2:#192538;
-  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
-  --cisco:#ff4655;--producer:#00e5a0;--developer:#3d9eff;
-  --explorer:#a78bfa;--ma:#f59e0b;--brine:#38bdf8;
-  --text:#f1f5f9;--muted:#64748b;--dim:#334155;
-  --font:'Space Grotesk',system-ui,sans-serif;--mono:'Space Mono',monospace;
+:root {
+  --bg: #0c0d0a; --bg-2: #131410; --bg-3: #1a1c16;
+  --line: #2a2c24; --line-2: #3a3d33;
+  --fg: #d8d4c2; --fg-2: #8a8773; --fg-3: #5d5b4d;
+  --accent: #5dd3a8; --accent-2: #3aa881; --accent-dim: rgba(93,211,168,0.10); --accent-soft: rgba(93,211,168,0.18);
+  --green: #5dd380; --amber: #e8b658; --red: #ff5f56; --cyan: #6acfe0;
+  --r: 4px;
+  --mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);}
-body{padding:0 0 48px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--mono);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
 
-/* Header */
-.hdr{padding:26px 36px 20px;border-bottom:1px solid var(--border);}
-.hdr-eyebrow{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--developer);margin-bottom:6px;}
-.hdr-row{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap;}
-.hdr-title{font-size:24px;font-weight:700;line-height:1.15;}
-.hdr-title span{color:var(--cisco);}
-.hdr-sub{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.6;max-width:540px;}
-.cisco-pill{background:rgba(255,70,85,.1);border:1px solid rgba(255,70,85,.3);border-radius:10px;padding:12px 16px;text-align:right;min-width:180px;}
-.cp-val{font-size:28px;font-weight:700;font-family:var(--mono);color:var(--cisco);line-height:1;}
-.cp-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:3px;}
-.cp-context{font-size:11px;font-family:var(--mono);color:var(--muted);margin-top:4px;}
+/* ─── Page chrome ─── */
+.t-top{background:var(--bg-2);border-bottom:1px solid var(--line);padding:8px 24px;display:flex;align-items:center;gap:24px;font-size:11px;color:var(--fg-2);flex-wrap:wrap}
+.t-top .session{color:var(--accent);font-weight:600}
+.t-spacer{flex:1}
+.t-nav{padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:12px}
+.t-mark{display:flex;align-items:center;gap:12px}
+.t-badge{width:32px;height:32px;background:var(--accent);color:var(--bg);display:grid;place-items:center;font-weight:800;font-size:16px;border-radius:var(--r)}
+.t-mark-text{display:flex;flex-direction:column;line-height:1.05}
+.t-mark-name{font-weight:700;font-size:13px;color:var(--fg);letter-spacing:0.14em}
+.t-mark-sub{font-size:9.5px;color:var(--fg-3);letter-spacing:0.22em;font-weight:500}
+.t-nav-r{display:flex;gap:18px;font-size:11px;color:var(--fg-2);align-items:center}
+.t-nav-r a{color:var(--fg-2);letter-spacing:0.08em;text-transform:uppercase;transition:color .15s}
+.t-nav-r a:hover{color:var(--accent)}
+.t-nav-r a.home::before{content:'← '}
 
-/* Re-rate bar */
-.rerate{background:rgba(255,153,0,.06);border-bottom:1px solid rgba(255,153,0,.2);padding:10px 36px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
-.rerate-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#f59e0b;white-space:nowrap;}
-.rerate input[type=range]{flex:1;min-width:180px;accent-color:#f59e0b;}
-.rerate-val{font-size:13px;font-weight:700;font-family:var(--mono);color:#f59e0b;min-width:56px;}
-.rr-cards{display:flex;gap:8px;flex-wrap:wrap;}
-.rrc{background:rgba(255,153,0,.08);border:1px solid rgba(255,153,0,.18);border-radius:7px;padding:7px 12px;min-width:100px;}
-.rrc-v{font-size:16px;font-weight:700;font-family:var(--mono);color:#f59e0b;line-height:1.1;}
-.rrc-l{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-top:2px;}
-.rrc-n{font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:1px;}
+/* ─── Cover ─── */
+.cover{max-width:1280px;margin:0 auto;padding:36px 24px 24px;border-bottom:1px solid var(--line)}
+.cover .tags{display:flex;gap:12px;flex-wrap:wrap;font-size:10.5px;color:var(--fg-3);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px}
+.cover .tags .accent{color:var(--accent)}
+.cover .tags .sep{color:var(--line-2)}
+.cover h1{font-weight:500;font-size:clamp(28px,4.5vw,44px);line-height:1.05;letter-spacing:-0.025em;color:var(--fg);margin-bottom:10px}
+.cover h1 .accent{color:var(--accent)}
+.cover .sub{font-family:var(--sans);font-size:15px;color:var(--fg-2);max-width:680px;line-height:1.55;margin-bottom:18px}
+.cover .meta{display:flex;gap:24px;flex-wrap:wrap;font-size:10.5px;color:var(--fg-3);letter-spacing:0.06em;padding-top:12px;border-top:1px dashed var(--line-2)}
+.cover .meta strong{color:var(--fg);font-weight:500}
+.cover .meta .accent{color:var(--accent)}
+.cover .meta .amber{color:var(--amber)}
 
-/* Controls */
-.controls{display:flex;justify-content:space-between;align-items:center;padding:9px 36px;border-bottom:1px solid var(--border);background:var(--surface);flex-wrap:wrap;gap:8px;}
-.legend{display:flex;gap:14px;flex-wrap:wrap;}
-.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);cursor:pointer;user-select:none;transition:opacity .15s;}
-.leg.off{opacity:.3;}
-.leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
-.vbtns{display:flex;gap:3px;}
-.vbtn{padding:4px 12px;border-radius:16px;border:1px solid var(--border2);background:none;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .12s;}
-.vbtn.on{background:var(--developer);border-color:var(--developer);color:#fff;}
+/* ─── Calculator shell ─── */
+.calc{max-width:1280px;margin:0 auto;padding:28px 24px 60px;display:grid;grid-template-columns:340px 1fr;gap:20px}
+@media (max-width:920px){.calc{grid-template-columns:1fr}}
 
-/* === BUCKET VIEW === */
-.bucket-view{padding:20px 36px;}
-.bucket-row{display:flex;gap:0;margin-bottom:24px;align-items:stretch;}
-.bucket-label-col{width:110px;flex-shrink:0;display:flex;flex-direction:column;justify-content:center;padding-right:12px;}
-.bucket-stage{font-size:11px;font-weight:700;color:#c8d8e8;line-height:1.2;margin-bottom:2px;}
-.bucket-range{font-size:9px;font-family:var(--mono);color:var(--muted);}
-.bucket-chart-col{flex:1;position:relative;min-height:80px;}
-/* Range bar */
-.bk-track{position:relative;height:32px;background:rgba(255,255,255,.04);border-radius:4px;margin-bottom:6px;}
-.bk-range{position:absolute;top:0;bottom:0;border-radius:4px;opacity:.35;}
-.bk-median{position:absolute;top:-4px;bottom:-4px;width:3px;border-radius:2px;z-index:2;}
-.bk-cisco{position:absolute;top:-2px;bottom:-2px;width:4px;border-radius:2px;background:var(--cisco);z-index:3;}
-.bk-rerate{position:absolute;top:-2px;bottom:-2px;width:2px;background:#f59e0b;z-index:4;opacity:.8;}
-/* Dot strip */
-.bk-dots{display:flex;gap:4px;flex-wrap:wrap;align-items:center;padding:2px 0;}
-.bk-dot{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted);cursor:pointer;transition:opacity .12s;}
-.bk-dot:hover{opacity:.8;}
-.bk-dot-circle{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.bk-dot.cisco-dot{color:var(--cisco);font-weight:700;}
-/* Axis labels */
-.bk-axis{display:flex;justify-content:space-between;font-size:9px;font-family:var(--mono);color:var(--dim);margin-top:2px;padding:0 1px;}
-/* Legend strip at top */
-.bk-legend{display:flex;gap:16px;padding:0 0 14px;font-size:10px;color:var(--muted);flex-wrap:wrap;align-items:center;}
-.bk-leg-item{display:flex;align-items:center;gap:5px;}
-.bk-leg-line{width:24px;height:3px;border-radius:2px;}
+/* ─── Cards ─── */
+.card{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r)}
+.card-h{padding:12px 16px;border-bottom:1px dashed var(--line-2);font-size:10.5px;color:var(--accent);text-transform:uppercase;letter-spacing:0.14em;font-weight:600;display:flex;align-items:center;justify-content:space-between}
+.card-h::before{content:'▸ '}
+.card-h .meta{font-size:9.5px;color:var(--fg-3);letter-spacing:0.1em;font-weight:500}
+.card-b{padding:16px}
+.card-b.flush{padding:0}
 
-/* === BAR VIEW === */
-.bar-view{padding:16px 36px;}
-.bar-list{max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:3px;}
-.bar-row{display:grid;grid-template-columns:210px 1fr 80px 62px;align-items:center;gap:8px;padding:2px 0;cursor:pointer;}
-.bar-name-wrap{display:flex;flex-direction:column;gap:1px;}
-.bar-name{font-size:12px;font-weight:600;color:#c8d8e8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.bar-meta{font-size:9px;color:var(--muted);font-family:var(--mono);}
-.bar-track{position:relative;height:24px;background:rgba(255,255,255,.03);border-radius:3px;overflow:hidden;}
-.bar-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding:0 8px;transition:width .4s cubic-bezier(.4,0,.2,1);}
-.bar-inner-lbl{font-size:10px;font-weight:700;font-family:var(--mono);color:rgba(0,0,0,.7);white-space:nowrap;overflow:hidden;}
-.bar-val{font-size:12px;font-weight:700;font-family:var(--mono);text-align:right;}
-.bar-badge{font-size:9px;font-weight:700;font-family:var(--mono);padding:2px 5px;border-radius:4px;text-align:center;}
-.sec-hdr{grid-column:1/-1;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);padding:8px 0 3px;display:flex;align-items:center;gap:8px;}
-.sec-hdr::after{content:'';flex:1;height:1px;background:var(--border);}
+/* ─── Controls ─── */
+.controls .group{padding:14px 0;border-bottom:1px dashed var(--line-2)}
+.controls .group:last-child{border-bottom:none;padding-bottom:0}
+.controls .group:first-child{padding-top:0}
+.lbl{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}
+.lbl-name{font-size:10px;color:var(--fg-3);letter-spacing:0.14em;text-transform:uppercase;font-weight:600}
+.lbl-val{font-size:13px;color:var(--accent);font-feature-settings:'tnum';font-weight:600}
+.lbl-val.amber{color:var(--amber)}
+input[type=range].t-range{width:100%;accent-color:var(--accent);height:18px}
+input[type=range].t-range.amber{accent-color:var(--amber)}
+.range-cap{font-size:9.5px;color:var(--fg-3);letter-spacing:0.08em;display:flex;justify-content:space-between;margin-top:4px;font-feature-settings:'tnum'}
 
-/* Bubble */
-.bubble-view{padding:16px 36px;}
-.bv-wrap{position:relative;height:460px;}
+/* View switcher */
+.view-switch{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.view-btn{background:transparent;border:1px solid var(--line-2);color:var(--fg-2);padding:8px 4px;font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:0.06em;cursor:pointer;border-radius:var(--r);transition:all .15s;text-transform:uppercase}
+.view-btn:hover{color:var(--accent);border-color:var(--accent)}
+.view-btn.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
 
-/* Footnote */
-.footnote{padding:14px 36px 0;font-size:10px;color:var(--muted);font-family:var(--mono);line-height:1.7;border-top:1px solid var(--border);margin-top:14px;}
-.footnote b{color:#8ab0d0;}
+/* Type filter chips */
+.chips{display:flex;flex-direction:column;gap:6px}
+.chip{display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--bg);cursor:pointer;font-size:11px;color:var(--fg-2);transition:all .15s;user-select:none}
+.chip:hover{border-color:var(--line-2);color:var(--fg)}
+.chip.off{opacity:.42}
+.chip-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.chip-name{flex:1;font-weight:600;letter-spacing:0.04em}
+.chip-count{font-size:10px;color:var(--fg-3);font-feature-settings:'tnum'}
 
-/* Tooltip */
-.tt{position:fixed;pointer-events:none;z-index:999;display:none;background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:12px 16px;max-width:280px;box-shadow:0 8px 32px rgba(0,0,0,.5);}
-.tt-name{font-size:13px;font-weight:700;margin-bottom:5px;}
-.tt-row{display:flex;justify-content:space-between;gap:14px;font-size:11px;margin-bottom:2px;}
-.tt-key{color:var(--muted);}
-.tt-val{font-weight:600;font-family:var(--mono);}
-.tt-note{font-size:10px;color:var(--muted);margin-top:6px;line-height:1.5;border-top:1px solid var(--border);padding-top:5px;}
+.t-btn{font-size:11.5px;font-weight:600;padding:9px 14px;cursor:pointer;border-radius:var(--r);letter-spacing:0.06em;display:inline-flex;align-items:center;gap:6px;transition:all .15s;border:1px solid transparent;font-family:var(--mono)}
+.t-btn-s{background:transparent;color:var(--fg-2);border-color:var(--line-2);width:100%;justify-content:center;text-transform:uppercase}
+.t-btn-s:hover{color:var(--accent);border-color:var(--accent)}
+
+/* ─── Re-rate output card (mini KPIs in left panel) ─── */
+.rr-out{display:flex;flex-direction:column;gap:1px;background:var(--line);border-radius:var(--r);overflow:hidden}
+.rr-cell{background:var(--bg-2);padding:11px 14px;display:flex;flex-direction:column;gap:2px}
+.rr-cell-l{font-size:9px;color:var(--fg-3);text-transform:uppercase;letter-spacing:0.14em;font-weight:500}
+.rr-cell-v{font-size:17px;color:var(--amber);font-feature-settings:'tnum';font-weight:600;letter-spacing:-0.01em}
+.rr-cell-n{font-size:10px;color:var(--fg-3);font-feature-settings:'tnum'}
+
+/* ─── Results panel ─── */
+.results{display:flex;flex-direction:column;gap:20px}
+
+/* KPI strip */
+.kpi-strip{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;border:1px solid var(--line);border-radius:var(--r);background:var(--line);gap:1px;overflow:hidden}
+@media (max-width:720px){.kpi-strip{grid-template-columns:1fr 1fr}}
+.kpi{background:var(--bg-2);padding:18px 18px;display:flex;flex-direction:column;gap:6px;justify-content:space-between;min-height:96px;position:relative}
+.kpi.hero{background:linear-gradient(180deg,var(--bg-2) 0%,#161812 100%)}
+.kpi.hero::after{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent)}
+.kpi-l{font-size:9.5px;color:var(--fg-3);text-transform:uppercase;letter-spacing:0.14em;font-weight:500}
+.kpi-v{font-size:30px;font-weight:600;color:var(--fg);font-feature-settings:'tnum';letter-spacing:-0.02em;line-height:1.05}
+.kpi-v.hl{color:var(--accent)}
+.kpi-v.cyan{color:var(--cyan)}
+.kpi-v.amber{color:var(--amber)}
+.kpi.hero .kpi-v{font-size:42px}
+.kpi-sub{font-size:10px;color:var(--fg-3);letter-spacing:0.04em;font-feature-settings:'tnum'}
+.kpi-sub .accent{color:var(--accent)}
+
+/* ─── BUCKET VIEW ─── */
+.bk-legend{display:flex;gap:18px;padding:12px 16px;font-size:10px;color:var(--fg-3);flex-wrap:wrap;align-items:center;border-bottom:1px dashed var(--line-2);text-transform:uppercase;letter-spacing:0.1em}
+.bk-leg-item{display:flex;align-items:center;gap:6px}
+.bk-leg-line{height:10px;border-radius:1px}
+.bucket-view{padding:14px 16px}
+.bucket-row{display:grid;grid-template-columns:140px 1fr;gap:14px;padding:14px 0;border-bottom:1px dashed var(--line-2)}
+.bucket-row:last-child{border-bottom:none}
+.bucket-label-col{display:flex;flex-direction:column;justify-content:center}
+.bucket-stage{font-size:11.5px;font-weight:600;color:var(--fg);letter-spacing:0.04em}
+.bucket-sub{font-size:9.5px;color:var(--fg-3);letter-spacing:0.06em;text-transform:uppercase;margin-top:3px}
+.bucket-stats{font-size:10px;color:var(--fg-2);font-feature-settings:'tnum';margin-top:6px;line-height:1.5}
+.bucket-stats .accent{color:var(--accent)}
+.bucket-chart-col{display:flex;flex-direction:column;gap:5px}
+.bk-track{position:relative;height:30px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r)}
+.bk-range{position:absolute;top:0;bottom:0;background:var(--accent-dim);border-left:1px solid var(--line-2);border-right:1px solid var(--line-2)}
+.bk-median{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--fg);z-index:2}
+.bk-cisco{position:absolute;top:-3px;bottom:-3px;width:4px;background:var(--accent);z-index:3;border-radius:2px;box-shadow:0 0 0 2px rgba(93,211,168,0.2)}
+.bk-rerate{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--amber);z-index:4;opacity:.85}
+.bk-dots{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:2px 0}
+.bk-dot{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--fg-2);cursor:pointer;font-family:var(--mono);transition:opacity .15s}
+.bk-dot:hover{opacity:.75}
+.bk-dot-circle{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.bk-dot.cisco-dot{color:var(--accent);font-weight:600}
+.bk-dot.cisco-dot .bk-dot-circle{width:9px;height:9px;border:1.5px solid var(--accent);background:var(--bg)}
+.bk-axis{display:flex;justify-content:space-between;font-size:9px;font-family:var(--mono);color:var(--fg-3);margin-top:2px;letter-spacing:0.04em;font-feature-settings:'tnum'}
+
+/* ─── BAR VIEW ─── */
+.bar-view{padding:14px 16px}
+.bar-list{display:flex;flex-direction:column;gap:2px}
+.bar-row{display:grid;grid-template-columns:200px 1fr 78px 64px;align-items:center;gap:10px;padding:5px 0;cursor:pointer;border-bottom:1px solid var(--line)}
+.bar-row:last-child{border-bottom:none}
+.bar-row:hover{background:var(--bg-3)}
+.bar-name-wrap{display:flex;flex-direction:column;gap:1px;padding-right:6px}
+.bar-name{font-size:12px;font-weight:600;color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:0.02em}
+.bar-name.cisco{color:var(--accent)}
+.bar-meta{font-size:9.5px;color:var(--fg-3);font-feature-settings:'tnum';letter-spacing:0.04em;text-transform:uppercase}
+.bar-track{position:relative;height:22px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.bar-fill{height:100%;display:flex;align-items:center;padding:0 8px;transition:width .35s cubic-bezier(.4,0,.2,1);font-feature-settings:'tnum'}
+.bar-inner-lbl{font-size:9.5px;font-weight:600;font-family:var(--mono);color:var(--bg);white-space:nowrap;overflow:hidden;letter-spacing:0.02em}
+.bar-val{font-size:13px;font-weight:600;font-family:var(--mono);text-align:right;font-feature-settings:'tnum'}
+.bar-val .unit{font-size:9px;color:var(--fg-3);font-weight:500;margin-left:1px}
+.bar-badge{font-size:8.5px;font-weight:600;font-family:var(--mono);padding:3px 6px;border-radius:var(--r);text-align:center;letter-spacing:0.08em;text-transform:uppercase;border:1px solid var(--line-2);color:var(--fg-3)}
+.sec-hdr{grid-column:1/-1;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.16em;color:var(--fg-3);padding:14px 0 4px;display:flex;align-items:center;gap:10px}
+.sec-hdr::after{content:'';flex:1;height:1px;background:var(--line)}
+
+/* ─── BUBBLE VIEW ─── */
+.bubble-view{padding:14px 16px}
+.bv-wrap{position:relative;height:460px}
+
+/* ─── Tooltip ─── */
+.tt{position:fixed;pointer-events:none;z-index:999;display:none;background:var(--bg-2);border:1px solid var(--line-2);border-radius:var(--r);padding:12px 14px;max-width:300px;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
+.tt-name{font-size:12px;font-weight:600;margin-bottom:8px;letter-spacing:0.02em}
+.tt-row{display:flex;justify-content:space-between;gap:14px;font-size:11px;margin-bottom:3px;font-family:var(--mono)}
+.tt-key{color:var(--fg-3);letter-spacing:0.04em;text-transform:uppercase;font-size:9.5px;font-weight:500}
+.tt-val{font-weight:600;font-feature-settings:'tnum';color:var(--fg)}
+.tt-val.hl{color:var(--accent);font-size:14px}
+.tt-note{font-family:var(--sans);font-size:11.5px;color:var(--fg-2);margin-top:8px;line-height:1.5;border-top:1px dashed var(--line-2);padding-top:7px}
+
+/* ─── Footnotes ─── */
+.fn{font-family:var(--sans);font-size:12.5px;color:var(--fg-2);line-height:1.6}
+.fn p{margin-bottom:6px}
+.fn p strong{color:var(--fg);font-weight:600}
+.fn .num{font-family:var(--mono);color:var(--accent);font-feature-settings:'tnum'}
+
+/* Footer */
+.foot{border-top:1px solid var(--line);padding:24px;font-size:10.5px;color:var(--fg-3);letter-spacing:0.06em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;max-width:1280px;margin:0 auto}
+.foot a{color:var(--accent)}
+
+/* Reveal */
+.reveal{opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s ease}
+.reveal.in{opacity:1;transform:none}
 </style>
 </head>
 <body>
 
-<!-- ← Home link (minimal, consistent across all tool pages) -->
-<a href="index.html" style="position:fixed;top:10px;left:14px;z-index:9999;color:rgba(238,242,247,.38);font:500 10px/1 'Inter','Segoe UI',system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;padding:4px 4px;transition:color .15s ease;" onmouseover="this.style.color='#00cfe0'" onmouseout="this.style.color='rgba(238,242,247,.38)'">← Home</a>
+<!-- Status bar -->
+<div class="t-top">
+  <span class="session" id="t-session">SESSION 00:00:00</span>
+  <span>TOOL · EV / T LCE</span>
+  <span>VERSION · 1.0</span>
+  <span class="t-spacer"></span>
+  <span id="t-clock">26-APR-2026 · 11:42 EDT</span>
+</div>
 
-<div class="hdr">
-  <div class="hdr-eyebrow">Global Lithium Valuation Universe · April 2026</div>
-  <div class="hdr-row">
-    <div>
-      <div class="hdr-title">EV per Tonne LCE — <span>Where Does Cisco Sit?</span></div>
-      <div class="hdr-sub">Companies and M&A transactions grouped by development stage. Each bucket shows the observed range and median $/t LCE paid at that stage. Cisco's red marker shows where it sits within — or below — its peer group.</div>
+<!-- Nav -->
+<div class="t-nav">
+  <a href="index.html" class="t-mark">
+    <div class="t-badge">Z</div>
+    <div class="t-mark-text">
+      <div class="t-mark-name">ZOVLYN</div>
+      <div class="t-mark-sub">RESEARCH</div>
     </div>
-    <div class="cisco-pill">
-      <div class="cp-val" id="cisco-val">$40/t</div>
-      <div class="cp-lbl">Cisco (QTWO) today</div>
-      <div class="cp-context" id="cisco-context">—</div>
-    </div>
+  </a>
+  <div class="t-nav-r">
+    <a href="index.html" class="home">ALL TOOLS</a>
+    <a href="lithium_screener.html">SCREENER</a>
+    <a href="lce_converter.html">CALC</a>
+    <a href="QTWO_Research_Report_v7.html">REPORT</a>
+    <a href="system.html">SYSTEM</a>
   </div>
 </div>
 
-<!-- Re-rate bar -->
-<div class="rerate">
-  <span class="rerate-lbl">If Cisco re-rates to</span>
-  <input type="range" id="rr-slider" min="30" max="600" step="10" value="103" oninput="updateRerate()">
-  <span class="rerate-val" id="rr-val">$103/t</span>
-  <div class="rr-cards" id="rr-cards"></div>
-</div>
-
-<!-- Controls -->
-<div class="controls">
-  <div class="legend" id="legend"></div>
-  <div style="display:flex;gap:8px;align-items:center;">
-    <div class="vbtns">
-      <button class="vbtn on" id="vbtn-bucket" onclick="setView('bucket')">Stage buckets</button>
-      <button class="vbtn" id="vbtn-bar" onclick="setView('bar')">Bar chart</button>
-      <button class="vbtn" id="vbtn-bubble" onclick="setView('bubble')">Bubble</button>
-    </div>
+<!-- Cover -->
+<header class="cover reveal">
+  <div class="tags">
+    <span class="accent">// ZOVLYN/PEER-VALUATION</span><span class="sep">│</span>
+    <span>GLOBAL LITHIUM UNIVERSE</span><span class="sep">│</span>
+    <span>UPDATED 2026-04-26</span>
   </div>
-</div>
+  <h1>EV / t LCE — where does <span class="accent">Cisco</span> sit?</h1>
+  <p class="sub">19 listed companies and recent M&amp;A transactions grouped by development stage. Each bucket shows the observed range and median paid for contained LCE. Cisco's accent marker shows where it sits within — or below — its peer group.</p>
+  <div class="meta">
+    <span>COMPS · <strong>19</strong></span>
+    <span>BUCKETS · <strong>6</strong></span>
+    <span>CISCO TODAY · <strong class="accent" id="meta-cisco">$40/t</strong></span>
+    <span>ALL-PEER MEDIAN · <strong id="meta-median">—</strong></span>
+    <span>RE-RATE TARGET · <strong class="amber" id="meta-target">$103/t</strong></span>
+  </div>
+</header>
 
-<div id="view-bucket" class="bucket-view"></div>
-<div id="view-bar" class="bar-view" style="display:none"><div class="bar-list" id="bar-list"></div></div>
-<div id="view-bubble" class="bubble-view" style="display:none">
-  <div class="bv-wrap"><canvas id="bubble-canvas" role="img" aria-label="Bubble chart of lithium companies by EV and EV per tonne LCE"></canvas></div>
-</div>
+<!-- Main grid -->
+<div class="calc">
 
-<div class="footnote">
-  <b>EV/t LCE</b> = Market cap (listed companies) or deal EV (M&A transactions) ÷ total contained LCE resource. All USD.
-  <b>Stage buckets</b> show the actual observed range and median for each development tier — no model, no assumptions. The range bar = min to max for that bucket. The white line = median. The red bar = Cisco. The amber line = re-rate target.
-  Cisco: 295 Mt @ 1.36% → 9.9 Mt LCE. QTWO C$2.80/share Apr 23 2026. PMET: TSX:PMET ~C$5.70 × 183.8M shares = C$1.05B = US$755M. All figures Apr 2026.
+  <!-- Left controls -->
+  <aside class="card controls reveal">
+    <div class="card-h">Controls <span class="meta">3 axes</span></div>
+    <div class="card-b">
+
+      <div class="group">
+        <div class="lbl">
+          <span class="lbl-name">Re-rate target</span>
+          <span class="lbl-val amber" id="rr-val">$103/t</span>
+        </div>
+        <input id="rr-slider" class="t-range amber" type="range" min="30" max="600" step="10" value="103">
+        <div class="range-cap"><span>$30</span><span>$600/t</span></div>
+      </div>
+
+      <div class="group">
+        <div class="lbl"><span class="lbl-name">View</span></div>
+        <div class="view-switch">
+          <button class="view-btn on" data-view="bucket">Buckets</button>
+          <button class="view-btn" data-view="bar">Bars</button>
+          <button class="view-btn" data-view="bubble">Bubble</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="lbl"><span class="lbl-name">Filter by type</span></div>
+        <div class="chips" id="chips"></div>
+      </div>
+
+      <div class="group">
+        <button class="t-btn t-btn-s" id="reset">↻ Reset filters</button>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- Right results -->
+  <section class="results reveal">
+
+    <!-- KPI strip -->
+    <div class="kpi-strip">
+      <div class="kpi hero">
+        <div class="kpi-l">CISCO TODAY · QTWO.V</div>
+        <div class="kpi-v hl" id="kpi-cisco">$40/t LCE</div>
+        <div class="kpi-sub">EV US$395M ÷ 9.9 Mt LCE · <span id="kpi-cisco-pct" class="accent">—</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-l">All-peer median</div>
+        <div class="kpi-v cyan" id="kpi-median">—</div>
+        <div class="kpi-sub">18 listed + M&amp;A</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-l">Bucket median <span class="accent">(MRE)</span></div>
+        <div class="kpi-v" id="kpi-bkt">—</div>
+        <div class="kpi-sub">Cisco's stage cohort</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-l">Implied at target</div>
+        <div class="kpi-v amber" id="kpi-implied-ev">—</div>
+        <div class="kpi-sub" id="kpi-implied-sub">—</div>
+      </div>
+    </div>
+
+    <!-- Re-rate detail outputs -->
+    <div class="card">
+      <div class="card-h">Re-rate scenario <span class="meta" id="rr-tag">@ $103/t LCE</span></div>
+      <div class="card-b">
+        <div class="rr-out" id="rr-cards" style="grid-template-columns:repeat(3,1fr);display:grid;gap:1px"></div>
+      </div>
+    </div>
+
+    <!-- Universe view -->
+    <div class="card">
+      <div class="card-h">Universe <span class="meta" id="uv-meta">19 comps · stage buckets</span></div>
+      <div class="card-b flush">
+        <div id="view-bucket" class="bucket-view">
+          <div class="bk-legend">
+            <div class="bk-leg-item"><div class="bk-leg-line" style="width:28px;background:var(--accent-dim);border:1px solid var(--line-2)"></div><span>Observed range</span></div>
+            <div class="bk-leg-item"><div class="bk-leg-line" style="width:2px;height:14px;background:var(--fg)"></div><span>Median</span></div>
+            <div class="bk-leg-item"><div class="bk-leg-line" style="width:4px;height:14px;background:var(--accent);border-radius:2px"></div><span>Cisco</span></div>
+            <div class="bk-leg-item"><div class="bk-leg-line" style="width:2px;height:14px;background:var(--amber)"></div><span>Re-rate target</span></div>
+          </div>
+        </div>
+        <div id="view-bar" class="bar-view" style="display:none"><div class="bar-list" id="bar-list"></div></div>
+        <div id="view-bubble" class="bubble-view" style="display:none">
+          <div class="bv-wrap"><canvas id="bubble-canvas" role="img" aria-label="Bubble chart of lithium companies by EV and EV per tonne LCE"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Methodology -->
+    <div class="card">
+      <div class="card-h">Methodology <span class="meta">data &amp; sources</span></div>
+      <div class="card-b fn">
+        <p><strong>1.</strong> <span class="num">EV / t LCE</span> = market cap (listed companies) or deal EV (M&amp;A transactions) ÷ total contained LCE resource. All in USD. Used as a peer-valuation yardstick — it normalises company size by resource endowment.</p>
+        <p><strong>2.</strong> <span class="num">Stage buckets</span> show the actual observed range and median for each development tier — no model, no assumptions. The range bar shows min to max; the white line is median; the accent bar is Cisco; the amber line is the re-rate target.</p>
+        <p><strong>3.</strong> <span class="num">Cisco</span>: 295 Mt @ 1.36% Li<sub>2</sub>O = 9.9 Mt LCE (MRE Apr 2026). Market cap C$549M @ C$2.80 / 195.95M shares = US$395M @ FX 0.72.</p>
+        <p><strong>4.</strong> <span class="num">PMET</span>: TSX:PMET ~C$5.70 × 183.8M shares = C$1.05B = US$755M (Apr 2026).</p>
+        <p><strong>5.</strong> All figures Apr 2026. Not investment advice.</p>
+      </div>
+    </div>
+
+  </section>
 </div>
 
 <div class="tt" id="tooltip"></div>
 
+<div class="foot">
+  <div>ZOVLYN/PEER-VALUATION · LCE-02 · v1.0 · NOT INVESTMENT ADVICE</div>
+  <div><a href="system.html">SYSTEM →</a> · <a href="index.html">← TOOLS</a></div>
+</div>
+
 <script>
+// ─── Clock + session ───
+(function(){
+  const clock=document.getElementById('t-clock'),session=document.getElementById('t-session');
+  const t0=Date.now(),mons=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function tick(){
+    const n=new Date();
+    clock.textContent=String(n.getDate()).padStart(2,'0')+'-'+mons[n.getMonth()]+'-'+n.getFullYear()+' · '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+' EDT';
+    const e=Math.floor((Date.now()-t0)/1000);
+    session.textContent='SESSION '+String(Math.floor(e/3600)).padStart(2,'0')+':'+String(Math.floor((e%3600)/60)).padStart(2,'0')+':'+String(e%60).padStart(2,'0');
+  }
+  tick();setInterval(tick,1000);
+})();
+
+// ─── Reveal ───
+(function(){
+  if(!('IntersectionObserver'in window)){document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));return;}
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.05});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+})();
+
+// ─── Chart.js system defaults ───
+Chart.defaults.color='#8a8773';
+Chart.defaults.font.family="'JetBrains Mono', monospace";
+Chart.defaults.font.size=10.5;
+Chart.defaults.borderColor='rgba(58,61,51,0.5)';
+
+// ─── Type taxonomy (5 system colors) ───
 const TYPES = {
-  producer:  { label:'Producer',         color:'#00e5a0' },
-  developer: { label:'Developer',        color:'#3d9eff' },
-  explorer:  { label:'Explorer/Pre-PEA', color:'#a78bfa' },
-  ma_hr:     { label:'M&A — Hard rock',  color:'#f59e0b' },
-  ma_brine:  { label:'M&A — Brine',      color:'#38bdf8' },
-  cisco:     { label:'Cisco (QTWO)',      color:'#ff4655' },
+  cisco:     { label:'Cisco (QTWO)',         color:'#5dd3a8' }, // accent
+  producer:  { label:'Producer',             color:'#5dd380' }, // green
+  developer: { label:'Developer · Peer',     color:'#6acfe0' }, // cyan
+  explorer:  { label:'Explorer · Pre-MRE',   color:'#8a8773' }, // fg-2
+  m_a:       { label:'M&A transaction',      color:'#e8b658' }, // amber
 };
 
-// Stage bucket each data point belongs to
 const BUCKETS = [
-  { id:'explorer', label:'Explorer / Pre-resource', sublabel:'No MRE yet', color:'#a78bfa' },
-  { id:'mre',      label:'Maiden MRE',               sublabel:'All Inferred', color:'#c084fc' },
-  { id:'pea',      label:'Post-PEA',                 sublabel:'Scoping economics', color:'#818cf8' },
-  { id:'pfs',      label:'Post-PFS / Pre-FS',        sublabel:'Reserves nearing', color:'#3d9eff' },
-  { id:'fs',       label:'Full FS / Construction',   sublabel:'Bankable study done', color:'#06b6d4' },
-  { id:'producer', label:'Producer / Ramp',          sublabel:'First ore achieved', color:'#00e5a0' },
+  { id:'explorer', label:'Explorer / Pre-resource', sublabel:'No MRE yet' },
+  { id:'mre',      label:'Maiden MRE',              sublabel:'All Inferred' },
+  { id:'pea',      label:'Post-PEA',                sublabel:'Scoping economics' },
+  { id:'pfs',      label:'Post-PFS / Pre-FS',       sublabel:'Reserves nearing' },
+  { id:'fs',       label:'Full FS / Construction',  sublabel:'Bankable' },
+  { id:'producer', label:'Producer / Ramp',         sublabel:'First ore achieved' },
 ];
 
+// Original 6-type data, simplified to 5 types (ma_hr + ma_brine -> m_a, kept in note)
 const DATA = [
-  { name:'Albemarle (ALB)',      ticker:'NYSE',    ev:23400, lce:28.0, type:'producer',  bucket:'producer', note:'EV $27.3B (with debt). Market cap $23.4B Apr 2026. Greenbushes JV, Atacama brine. ~320kt/yr LCE. Up 148% in 12 months.' },
-  { name:'SQM',                  ticker:'NYSE',    ev:22000, lce:35.0, type:'producer',  bucket:'producer', note:'Market cap ~$22B Apr 2026. Atacama salar — lowest-cost brine globally. 180,000+ t/yr LCE. Mount Holland JV (WA).' },
-  { name:'PLS Group / Pilbara',  ticker:'ASX',     ev:12500, lce:8.5,  type:'producer',  bucket:'producer', note:'Market cap A$19.5B (~US$12.5B) Apr 2026. ATH A$6.14 Apr 17. 1 Mtpa nameplate. 5× rally from lows. Formerly Pilbara Minerals.' },
-  { name:'Liontown / LTR',       ticker:'ASX',     ev:4100,  lce:6.2,  type:'producer',  bucket:'producer', note:'Market cap A$6.4B (~US$4.1B) Apr 2026. Kathleen Valley 1 Mtpa achieved, going underground. Up 3× in 2025.' },
-  { name:'Sigma Lithium (SGML)', ticker:'NASDAQ',  ev:1610,  lce:4.0,  type:'developer', bucket:'producer', note:'Market cap $1.61B Apr 2026. Grota do Cirilo Brazil. 220-270kt/yr. AISC ~$440/t CIF. Premium greentech product.' },
-  { name:'Elevra Lithium (ELV)', ticker:'ASX/NASDAQ',ev:888, lce:3.7,  type:'developer', bucket:'producer', note:'Market cap ~$888M (Feb 2026). North America largest hard-rock lithium producer. Sayona + Piedmont merged Sep 2025.' },
-  { name:'PMET Resources (PMET)',ticker:'TSX/ASX', ev:755,   lce:5.0,  type:'developer', bucket:'fs',       note:'TSX:PMET ~C$5.70 × 183.8M shares = C$1.05B = US$755M (Apr 2026). Post-FS (Oct 2025), ESIA submitted Apr 2026. VW 9.9% + offtake. FS NPV8% C$1.59B.' },
-  { name:'Lithium Americas (LAC)',ticker:'NYSE',   ev:1410,  lce:5.5,  type:'developer', bucket:'fs',       note:'Market cap $1.41B Apr 2026. Thacker Pass under construction. $2.23B DOE loan. GM $650M. First production 2027.' },
-  { name:'Frontier Lithium (FL)',ticker:'TSX',     ev:180,   lce:3.5,  type:'developer', bucket:'pea',      note:'PAK lithium project NW Ontario. SQM 50% JV. High-purity spodumene. PEA complete. Small, high-quality, Tier-1 jurisdiction.' },
-  { name:'Li-FT Power (LIFT)',   ticker:'TSX.V',  ev:241,   lce:3.3,  type:'explorer',  bucket:'mre',      note:'Market cap C$335M (~US$241M, Apr 2026). Yellowknife Lithium Project NWT (~2.8 Mt LCE) + Adina project Quebec James Bay (Winsome Resources merger Dec 2025, completing Jun 2026 — adds ~0.5 Mt LCE) + 75% of adjacent Galinée property. Combined 3.3 Mt LCE across NWT and James Bay. Winsome Adina scoping study NPV8% $743M at $259M CAPEX.' },
-  { name:'Brunswick Exploration',ticker:'TSX.V',  ev:90,    lce:1.2,  type:'explorer',  bucket:'explorer', note:'Early-stage exploration Quebec. No resource estimate. District-scale land position.' },
-  { name:'QTWO / Cisco',         ticker:'TSX.V',  ev:395,   lce:9.9,  type:'cisco',     bucket:'mre',      note:'295 Mt @ 1.36% Li₂O (MRE Apr 20 2026). 9.9 Mt LCE. C$2.80/sh × 195.95M shares = C$549M = US$395M. 150km to Matagami CN Rail. PEA late 2026.' },
-  // M&A hard rock
-  { name:'PLS → Latin Resources', ticker:'M&A', ev:370, lce:2.38, type:'ma_hr', bucket:'pea', note:'PLS acquired Latin Resources (Salinas/Colina project, Minas Gerais Brazil) for A$559.9M (~US$370M) all-share, Aug 2024. 77.7 Mt @ 1.24% Li₂O = 2.38 Mt LCE. Post-PEA, DFS underway. Counter-cyclical acquisition at lithium price trough — spodumene ~$700/t at deal time. $155/t LCE at bear market bottom.' },
-  { name:'VW stake → PMET',      ticker:'M&A',    ev:502,   lce:4.88, type:'ma_hr',     bucket:'pfs',      note:'C$69M for 9.9% at C$4.42. Implied co. US$502M. Minority strategic + offtake (Dec 2024). NOT a control premium. Best Cisco comparable — same jurisdiction.' },
-  { name:'SQM → Frontier JV',   ticker:'M&A',    ev:155,   lce:2.8,  type:'ma_hr',     bucket:'pea',      note:'SQM paid C$110M for 50% of Frontier PAL. Implied 100% ~US$155M. Pre-PEA, scoping stage. Ontario Canada.' },
-  { name:'Rio / James Bay',      ticker:'M&A',    ev:540,   lce:2.7,  type:'ma_hr',     bucket:'pea',      note:'James Bay Lithium value implied within Arcadium chain. Same Billy Diamond Hwy as Cisco. Comparable Quebec jurisdiction & logistics.' },
-  { name:'Albemarle → Liontown', ticker:'M&A',    ev:4300,  lce:10.2, type:'ma_hr',     bucket:'fs',       note:'A$6.6B bid at construction stage, Sep 2023. Board accepted; Rinehart blocked. Peak-market bid — first ore 6 months away. Now Liontown is worth more than the rejected bid.' },
-  // M&A brine
-  { name:'Rio Tinto → Rincon',   ticker:'M&A',    ev:825,   lce:11.8, type:'ma_brine',  bucket:'fs',       note:'$825M for undeveloped DLE brine Argentina (Mar 2022). Production commenced 2024-25.' },
-  { name:'Ganfeng → Millennial', ticker:'M&A',    ev:320,   lce:3.8,  type:'ma_brine',  bucket:'fs',       note:'C$400M (~US$320M) for Pastos Grandes brine Argentina (2021). ~$84/t LCE for undeveloped South American brine.' },
+  { name:'Albemarle (ALB)',       ticker:'NYSE',     ev:23400, lce:28.0, type:'producer',  bucket:'producer', note:'EV $27.3B (with debt). Market cap $23.4B Apr 2026. Greenbushes JV, Atacama brine. ~320 kt/yr LCE. Up 148% in 12 months.' },
+  { name:'SQM',                   ticker:'NYSE',     ev:22000, lce:35.0, type:'producer',  bucket:'producer', note:'Market cap ~$22B Apr 2026. Atacama salar — lowest-cost brine globally. 180 kt/yr+ LCE. Mount Holland JV (WA).' },
+  { name:'PLS Group / Pilbara',   ticker:'ASX',      ev:12500, lce:8.5,  type:'producer',  bucket:'producer', note:'Market cap A$19.5B (~US$12.5B) Apr 2026. ATH A$6.14 Apr 17. 1 Mtpa nameplate. 5× rally from lows.' },
+  { name:'Liontown / LTR',        ticker:'ASX',      ev:4100,  lce:6.2,  type:'producer',  bucket:'producer', note:'Market cap A$6.4B (~US$4.1B) Apr 2026. Kathleen Valley 1 Mtpa achieved, going underground. Up 3× in 2025.' },
+  { name:'Sigma Lithium (SGML)',  ticker:'NASDAQ',   ev:1610,  lce:4.0,  type:'developer', bucket:'producer', note:'Market cap $1.61B Apr 2026. Grota do Cirilo Brazil. 220-270 kt/yr. AISC ~$440/t CIF. Premium greentech product.' },
+  { name:'Elevra Lithium (ELV)',  ticker:'ASX/NASDAQ',ev:888,  lce:3.7,  type:'developer', bucket:'producer', note:'Market cap ~$888M (Feb 2026). North America largest hard-rock lithium producer. Sayona + Piedmont merged Sep 2025.' },
+  { name:'PMET Resources (PMET)', ticker:'TSX/ASX',  ev:755,   lce:5.0,  type:'developer', bucket:'fs',       note:'TSX:PMET ~C$5.70 × 183.8M = C$1.05B = US$755M (Apr 2026). Post-FS Oct 2025, ESIA submitted Apr 2026. VW 9.9% + offtake. FS NPV8% C$1.59B.' },
+  { name:'Lithium Americas (LAC)',ticker:'NYSE',     ev:1410,  lce:5.5,  type:'developer', bucket:'fs',       note:'Market cap $1.41B Apr 2026. Thacker Pass under construction. $2.23B DOE loan. GM $650M. First production 2027.' },
+  { name:'Frontier Lithium (FL)', ticker:'TSX',      ev:180,   lce:3.5,  type:'developer', bucket:'pea',      note:'PAK lithium project NW Ontario. SQM 50% JV. High-purity spodumene. PEA complete. Small, high-quality, Tier-1 jurisdiction.' },
+  { name:'Li-FT Power (LIFT)',    ticker:'TSX.V',    ev:241,   lce:3.3,  type:'explorer',  bucket:'mre',      note:'Market cap C$335M (~US$241M, Apr 2026). Yellowknife (~2.8 Mt LCE) + Adina (Quebec James Bay, Winsome merger Dec 2025) + 75% of Galinée. Combined 3.3 Mt LCE.' },
+  { name:'Brunswick Exploration', ticker:'TSX.V',    ev:90,    lce:1.2,  type:'explorer',  bucket:'explorer', note:'Early-stage exploration Quebec. No resource estimate. District-scale land position.' },
+  { name:'QTWO / Cisco',          ticker:'TSX.V',    ev:395,   lce:9.9,  type:'cisco',     bucket:'mre',      note:'295 Mt @ 1.36% Li₂O (MRE Apr 20 2026). 9.9 Mt LCE. C$2.80 × 195.95M shares = C$549M = US$395M. 150km to Matagami CN Rail. PEA late 2026.' },
+  // M&A — hard rock
+  { name:'PLS → Latin Resources', ticker:'M&A · HR', ev:370,   lce:2.38, type:'m_a',       bucket:'pea',      note:'PLS acquired Latin Resources (Salinas/Colina, Minas Gerais Brazil) for A$559.9M (~US$370M) all-share, Aug 2024. 77.7 Mt @ 1.24% Li₂O = 2.38 Mt LCE. Counter-cyclical at lithium price trough — $155/t LCE at bear bottom.' },
+  { name:'VW stake → PMET',       ticker:'M&A · HR', ev:502,   lce:4.88, type:'m_a',       bucket:'pfs',      note:'C$69M for 9.9% at C$4.42. Implied co. US$502M. Minority strategic + offtake (Dec 2024). Not a control premium. Best Cisco comparable — same jurisdiction.' },
+  { name:'SQM → Frontier JV',     ticker:'M&A · HR', ev:155,   lce:2.8,  type:'m_a',       bucket:'pea',      note:'SQM paid C$110M for 50% of Frontier PAL. Implied 100% ~US$155M. Pre-PEA, scoping stage. Ontario Canada.' },
+  { name:'Rio / James Bay',       ticker:'M&A · HR', ev:540,   lce:2.7,  type:'m_a',       bucket:'pea',      note:'James Bay Lithium value implied within Arcadium chain. Same Billy Diamond Hwy as Cisco. Comparable Quebec jurisdiction & logistics.' },
+  { name:'Albemarle → Liontown',  ticker:'M&A · HR', ev:4300,  lce:10.2, type:'m_a',       bucket:'fs',       note:'A$6.6B bid at construction stage, Sep 2023. Board accepted; Rinehart blocked. Peak-market bid — first ore 6 months away.' },
+  // M&A — brine
+  { name:'Rio Tinto → Rincon',    ticker:'M&A · BR', ev:825,   lce:11.8, type:'m_a',       bucket:'fs',       note:'$825M for undeveloped DLE brine Argentina (Mar 2022). Production commenced 2024-25.' },
+  { name:'Ganfeng → Millennial',  ticker:'M&A · BR', ev:320,   lce:3.8,  type:'m_a',       bucket:'fs',       note:'C$400M (~US$320M) for Pastos Grandes brine Argentina (2021). ~$84/t LCE for undeveloped South American brine.' },
 ];
 
-const LCE_CISCO = 9.9, SHARES = 195.95, FX = 0.72, CURR_PRICE = 2.80;
-const CISCO_EV = 395;
-let hiddenTypes = new Set(), view = 'bucket', bubChart = null;
+const LCE_CISCO=9.9, SHARES=195.95, FX=0.72, CURR_PRICE=2.80;
+const CISCO_EV=395;
+let hiddenTypes=new Set(), view='bucket', bubChart=null;
 
-function typeColor(t){ return TYPES[t]?.color || '#888'; }
+function typeColor(t){ return TYPES[t]?.color || '#8a8773'; }
 function perT(d){ return d.ev / d.lce; }
+function fmtMoney(m){ return m>=1000 ? '$'+(m/1000).toFixed(2)+'B' : '$'+Math.round(m)+'M'; }
 
-// ── Header ──────────────────────────────────────────────────────────────
+// ─── Cover / KPI strip / re-rate sub-cards ───
 function updateHeader(){
   const pt = CISCO_EV / LCE_CISCO;
   const all = DATA.filter(d=>d.type!=='cisco').map(perT).sort((a,b)=>a-b);
   const med = all[Math.floor(all.length/2)];
-  document.getElementById('cisco-val').textContent = '$'+Math.round(pt)+'/t LCE';
-  document.getElementById('cisco-context').textContent =
-    Math.round(pt/med*100)+'% of all-peer median ($'+Math.round(med)+'/t)';
+  const ciscoBkt = DATA.filter(d=>d.bucket==='mre' && d.type!=='cisco').map(perT).sort((a,b)=>a-b);
+  const bktMed = ciscoBkt.length ? ciscoBkt[Math.floor(ciscoBkt.length/2)] : null;
+
+  document.getElementById('kpi-cisco').textContent = '$'+Math.round(pt)+'/t';
+  document.getElementById('kpi-cisco-pct').textContent = Math.round(pt/med*100)+'% of all-peer median';
+  document.getElementById('kpi-median').textContent = '$'+Math.round(med)+'/t';
+  document.getElementById('kpi-bkt').textContent = bktMed ? '$'+Math.round(bktMed)+'/t' : '—';
+
+  document.getElementById('meta-cisco').textContent = '$'+Math.round(pt)+'/t';
+  document.getElementById('meta-median').textContent = '$'+Math.round(med)+'/t';
 }
 
-// ── Re-rate ─────────────────────────────────────────────────────────────
 function updateRerate(){
   const t = parseInt(document.getElementById('rr-slider').value);
   document.getElementById('rr-val').textContent = '$'+t+'/t';
+  document.getElementById('rr-tag').textContent = '@ $'+t+'/t LCE';
+  document.getElementById('meta-target').textContent = '$'+t+'/t';
+
   const ev = t * LCE_CISCO;
   const cad = ev * 1e6 / (SHARES * 1e6) / FX;
   const mult = (cad / CURR_PRICE).toFixed(1);
   const fmtEV = ev >= 1000 ? '$'+(ev/1000).toFixed(2)+'B' : '$'+Math.round(ev)+'M';
-  // Find nearest named comp
   const nearest = DATA.filter(d=>d.type!=='cisco').sort((a,b)=>Math.abs(perT(a)-t)-Math.abs(perT(b)-t))[0];
-  document.getElementById('rr-cards').innerHTML = [
-    { v:fmtEV,            l:'Implied EV',       n:'' },
-    { v:'C$'+cad.toFixed(2), l:'Per share CAD',  n:mult+'× today (C$2.80)' },
-    { v:'~'+nearest.name.split(' ')[0]+' level', l:'Comparable', n:'$'+Math.round(perT(nearest))+'/t LCE' },
-  ].map(c=>`<div class="rrc"><div class="rrc-v">${c.v}</div><div class="rrc-l">${c.l}</div>${c.n?`<div class="rrc-n">${c.n}</div>`:''}</div>`).join('');
+
+  document.getElementById('kpi-implied-ev').textContent = fmtEV;
+  document.getElementById('kpi-implied-sub').textContent = mult+'x today | C$'+cad.toFixed(2)+'/sh';
+
+  const rrCells = [
+    { v:fmtEV,                          l:'Implied EV',     n:'9.9 Mt x $'+t+'/t' },
+    { v:'C$'+cad.toFixed(2),            l:'Per share CAD',  n:mult+'x today (C$2.80)' },
+    { v:'~ '+nearest.name.split(' ')[0],l:'Comparable',     n:'$'+Math.round(perT(nearest))+'/t | '+nearest.ticker },
+  ];
+  document.getElementById('rr-cards').innerHTML = rrCells.map(c =>
+    '<div class="rr-cell"><div class="rr-cell-l">'+c.l+'</div><div class="rr-cell-v">'+c.v+'</div>'+(c.n?'<div class="rr-cell-n">'+c.n+'</div>':'')+'</div>'
+  ).join('');
 
   if(view==='bucket') renderBuckets();
 }
 
-// ── Legend ──────────────────────────────────────────────────────────────
-function renderLegend(){
-  document.getElementById('legend').innerHTML = Object.entries(TYPES).map(([k,v])=>
-    `<div class="leg${hiddenTypes.has(k)?' off':''}" onclick="toggleType('${k}')">
-      <div class="leg-dot" style="background:${v.color}"></div><span>${v.label}</span>
-    </div>`).join('');
+function renderChips(){
+  const counts = {};
+  Object.keys(TYPES).forEach(k => counts[k] = DATA.filter(d=>d.type===k).length);
+  document.getElementById('chips').innerHTML = Object.entries(TYPES).map(([k,v])=>
+    '<div class="chip'+(hiddenTypes.has(k)?' off':'')+'" data-type="'+k+'">'
+    +'<div class="chip-dot" style="background:'+v.color+'"></div>'
+    +'<span class="chip-name">'+v.label+'</span>'
+    +'<span class="chip-count">'+counts[k]+'</span>'
+    +'</div>').join('');
 }
-function toggleType(t){ hiddenTypes.has(t)?hiddenTypes.delete(t):hiddenTypes.add(t); renderLegend(); render(); }
+function toggleType(t){ hiddenTypes.has(t) ? hiddenTypes.delete(t) : hiddenTypes.add(t); renderChips(); render(); }
 
-// ── BUCKET VIEW ─────────────────────────────────────────────────────────
 function renderBuckets(){
   const target = parseInt(document.getElementById('rr-slider').value);
   const el = document.getElementById('view-bucket');
+  const legendHTML = el.querySelector('.bk-legend').outerHTML;
 
-  // Group data into buckets
   const groups = {};
   BUCKETS.forEach(b => groups[b.id] = []);
-  DATA.forEach(d => {
-    if(!hiddenTypes.has(d.type) && groups[d.bucket] !== undefined)
-      groups[d.bucket].push(d);
-  });
+  DATA.forEach(d => { if(!hiddenTypes.has(d.type) && groups[d.bucket]!==undefined) groups[d.bucket].push(d); });
 
-  // Global max for consistent x-axis across all buckets
   const allPT = DATA.map(perT);
   const globalMax = Math.ceil(Math.max(...allPT) / 100) * 100;
+  const toX = v => Math.min(98, v / globalMax * 100);
 
-  let html = `<div class="bk-legend">
-    <div class="bk-leg-item"><div style="width:32px;height:8px;border-radius:3px;background:rgba(255,255,255,.15)"></div><span>Observed range</span></div>
-    <div class="bk-leg-item"><div style="width:3px;height:14px;background:#fff;border-radius:2px"></div><span>Median</span></div>
-    <div class="bk-leg-item"><div style="width:4px;height:14px;background:var(--cisco);border-radius:2px"></div><span>Cisco today</span></div>
-    <div class="bk-leg-item"><div style="width:2px;height:14px;background:#f59e0b;border-radius:2px"></div><span>Re-rate target</span></div>
-  </div>`;
-
+  let html = legendHTML;
   BUCKETS.forEach(bkt => {
     const items = groups[bkt.id];
     const cisco = DATA.find(d => d.type === 'cisco' && d.bucket === bkt.id);
-
-    // Compute stats from non-cisco items
     const vals = items.filter(d=>d.type!=='cisco').map(perT).sort((a,b)=>a-b);
     const hasData = vals.length > 0;
     const lo  = hasData ? vals[0] : 0;
     const hi  = hasData ? vals[vals.length-1] : 0;
     const med = hasData ? vals[Math.floor(vals.length/2)] : 0;
 
-    const toX = v => Math.min(98, v / globalMax * 100);
+    let row = '<div class="bucket-row">'
+      +'<div class="bucket-label-col">'
+        +'<div class="bucket-stage">'+bkt.label+'</div>'
+        +'<div class="bucket-sub">'+bkt.sublabel+'</div>'
+        +(hasData
+          ? '<div class="bucket-stats">$'+Math.round(lo)+'-$'+Math.round(hi)+'/t<br>median <span class="accent">$'+Math.round(med)+'/t</span></div>'
+          : '<div class="bucket-stats" style="color:var(--fg-3)">no data</div>')
+      +'</div>'
+      +'<div class="bucket-chart-col">'
+        +'<div class="bk-track">'
+          +(hasData ? '<div class="bk-range" style="left:'+toX(lo)+'%;width:'+Math.max(0.5,toX(hi)-toX(lo))+'%"></div>' : '')
+          +(hasData ? '<div class="bk-median" style="left:'+toX(med)+'%"></div>' : '')
+          +(cisco  ? '<div class="bk-cisco" style="left:'+toX(perT(cisco))+'%"></div>' : '')
+          +'<div class="bk-rerate" style="left:'+toX(target)+'%"></div>'
+        +'</div>'
+        +'<div class="bk-dots">';
 
-    html += `<div class="bucket-row">
-      <div class="bucket-label-col">
-        <div class="bucket-stage">${bkt.label}</div>
-        <div class="bucket-range">${bkt.sublabel}</div>
-        ${hasData ? `<div class="bucket-range" style="margin-top:3px;color:#8ab0d0">$${Math.round(lo)}–$${Math.round(hi)}/t<br>median $${Math.round(med)}/t</div>` : '<div class="bucket-range" style="margin-top:3px;color:var(--dim)">no data</div>'}
-      </div>
-      <div class="bucket-chart-col">
-        <div class="bk-track">
-          ${hasData ? `<div class="bk-range" style="left:${toX(lo)}%;width:${Math.max(0.5,toX(hi)-toX(lo))}%;background:${bkt.color}"></div>` : ''}
-          ${hasData ? `<div class="bk-median" style="left:${toX(med)}%;background:rgba(255,255,255,.7)"></div>` : ''}
-          ${cisco ? `<div class="bk-cisco" style="left:${toX(perT(cisco))}%"></div>` : ''}
-          <div class="bk-rerate" style="left:${toX(target)}%"></div>
-        </div>
-        <div class="bk-dots">
-          ${items.map((d,i) => {
-            const isCisco = d.type === 'cisco';
-            const col = typeColor(d.type);
-            return `<div class="bk-dot${isCisco?' cisco-dot':''}" data-idx="${DATA.indexOf(d)}"
-              onmouseenter="showTTidx(event,${DATA.indexOf(d)})" onmousemove="moveTT(event)" onmouseleave="hideTT()">
-              <div class="bk-dot-circle" style="background:${col};width:${isCisco?10:7}px;height:${isCisco?10:7}px;border:${isCisco?'2px solid '+col:'none'}"></div>
-              <span style="color:${isCisco?col:'var(--muted)'};font-size:${isCisco?'11':'9'}px;font-family:var(--mono)">${d.ticker==='M&A'?'[M&A]':d.ticker} ${d.name.split(' ')[0]}  $${Math.round(perT(d))}/t</span>
-            </div>`;
-          }).join('')}
-        </div>
-        <div class="bk-axis">
-          <span>$0</span>
-          <span>$${Math.round(globalMax*0.25)}/t</span>
-          <span>$${Math.round(globalMax*0.5)}/t</span>
-          <span>$${Math.round(globalMax*0.75)}/t</span>
-          <span>$${Math.round(globalMax)}/t</span>
-        </div>
-      </div>
-    </div>`;
+    items.forEach(d => {
+      const isCisco = d.type === 'cisco';
+      const col = typeColor(d.type);
+      const tickerLbl = d.ticker.indexOf('M&A')===0 ? '['+d.ticker.replace(/ /g,'')+']' : '['+d.ticker+']';
+      row += '<div class="bk-dot'+(isCisco?' cisco-dot':'')+'" data-idx="'+DATA.indexOf(d)+'"'
+        +' onmouseenter="showTTidx(event,'+DATA.indexOf(d)+')" onmousemove="moveTT(event)" onmouseleave="hideTT()">'
+        +'<div class="bk-dot-circle" style="background:'+(isCisco?'var(--bg)':col)+'"></div>'
+        +'<span>'+tickerLbl+' '+d.name.split(' ')[0]+' &middot; $'+Math.round(perT(d))+'/t</span>'
+        +'</div>';
+    });
+
+    row += '</div>'
+      +'<div class="bk-axis">'
+        +'<span>$0</span>'
+        +'<span>$'+Math.round(globalMax*0.25)+'</span>'
+        +'<span>$'+Math.round(globalMax*0.5)+'</span>'
+        +'<span>$'+Math.round(globalMax*0.75)+'</span>'
+        +'<span>$'+Math.round(globalMax)+'/t</span>'
+      +'</div>'
+      +'</div></div>';
+    html += row;
   });
 
   el.innerHTML = html;
+  const visible = DATA.filter(d=>!hiddenTypes.has(d.type)).length;
+  document.getElementById('uv-meta').textContent = visible + ' comps | 6 stage buckets';
 }
 
-// ── BAR VIEW ─────────────────────────────────────────────────────────────
 function renderBar(){
-  const data = [...DATA].filter(d=>!hiddenTypes.has(d.type))
-    .sort((a,b)=>perT(b)-perT(a));
-  const maxPT = Math.max(...data.map(perT));
-  let html = '';
+  const data = [...DATA].filter(d=>!hiddenTypes.has(d.type)).sort((a,b)=>perT(b)-perT(a));
+  const maxPT = data.length ? Math.max(...data.map(perT)) : 1;
+  let html='';
   data.forEach(d => {
     const pt = perT(d);
-    const w = Math.max(0.3, pt/maxPT*100);
+    const w = Math.max(0.4, pt/maxPT*100);
     const col = typeColor(d.type);
     const isCisco = d.type === 'cisco';
-    const evStr = d.ev>=1000?'$'+(d.ev/1000).toFixed(1)+'B':'$'+d.ev+'M';
-    const bktLabel = BUCKETS.find(b=>b.id===d.bucket)?.label || '';
-    html += `<div class="bar-row" data-idx="${DATA.indexOf(d)}"
-      onmouseenter="showTTidx(event,${DATA.indexOf(d)})" onmousemove="moveTT(event)" onmouseleave="hideTT()">
-      <div class="bar-name-wrap">
-        <div class="bar-name" style="color:${isCisco?col:'#c8d8e8'}">${d.name}</div>
-        <div class="bar-meta">${d.ticker} · ${bktLabel}</div>
-      </div>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${w}%;background:${col};opacity:${isCisco?1:.72}">
-          ${w>11?`<span class="bar-inner-lbl">${evStr} · ${d.lce.toFixed(1)}Mt</span>`:''}
-        </div>
-      </div>
-      <div class="bar-val" style="color:${col}">$${Math.round(pt)}<span style="font-size:9px;color:var(--muted)">/t</span></div>
-      <div class="bar-badge" style="background:${BUCKETS.find(b=>b.id===d.bucket)?.color+'22'};color:${BUCKETS.find(b=>b.id===d.bucket)?.color};font-size:8px">
-        ${d.bucket.toUpperCase()}
-      </div>
-    </div>`;
+    const evStr = fmtMoney(d.ev);
+    const bktLabel = BUCKETS.find(b=>b.id===d.bucket) ? BUCKETS.find(b=>b.id===d.bucket).label : '';
+    html += '<div class="bar-row" data-idx="'+DATA.indexOf(d)+'"'
+      +' onmouseenter="showTTidx(event,'+DATA.indexOf(d)+')" onmousemove="moveTT(event)" onmouseleave="hideTT()">'
+      +'<div class="bar-name-wrap">'
+        +'<div class="bar-name'+(isCisco?' cisco':'')+'">'+d.name+'</div>'
+        +'<div class="bar-meta">'+d.ticker+' | '+bktLabel+'</div>'
+      +'</div>'
+      +'<div class="bar-track">'
+        +'<div class="bar-fill" style="width:'+w+'%;background:'+col+';opacity:'+(isCisco?1:.78)+'">'
+          +(w>14?'<span class="bar-inner-lbl">'+evStr+' | '+d.lce.toFixed(1)+' Mt LCE</span>':'')
+        +'</div>'
+      +'</div>'
+      +'<div class="bar-val" style="color:'+col+'">$'+Math.round(pt)+'<span class="unit">/t</span></div>'
+      +'<div class="bar-badge">'+d.bucket.toUpperCase()+'</div>'
+      +'</div>';
   });
   document.getElementById('bar-list').innerHTML = html;
+  document.getElementById('uv-meta').textContent = data.length + ' comps | sorted by EV / t LCE';
 }
 
-// ── BUBBLE VIEW ──────────────────────────────────────────────────────────
 function renderBubble(){
-  if(bubChart){ bubChart.destroy(); bubChart = null; }
+  if(bubChart){ bubChart.destroy(); bubChart=null; }
   const datasets = Object.keys(TYPES).filter(t=>!hiddenTypes.has(t)).map(type => ({
     label: TYPES[type].label,
     data: DATA.filter(d=>d.type===type).map(d=>({
-      x:d.lce, y:perT(d), r:Math.max(4,Math.min(36,Math.sqrt(d.ev/18))),
-      name:d.name, ev:d.ev, lce:d.lce
+      x:d.lce, y:perT(d), r:Math.max(4,Math.min(34,Math.sqrt(d.ev/18))),
+      name:d.name, ev:d.ev, lce:d.lce, ticker:d.ticker
     })),
-    backgroundColor: TYPES[type].color+(type==='cisco'?'cc':'55'),
+    backgroundColor: TYPES[type].color + (type==='cisco'?'cc':'55'),
     borderColor: TYPES[type].color,
-    borderWidth: type==='cisco'?2.5:1.5,
+    borderWidth: type==='cisco'?2.5:1.2,
   }));
   bubChart = new Chart(document.getElementById('bubble-canvas'),{
     type:'bubble', data:{datasets},
     options:{
       responsive:true, maintainAspectRatio:false,
       plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{label:ctx=>[`${ctx.raw.name}`,`$${Math.round(ctx.raw.y)}/t · EV $${ctx.raw.ev>=1000?(ctx.raw.ev/1000).toFixed(1)+'B':ctx.raw.ev+'M'}`]},
-          backgroundColor:'rgba(14,22,32,.95)',titleColor:'#f1f5f9',bodyColor:'#8ab0d0',borderColor:'rgba(255,255,255,.12)',borderWidth:1,padding:10}
+        legend:{position:'bottom',labels:{boxWidth:10,boxHeight:10,padding:14,font:{family:"'JetBrains Mono', monospace",size:10}}},
+        tooltip:{
+          backgroundColor:'#0c0d0a', titleColor:'#d8d4c2', bodyColor:'#d8d4c2',
+          borderColor:'#3a3d33', borderWidth:1, padding:10,
+          titleFont:{family:"'JetBrains Mono', monospace",size:11,weight:'600'},
+          bodyFont:{family:"'JetBrains Mono', monospace",size:11},
+          callbacks:{
+            title:ctx=>ctx[0].raw.name,
+            label:ctx=>['$'+Math.round(ctx.raw.y)+'/t LCE','EV '+fmtMoney(ctx.raw.ev)+' | '+ctx.raw.lce.toFixed(1)+' Mt LCE',ctx.raw.ticker]
+          }
+        }
       },
       scales:{
-        x:{type:'logarithmic',ticks:{color:'#475569',font:{size:9},callback:v=>v+'Mt'},grid:{color:'rgba(255,255,255,.04)'},title:{display:true,text:'Contained LCE (Mt) — log scale',color:'#64748b',font:{size:10}}},
-        y:{type:'logarithmic',ticks:{color:'#475569',font:{size:9},callback:v=>'$'+v+'/t'},grid:{color:'rgba(255,255,255,.04)'},title:{display:true,text:'EV / t LCE (log scale)',color:'#64748b',font:{size:10}}}
+        x:{type:'logarithmic',ticks:{callback:v=>v+' Mt'},grid:{color:'rgba(58,61,51,0.3)'},title:{display:true,text:'Contained LCE (Mt) | log',color:'#5d5b4d',font:{size:10,weight:'600'}}},
+        y:{type:'logarithmic',ticks:{callback:v=>'$'+v},grid:{color:'rgba(58,61,51,0.3)'},title:{display:true,text:'EV / t LCE | log',color:'#5d5b4d',font:{size:10,weight:'600'}}}
       }
     }
   });
+  document.getElementById('uv-meta').textContent = 'log-log | bubble size proportional to sqrt(EV)';
 }
 
-// ── Tooltip ──────────────────────────────────────────────────────────────
 function showTTidx(e, idx){
   const d = DATA[idx];
   const tt = document.getElementById('tooltip');
   const col = typeColor(d.type);
   const bkt = BUCKETS.find(b=>b.id===d.bucket);
-  const vals = DATA.filter(x=>x.bucket===d.bucket&&x.type!=='cisco').map(perT).sort((a,b)=>a-b);
+  const vals = DATA.filter(x=>x.bucket===d.bucket && x.type!=='cisco').map(perT).sort((a,b)=>a-b);
   const med = vals.length ? vals[Math.floor(vals.length/2)] : null;
-  tt.innerHTML = `
-    <div class="tt-name" style="color:${col}">${d.name}</div>
-    <div class="tt-row"><span class="tt-key">Market cap / EV</span><span class="tt-val">$${d.ev>=1000?(d.ev/1000).toFixed(1)+'B':d.ev+'M'}</span></div>
-    <div class="tt-row"><span class="tt-key">LCE resource</span><span class="tt-val">${d.lce.toFixed(1)} Mt</span></div>
-    <div class="tt-row"><span class="tt-key">EV / t LCE</span><span class="tt-val" style="color:${col};font-size:15px">$${Math.round(perT(d))}</span></div>
-    <div class="tt-row"><span class="tt-key">Stage bucket</span><span class="tt-val">${bkt?.label||'—'}</span></div>
-    ${med?`<div class="tt-row"><span class="tt-key">Bucket median</span><span class="tt-val">$${Math.round(med)}/t</span></div>`:''}
-    <div class="tt-note">${d.note}</div>`;
+  tt.innerHTML = '<div class="tt-name" style="color:'+col+'">'+d.name+'</div>'
+    +'<div class="tt-row"><span class="tt-key">EV / cap</span><span class="tt-val">'+fmtMoney(d.ev)+'</span></div>'
+    +'<div class="tt-row"><span class="tt-key">LCE</span><span class="tt-val">'+d.lce.toFixed(1)+' Mt</span></div>'
+    +'<div class="tt-row"><span class="tt-key">EV / t LCE</span><span class="tt-val hl" style="color:'+col+'">$'+Math.round(perT(d))+'/t</span></div>'
+    +'<div class="tt-row"><span class="tt-key">Stage</span><span class="tt-val">'+(bkt?bkt.label:'-')+'</span></div>'
+    +(med?'<div class="tt-row"><span class="tt-key">Bucket median</span><span class="tt-val">$'+Math.round(med)+'/t</span></div>':'')
+    +'<div class="tt-note">'+d.note+'</div>';
   tt.style.display='block'; moveTT(e);
 }
-function moveTT(e){ const tt=document.getElementById('tooltip'); const x=e.clientX+14; tt.style.left=(x+280>window.innerWidth?e.clientX-294:x)+'px'; tt.style.top=(e.clientY-10)+'px'; }
+function moveTT(e){ const tt=document.getElementById('tooltip'); const x=e.clientX+14; tt.style.left=(x+300>window.innerWidth?e.clientX-310:x)+'px'; tt.style.top=(e.clientY-10)+'px'; }
 function hideTT(){ document.getElementById('tooltip').style.display='none'; }
 
-// ── Controls ─────────────────────────────────────────────────────────────
 function setView(v){
-  view=v;
-  ['bucket','bar','bubble'].forEach(n=>{
-    document.getElementById('vbtn-'+n).classList.toggle('on',n===v);
-    document.getElementById('view-'+n).style.display=n===v?'block':'none';
-  });
+  view = v;
+  document.querySelectorAll('.view-btn').forEach(b=>b.classList.toggle('on',b.dataset.view===v));
+  ['bucket','bar','bubble'].forEach(n=>document.getElementById('view-'+n).style.display=n===v?'block':'none');
   render();
 }
 function render(){
@@ -427,8 +654,21 @@ function render(){
   if(view==='bubble') renderBubble();
 }
 
-// Init
-renderLegend();
+document.getElementById('rr-slider').addEventListener('input', updateRerate);
+document.querySelectorAll('.view-btn').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
+document.getElementById('chips').addEventListener('click', e=>{
+  const c = e.target.closest('.chip'); if(!c) return;
+  toggleType(c.dataset.type);
+});
+document.getElementById('reset').addEventListener('click', ()=>{
+  hiddenTypes.clear();
+  document.getElementById('rr-slider').value = 103;
+  renderChips();
+  updateRerate();
+  render();
+});
+
+renderChips();
 updateHeader();
 updateRerate();
 render();
