@@ -314,8 +314,8 @@ function CommodityDetailPanel({ data, selected, setSelected }) {
     <div style={{ display: 'grid', gridTemplateColumns: '7fr 5fr', gap: 18 }}>
       <div>
         {/* Score history + components — Tasks 8 & 9 */}
-        <div style={{ height: 140, background: BRAND.panel, border: `1px solid ${BRAND.border}`, borderRadius: 4, marginBottom: 12, display: 'grid', placeItems: 'center', color: BRAND.textDim, fontSize: 11 }}>
-          ScoreHistoryChart placeholder — Task 8
+        <div style={{ marginBottom: 12 }}>
+          <ScoreHistoryChart history={c.score_history} score={c.score} />
         </div>
         <div style={{ height: 120, background: BRAND.panel, border: `1px solid ${BRAND.border}`, borderRadius: 4, display: 'grid', placeItems: 'center', color: BRAND.textDim, fontSize: 11 }}>
           ComponentBars placeholder — Task 9
@@ -331,6 +331,41 @@ function CommodityDetailPanel({ data, selected, setSelected }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function ScoreHistoryChart({ history, score }) {
+  if (!history || history.length === 0) return null;
+  const W = 700, H = 140, P = { top: 12, right: 12, bottom: 22, left: 36 };
+  const cw = W - P.left - P.right, ch = H - P.top - P.bottom;
+  const ys = history.map(h => h.score);
+  const yMin = Math.min(-2, ...ys) - 0.5;
+  const yMax = Math.max(10, ...ys) + 0.5;
+  const xScale = i => P.left + (i / (history.length - 1)) * cw;
+  const yScale = y => P.top + (1 - (y - yMin) / (yMax - yMin)) * ch;
+  const path = history.map((h, i) => `${i === 0 ? 'M' : 'L'}${xScale(i)},${yScale(h.score)}`).join(' ');
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
+      {[4, 8].map(t => (
+        <g key={t}>
+          <line x1={P.left} y1={yScale(t)} x2={P.left + cw} y2={yScale(t)}
+                stroke={t === 8 ? BRAND.orange : BRAND.pink} strokeOpacity={0.5}
+                strokeDasharray="3 4" />
+          <text x={P.left + cw + 4} y={yScale(t) + 3} fontSize={9} fill={BRAND.textDim}
+                fontFamily="JetBrains Mono">{t === 8 ? 'capitulation' : 'hated'}</text>
+        </g>
+      ))}
+      <line x1={P.left} y1={yScale(0)} x2={P.left + cw} y2={yScale(0)}
+            stroke={BRAND.textMute} strokeOpacity={0.4} />
+      <path d={path} fill="none" stroke={BRAND.green} strokeWidth={1.5} />
+      <text x={P.left} y={H - 6} fontSize={9} fill={BRAND.textDim} fontFamily="JetBrains Mono">
+        {history[0].date} → {history[history.length - 1].date}
+      </text>
+      <text x={P.left - 8} y={yScale(yMax) + 4} fontSize={9} fill={BRAND.textDim}
+            fontFamily="JetBrains Mono" textAnchor="end">{yMax.toFixed(1)}</text>
+      <text x={P.left - 8} y={yScale(yMin) + 4} fontSize={9} fill={BRAND.textDim}
+            fontFamily="JetBrains Mono" textAnchor="end">{yMin.toFixed(1)}</text>
+    </svg>
   );
 }
 
