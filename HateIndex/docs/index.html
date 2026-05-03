@@ -337,9 +337,7 @@ function CommodityDetailPanel({ data, selected, setSelected }) {
             {c.commentary.rotation}
           </p>
         </div>
-        <div style={{ color: BRAND.textDim, fontSize: 11 }}>
-          ConstituentsTable placeholder — Task 11
-        </div>
+        <ConstituentsTable rows={c.constituents} />
       </div>
     </div>
   );
@@ -418,6 +416,55 @@ function ComponentBars({ components }) {
         );
       })}
     </svg>
+  );
+}
+
+function ConstituentsTable({ rows }) {
+  if (!rows || rows.length === 0) {
+    return <div style={{ color: BRAND.textDim, fontSize: 11 }}>No constituents configured.</div>;
+  }
+  const fmtPx = v => v == null ? '—' : v.toFixed(2);
+  const fmtPct = v => {
+    if (v == null) return '—';
+    const sign = v > 0 ? '+' : '';
+    return `${sign}${v.toFixed(2)}%`;
+  };
+  const colorPct = v => v == null ? BRAND.textDim : v > 0 ? BRAND.green : v < 0 ? BRAND.red : BRAND.textMute;
+  return (
+    <div>
+      <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em', marginBottom: 8 }}>
+        SECTOR · COMPANIES ON THE DESK
+      </div>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11, fontFamily: 'JetBrains Mono' }}>
+        <thead>
+          <tr style={{ borderBottom: `1px solid ${BRAND.border}`, color: BRAND.textDim }}>
+            <th style={{ textAlign: 'left',  padding: '4px 6px' }}>Ticker</th>
+            <th style={{ textAlign: 'left',  padding: '4px 6px' }}>Name</th>
+            <th style={{ textAlign: 'left',  padding: '4px 6px' }}>Role</th>
+            <th style={{ textAlign: 'right', padding: '4px 6px' }}>Last</th>
+            <th style={{ textAlign: 'right', padding: '4px 6px' }}>WoW</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(r => (
+            <tr key={r.ticker} style={{ borderBottom: `1px solid ${BRAND.border}40` }}>
+              <td style={{ padding: '5px 6px', color: BRAND.text, fontWeight: 600 }}>
+                <a href={`https://finance.yahoo.com/quote/${encodeURIComponent(r.ticker)}`}
+                   target="_blank" rel="noopener" style={{ color: 'inherit', textDecoration: 'none' }}>
+                  {r.ticker}
+                </a>
+              </td>
+              <td style={{ padding: '5px 6px', color: BRAND.textMute }}>{r.name}</td>
+              <td style={{ padding: '5px 6px', color: BRAND.textDim, fontSize: 10 }}>
+                {r.role}{r.stale ? ' · stale' : ''}
+              </td>
+              <td style={{ padding: '5px 6px', textAlign: 'right', color: BRAND.text }}>{fmtPx(r.last_close)}</td>
+              <td style={{ padding: '5px 6px', textAlign: 'right', color: colorPct(r.wow_pct) }}>{fmtPct(r.wow_pct)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
