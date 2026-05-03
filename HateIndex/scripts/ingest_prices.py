@@ -22,19 +22,19 @@ ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "data" / "raw"
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 
-UNIVERSE: list[tuple[str, str]] = [
-    ("Lithium",      "LIT"),
-    ("Uranium",      "URA"),
-    ("Copper",       "COPX"),
-    ("Gold",         "GLD"),
-    ("Silver",       "SLV"),
-    ("Rare Earths",  "REMX"),
-    ("Crude Oil",    "USO"),
-    ("Nat Gas",      "UNG"),
-    ("PGMs",         "PPLT"),
-    ("Iron Ore",     "IRON.AX"),
-    ("Thermal Coal", "BTU"),
-    ("Nickel",       "PICK"),
+UNIVERSE: list[tuple[str, list[str]]] = [
+    ("Lithium",      ["LIT"]),
+    ("Uranium",      ["URA"]),
+    ("Copper",       ["COPX"]),
+    ("Gold",         ["GLD"]),
+    ("Silver",       ["SLV"]),
+    ("Rare Earths",  ["REMX"]),
+    ("Crude Oil",    ["USO"]),
+    ("Nat Gas",      ["UNG"]),
+    ("PGMs",         ["PPLT"]),
+    ("Iron Ore",     ["IRON.AX", "FMG.AX"]),  # IRON.AX flaky; SPEC alt is FMG.AX
+    ("Thermal Coal", ["BTU"]),
+    ("Nickel",       ["PICK"]),
 ]
 BENCHMARK = "^AXJO"
 HISTORY_PERIOD = "10y"
@@ -82,13 +82,33 @@ def fetch(ticker: str) -> pd.DataFrame:
     return pd.DataFrame(columns=["date", "ticker", "close"])
 
 
+def fetch_with_fallbacks(tickers: list[str]) -> tuple[pd.DataFrame, str | None]:
+    """Try each ticker in order; return (frame, ticker_used) on first success."""
+    for tkr in tickers:
+        df = fetch(tkr)
+        if not df.empty:
+            return df, tkr
+    return pd.DataFrame(columns=["date", "ticker", "close"]), None
+
+
 def main() -> int:
     frames: list[pd.DataFrame] = []
-    for _name, ticker in UNIVERSE + [("Benchmark", BENCHMARK)]:
-        try:
-            frames.append(fetch(ticker))
-        except Exception as e:
-            log.error("Failed to fetch %s: %s", ticker, e)
+    for _name, fallbacks in UNIVERSE:
+        primary = fallbacks[0]
+        df, used = fetch_with_fallbacks(fallbacks)
+        if used is None:
+            log.error("All fallbacks failed for %s: %s", _name, fallbacks)
+            continue
+        if used != primary:
+            log.warning("Using fallback %s for %s (primary %s failed)", used, _name, primary)
+            df = df.assign(ticker=primary)  # store under canonical ticker
+        frames.append(df)
+
+    bench_df = fetch(BENCHMARK)
+    if not bench_df.empty:
+        frames.append(bench_df)
+    else:
+        log.error("Benchmark %s failed to fetch", BENCHMARK)
 
     if not frames:
         log.error("No data fetched; aborting")
@@ -97,7 +117,7 @@ def main() -> int:
     combined = pd.concat(frames, ignore_index=True).dropna(subset=["close"])
     combined = combined.sort_values(["ticker", "date"]).reset_index(drop=True)
 
-    expected = {t for _n, t in UNIVERSE} | {BENCHMARK}
+    expected = {fallbacks[0] for _n, fallbacks in UNIVERSE} | {BENCHMARK}
     got = set(combined["ticker"].unique())
     missing = expected - got
     if missing:

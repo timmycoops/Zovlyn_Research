@@ -58,7 +58,7 @@ YEARS_BACK = 10  # Phase 2 backtest needs at least 5; pull 10 to be safe.
 
 
 def fetch_year(year: int) -> pd.DataFrame:
-    url = f"https://www.cftc.gov/dea/history/dea_disagg_xls_{year}.zip"
+    url = f"https://www.cftc.gov/sites/default/files/files/dea/history/com_disagg_xls_{year}.zip"
     log.info("Downloading CFTC disaggregated report for %d", year)
     r = requests.get(url, timeout=60)
     r.raise_for_status()
