@@ -521,8 +521,8 @@ function BacktestPanel() {
         ))}
       </div>
       {tab === 'components' && components && <ComponentCalibrationGrid data={components} />}
-      {tab === 'composite'  && components && <Placeholder text="composite view — Task 7" />}
-      {tab === 'signal'     && signal     && <Placeholder text="signal P&L view — Task 7" />}
+      {tab === 'composite'  && components && <CompositeCalibrationView data={components} />}
+      {tab === 'signal'     && signal     && <SignalPnLView           data={signal} />}
       {tab === 'components' && !components && <Placeholder text="components data missing" />}
       {tab === 'composite'  && !components && <Placeholder text="components data missing" />}
       {tab === 'signal'     && !signal     && <Placeholder text="signal data missing" />}
@@ -620,6 +620,101 @@ function CalibrationCard({ name, block }) {
             </g>
           );
         })}
+      </svg>
+    </div>
+  );
+}
+
+function CompositeCalibrationView({ data }) {
+  const block = data.composite || {};
+  return (
+    <div>
+      <div style={{ marginBottom: 12, color: BRAND.textMute, fontSize: 12, lineHeight: 1.55, maxWidth: 720 }}>
+        Decile spread of the summed hate score across all components.
+        Best horizon: <span className="mono" style={{ color: BRAND.text }}>{block.best_horizon || '—'}</span>.
+        Beats best single component: <span className="mono" style={{ color: block.beats_best_component ? BRAND.green : BRAND.red }}>
+          {block.beats_best_component ? 'YES' : 'NO'}
+        </span>.
+      </div>
+      <CalibrationCard name="composite" block={block} />
+    </div>
+  );
+}
+
+function SignalPnLView({ data }) {
+  const horizons = ['4', '13', '26', '52'];
+  const fmt    = v => v == null ? '—' : (typeof v === 'number' ? v.toFixed(3) : v);
+  const fmtPct = v => v == null ? '—' : `${(v * 100).toFixed(1)}%`;
+  const verdict = data.verdict || {};
+
+  return (
+    <div>
+      <div className="panel-hi" style={{ padding: 14, marginBottom: 14 }}>
+        <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em', marginBottom: 6 }}>
+          VERDICT · n_events = {data.n_events || 0}
+        </div>
+        <div style={{ fontSize: 13, color: BRAND.text, lineHeight: 1.5 }}>{verdict.summary}</div>
+        <div style={{ display: 'flex', gap: 14, marginTop: 8, fontSize: 11, color: BRAND.textMute, flexWrap: 'wrap' }}>
+          <span>Beats random @ 26w: <span style={{ color: verdict.beats_random_at_26w ? BRAND.green : BRAND.red }}>{verdict.beats_random_at_26w ? 'yes' : 'no'}</span></span>
+          <span>Beats random @ 52w: <span style={{ color: verdict.beats_random_at_52w ? BRAND.green : BRAND.red }}>{verdict.beats_random_at_52w ? 'yes' : 'no'}</span></span>
+          <span>Beats benchmark @ 52w: <span style={{ color: verdict.beats_benchmark_at_52w ? BRAND.green : BRAND.red }}>{verdict.beats_benchmark_at_52w ? 'yes' : 'no'}</span></span>
+        </div>
+      </div>
+      <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em', marginBottom: 6 }}>HIT RATE / MEAN / SHARPE BY HORIZON</div>
+      <div style={{ overflowX: 'auto', marginBottom: 16 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11, fontFamily: 'JetBrains Mono' }}>
+          <thead>
+            <tr style={{ borderBottom: `1px solid ${BRAND.border}`, color: BRAND.textDim }}>
+              <th style={{ textAlign: 'left',  padding: '4px 6px' }}>Group</th>
+              {horizons.map(h => (<th key={h} style={{ textAlign: 'right', padding: '4px 6px' }}>{h}w hit / mean / Sharpe</th>))}
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              ['Treatment',           data.horizons || {}],
+              ['Hated, not rotating', (data.controls?.hated_not_rotating?.horizons) || {}],
+              ['Rotating, not hated', (data.controls?.rotating_not_hated?.horizons) || {}],
+              ['Inverse',             (data.controls?.inverse?.horizons) || {}],
+            ].map(([label, hMap]) => (
+              <tr key={label} style={{ borderBottom: `1px solid ${BRAND.border}40` }}>
+                <td style={{ padding: '5px 6px', color: BRAND.text, fontWeight: 600 }}>{label}</td>
+                {horizons.map(h => (
+                  <td key={h} style={{ padding: '5px 6px', textAlign: 'right', color: BRAND.textMute }}>
+                    {fmtPct(hMap[h]?.hit_rate)} / {fmt(hMap[h]?.mean)} / {fmt(hMap[h]?.sharpe)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <EquityCurve points={data.equity_curve || []} />
+    </div>
+  );
+}
+
+function EquityCurve({ points }) {
+  if (!points || points.length === 0) {
+    return <div style={{ color: BRAND.textDim, fontSize: 11, padding: 14 }}>Equity curve unavailable (no flagged events).</div>;
+  }
+  const W = 920, H = 220, P = { top: 14, right: 14, bottom: 28, left: 40 };
+  const cw = W - P.left - P.right, ch = H - P.top - P.bottom;
+  const allY = points.flatMap(p => [p.strategy, p.benchmark]);
+  const yMin = Math.min(...allY) * 0.98;
+  const yMax = Math.max(...allY) * 1.02;
+  const xScale = i => P.left + (i / (Math.max(1, points.length - 1))) * cw;
+  const yScale = v => P.top + (1 - (v - yMin) / (yMax - yMin || 1)) * ch;
+  const pathFor = key => points.map((p, i) => `${i === 0 ? 'M' : 'L'}${xScale(i)},${yScale(p[key])}`).join(' ');
+  return (
+    <div>
+      <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em', marginBottom: 6 }}>
+        EQUITY CURVE — STRATEGY (green) vs BENCHMARK (mute)
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
+        <path d={pathFor('benchmark')} fill="none" stroke={BRAND.textMute} strokeWidth={1} strokeOpacity={0.7} />
+        <path d={pathFor('strategy')}  fill="none" stroke={BRAND.green}    strokeWidth={1.5} />
+        <text x={P.left}      y={H - 8} fontSize={9} fill={BRAND.textDim} fontFamily="JetBrains Mono">{points[0].date}</text>
+        <text x={P.left + cw} y={H - 8} fontSize={9} fill={BRAND.textDim} fontFamily="JetBrains Mono" textAnchor="end">{points[points.length - 1].date}</text>
       </svg>
     </div>
   );
