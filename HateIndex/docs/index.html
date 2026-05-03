@@ -310,6 +310,13 @@ function CommodityDetailPanel({ data, selected, setSelected }) {
       </div>
     );
   }
+  if (!c.commentary || !c.score_history || !c.constituents) {
+    return (
+      <div style={{ padding: 24, color: BRAND.textDim, fontSize: 12, fontStyle: 'italic' }}>
+        No detail available — running on mock data. Refresh data.json.
+      </div>
+    );
+  }
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '7fr 5fr', gap: 18 }}>
       <div>
@@ -502,6 +509,11 @@ function HateIndexDashboard() {
         status: c.status,
         justEntered: c.just_entered,
         history: (c.score_history || []).map((p, i) => ({ w: i, v: p.score })),
+        // new — for the detail panel
+        components:    c.components,
+        score_history: c.score_history,
+        commentary:    c.commentary,
+        constituents:  c.constituents,
       })).sort((a, b) => b.score - a.score);
     }
     const sparklines = Object.fromEntries(

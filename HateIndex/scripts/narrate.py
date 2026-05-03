@@ -45,8 +45,10 @@ def positioning_phrase(z: Optional[float]) -> Optional[str]:
 
 def headline_phrase(name: str, score: float, universe_scores: list[float]) -> str:
     sorted_desc = sorted(universe_scores, reverse=True)
-    rank = sorted_desc.index(score) + 1 if score in sorted_desc else len(sorted_desc)
-    n = len(sorted_desc)
+    n = len(sorted_desc) or 1
+    # Use nearest-index match instead of float-equality `in`, since `score` may be
+    # rounded while universe_scores are not (silent rank-collapse to the bottom otherwise).
+    rank = min(range(len(sorted_desc)), key=lambda i: abs(sorted_desc[i] - score)) + 1 if sorted_desc else 1
     if rank <= n / 3:
         rank_label = "top third — the market hates this"
     elif rank <= 2 * n / 3:

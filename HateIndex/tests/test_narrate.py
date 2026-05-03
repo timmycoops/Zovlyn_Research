@@ -60,6 +60,23 @@ def test_headline_phrase_includes_score_and_rank():
     assert "-1.0" in out
 
 
+def test_headline_phrase_top_score_lands_in_top_third():
+    """The maximum score should rank top third, even when score is rounded
+    relative to the unrounded universe (regression for the float-equality
+    `in` bug that silently collapsed all ranks to the bottom)."""
+    out = headline_phrase("Nat Gas", 1.92, universe_scores=[
+        1.9213, 1.25, 0.6, 0.5, 0.0, -0.5, -0.6, -0.85, -1.0, -1.18, -1.26, -1.39
+    ])
+    assert "top third" in out
+
+
+def test_headline_phrase_bottom_score_lands_in_bottom_third():
+    out = headline_phrase("Copper", -1.39, universe_scores=[
+        1.92, 1.25, 0.6, 0.5, 0.0, -0.5, -0.6, -0.85, -1.0, -1.18, -1.26, -1.39
+    ])
+    assert "bottom third" in out
+
+
 def test_rotation_phrase_unchanged_status():
     assert "Lagging" in rotation_phrase("Lagging", just_entered=False)
 

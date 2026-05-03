@@ -1,6 +1,6 @@
 {
   "as_of": "2026-04-24",
-  "build": "20260503-0629",
+  "build": "20260503-0644",
   "benchmark": "^AXJO",
   "is_stale": false,
   "age_days": 9,
@@ -464,7 +464,7 @@
         }
       ],
       "commentary": {
-        "headline": "Nat Gas at +1.9 sits in the bottom third — not yet hated.",
+        "headline": "Nat Gas at +1.9 sits in the top third — the market hates this.",
         "components": [
           "Trading 92% below 5-year max — more depressed than two-thirds of weeks.",
           "Positioning data not available — CFTC does not publish a managed-money series for this contract.",
@@ -981,7 +981,7 @@
         }
       ],
       "commentary": {
-        "headline": "Silver at +1.2 sits in the bottom third — not yet hated.",
+        "headline": "Silver at +1.2 sits in the top third — the market hates this.",
         "components": [
           "Drawdown is in the normal historical range.",
           "Managed money positioning is neutral.",
@@ -1498,7 +1498,7 @@
         }
       ],
       "commentary": {
-        "headline": "PGMs at +0.6 sits in the bottom third — not yet hated.",
+        "headline": "PGMs at +0.6 sits in the top third — the market hates this.",
         "components": [
           "Drawdown is in the normal historical range.",
           "Positioning data not available — CFTC does not publish a managed-money series for this contract.",
@@ -2015,7 +2015,7 @@
         }
       ],
       "commentary": {
-        "headline": "Gold at +0.4 sits in the bottom third — not yet hated.",
+        "headline": "Gold at +0.4 sits in the top third — the market hates this.",
         "components": [
           "Drawdown is in the normal historical range.",
           "Managed money positioning is neutral.",
@@ -2550,7 +2550,7 @@
         }
       ],
       "commentary": {
-        "headline": "Iron Ore at +0.1 sits in the bottom third — not yet hated.",
+        "headline": "Iron Ore at +0.1 sits in the middle of the pack.",
         "components": [
           "Drawdown is in the normal historical range.",
           "Positioning data not available — CFTC does not publish a managed-money series for this contract.",
@@ -3076,7 +3076,7 @@
         }
       ],
       "commentary": {
-        "headline": "Thermal Coal at -0.1 sits in the bottom third — not yet hated.",
+        "headline": "Thermal Coal at -0.1 sits in the middle of the pack.",
         "components": [
           "Drawdown is in the normal historical range.",
           "Positioning data not available — CFTC does not publish a managed-money series for this contract.",
@@ -3593,7 +3593,7 @@
         }
       ],
       "commentary": {
-        "headline": "Nickel at -0.9 sits in the bottom third — not yet hated.",
+        "headline": "Nickel at -0.9 sits in the middle of the pack.",
         "components": [
           "Drawdown is in the normal historical range.",
           "Positioning data not available — CFTC does not publish a managed-money series for this contract.",
@@ -4110,7 +4110,7 @@
         }
       ],
       "commentary": {
-        "headline": "Rare Earths at -1.0 sits in the bottom third — not yet hated.",
+        "headline": "Rare Earths at -1.0 sits in the middle of the pack.",
         "components": [
           "Drawdown is in the normal historical range.",
           "Positioning data not available — CFTC does not publish a managed-money series for this contract.",
