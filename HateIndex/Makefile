@@ -4,13 +4,14 @@
 PYTHON ?= $(shell test -x $(CURDIR)/.venv/bin/python && echo $(CURDIR)/.venv/bin/python || echo python3)
 PIP    ?= $(shell test -x $(CURDIR)/.venv/bin/pip    && echo $(CURDIR)/.venv/bin/pip    || echo pip3)
 
-.PHONY: help install ingest score rrg site backtest refresh test serve clean
+.PHONY: help install ingest constituents score rrg site backtest refresh test serve clean
 
 help:
 	@echo "Targets:"
 	@echo "  install   - create .venv and pip install -r requirements.txt"
 	@echo "  refresh   - run the full weekly pipeline (ingest -> score -> rrg -> site)"
 	@echo "  ingest    - pull prices and CFTC into data/raw/"
+	@echo "  constituents - pull weekly closes for sector constituents"
 	@echo "  score     - compute hate scores from raw"
 	@echo "  rrg       - compute RRG from raw"
 	@echo "  site      - build docs/data.json"
@@ -24,22 +25,25 @@ install:
 	$(PIP) install -r requirements.txt
 
 ingest:
-	$(PYTHON) scripts/ingest_prices.py
-	$(PYTHON) scripts/ingest_cftc.py
+	$(PYTHON) -m scripts.ingest_prices
+	$(PYTHON) -m scripts.ingest_cftc
+
+constituents:
+	$(PYTHON) -m scripts.ingest_constituents
 
 score:
-	$(PYTHON) scripts/compute_scores.py
+	$(PYTHON) -m scripts.compute_scores
 
 rrg:
-	$(PYTHON) scripts/compute_rrg.py
+	$(PYTHON) -m scripts.compute_rrg
 
 site:
-	$(PYTHON) scripts/build_site.py
+	$(PYTHON) -m scripts.build_site
 
 backtest:
-	$(PYTHON) scripts/backtest.py
+	$(PYTHON) -m scripts.backtest
 
-refresh: ingest score rrg site
+refresh: ingest constituents score rrg site
 	@echo "Pipeline refresh complete. Open docs/index.html or run 'make serve'."
 
 test:

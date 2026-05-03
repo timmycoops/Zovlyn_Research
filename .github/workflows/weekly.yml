@@ -38,20 +38,24 @@ jobs:
         run: pytest -v tests/
 
       - name: Ingest prices
-        run: python scripts/ingest_prices.py
+        run: python -m scripts.ingest_prices
 
       - name: Ingest CFTC
-        run: python scripts/ingest_cftc.py
+        run: python -m scripts.ingest_cftc
         continue-on-error: true   # CFTC ZIP can be flaky; non-fatal for Phase 2
 
+      - name: Pull constituents
+        run: python -m scripts.ingest_constituents
+        continue-on-error: true   # constituent fetch failures should not fail the cron
+
       - name: Compute hate scores
-        run: python scripts/compute_scores.py
+        run: python -m scripts.compute_scores
 
       - name: Compute RRG
-        run: python scripts/compute_rrg.py
+        run: python -m scripts.compute_rrg
 
       - name: Build site (data.json)
-        run: python scripts/build_site.py
+        run: python -m scripts.build_site
 
       - name: Commit refreshed data
         working-directory: ${{ github.workspace }}
