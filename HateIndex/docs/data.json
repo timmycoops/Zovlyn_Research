@@ -1,6 +1,6 @@
 {
   "as_of": "2026-04-24",
-  "build": "20260503-0349",
+  "build": "20260503-0601",
   "benchmark": "^AXJO",
   "is_stale": false,
   "age_days": 9,
@@ -462,6 +462,64 @@
           "date": "2026-04-24",
           "score": 1.9173547730484013
         }
+      ],
+      "commentary": {
+        "headline": "Nat Gas at +1.9 sits in the bottom third — not yet hated.",
+        "components": [
+          "Trading 92% below 5-year max — more depressed than two-thirds of weeks.",
+          "Positioning data not available — CFTC does not publish a managed-money series for this contract.",
+          "Flows component not yet implemented (Phase 7).",
+          "Valuation component not yet implemented (Phase 7).",
+          "Sentiment component not yet implemented (Phase 7)."
+        ],
+        "rotation": "Leading→Lagging: rotation in progress."
+      },
+      "constituents": [
+        {
+          "ticker": "AR",
+          "name": "Antero Resources",
+          "exchange": "NYSE",
+          "role": "Pure-play",
+          "last_close": 38.89,
+          "wow_pct": 2.77,
+          "stale": false
+        },
+        {
+          "ticker": "CHK",
+          "name": "Chesapeake Energy",
+          "exchange": "NASDAQ",
+          "role": "Pure-play",
+          "last_close": null,
+          "wow_pct": null,
+          "stale": true
+        },
+        {
+          "ticker": "EQT",
+          "name": "EQT Corporation",
+          "exchange": "NYSE",
+          "role": "Pure-play",
+          "last_close": 58.66,
+          "wow_pct": -0.42,
+          "stale": false
+        },
+        {
+          "ticker": "RRC",
+          "name": "Range Resources",
+          "exchange": "NYSE",
+          "role": "Pure-play",
+          "last_close": 42.63,
+          "wow_pct": 0.64,
+          "stale": false
+        },
+        {
+          "ticker": "UNG",
+          "name": "United States Natural Gas Fund",
+          "exchange": "NYSE",
+          "role": "ETF",
+          "last_close": 10.71,
+          "wow_pct": 3.88,
+          "stale": false
+        }
       ]
     },
     {
@@ -920,6 +978,64 @@
         {
           "date": "2026-04-24",
           "score": 1.245063939458839
+        }
+      ],
+      "commentary": {
+        "headline": "Silver at +1.2 sits in the bottom third — not yet hated.",
+        "components": [
+          "Drawdown is in the normal historical range.",
+          "Managed money positioning is neutral.",
+          "Flows component not yet implemented (Phase 7).",
+          "Valuation component not yet implemented (Phase 7).",
+          "Sentiment component not yet implemented (Phase 7)."
+        ],
+        "rotation": "Lagging→Improving: rotated into Improving — early-stage rotation."
+      },
+      "constituents": [
+        {
+          "ticker": "AG",
+          "name": "First Majestic Silver",
+          "exchange": "NYSE",
+          "role": "Pure-play",
+          "last_close": 19.85,
+          "wow_pct": -3.45,
+          "stale": false
+        },
+        {
+          "ticker": "FSM",
+          "name": "Fortuna Silver Mines",
+          "exchange": "NYSE",
+          "role": "Pure-play",
+          "last_close": 9.48,
+          "wow_pct": -7.69,
+          "stale": false
+        },
+        {
+          "ticker": "PAAS",
+          "name": "Pan American Silver",
+          "exchange": "NYSE",
+          "role": "Major",
+          "last_close": 51.81,
+          "wow_pct": -7.47,
+          "stale": false
+        },
+        {
+          "ticker": "SIL",
+          "name": "Global X Silver Miners ETF",
+          "exchange": "NYSE",
+          "role": "ETF",
+          "last_close": 88.67,
+          "wow_pct": -6.54,
+          "stale": false
+        },
+        {
+          "ticker": "SLV",
+          "name": "iShares Silver Trust",
+          "exchange": "NYSE",
+          "role": "ETF",
+          "last_close": 68.29,
+          "wow_pct": -0.73,
+          "stale": false
         }
       ]
     },
@@ -1380,6 +1496,64 @@
           "date": "2026-04-24",
           "score": 0.6052769982237509
         }
+      ],
+      "commentary": {
+        "headline": "PGMs at +0.6 sits in the bottom third — not yet hated.",
+        "components": [
+          "Drawdown is in the normal historical range.",
+          "Positioning data not available — CFTC does not publish a managed-money series for this contract.",
+          "Flows component not yet implemented (Phase 7).",
+          "Valuation component not yet implemented (Phase 7).",
+          "Sentiment component not yet implemented (Phase 7)."
+        ],
+        "rotation": "Lagging→Improving: rotated into Improving — early-stage rotation."
+      },
+      "constituents": [
+        {
+          "ticker": "AAL.L",
+          "name": "Anglo American Platinum (parent)",
+          "exchange": "LSE",
+          "role": "Major",
+          "last_close": 3590.0,
+          "wow_pct": -2.84,
+          "stale": false
+        },
+        {
+          "ticker": "IMPUY",
+          "name": "Impala Platinum",
+          "exchange": "OTC",
+          "role": "Major",
+          "last_close": 14.15,
+          "wow_pct": -4.2,
+          "stale": false
+        },
+        {
+          "ticker": "SBSW",
+          "name": "Sibanye Stillwater",
+          "exchange": "NYSE",
+          "role": "Major",
+          "last_close": 12.07,
+          "wow_pct": -5.11,
+          "stale": false
+        },
+        {
+          "ticker": "PALL",
+          "name": "Aberdeen Standard Physical Palladium Shares",
+          "exchange": "NYSE",
+          "role": "ETF",
+          "last_close": 138.3,
+          "wow_pct": 1.36,
+          "stale": false
+        },
+        {
+          "ticker": "PPLT",
+          "name": "Aberdeen Standard Physical Platinum Shares",
+          "exchange": "NYSE",
+          "role": "ETF",
+          "last_close": 180.01,
+          "wow_pct": -1.4,
+          "stale": false
+        }
       ]
     },
     {
@@ -1838,6 +2012,82 @@
         {
           "date": "2026-04-24",
           "score": 0.35639315834956525
+        }
+      ],
+      "commentary": {
+        "headline": "Gold at +0.4 sits in the bottom third — not yet hated.",
+        "components": [
+          "Drawdown is in the normal historical range.",
+          "Managed money positioning is neutral.",
+          "Flows component not yet implemented (Phase 7).",
+          "Valuation component not yet implemented (Phase 7).",
+          "Sentiment component not yet implemented (Phase 7)."
+        ],
+        "rotation": "Weakening→Lagging: rotation in progress."
+      },
+      "constituents": [
+        {
+          "ticker": "EVN.AX",
+          "name": "Evolution Mining",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 12.15,
+          "wow_pct": -4.78,
+          "stale": false
+        },
+        {
+          "ticker": "AEM",
+          "name": "Agnico Eagle Mines",
+          "exchange": "NYSE",
+          "role": "Major",
+          "last_close": 183.56,
+          "wow_pct": -8.33,
+          "stale": false
+        },
+        {
+          "ticker": "GOLD",
+          "name": "Barrick Gold",
+          "exchange": "NYSE",
+          "role": "Major",
+          "last_close": 42.63,
+          "wow_pct": -9.32,
+          "stale": false
+        },
+        {
+          "ticker": "NEM",
+          "name": "Newmont",
+          "exchange": "NYSE",
+          "role": "Major",
+          "last_close": 108.62,
+          "wow_pct": -10.01,
+          "stale": false
+        },
+        {
+          "ticker": "NST.AX",
+          "name": "Northern Star Resources",
+          "exchange": "ASX",
+          "role": "Major",
+          "last_close": 21.17,
+          "wow_pct": -3.16,
+          "stale": false
+        },
+        {
+          "ticker": "GLD",
+          "name": "SPDR Gold Shares",
+          "exchange": "NYSE",
+          "role": "ETF",
+          "last_close": 423.18,
+          "wow_pct": -2.32,
+          "stale": false
+        },
+        {
+          "ticker": "GDX",
+          "name": "VanEck Gold Miners ETF",
+          "exchange": "NYSE",
+          "role": "ETF",
+          "last_close": 87.11,
+          "wow_pct": -7.66,
+          "stale": false
         }
       ]
     },
@@ -2298,6 +2548,73 @@
           "date": "2026-04-24",
           "score": 0.14355013170407147
         }
+      ],
+      "commentary": {
+        "headline": "Iron Ore at +0.1 sits in the bottom third — not yet hated.",
+        "components": [
+          "Drawdown is in the normal historical range.",
+          "Positioning data not available — CFTC does not publish a managed-money series for this contract.",
+          "Flows component not yet implemented (Phase 7).",
+          "Valuation component not yet implemented (Phase 7).",
+          "Sentiment component not yet implemented (Phase 7)."
+        ],
+        "rotation": "Improving→Leading: rotated into Leading — fresh momentum, signal active."
+      },
+      "constituents": [
+        {
+          "ticker": "CIA.TO",
+          "name": "Champion Iron",
+          "exchange": "TSX",
+          "role": "Pure-play",
+          "last_close": 4.78,
+          "wow_pct": -1.85,
+          "stale": false
+        },
+        {
+          "ticker": "FMG.AX",
+          "name": "Fortescue",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 20.01,
+          "wow_pct": 1.16,
+          "stale": false
+        },
+        {
+          "ticker": "BHP.AX",
+          "name": "BHP Group",
+          "exchange": "ASX",
+          "role": "Major",
+          "last_close": 54.94,
+          "wow_pct": -2.07,
+          "stale": false
+        },
+        {
+          "ticker": "RIO.AX",
+          "name": "Rio Tinto",
+          "exchange": "ASX",
+          "role": "Major",
+          "last_close": 171.97,
+          "wow_pct": 0.22,
+          "stale": false
+        },
+        {
+          "ticker": "VALE",
+          "name": "Vale",
+          "exchange": "NYSE",
+          "role": "Major",
+          "last_close": 16.18,
+          "wow_pct": -5.77,
+          "stale": false
+        },
+        {
+          "ticker": "MGX.AX",
+          "name": "Mount Gibson Iron",
+          "exchange": "ASX",
+          "role": "Junior",
+          "last_close": 0.4,
+          "wow_pct": 2.56,
+          "stale": false
+        }
       ]
     },
     {
@@ -2756,6 +3073,64 @@
         {
           "date": "2026-04-24",
           "score": -0.12168779605134494
+        }
+      ],
+      "commentary": {
+        "headline": "Thermal Coal at -0.1 sits in the bottom third — not yet hated.",
+        "components": [
+          "Drawdown is in the normal historical range.",
+          "Positioning data not available — CFTC does not publish a managed-money series for this contract.",
+          "Flows component not yet implemented (Phase 7).",
+          "Valuation component not yet implemented (Phase 7).",
+          "Sentiment component not yet implemented (Phase 7)."
+        ],
+        "rotation": "Weakening→Lagging: rotation in progress."
+      },
+      "constituents": [
+        {
+          "ticker": "ARCH",
+          "name": "Arch Resources",
+          "exchange": "NYSE",
+          "role": "Pure-play",
+          "last_close": null,
+          "wow_pct": null,
+          "stale": true
+        },
+        {
+          "ticker": "NHC.AX",
+          "name": "New Hope Corporation",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 5.53,
+          "wow_pct": 3.75,
+          "stale": false
+        },
+        {
+          "ticker": "WHC.AX",
+          "name": "Whitehaven Coal",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 8.63,
+          "wow_pct": 8.83,
+          "stale": false
+        },
+        {
+          "ticker": "YAL.AX",
+          "name": "Yancoal Australia",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 7.68,
+          "wow_pct": 6.96,
+          "stale": false
+        },
+        {
+          "ticker": "BTU",
+          "name": "Peabody Energy",
+          "exchange": "NYSE",
+          "role": "Major",
+          "last_close": 26.53,
+          "wow_pct": -0.26,
+          "stale": false
         }
       ]
     },
@@ -3216,6 +3591,64 @@
           "date": "2026-04-24",
           "score": -0.8641466189475607
         }
+      ],
+      "commentary": {
+        "headline": "Nickel at -0.9 sits in the bottom third — not yet hated.",
+        "components": [
+          "Drawdown is in the normal historical range.",
+          "Positioning data not available — CFTC does not publish a managed-money series for this contract.",
+          "Flows component not yet implemented (Phase 7).",
+          "Valuation component not yet implemented (Phase 7).",
+          "Sentiment component not yet implemented (Phase 7)."
+        ],
+        "rotation": "Lagging→Leading: rotated into Leading — fresh momentum, signal active."
+      },
+      "constituents": [
+        {
+          "ticker": "IGO.AX",
+          "name": "IGO Limited",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 7.68,
+          "wow_pct": 9.56,
+          "stale": false
+        },
+        {
+          "ticker": "NIC.AX",
+          "name": "Nickel Industries",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 1.07,
+          "wow_pct": 7.04,
+          "stale": false
+        },
+        {
+          "ticker": "VALE",
+          "name": "Vale",
+          "exchange": "NYSE",
+          "role": "Major",
+          "last_close": 16.18,
+          "wow_pct": -5.77,
+          "stale": false
+        },
+        {
+          "ticker": "WSA.AX",
+          "name": "Western Areas (delisted; placeholder)",
+          "exchange": "ASX",
+          "role": "Junior",
+          "last_close": null,
+          "wow_pct": null,
+          "stale": true
+        },
+        {
+          "ticker": "PICK",
+          "name": "iShares MSCI Global Metals & Mining Producers ETF",
+          "exchange": "NYSE",
+          "role": "ETF",
+          "last_close": 61.4,
+          "wow_pct": -0.65,
+          "stale": false
+        }
       ]
     },
     {
@@ -3674,6 +4107,64 @@
         {
           "date": "2026-04-24",
           "score": -0.9891716424588229
+        }
+      ],
+      "commentary": {
+        "headline": "Rare Earths at -1.0 sits in the bottom third — not yet hated.",
+        "components": [
+          "Drawdown is in the normal historical range.",
+          "Positioning data not available — CFTC does not publish a managed-money series for this contract.",
+          "Flows component not yet implemented (Phase 7).",
+          "Valuation component not yet implemented (Phase 7).",
+          "Sentiment component not yet implemented (Phase 7)."
+        ],
+        "rotation": "Lagging→Leading: rotated into Leading — fresh momentum, signal active."
+      },
+      "constituents": [
+        {
+          "ticker": "ARU.AX",
+          "name": "Arafura Rare Earths",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 0.36,
+          "wow_pct": 7.46,
+          "stale": false
+        },
+        {
+          "ticker": "ILU.AX",
+          "name": "Iluka Resources",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 8.36,
+          "wow_pct": 9.71,
+          "stale": false
+        },
+        {
+          "ticker": "LYC.AX",
+          "name": "Lynas Rare Earths",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 19.14,
+          "wow_pct": 5.05,
+          "stale": false
+        },
+        {
+          "ticker": "MP",
+          "name": "MP Materials",
+          "exchange": "NYSE",
+          "role": "Pure-play",
+          "last_close": 66.63,
+          "wow_pct": 9.72,
+          "stale": false
+        },
+        {
+          "ticker": "REMX",
+          "name": "VanEck Rare Earth & Strategic Metals ETF",
+          "exchange": "NYSE",
+          "role": "ETF",
+          "last_close": 106.52,
+          "wow_pct": 8.08,
+          "stale": false
         }
       ]
     },
@@ -4134,6 +4625,82 @@
           "date": "2026-04-24",
           "score": -1.0181345795261743
         }
+      ],
+      "commentary": {
+        "headline": "Crude Oil at -1.0 sits in the bottom third — not yet hated.",
+        "components": [
+          "Above its 5-year average — no drawdown signal.",
+          "Managed money positioning is neutral.",
+          "Flows component not yet implemented (Phase 7).",
+          "Valuation component not yet implemented (Phase 7).",
+          "Sentiment component not yet implemented (Phase 7)."
+        ],
+        "rotation": "Leading→Weakening: rotation in progress."
+      },
+      "constituents": [
+        {
+          "ticker": "OXY",
+          "name": "Occidental Petroleum",
+          "exchange": "NYSE",
+          "role": "Pure-play",
+          "last_close": 58.71,
+          "wow_pct": 2.78,
+          "stale": false
+        },
+        {
+          "ticker": "CVX",
+          "name": "Chevron",
+          "exchange": "NYSE",
+          "role": "Major",
+          "last_close": 190.63,
+          "wow_pct": 2.93,
+          "stale": false
+        },
+        {
+          "ticker": "XOM",
+          "name": "ExxonMobil",
+          "exchange": "NYSE",
+          "role": "Major",
+          "last_close": 152.75,
+          "wow_pct": 2.58,
+          "stale": false
+        },
+        {
+          "ticker": "STO.AX",
+          "name": "Santos",
+          "exchange": "ASX",
+          "role": "Major",
+          "last_close": 8.02,
+          "wow_pct": 2.95,
+          "stale": false
+        },
+        {
+          "ticker": "WDS.AX",
+          "name": "Woodside Energy",
+          "exchange": "ASX",
+          "role": "Major",
+          "last_close": 33.12,
+          "wow_pct": 1.56,
+          "stale": false
+        },
+        {
+          "ticker": "XLE",
+          "name": "Energy Select Sector SPDR",
+          "exchange": "NYSE",
+          "role": "ETF",
+          "last_close": 58.85,
+          "wow_pct": 3.48,
+          "stale": false
+        },
+        {
+          "ticker": "USO",
+          "name": "United States Oil Fund",
+          "exchange": "NYSE",
+          "role": "ETF",
+          "last_close": 142.8,
+          "wow_pct": 7.85,
+          "stale": false
+        }
       ]
     },
     {
@@ -4592,6 +5159,91 @@
         {
           "date": "2026-04-24",
           "score": -1.0341032050837633
+        }
+      ],
+      "commentary": {
+        "headline": "Lithium at -1.0 sits in the bottom third — not yet hated.",
+        "components": [
+          "Above its 5-year average — no drawdown signal.",
+          "Positioning data not available — CFTC does not publish a managed-money series for this contract.",
+          "Flows component not yet implemented (Phase 7).",
+          "Valuation component not yet implemented (Phase 7).",
+          "Sentiment component not yet implemented (Phase 7)."
+        ],
+        "rotation": "Lagging→Leading: rotated into Leading — fresh momentum, signal active."
+      },
+      "constituents": [
+        {
+          "ticker": "LTR.AX",
+          "name": "Liontown Resources",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 2.64,
+          "wow_pct": 17.86,
+          "stale": false
+        },
+        {
+          "ticker": "LAC",
+          "name": "Lithium Americas",
+          "exchange": "NYSE",
+          "role": "Pure-play",
+          "last_close": 5.71,
+          "wow_pct": 23.06,
+          "stale": false
+        },
+        {
+          "ticker": "MIN.AX",
+          "name": "Mineral Resources",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 66.7,
+          "wow_pct": 12.35,
+          "stale": false
+        },
+        {
+          "ticker": "PMET.TO",
+          "name": "Patriot Battery Metals",
+          "exchange": "TSX",
+          "role": "Pure-play",
+          "last_close": 6.11,
+          "wow_pct": 18.18,
+          "stale": false
+        },
+        {
+          "ticker": "PLS.AX",
+          "name": "Pilbara Minerals",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 6.14,
+          "wow_pct": 6.41,
+          "stale": false
+        },
+        {
+          "ticker": "ALB",
+          "name": "Albemarle",
+          "exchange": "NYSE",
+          "role": "Major",
+          "last_close": 193.88,
+          "wow_pct": 2.95,
+          "stale": false
+        },
+        {
+          "ticker": "SQM",
+          "name": "SQM",
+          "exchange": "NYSE",
+          "role": "Major",
+          "last_close": 92.68,
+          "wow_pct": 4.38,
+          "stale": false
+        },
+        {
+          "ticker": "LIT",
+          "name": "Global X Lithium ETF",
+          "exchange": "NYSE",
+          "role": "ETF",
+          "last_close": 88.72,
+          "wow_pct": 5.88,
+          "stale": false
         }
       ]
     },
@@ -5052,6 +5704,82 @@
           "date": "2026-04-24",
           "score": -1.1876246954400043
         }
+      ],
+      "commentary": {
+        "headline": "Uranium at -1.2 sits in the bottom third — not yet hated.",
+        "components": [
+          "Above its 5-year average — no drawdown signal.",
+          "Positioning data not available — CFTC does not publish a managed-money series for this contract.",
+          "Flows component not yet implemented (Phase 7).",
+          "Valuation component not yet implemented (Phase 7).",
+          "Sentiment component not yet implemented (Phase 7)."
+        ],
+        "rotation": "Lagging→Leading: rotated into Leading — fresh momentum, signal active."
+      },
+      "constituents": [
+        {
+          "ticker": "BOE.AX",
+          "name": "Boss Energy",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 1.42,
+          "wow_pct": -11.21,
+          "stale": false
+        },
+        {
+          "ticker": "DNN",
+          "name": "Denison Mines",
+          "exchange": "NYSE",
+          "role": "Pure-play",
+          "last_close": 3.75,
+          "wow_pct": -1.32,
+          "stale": false
+        },
+        {
+          "ticker": "NXE",
+          "name": "NexGen Energy",
+          "exchange": "NYSE",
+          "role": "Pure-play",
+          "last_close": 12.38,
+          "wow_pct": -0.16,
+          "stale": false
+        },
+        {
+          "ticker": "PDN.AX",
+          "name": "Paladin Energy",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 11.97,
+          "wow_pct": -5.08,
+          "stale": false
+        },
+        {
+          "ticker": "CCJ",
+          "name": "Cameco",
+          "exchange": "NYSE",
+          "role": "Major",
+          "last_close": 120.6,
+          "wow_pct": -1.27,
+          "stale": false
+        },
+        {
+          "ticker": "URA",
+          "name": "Global X Uranium ETF",
+          "exchange": "NYSE",
+          "role": "ETF",
+          "last_close": 55.84,
+          "wow_pct": 0.96,
+          "stale": false
+        },
+        {
+          "ticker": "URNM",
+          "name": "Sprott Uranium Miners ETF",
+          "exchange": "NYSE",
+          "role": "ETF",
+          "last_close": 67.13,
+          "wow_pct": 0.18,
+          "stale": false
+        }
       ]
     },
     {
@@ -5510,6 +6238,82 @@
         {
           "date": "2026-04-24",
           "score": -1.3920966214272084
+        }
+      ],
+      "commentary": {
+        "headline": "Copper at -1.4 sits in the bottom third — not yet hated.",
+        "components": [
+          "Drawdown is in the normal historical range.",
+          "Managed money is long — extreme bullish positioning.",
+          "Flows component not yet implemented (Phase 7).",
+          "Valuation component not yet implemented (Phase 7).",
+          "Sentiment component not yet implemented (Phase 7)."
+        ],
+        "rotation": "Lagging→Leading: rotated into Leading — fresh momentum, signal active."
+      },
+      "constituents": [
+        {
+          "ticker": "29M.AX",
+          "name": "29Metals",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 0.24,
+          "wow_pct": 9.09,
+          "stale": false
+        },
+        {
+          "ticker": "SFR.AX",
+          "name": "Sandfire Resources",
+          "exchange": "ASX",
+          "role": "Pure-play",
+          "last_close": 16.78,
+          "wow_pct": -1.64,
+          "stale": false
+        },
+        {
+          "ticker": "BHP.AX",
+          "name": "BHP Group",
+          "exchange": "ASX",
+          "role": "Major",
+          "last_close": 54.94,
+          "wow_pct": -2.07,
+          "stale": false
+        },
+        {
+          "ticker": "FCX",
+          "name": "Freeport-McMoRan",
+          "exchange": "NYSE",
+          "role": "Major",
+          "last_close": 56.55,
+          "wow_pct": -7.37,
+          "stale": false
+        },
+        {
+          "ticker": "RIO.AX",
+          "name": "Rio Tinto",
+          "exchange": "ASX",
+          "role": "Major",
+          "last_close": 171.97,
+          "wow_pct": 0.22,
+          "stale": false
+        },
+        {
+          "ticker": "SCCO",
+          "name": "Southern Copper",
+          "exchange": "NYSE",
+          "role": "Major",
+          "last_close": 171.18,
+          "wow_pct": -5.13,
+          "stale": false
+        },
+        {
+          "ticker": "COPX",
+          "name": "Global X Copper Miners ETF",
+          "exchange": "NYSE",
+          "role": "ETF",
+          "last_close": 79.05,
+          "wow_pct": -4.03,
+          "stale": false
         }
       ]
     }

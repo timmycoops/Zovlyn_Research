@@ -17,11 +17,15 @@ from pathlib import Path
 
 import pandas as pd
 
+from scripts.narrate import build_commentary
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parent.parent
 PROC_DIR = ROOT / "data" / "processed"
+RAW_DIR = ROOT / "data" / "raw"
+STATIC_DIR = ROOT / "data" / "static"
 DOCS_DIR = ROOT / "docs"
 
 TICKER_MAP: dict[str, str] = {
@@ -74,6 +78,16 @@ def build() -> dict:
         log.warning("Data is %d days old (> %d threshold); marking is_stale=true",
                     age_days, STALE_THRESHOLD_DAYS)
 
+    static_path = STATIC_DIR / "constituents.json"
+    static_data = json.loads(static_path.read_text()) if static_path.exists() else {}
+
+    cp_path = RAW_DIR / "constituents_prices.parquet"
+    if cp_path.exists():
+        constituent_prices = pd.read_parquet(cp_path)
+        constituent_prices["date"] = pd.to_datetime(constituent_prices["date"], utc=True)
+    else:
+        constituent_prices = pd.DataFrame(columns=["date", "ticker", "close"])
+
     commodities_payload = []
     for commodity in TICKER_MAP:
         s_sub = (
@@ -113,6 +127,23 @@ def build() -> dict:
             "sentiment":   None,
         }
 
+        universe_scores = [
+            float(scores[(scores["commodity"] == k) & (scores["date"] <= as_of)]
+                  .sort_values("date").iloc[-1]["score"])
+            for k in TICKER_MAP
+            if not scores[(scores["commodity"] == k) & (scores["date"] <= as_of)].empty
+        ]
+        commentary = build_commentary(
+            name=commodity,
+            score=round(float(latest["score"]), 2),
+            universe_scores=universe_scores,
+            components=components,
+            drawdown_pct=float(latest.get("drawdown") or 0.0),
+            status=status,
+            just_entered=bool(just_entered),
+        )
+        constituents = _build_constituents(commodity, constituent_prices, static_data)
+
         commodities_payload.append({
             "name": commodity,
             "ticker": TICKER_MAP[commodity],
@@ -122,6 +153,8 @@ def build() -> dict:
             "status": status,
             "just_entered": bool(just_entered),
             "score_history": history,
+            "commentary":   commentary,
+            "constituents": constituents,
         })
 
     commodities_payload.sort(key=lambda c: c["score"], reverse=True)
@@ -144,6 +177,29 @@ def nullable(v) -> float | None:
     if v is None or pd.isna(v):
         return None
     return round(float(v), 2)
+
+
+def _build_constituents(commodity: str, prices: pd.DataFrame, static: dict) -> list[dict]:
+    """Join static member metadata with the latest 2 weekly closes per ticker."""
+    members = static.get(commodity, {}).get("members", [])
+    out: list[dict] = []
+    for m in members:
+        sub = prices[prices["ticker"] == m["ticker"]].sort_values("date")
+        if len(sub) >= 2:
+            prev, last = sub.iloc[-2]["close"], sub.iloc[-1]["close"]
+            wow = (last - prev) / prev * 100 if prev else 0.0
+            out.append({**m, "last_close": round(float(last), 2),
+                              "wow_pct": round(float(wow), 2),
+                              "stale": False})
+        elif len(sub) == 1:
+            out.append({**m, "last_close": round(float(sub.iloc[-1]["close"]), 2),
+                              "wow_pct": None, "stale": True})
+        else:
+            out.append({**m, "last_close": None, "wow_pct": None, "stale": True})
+    # ETFs to the bottom; pure-plays first, then majors, then juniors
+    role_order = {"Pure-play": 0, "Major": 1, "Junior": 2, "ETF": 3}
+    out.sort(key=lambda r: (role_order.get(r["role"], 9), r.get("name", "")))
+    return out
 
 
 def main() -> int:
