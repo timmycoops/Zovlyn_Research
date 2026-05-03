@@ -92,12 +92,15 @@ Palette is semantic only: accent green = our subject, red = downside, amber = re
 - Primer / explainer — *next*
 - Investment thesis one-pager, Watchlist dashboard — later
 
-**Existing root pages still on the old design** (need re-skin to inherit from a canonical above):
-- `cisco-enhanced-v2.html` → Research report template
-- `lce_chart_2.html` → Calculator template
-- `lithium_supply_model.html` → Calculator template (heavy data variant)
-- `lithium_projects_map_8.html` → waiting on Map template
-- `tsxv_primer.html` → waiting on Primer template
+**Existing root pages still needing work to inherit from a canonical template:**
+
+| File | Status | Next step |
+| --- | --- | --- |
+| `cisco-enhanced-v2.html` | tokens swapped to brand palette + JetBrains Mono; layout still bespoke; many hardcoded color literals (`#0f1e30`, `#c0d4e8`, `rgba(100,181,246,...)`) untouched | full port onto QTWO research-report template |
+| `lithium_supply_model.html` | tokens swapped; layout still bespoke (header/tabs/filters) | port onto a "calculator (heavy-data variant)" template — design the template first |
+| `lce_chart_2.html` | **on the design system** (canonical tokens, `t-top`/`t-nav`/`t-sec` chrome) | done |
+| `lithium_projects_map_8.html` | off-brand (navy/amber, own token names) | blocked on Map template — design the template first |
+| `tsxv_primer.html` | off-brand, no design tokens at all (every color is a literal) | blocked on Primer template — design the template first |
 
 When asked to build something matching one of these archetypes, design the **template** first (reusable patterns), then fill it with the specific content.
 

@@ -29,15 +29,30 @@ BENCHMARK = "^AXJO"
 
 WINDOW = 10
 SMOOTH = 3
+SCALE = 10   # JdK convention: multiply normalised deviation by 10 so values land in ~[85, 115]
+
+
+def _zscore(s: pd.Series, window: int) -> pd.Series:
+    return (s - s.rolling(window).mean()) / s.rolling(window).std()
 
 
 def compute_rrg_pair(prices: pd.Series, benchmark: pd.Series,
-                     window: int = WINDOW, smooth: int = SMOOTH
+                     window: int = WINDOW, smooth: int = SMOOTH, scale: int = SCALE
                      ) -> tuple[pd.Series, pd.Series]:
+    """
+    JdK RS-Ratio + RS-Momentum (de Kempenaer convention).
+
+    rs_ratio = 100 + scale * z(rs, window)
+    rs_mom   = 100 + scale * z(rs_ratio, window)
+
+    The *scale* multiplier (default 10) spreads the values into the conventional
+    [~85, ~115] range, so a standard RRG chart with [85, 115] axes frames the data
+    and the quadrants (centred at 100,100) are visually meaningful.
+    """
     aligned_bench = benchmark.reindex(prices.index).ffill()
     rs = 100 * prices / aligned_bench
-    rs_ratio_raw = 100 + ((rs - rs.rolling(window).mean()) / rs.rolling(window).std())
-    rs_mom_raw = 100 + rs_ratio_raw.pct_change(fill_method=None) * 100
+    rs_ratio_raw = 100 + scale * _zscore(rs, window)
+    rs_mom_raw = 100 + scale * _zscore(rs_ratio_raw, window)
     return rs_ratio_raw.rolling(smooth).mean(), rs_mom_raw.rolling(smooth).mean()
 
 

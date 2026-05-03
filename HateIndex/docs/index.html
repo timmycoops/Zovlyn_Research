@@ -188,7 +188,7 @@ function RRGPanel({ data, selected, setSelected }) {
   const PAD = { top: 30, right: 30, bottom: 50, left: 60 };
   const CHART_W = W - PAD.left - PAD.right;
   const CHART_H = H - PAD.top - PAD.bottom;
-  const X_MIN = 92, X_MAX = 108, Y_MIN = 92, Y_MAX = 108;
+  const X_MIN = 76, X_MAX = 124, Y_MIN = 76, Y_MAX = 124;
   const xScale = (x) => PAD.left + ((x - X_MIN) / (X_MAX - X_MIN)) * CHART_W;
   const yScale = (y) => PAD.top + (1 - (y - Y_MIN) / (Y_MAX - Y_MIN)) * CHART_H;
   const cx = xScale(100), cy = yScale(100);
@@ -212,13 +212,13 @@ function RRGPanel({ data, selected, setSelected }) {
       <rect x={PAD.left} y={PAD.top} width={cx - PAD.left} height={cy - PAD.top} fill="url(#improvingGlow)" />
       <rect x={cx} y={PAD.top} width={PAD.left + CHART_W - cx} height={cy - PAD.top} fill="url(#leadingGlow)" />
 
-      {[94, 96, 98, 102, 104, 106].map(v => (
+      {[80, 86, 92, 108, 114, 120].map(v => (
         <g key={`gx${v}`}>
           <line x1={xScale(v)} y1={PAD.top} x2={xScale(v)} y2={PAD.top + CHART_H} stroke={BRAND.border} strokeOpacity={0.4} strokeDasharray="2 4" />
           <text x={xScale(v)} y={PAD.top + CHART_H + 16} fill={BRAND.textDim} fontSize={9} textAnchor="middle" fontFamily="JetBrains Mono">{v}</text>
         </g>
       ))}
-      {[94, 96, 98, 102, 104, 106].map(v => (
+      {[80, 86, 92, 108, 114, 120].map(v => (
         <g key={`gy${v}`}>
           <line x1={PAD.left} y1={yScale(v)} x2={PAD.left + CHART_W} y2={yScale(v)} stroke={BRAND.border} strokeOpacity={0.4} strokeDasharray="2 4" />
           <text x={PAD.left - 8} y={yScale(v) + 3} fill={BRAND.textDim} fontSize={9} textAnchor="end" fontFamily="JetBrains Mono">{v}</text>
@@ -275,12 +275,25 @@ function RRGPanel({ data, selected, setSelected }) {
             <circle cx={xScale(last[0])} cy={yScale(last[1])}
                     r={isSelected ? 8 : isHated ? 6 : 4.5}
                     fill={baseColor} stroke={BRAND.bg} strokeWidth={2} />
-            <text x={xScale(last[0]) + 11} y={yScale(last[1]) + 4}
-                  fill={isSelected ? BRAND.text : BRAND.textMute}
-                  fontSize={isSelected ? 12 : 10} fontFamily="JetBrains Mono"
-                  fontWeight={isSelected ? 600 : 400}>
-              {d.ticker}
-            </text>
+            {(() => {
+              // Smart label placement: flip the label to the opposite side when a point
+              // sits near the chart edge so the ticker doesn't run off the panel.
+              const EDGE = 5;  // data-units from edge that count as "near"
+              const flipX = last[0] > X_MAX - EDGE;
+              const flipY = last[1] < Y_MIN + EDGE;
+              const dx = flipX ? -11 : 11;
+              const dy = flipY ? -8  : 4;
+              const anchor = flipX ? 'end' : 'start';
+              return (
+                <text x={xScale(last[0]) + dx} y={yScale(last[1]) + dy}
+                      textAnchor={anchor}
+                      fill={isSelected ? BRAND.text : BRAND.textMute}
+                      fontSize={isSelected ? 12 : 10} fontFamily="JetBrains Mono"
+                      fontWeight={isSelected ? 600 : 400}>
+                  {d.ticker}
+                </text>
+              );
+            })()}
           </g>
         );
       })}

@@ -4,14 +4,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lithium Hard Rock Mine — DCF Model</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0d1520;--surface:#152233;--card:#1a2d42;--card2:#1f3550;
-  --border:#2c4260;--border2:#3a5478;
-  --accent:#ffc107;--teal:#26c6da;--blue:#64b5f6;--purple:#b39dff;
-  --green:#69f0ae;--red:#ff5252;--orange:#ffab40;
-  --text:#ffffff;--muted:#b0c8e0;--dim:#6e90b0;
-  --font-mono:'Fira Code','Cascadia Code','Consolas',monospace;
+  /* Zovlyn design tokens — see /CLAUDE.md. Token swap from legacy navy/amber palette.
+     Hardcoded literals throughout the file (e.g. #0f1e30, #c0d4e8) are NOT yet migrated;
+     deeper layout port to the QTWO research-report template is TBD. */
+  --bg:#0c0d0a;--surface:#131410;--card:#1a1c16;--card2:#1a1c16;
+  --border:#2a2c24;--border2:#3a3d33;
+  --accent:#5dd3a8;--accent-2:#3aa881;--accent-dim:rgba(93,211,168,0.10);
+  --teal:#6acfe0;--blue:#64b5f6;--purple:#b39dff;
+  --green:#5dd380;--red:#ff5f56;--orange:#e8b658;
+  --text:#d8d4c2;--muted:#8a8773;--dim:#5d5b4d;
+  --r:4px;
+  --font-mono:'JetBrains Mono','IBM Plex Mono',ui-monospace,'Cascadia Code',monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html{height:100%;}body{height:100%;overflow:hidden;}

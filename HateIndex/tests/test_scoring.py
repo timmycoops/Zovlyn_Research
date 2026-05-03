@@ -47,12 +47,17 @@ def test_quadrant_labels():
     assert quadrant_label(np.nan, 100) == "N/A"
 
 
-def test_rrg_at_benchmark_equals_100():
-    """If the commodity tracks the benchmark exactly, RS-Ratio should hover at 100."""
-    idx = _weekly_index(50)
-    bench = pd.Series(np.linspace(100, 120, 50), index=idx)
-    sym = bench.copy()
-    rs_ratio, rs_mom = compute_rrg_pair(sym, bench)
-    # The smoothed values once warmed up should sit very close to 100
-    settled = rs_ratio.dropna().tail(20)
-    assert (settled.between(99, 101)).all(), f"got {settled.values}"
+def test_rrg_outperformer_lands_above_100():
+    """A monotonic outperformer should land in the upper half of the JdK range.
+
+    The JdK formula z-score-normalises the relative-strength series, so the test
+    isn't 'tracks → near 100' (that's degenerate). The well-conditioned check is
+    that an asset with steadily rising RS sits above 100 once warmed up.
+    """
+    idx = _weekly_index(60)
+    bench = pd.Series(np.linspace(100, 120, 60), index=idx)
+    sym = pd.Series(np.linspace(100, 150, 60), index=idx)  # rises faster than bench
+    rs_ratio, _ = compute_rrg_pair(sym, bench)
+    settled = rs_ratio.dropna().tail(10)
+    assert not settled.empty, "no warmed-up values to check"
+    assert (settled > 100).all(), f"expected outperformer rs_ratio > 100, got {settled.values}"

@@ -87,13 +87,23 @@ Equal weights to start (`w_k = 1` for all k). After ~2 years of live data, refit
 Per de Kempenaer's published method, weekly bars vs benchmark:
 
 ```python
-def rrg(prices: pd.Series, benchmark: pd.Series, window: int = 10, smooth: int = 3):
+SCALE = 10  # multiplier so values land in the conventional ~[85, 115] window
+
+def _z(s, window):
+    return (s - s.rolling(window).mean()) / s.rolling(window).std()
+
+def rrg(prices, benchmark, window=10, smooth=3, scale=SCALE):
     rs = 100 * prices / benchmark
-    rs_ratio = 100 + ((rs - rs.rolling(window).mean())
-                      / rs.rolling(window).std())
-    rs_mom = 100 + rs_ratio.pct_change() * 100
+    rs_ratio = 100 + scale * _z(rs, window)
+    rs_mom   = 100 + scale * _z(rs_ratio, window)
     return rs_ratio.rolling(smooth).mean(), rs_mom.rolling(smooth).mean()
 ```
+
+The `scale=10` multiplier matches the Bloomberg/Stockcharts convention so RRG charts
+plotted on conventional `[85, 115]` axes frame the data correctly. Both axes are
+z-score-normalised (the momentum axis is z(rs_ratio), not pct_change of it), so the
+two axes share comparable scale and the quadrant boundaries at (100, 100) are
+visually meaningful.
 
 Quadrants (centred at 100, 100):
 

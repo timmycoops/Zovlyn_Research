@@ -5,15 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Global Lithium Supply Model — Interactive Forecast</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#080d14;--surface:#0e1620;--card:#131e2e;--card2:#192538;
-  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
-  --accent:#ffc107;--teal:#26c6da;--blue:#64b5f6;--purple:#b39dff;
-  --green:#69f0ae;--red:#ff5252;--orange:#ffab40;--pink:#f48fb1;
-  --text:#f1f5f9;--muted:#64748b;--dim:#334155;
-  --font:'Space Grotesk',system-ui,sans-serif;--mono:'Space Mono',monospace;
+  /* Zovlyn design tokens — see /CLAUDE.md. Token swap from legacy navy/amber palette.
+     Layout (header/tabs/filters) still uses the bespoke pattern; deeper port to a
+     canonical template is TBD. */
+  --bg:#0c0d0a;--surface:#131410;--card:#1a1c16;--card2:#1a1c16;
+  --border:#2a2c24;--border2:#3a3d33;
+  --accent:#5dd3a8;--accent-2:#3aa881;--accent-dim:rgba(93,211,168,0.10);
+  --teal:#6acfe0;--blue:#64b5f6;--purple:#b39dff;
+  --green:#5dd380;--red:#ff5f56;--orange:#e8b658;--pink:#f48fb1;
+  --text:#d8d4c2;--muted:#8a8773;--dim:#5d5b4d;
+  --r:4px;
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono','IBM Plex Mono',ui-monospace,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px;}
