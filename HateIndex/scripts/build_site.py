@@ -122,9 +122,14 @@ def build() -> dict:
             "drawdown":    nullable(latest.get("z_drawdown")),
             "momentum":    nullable(latest.get("z_momentum")),
             "positioning": nullable(latest.get("z_positioning")),
-            "flows":       None,
+            "flows":       nullable(latest.get("z_flows")),
             "valuation":   None,
             "sentiment":   None,
+        }
+
+        flow_breakdown_block = {
+            "z_short":  nullable(latest.get("sub_z_short")),
+            "z_blocks": None,   # Phase 7a.5
         }
 
         universe_scores = [
@@ -155,6 +160,7 @@ def build() -> dict:
             "score_history": history,
             "commentary":   commentary,
             "constituents": constituents,
+            "flow_breakdown": flow_breakdown_block,
         })
 
     commodities_payload.sort(key=lambda c: c["score"], reverse=True)

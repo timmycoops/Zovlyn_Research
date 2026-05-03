@@ -26,6 +26,7 @@ ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "data" / "raw"
 PROC_DIR = ROOT / "data" / "processed"
 PROC_DIR.mkdir(parents=True, exist_ok=True)
+FLOW_PATH = ROOT / "data" / "processed" / "flow_scores.parquet"
 
 # Same as ingest_prices.UNIVERSE — kept here too so this script can run independently
 TICKER_MAP: dict[str, str] = {
@@ -147,6 +148,14 @@ def main() -> int:
         prices_long, = align_to_weekly_calendar(prices_long)
         positioning = pd.DataFrame(columns=["date", "commodity", "z_positioning"])
 
+    if FLOW_PATH.exists():
+        flows = pd.read_parquet(FLOW_PATH)[["date", "commodity", "z_short", "z_flow_composite"]]
+        flows = flows.rename(columns={"z_flow_composite": "z_flows"})
+        flows["date"] = pd.to_datetime(flows["date"], utc=True)
+    else:
+        log.info("No flow_scores.parquet; flows component will be NaN")
+        flows = pd.DataFrame(columns=["date", "commodity", "z_short", "z_flows"])
+
     drawdown = compute_drawdown(prices_long)
     momentum = compute_momentum(prices_long, bench)
 
@@ -154,6 +163,12 @@ def main() -> int:
     keys = ["date", "commodity"]
     merged = drawdown.merge(momentum, on=keys, how="outer")
     merged = merged.merge(positioning, on=keys, how="outer")
+    merged = merged.merge(flows, on=keys, how="outer")
+
+    # z_short is a sub-component already rolled into z_flows. Rename it so
+    # the composite sum (which auto-includes every z_*) does not double-count.
+    if "z_short" in merged.columns:
+        merged = merged.rename(columns={"z_short": "sub_z_short"})
 
     # Composite — equal-weighted sum of available z-scores (NaN-safe)
     z_cols = [c for c in merged.columns if c.startswith("z_")]
