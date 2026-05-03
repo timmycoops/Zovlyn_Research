@@ -301,6 +301,39 @@ function RRGPanel({ data, selected, setSelected }) {
   );
 }
 
+function CommodityDetailPanel({ data, selected, setSelected }) {
+  const c = data.find(d => d.name === selected);
+  if (!c) {
+    return (
+      <div style={{ padding: 24, color: BRAND.textDim, fontSize: 12, fontStyle: 'italic' }}>
+        Hover the rotation map or click a row in the leaderboard to drill in.
+      </div>
+    );
+  }
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '7fr 5fr', gap: 18 }}>
+      <div>
+        {/* Score history + components — Tasks 8 & 9 */}
+        <div style={{ height: 140, background: BRAND.panel, border: `1px solid ${BRAND.border}`, borderRadius: 4, marginBottom: 12, display: 'grid', placeItems: 'center', color: BRAND.textDim, fontSize: 11 }}>
+          ScoreHistoryChart placeholder — Task 8
+        </div>
+        <div style={{ height: 120, background: BRAND.panel, border: `1px solid ${BRAND.border}`, borderRadius: 4, display: 'grid', placeItems: 'center', color: BRAND.textDim, fontSize: 11 }}>
+          ComponentBars placeholder — Task 9
+        </div>
+      </div>
+      <div>
+        {/* Commentary + constituents — Tasks 10 & 11 */}
+        <div style={{ marginBottom: 16, color: BRAND.textDim, fontSize: 11 }}>
+          Commentary placeholder — Task 10
+        </div>
+        <div style={{ color: BRAND.textDim, fontSize: 11 }}>
+          ConstituentsTable placeholder — Task 11
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main dashboard ──────────────────────────────────────────────────────
 function HateIndexDashboard() {
   const [selected, setSelected] = useState(null);
@@ -490,6 +523,16 @@ function HateIndexDashboard() {
         <div style={{ marginTop: 10 }}>
           <RRGPanel data={data} selected={selected} setSelected={setSelected} />
         </div>
+      </div>
+
+      <div className="panel" style={{ padding: 20, marginBottom: 16 }}>
+        <div style={{ marginBottom: 12 }}>
+          <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>FIG 03.5 · COMMODITY DETAIL</div>
+          <h2 className="display" style={{ fontSize: 22, fontWeight: 500, margin: '4px 0 0' }}>
+            {selected || 'Pick a commodity'}
+          </h2>
+        </div>
+        <CommodityDetailPanel data={data} selected={selected} setSelected={setSelected} />
       </div>
 
       <div className="panel" style={{ padding: 22 }}>
