@@ -8,6 +8,9 @@
 .idea/
 *.swp
 
+# Git worktrees (per superpowers convention)
+.worktrees/
+
 # Python (HateIndex has its own .gitignore too; this is a safety net at root)
 __pycache__/
 *.py[cod]
