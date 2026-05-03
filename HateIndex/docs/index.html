@@ -536,11 +536,36 @@ function Placeholder({ text }) {
 
 function ComponentCalibrationGrid({ data }) {
   const components = ['drawdown', 'momentum', 'positioning', 'flows'];
+  const horizons = [4, 13, 26, 52];
+  const horizonColors = { 4: BRAND.purple, 13: BRAND.blue, 26: BRAND.orange, 52: BRAND.green };
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-      {components.map(c => (
-        <CalibrationCard key={c} name={c} block={data.components[c]} />
-      ))}
+    <div>
+      <div style={{ marginBottom: 14, padding: '12px 14px', background: BRAND.panelHi, border: `1px solid ${BRAND.border}`, borderRadius: 4 }}>
+        <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em', marginBottom: 6 }}>HOW TO READ</div>
+        <div style={{ fontSize: 12, color: BRAND.textMute, lineHeight: 1.55, marginBottom: 10 }}>
+          Each card buckets every historical observation into ten deciles by that component's z-score (decile 1 = lowest z, decile 10 = highest).
+          Y-axis is the <span style={{ color: BRAND.text }}>mean forward return</span> on the commodity over the next N weeks.
+          A signal is "worth tracking" if higher deciles (more "hated") consistently produce higher forward returns —
+          i.e. the line goes <span style={{ color: BRAND.green }}>up and to the right</span>. A flat or downward line means the component isn't predictive in this direction.
+        </div>
+        <div style={{ display: 'flex', gap: 18, alignItems: 'center', flexWrap: 'wrap' }}>
+          <span className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>HORIZON</span>
+          {horizons.map(h => (
+            <span key={h} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ width: 14, height: 2, background: horizonColors[h] }}></span>
+              <span className="mono" style={{ fontSize: 11, color: BRAND.text }}>{h}w</span>
+            </span>
+          ))}
+          <span style={{ marginLeft: 'auto', fontSize: 11, color: BRAND.textMute }}>
+            <span className="mono" style={{ color: BRAND.green, fontSize: 10 }}>✓</span> tag = monotonically increasing at that horizon
+          </span>
+        </div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+        {components.map(c => (
+          <CalibrationCard key={c} name={c} block={data.components[c]} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -578,32 +603,48 @@ function CalibrationCard({ name, block }) {
   const xScale = d => P.left + ((d - 1) / 9) * cw;
   const yScale = v => P.top + (1 - (v - yMin) / (yMax - yMin || 1)) * ch;
 
+  const fmtPct = v => v == null ? '—' : `${(v * 100 >= 0 ? '+' : '')}${(v * 100).toFixed(1)}%`;
+  const spread26 = block.spread_top_minus_bottom?.['26w'];
+  const spreadColor = spread26 == null ? BRAND.textDim : spread26 > 0 ? BRAND.green : BRAND.red;
+
   return (
     <div className="panel-hi" style={{ padding: 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-        <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>
-          {name.toUpperCase()} · n={block.n_total}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
+        <div className="mono" style={{ fontSize: 11, color: BRAND.text, letterSpacing: '0.12em', fontWeight: 600 }}>
+          {name.toUpperCase()}
         </div>
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-          {horizons.map(h => (
-            <span key={h} className="mono" style={{
-              fontSize: 8, color: block.monotonic && block.monotonic[`${h}w`] ? BRAND.green : BRAND.textDim,
-              padding: '1px 5px', border: `1px solid ${BRAND.border}`, borderRadius: 2,
-            }}>
-              {h}w {block.monotonic && block.monotonic[`${h}w`] ? '✓' : ''}
-            </span>
-          ))}
+        <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.1em' }}>
+          n={block.n_total}
         </div>
+      </div>
+      <div style={{ marginBottom: 8, fontSize: 11, color: BRAND.textMute, lineHeight: 1.4 }}>
+        26w spread (top decile − bottom): <span className="mono" style={{ color: spreadColor, fontWeight: 600 }}>{fmtPct(spread26)}</span>
+      </div>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
+        {horizons.map(h => (
+          <span key={h} className="mono" style={{
+            fontSize: 8, color: block.monotonic && block.monotonic[`${h}w`] ? BRAND.green : BRAND.textDim,
+            padding: '1px 5px', border: `1px solid ${BRAND.border}`, borderRadius: 2,
+          }}>
+            {h}w {block.monotonic && block.monotonic[`${h}w`] ? '✓' : ''}
+          </span>
+        ))}
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
         <line x1={P.left} y1={yScale(0)} x2={P.left + cw} y2={yScale(0)}
               stroke={BRAND.textMute} strokeOpacity={0.4} strokeDasharray="2 4" />
+        <text x={P.left - 6} y={yScale(yMax) + 3} fontSize={9} fill={BRAND.textDim}
+              fontFamily="JetBrains Mono" textAnchor="end">{fmtPct(yMax)}</text>
+        <text x={P.left - 6} y={yScale(0) + 3} fontSize={9} fill={BRAND.textDim}
+              fontFamily="JetBrains Mono" textAnchor="end">0%</text>
+        <text x={P.left - 6} y={yScale(yMin) + 3} fontSize={9} fill={BRAND.textDim}
+              fontFamily="JetBrains Mono" textAnchor="end">{fmtPct(yMin)}</text>
         {[1, 5, 10].map(d => (
           <text key={d} x={xScale(d)} y={H - 8} fontSize={9} fill={BRAND.textDim}
                 fontFamily="JetBrains Mono" textAnchor="middle">{d}</text>
         ))}
         <text x={P.left + cw / 2} y={H - 18} fontSize={9} fill={BRAND.textMute}
-              fontFamily="JetBrains Mono" textAnchor="middle" letterSpacing="0.1em">DECILE</text>
+              fontFamily="JetBrains Mono" textAnchor="middle" letterSpacing="0.1em">DECILE (z-score, low → high)</text>
         {horizons.map(h => {
           const rows = block.calibration.filter(r => r.horizon_w === h && r.mean_return != null);
           if (rows.length === 0) return null;
@@ -629,12 +670,21 @@ function CompositeCalibrationView({ data }) {
   const block = data.composite || {};
   return (
     <div>
-      <div style={{ marginBottom: 12, color: BRAND.textMute, fontSize: 12, lineHeight: 1.55, maxWidth: 720 }}>
-        Decile spread of the summed hate score across all components.
-        Best horizon: <span className="mono" style={{ color: BRAND.text }}>{block.best_horizon || '—'}</span>.
-        Beats best single component: <span className="mono" style={{ color: block.beats_best_component ? BRAND.green : BRAND.red }}>
-          {block.beats_best_component ? 'YES' : 'NO'}
-        </span>.
+      <div style={{ marginBottom: 14, padding: '12px 14px', background: BRAND.panelHi, border: `1px solid ${BRAND.border}`, borderRadius: 4 }}>
+        <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em', marginBottom: 6 }}>HOW TO READ</div>
+        <div style={{ fontSize: 12, color: BRAND.textMute, lineHeight: 1.55, marginBottom: 8 }}>
+          Same decile chart as the per-component view, but applied to the <span style={{ color: BRAND.text }}>summed</span> hate score
+          (drawdown + momentum + positioning + flows). The composite "earns its place" only if its decile spread at 26w/52w
+          matches or beats the best single component. If a single component dominates, the composite is decoration.
+        </div>
+        <div style={{ fontSize: 12, color: BRAND.textMute, lineHeight: 1.55 }}>
+          Widest spread is at <span className="mono" style={{ color: BRAND.text }}>{block.best_horizon || '—'}</span>.
+          Beats best single component: <span className="mono" style={{ color: block.beats_best_component ? BRAND.green : BRAND.red, fontWeight: 600 }}>
+          {block.beats_best_component ? 'YES' : 'NO'}</span>
+          {block.beats_best_component
+            ? ' — combining the components adds value over picking the best one alone.'
+            : ' — combining washes out the signal because components have opposing-sign relationships in this sample.'}
+        </div>
       </div>
       <CalibrationCard name="composite" block={block} />
     </div>
@@ -643,44 +693,69 @@ function CompositeCalibrationView({ data }) {
 
 function SignalPnLView({ data }) {
   const horizons = ['4', '13', '26', '52'];
-  const fmt    = v => v == null ? '—' : (typeof v === 'number' ? v.toFixed(3) : v);
-  const fmtPct = v => v == null ? '—' : `${(v * 100).toFixed(1)}%`;
+  const fmtMean = v => v == null ? '—' : `${(v * 100 >= 0 ? '+' : '')}${(v * 100).toFixed(2)}%`;
+  const fmtSharpe = v => v == null ? '—' : v.toFixed(2);
+  const fmtPct = v => v == null ? '—' : `${(v * 100).toFixed(0)}%`;
   const verdict = data.verdict || {};
+  const colorMean = v => v == null ? BRAND.textDim : v > 0 ? BRAND.green : BRAND.red;
 
   return (
     <div>
-      <div className="panel-hi" style={{ padding: 14, marginBottom: 14 }}>
-        <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em', marginBottom: 6 }}>
-          VERDICT · n_events = {data.n_events || 0}
-        </div>
-        <div style={{ fontSize: 13, color: BRAND.text, lineHeight: 1.5 }}>{verdict.summary}</div>
-        <div style={{ display: 'flex', gap: 14, marginTop: 8, fontSize: 11, color: BRAND.textMute, flexWrap: 'wrap' }}>
-          <span>Beats random @ 26w: <span style={{ color: verdict.beats_random_at_26w ? BRAND.green : BRAND.red }}>{verdict.beats_random_at_26w ? 'yes' : 'no'}</span></span>
-          <span>Beats random @ 52w: <span style={{ color: verdict.beats_random_at_52w ? BRAND.green : BRAND.red }}>{verdict.beats_random_at_52w ? 'yes' : 'no'}</span></span>
-          <span>Beats benchmark @ 52w: <span style={{ color: verdict.beats_benchmark_at_52w ? BRAND.green : BRAND.red }}>{verdict.beats_benchmark_at_52w ? 'yes' : 'no'}</span></span>
+      <div style={{ marginBottom: 14, padding: '12px 14px', background: BRAND.panelHi, border: `1px solid ${BRAND.border}`, borderRadius: 4 }}>
+        <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em', marginBottom: 6 }}>HOW TO READ</div>
+        <div style={{ fontSize: 12, color: BRAND.textMute, lineHeight: 1.55 }}>
+          The <span style={{ color: BRAND.text }}>treatment</span> is "score ≥ 4 AND just-entered Improving/Leading within 4 weeks" — every historical week where this rule fired,
+          we measure the forward return on the commodity's primary ETF. The three controls let us see whether the rule beats simpler alternatives:
+          {' '}<span style={{ color: BRAND.text }}>hated-only</span> (no rotation requirement),
+          {' '}<span style={{ color: BRAND.text }}>rotating-only</span> (no score requirement),
+          and <span style={{ color: BRAND.text }}>inverse</span> (score ≤ -4, the "loved" tail — sanity check that the index has direction).
+          The <span style={{ color: BRAND.text }}>random_bootstrap</span> percentile in the verdict comes from 1000 block-bootstrap samples of equal size — anything inside the bootstrap 95% CI is consistent with luck.
         </div>
       </div>
-      <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em', marginBottom: 6 }}>HIT RATE / MEAN / SHARPE BY HORIZON</div>
-      <div style={{ overflowX: 'auto', marginBottom: 16 }}>
+
+      <div className="panel-hi" style={{ padding: 16, marginBottom: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 8 }}>
+          <div className="mono" style={{ fontSize: 11, color: BRAND.text, letterSpacing: '0.12em', fontWeight: 600 }}>VERDICT</div>
+          <div className="mono" style={{ fontSize: 10, color: BRAND.textDim }}>n_events = {data.n_events || 0}</div>
+        </div>
+        <div style={{ fontSize: 14, color: BRAND.text, lineHeight: 1.5, marginBottom: 10 }}>{verdict.summary}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+          <VerdictTile label="Beats random @ 26w" pass={verdict.beats_random_at_26w} />
+          <VerdictTile label="Beats random @ 52w" pass={verdict.beats_random_at_52w} />
+          <VerdictTile label="Beats benchmark @ 52w" pass={verdict.beats_benchmark_at_52w} />
+        </div>
+      </div>
+
+      <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em', marginBottom: 6 }}>FORWARD RETURNS BY HORIZON</div>
+      <div style={{ fontSize: 11, color: BRAND.textDim, marginBottom: 8, lineHeight: 1.5 }}>
+        Each cell shows <span className="mono" style={{ color: BRAND.text }}>hit% / mean / Sharpe</span>.
+        Hit% is fraction of trades positive. Mean is average forward return.
+        Sharpe is annualised (mean / std × √52). Higher is better in all three.
+      </div>
+      <div style={{ overflowX: 'auto', marginBottom: 18 }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11, fontFamily: 'JetBrains Mono' }}>
           <thead>
             <tr style={{ borderBottom: `1px solid ${BRAND.border}`, color: BRAND.textDim }}>
-              <th style={{ textAlign: 'left',  padding: '4px 6px' }}>Group</th>
-              {horizons.map(h => (<th key={h} style={{ textAlign: 'right', padding: '4px 6px' }}>{h}w hit / mean / Sharpe</th>))}
+              <th style={{ textAlign: 'left',  padding: '6px 8px' }}>Group</th>
+              <th style={{ textAlign: 'right', padding: '6px 8px' }}>n</th>
+              {horizons.map(h => (<th key={h} style={{ textAlign: 'right', padding: '6px 8px' }}>{h}w</th>))}
             </tr>
           </thead>
           <tbody>
             {[
-              ['Treatment',           data.horizons || {}],
-              ['Hated, not rotating', (data.controls?.hated_not_rotating?.horizons) || {}],
-              ['Rotating, not hated', (data.controls?.rotating_not_hated?.horizons) || {}],
-              ['Inverse',             (data.controls?.inverse?.horizons) || {}],
-            ].map(([label, hMap]) => (
+              ['Treatment',           data.horizons || {}, data.n_events],
+              ['Hated, not rotating', (data.controls?.hated_not_rotating?.horizons) || {}, data.controls?.hated_not_rotating?.n_events],
+              ['Rotating, not hated', (data.controls?.rotating_not_hated?.horizons) || {}, data.controls?.rotating_not_hated?.n_events],
+              ['Inverse (loved tail)',(data.controls?.inverse?.horizons) || {}, data.controls?.inverse?.n_events],
+            ].map(([label, hMap, n]) => (
               <tr key={label} style={{ borderBottom: `1px solid ${BRAND.border}40` }}>
-                <td style={{ padding: '5px 6px', color: BRAND.text, fontWeight: 600 }}>{label}</td>
+                <td style={{ padding: '6px 8px', color: BRAND.text, fontWeight: 600 }}>{label}</td>
+                <td style={{ padding: '6px 8px', textAlign: 'right', color: BRAND.textMute }}>{n ?? '—'}</td>
                 {horizons.map(h => (
-                  <td key={h} style={{ padding: '5px 6px', textAlign: 'right', color: BRAND.textMute }}>
-                    {fmtPct(hMap[h]?.hit_rate)} / {fmt(hMap[h]?.mean)} / {fmt(hMap[h]?.sharpe)}
+                  <td key={h} style={{ padding: '6px 8px', textAlign: 'right', color: BRAND.textMute, lineHeight: 1.4 }}>
+                    {fmtPct(hMap[h]?.hit_rate)}{' '}/{' '}
+                    <span style={{ color: colorMean(hMap[h]?.mean) }}>{fmtMean(hMap[h]?.mean)}</span>{' '}/{' '}
+                    {fmtSharpe(hMap[h]?.sharpe)}
                   </td>
                 ))}
               </tr>
@@ -693,11 +768,21 @@ function SignalPnLView({ data }) {
   );
 }
 
+function VerdictTile({ label, pass }) {
+  const color = pass ? BRAND.green : BRAND.red;
+  return (
+    <div style={{ padding: '8px 10px', background: BRAND.panel, border: `1px solid ${BRAND.border}`, borderRadius: 4 }}>
+      <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.1em', marginBottom: 4 }}>{label}</div>
+      <div className="mono" style={{ fontSize: 16, color: color, fontWeight: 700 }}>{pass ? 'YES' : 'NO'}</div>
+    </div>
+  );
+}
+
 function EquityCurve({ points }) {
   if (!points || points.length === 0) {
     return <div style={{ color: BRAND.textDim, fontSize: 11, padding: 14 }}>Equity curve unavailable (no flagged events).</div>;
   }
-  const W = 920, H = 220, P = { top: 14, right: 14, bottom: 28, left: 40 };
+  const W = 920, H = 240, P = { top: 18, right: 60, bottom: 32, left: 50 };
   const cw = W - P.left - P.right, ch = H - P.top - P.bottom;
   const allY = points.flatMap(p => [p.strategy, p.benchmark]);
   const yMin = Math.min(...allY) * 0.98;
@@ -705,16 +790,42 @@ function EquityCurve({ points }) {
   const xScale = i => P.left + (i / (Math.max(1, points.length - 1))) * cw;
   const yScale = v => P.top + (1 - (v - yMin) / (yMax - yMin || 1)) * ch;
   const pathFor = key => points.map((p, i) => `${i === 0 ? 'M' : 'L'}${xScale(i)},${yScale(p[key])}`).join(' ');
+  const finalStrategy = points[points.length - 1].strategy;
+  const finalBenchmark = points[points.length - 1].benchmark;
+  const fmtX = v => `${v.toFixed(2)}x`;
   return (
     <div>
-      <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em', marginBottom: 6 }}>
-        EQUITY CURVE — STRATEGY (green) vs BENCHMARK (mute)
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+        <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>
+          EQUITY CURVE
+        </div>
+        <div style={{ display: 'flex', gap: 16, fontSize: 11, color: BRAND.textMute }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 14, height: 2, background: BRAND.green }}></span>
+            Strategy <span className="mono" style={{ color: BRAND.text }}>{fmtX(finalStrategy)}</span>
+          </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 14, height: 2, background: BRAND.textMute }}></span>
+            Benchmark <span className="mono" style={{ color: BRAND.text }}>{fmtX(finalBenchmark)}</span>
+          </span>
+        </div>
+      </div>
+      <div style={{ fontSize: 10, color: BRAND.textDim, marginBottom: 4, fontStyle: 'italic' }}>
+        Compounded equal-weight return on flagged commodities, vs ASX 200. Each tick is one signal week. {points.length} signal weeks total.
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
-        <path d={pathFor('benchmark')} fill="none" stroke={BRAND.textMute} strokeWidth={1} strokeOpacity={0.7} />
-        <path d={pathFor('strategy')}  fill="none" stroke={BRAND.green}    strokeWidth={1.5} />
-        <text x={P.left}      y={H - 8} fontSize={9} fill={BRAND.textDim} fontFamily="JetBrains Mono">{points[0].date}</text>
-        <text x={P.left + cw} y={H - 8} fontSize={9} fill={BRAND.textDim} fontFamily="JetBrains Mono" textAnchor="end">{points[points.length - 1].date}</text>
+        <line x1={P.left} y1={yScale(1.0)} x2={P.left + cw} y2={yScale(1.0)}
+              stroke={BRAND.textMute} strokeOpacity={0.3} strokeDasharray="2 4" />
+        <text x={P.left - 6} y={yScale(yMax) + 3} fontSize={9} fill={BRAND.textDim}
+              fontFamily="JetBrains Mono" textAnchor="end">{fmtX(yMax)}</text>
+        <text x={P.left - 6} y={yScale(1.0) + 3} fontSize={9} fill={BRAND.textDim}
+              fontFamily="JetBrains Mono" textAnchor="end">1.00x</text>
+        <text x={P.left - 6} y={yScale(yMin) + 3} fontSize={9} fill={BRAND.textDim}
+              fontFamily="JetBrains Mono" textAnchor="end">{fmtX(yMin)}</text>
+        <path d={pathFor('benchmark')} fill="none" stroke={BRAND.textMute} strokeWidth={1.2} strokeOpacity={0.85} />
+        <path d={pathFor('strategy')}  fill="none" stroke={BRAND.green}    strokeWidth={2} />
+        <text x={P.left}      y={H - 10} fontSize={9} fill={BRAND.textDim} fontFamily="JetBrains Mono">{points[0].date}</text>
+        <text x={P.left + cw} y={H - 10} fontSize={9} fill={BRAND.textDim} fontFamily="JetBrains Mono" textAnchor="end">{points[points.length - 1].date}</text>
       </svg>
     </div>
   );
