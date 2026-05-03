@@ -317,9 +317,7 @@ function CommodityDetailPanel({ data, selected, setSelected }) {
         <div style={{ marginBottom: 12 }}>
           <ScoreHistoryChart history={c.score_history} score={c.score} />
         </div>
-        <div style={{ height: 120, background: BRAND.panel, border: `1px solid ${BRAND.border}`, borderRadius: 4, display: 'grid', placeItems: 'center', color: BRAND.textDim, fontSize: 11 }}>
-          ComponentBars placeholder — Task 9
-        </div>
+        <ComponentBars components={c.components} />
       </div>
       <div>
         {/* Commentary + constituents — Tasks 10 & 11 */}
@@ -365,6 +363,47 @@ function ScoreHistoryChart({ history, score }) {
             fontFamily="JetBrains Mono" textAnchor="end">{yMax.toFixed(1)}</text>
       <text x={P.left - 8} y={yScale(yMin) + 4} fontSize={9} fill={BRAND.textDim}
             fontFamily="JetBrains Mono" textAnchor="end">{yMin.toFixed(1)}</text>
+    </svg>
+  );
+}
+
+function ComponentBars({ components }) {
+  const ORDER = ['drawdown', 'momentum', 'positioning', 'flows', 'valuation', 'sentiment'];
+  const W = 700, H = 120, P = { top: 8, right: 60, bottom: 8, left: 100 };
+  const rh = (H - P.top - P.bottom) / ORDER.length;
+  const xRange = 3.5;  // bars span ±3.5 z-units
+  const cx = P.left + (W - P.left - P.right) / 2;
+  const xScale = z => cx + (z / xRange) * ((W - P.left - P.right) / 2);
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
+      <line x1={cx} y1={P.top} x2={cx} y2={H - P.bottom} stroke={BRAND.textMute} strokeOpacity={0.4} />
+      {ORDER.map((name, i) => {
+        const z = components[name];
+        const y = P.top + i * rh;
+        const isNull = z === null || z === undefined;
+        const barEnd = isNull ? cx : xScale(z);
+        return (
+          <g key={name}>
+            <text x={P.left - 8} y={y + rh / 2 + 4} fontSize={11}
+                  fill={isNull ? BRAND.textDim : BRAND.text}
+                  fontFamily="JetBrains Mono" textAnchor="end">{name}</text>
+            {isNull ? (
+              <rect x={cx - 1} y={y + 4} width={2} height={rh - 8}
+                    fill={BRAND.textDim} opacity={0.3} />
+            ) : (
+              <rect x={Math.min(cx, barEnd)} y={y + 4}
+                    width={Math.abs(barEnd - cx)} height={rh - 8}
+                    fill={z >= 0 ? BRAND.green : BRAND.red} opacity={0.85} />
+            )}
+            <text x={W - P.right + 4} y={y + rh / 2 + 4} fontSize={10}
+                  fill={isNull ? BRAND.textDim : BRAND.text}
+                  fontFamily="JetBrains Mono">
+              {isNull ? 'phase 7' : (z >= 0 ? '+' : '') + z.toFixed(2)}
+            </text>
+          </g>
+        );
+      })}
     </svg>
   );
 }
