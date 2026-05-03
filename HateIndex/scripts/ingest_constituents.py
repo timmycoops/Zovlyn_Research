@@ -30,7 +30,7 @@ def collect_unique_tickers(path: Path = STATIC) -> list[str]:
     cj = json.loads(path.read_text())
     seen: set[str] = set()
     for entry in cj.values():
-        for m in entry["members"]:
+        for m in entry.get("members", []):
             seen.add(m["ticker"])
     return sorted(seen)
 
@@ -39,7 +39,7 @@ def build_long_frame(frames: list[pd.DataFrame]) -> pd.DataFrame:
     non_empty = [f for f in frames if not f.empty]
     if not non_empty:
         return pd.DataFrame(columns=["date", "ticker", "close"])
-    out = pd.concat(non_empty, ignore_index=True)
+    out = pd.concat(non_empty, ignore_index=True).dropna(subset=["close"])
     return out.sort_values(["ticker", "date"]).reset_index(drop=True)
 
 
