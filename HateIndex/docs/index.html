@@ -475,6 +475,156 @@ function ConstituentsTable({ rows }) {
   );
 }
 
+// ─── Backtest panel (FIG 05) ─────────────────────────────────────────────
+function BacktestPanel() {
+  const [tab, setTab] = useState('components');
+  const [components, setComponents] = useState(null);
+  const [signal, setSignal] = useState(null);
+
+  useEffect(() => {
+    fetch('./backtest_components.json')
+      .then(r => r.ok ? r.json() : null)
+      .then(setComponents)
+      .catch(() => setComponents(null));
+    fetch('./backtest.json')
+      .then(r => r.ok ? r.json() : null)
+      .then(setSignal)
+      .catch(() => setSignal(null));
+  }, []);
+
+  if (!components && !signal) {
+    return (
+      <div style={{ padding: 24, color: BRAND.textDim, fontSize: 12, fontStyle: 'italic' }}>
+        Backtest not yet generated — run <span className="mono" style={{color: BRAND.text}}>make backtest</span> from the HateIndex directory.
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 18, borderBottom: `1px solid ${BRAND.border}`, paddingBottom: 8, marginBottom: 14 }}>
+        {[
+          ['components', 'Per-component'],
+          ['composite',  'Composite'],
+          ['signal',     'Signal P&L'],
+        ].map(([id, label]) => (
+          <button key={id} onClick={() => setTab(id)}
+                  className="mono"
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    color: tab === id ? BRAND.green : BRAND.textMute,
+                    fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase',
+                    padding: 0,
+                  }}>
+            {label}
+          </button>
+        ))}
+      </div>
+      {tab === 'components' && components && <ComponentCalibrationGrid data={components} />}
+      {tab === 'composite'  && components && <Placeholder text="composite view — Task 7" />}
+      {tab === 'signal'     && signal     && <Placeholder text="signal P&L view — Task 7" />}
+      {tab === 'components' && !components && <Placeholder text="components data missing" />}
+      {tab === 'composite'  && !components && <Placeholder text="components data missing" />}
+      {tab === 'signal'     && !signal     && <Placeholder text="signal data missing" />}
+    </div>
+  );
+}
+
+function Placeholder({ text }) {
+  return <div style={{ padding: 24, color: BRAND.textDim, fontSize: 11, fontStyle: 'italic' }}>{text}</div>;
+}
+
+function ComponentCalibrationGrid({ data }) {
+  const components = ['drawdown', 'momentum', 'positioning', 'flows'];
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+      {components.map(c => (
+        <CalibrationCard key={c} name={c} block={data.components[c]} />
+      ))}
+    </div>
+  );
+}
+
+function CalibrationCard({ name, block }) {
+  const W = 480, H = 200, P = { top: 14, right: 12, bottom: 28, left: 36 };
+  const cw = W - P.left - P.right, ch = H - P.top - P.bottom;
+  const horizons = [4, 13, 26, 52];
+  const horizonColors = { 4: BRAND.purple, 13: BRAND.blue, 26: BRAND.orange, 52: BRAND.green };
+
+  if (!block || !block.calibration || block.calibration.length === 0) {
+    return (
+      <div className="panel-hi" style={{ padding: 14 }}>
+        <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, marginBottom: 4 }}>
+          {name.toUpperCase()}
+        </div>
+        <div style={{ color: BRAND.textDim, fontSize: 11 }}>insufficient history</div>
+      </div>
+    );
+  }
+
+  const allMeans = block.calibration.map(r => r.mean_return).filter(v => v != null);
+  if (allMeans.length === 0) {
+    return (
+      <div className="panel-hi" style={{ padding: 14 }}>
+        <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, marginBottom: 4 }}>
+          {name.toUpperCase()} · n={block.n_total}
+        </div>
+        <div style={{ color: BRAND.textDim, fontSize: 11 }}>no return data — likely missing column upstream</div>
+      </div>
+    );
+  }
+  const yMin = Math.min(0, ...allMeans);
+  const yMax = Math.max(0, ...allMeans);
+  const xScale = d => P.left + ((d - 1) / 9) * cw;
+  const yScale = v => P.top + (1 - (v - yMin) / (yMax - yMin || 1)) * ch;
+
+  return (
+    <div className="panel-hi" style={{ padding: 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+        <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>
+          {name.toUpperCase()} · n={block.n_total}
+        </div>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          {horizons.map(h => (
+            <span key={h} className="mono" style={{
+              fontSize: 8, color: block.monotonic && block.monotonic[`${h}w`] ? BRAND.green : BRAND.textDim,
+              padding: '1px 5px', border: `1px solid ${BRAND.border}`, borderRadius: 2,
+            }}>
+              {h}w {block.monotonic && block.monotonic[`${h}w`] ? '✓' : ''}
+            </span>
+          ))}
+        </div>
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
+        <line x1={P.left} y1={yScale(0)} x2={P.left + cw} y2={yScale(0)}
+              stroke={BRAND.textMute} strokeOpacity={0.4} strokeDasharray="2 4" />
+        {[1, 5, 10].map(d => (
+          <text key={d} x={xScale(d)} y={H - 8} fontSize={9} fill={BRAND.textDim}
+                fontFamily="JetBrains Mono" textAnchor="middle">{d}</text>
+        ))}
+        <text x={P.left + cw / 2} y={H - 18} fontSize={9} fill={BRAND.textMute}
+              fontFamily="JetBrains Mono" textAnchor="middle" letterSpacing="0.1em">DECILE</text>
+        {horizons.map(h => {
+          const rows = block.calibration.filter(r => r.horizon_w === h && r.mean_return != null);
+          if (rows.length === 0) return null;
+          const path = rows.sort((a, b) => a.decile - b.decile)
+                           .map((r, i) => `${i === 0 ? 'M' : 'L'}${xScale(r.decile)},${yScale(r.mean_return)}`)
+                           .join(' ');
+          return (
+            <g key={h}>
+              <path d={path} fill="none" stroke={horizonColors[h]} strokeWidth={1.5} opacity={0.85} />
+              {rows.map(r => (
+                <circle key={r.decile} cx={xScale(r.decile)} cy={yScale(r.mean_return)}
+                        r={2.5} fill={horizonColors[h]} />
+              ))}
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
 // ─── Main dashboard ──────────────────────────────────────────────────────
 function HateIndexDashboard() {
   const [selected, setSelected] = useState(null);
@@ -712,6 +862,14 @@ function HateIndexDashboard() {
             Sources: yfinance, CFTC COT, FRED, GDELT.
           </p>
         </div>
+      </div>
+
+      <div className="panel" style={{ padding: 22, marginTop: 16 }}>
+        <div style={{ marginBottom: 14 }}>
+          <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>FIG 05 · BACKTEST · DOES THIS WORK?</div>
+          <h2 className="display" style={{ fontSize: 22, fontWeight: 500, margin: '4px 0 0' }}>Out-of-sample evidence</h2>
+        </div>
+        <BacktestPanel />
       </div>
 
       <footer style={{ marginTop: 32, paddingTop: 20, borderTop: `1px solid ${BRAND.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
