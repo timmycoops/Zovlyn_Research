@@ -321,8 +321,21 @@ function CommodityDetailPanel({ data, selected, setSelected }) {
       </div>
       <div>
         {/* Commentary + constituents — Tasks 10 & 11 */}
-        <div style={{ marginBottom: 16, color: BRAND.textDim, fontSize: 11 }}>
-          Commentary placeholder — Task 10
+        <div style={{ marginBottom: 18 }}>
+          <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em', marginBottom: 6 }}>
+            WHAT THE SCORE MEANS
+          </div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: BRAND.text, lineHeight: 1.45, margin: '0 0 10px' }}>
+            {c.commentary.headline}
+          </p>
+          <ul style={{ fontSize: 12, color: BRAND.textMute, lineHeight: 1.55, paddingLeft: 16, margin: '0 0 10px' }}>
+            {c.commentary.components.map((line, i) => (
+              <li key={i} style={{ marginBottom: 4 }}>{line}</li>
+            ))}
+          </ul>
+          <p style={{ fontSize: 12, color: BRAND.text, lineHeight: 1.45, margin: 0, fontStyle: 'italic' }}>
+            {c.commentary.rotation}
+          </p>
         </div>
         <div style={{ color: BRAND.textDim, fontSize: 11 }}>
           ConstituentsTable placeholder — Task 11
