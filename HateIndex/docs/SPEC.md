@@ -54,12 +54,77 @@ x = managed_money_net_long / total_open_interest    # bounded roughly [-1, 1]
 ```
 Sign-flip. Lag by 1 week to respect release timing.
 
-### 2.4 ETF flows (Phase 7)
+### 2.4 Flow
+
+Aggregates stock-level flow signals up to commodity level via a curated
+ASX universe (`scripts/_universe.py` `STOCK_UNIVERSE`).
+
+**Sub-component 1 — Short interest (live, Phase 7a):**
+
 ```
-shares_out_change = shares_outstanding_t - shares_outstanding_(t-26w)
-flow_proxy = shares_out_change * avg_price / aum_(t-26w)
+short_pct(stock, t)         = ASIC reported short %
+short_pct_commodity(c, t)   = mean across stocks in c
+z_short(c, t)               = dual_z(short_pct_commodity)   # NO sign-flip
 ```
-Sign-flip. yfinance has `sharesOutstanding` history.
+
+Sign convention: high `short_pct` = bearish positioning = HIGH hate.
+
+**Sub-component 2 — Block crossings (Phase 7a.5, deferred):**
+
+```
+block_value(stock, t)       = ASX TRF block crossings $ value (weekly sum)
+block_value_commodity(c, t) = mean across stocks in c
+z_blocks(c, t)              = -dual_z(block_value_commodity)   # SIGN-FLIPPED
+```
+
+Sign convention: high block volume = institutional accumulation = LOW hate.
+**Status:** the ASX block-crossings URL is JS-rendered (returns 302 to a
+generic page). Pending an URL hunt or a switch to Cboe Australia reports.
+
+**Composite flow component:**
+
+```
+z_flow_composite = mean(z_short, z_blocks, ...)
+```
+
+In Phase 7a (current), `z_flow_composite = z_short` since blocks are deferred.
+
+**Window:** flow z-scores use a 3-year (156-week) rolling window with a
+26-week warmup, vs the 10-year/52-week window of price-based components.
+Rationale: flow signals are noisier and more affected by structural market
+changes (algos, regulations) — recent context is more informative.
+
+**Sources:**
+
+| Source | URL | Cadence | Lag |
+|---|---|---|---|
+| ASIC short positions | `download.asic.gov.au/short-selling/RR{YYYYMMDD}-001-SSDailyAggShortPos.csv` | Daily (Mon-Fri) | T+4 business days |
+| ASX block crossings | *pending verification* | Daily | T+1 |
+
+**Backtest implications:** when Phase 6 backtest is implemented, the flow
+component must respect the T+4 lag on ASIC data. Concretely: at week T, the
+most recent ASIC observation available is for week T-1.
+
+**Output schema additions:**
+
+In `docs/data.json` per commodity:
+
+```json
+{
+  "components": {
+    "drawdown":    2.4,
+    "momentum":    2.1,
+    "positioning": 1.7,
+    "flows":       1.6,        // = z_flow_composite (currently = z_short)
+    "valuation":   null,
+    "sentiment":   null
+  },
+  "flow_breakdown": {
+    "z_short":  1.9,
+    "z_blocks": null
+  }
+}
+```
 
 ### 2.5 Valuation (Phase 7)
 Skip until a clean source is found. Damodaran's annual sector multiples are usable but coarse.
