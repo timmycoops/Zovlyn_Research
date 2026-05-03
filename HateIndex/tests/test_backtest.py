@@ -101,3 +101,42 @@ def test_composite_calibration_present(fake_parquets):
 def test_composite_beats_best_component_is_boolean(fake_parquets):
     payload = bt.build_components_payload()
     assert isinstance(payload["composite"]["beats_best_component"], bool)
+
+
+def test_treatment_excludes_inverse_signals(fake_parquets):
+    """A high-NEGATIVE-score (c, t) cannot be in the treatment group."""
+    df = bt._load_scores()
+    df.loc[df.index[0], "score"] = -5.0
+    is_t = bt._is_treatment(df.iloc[0:1], pd.DataFrame(columns=["date","commodity","quadrant"]))
+    assert not is_t.iloc[0]
+
+
+def test_random_baseline_returns_correct_shape(fake_parquets):
+    df = bt._load_scores()
+    prices = bt._load_prices()
+    df = bt._attach_forward_returns(df, prices, bt.TICKER_MAP, [4, 13])
+    out = bt.compute_random_baseline(df, n_samples=100, sample_size=20, horizons=(4, 13))
+    assert "horizons" in out
+    for h in (4, 13):
+        block = out["horizons"][str(h)]
+        assert {"mean_p2.5", "mean_p50", "mean_p97.5"} <= set(block.keys())
+
+
+def test_main_writes_backtest_json(fake_parquets):
+    # Need a fake rrg.parquet too for main() to run without raising.
+    dates = pd.date_range("2022-01-07", periods=200, freq="W-FRI", tz="UTC")
+    rrg_rows = []
+    commodities = ["A", "B", "C", "D"]
+    for c in commodities:
+        for d in dates:
+            rrg_rows.append({"date": d, "commodity": c,
+                             "rs_ratio": 100.0, "rs_momentum": 100.0,
+                             "quadrant": "Lagging"})
+    pd.DataFrame(rrg_rows).to_parquet(bt.PROC_DIR / "rrg.parquet", index=False)
+
+    rc = bt.main(write_components=True, write_signal=True)
+    assert rc == 0
+    p = bt.DOCS_DIR / "backtest.json"
+    assert p.exists()
+    out = json.loads(p.read_text())
+    assert {"as_of", "n_events", "horizons", "controls", "verdict", "equity_curve"} <= set(out.keys())
