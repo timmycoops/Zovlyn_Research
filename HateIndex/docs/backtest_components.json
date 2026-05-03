@@ -1,6 +1,6 @@
 {
   "as_of": "2026-05-03",
-  "build": "20260503-2202",
+  "build": "20260503-2206",
   "horizons_weeks": [
     4,
     13,
@@ -1197,5 +1197,303 @@
       "n_total": 2832
     }
   },
-  "composite": null
+  "composite": {
+    "calibration": [
+      {
+        "horizon_w": 4,
+        "decile": 1,
+        "mean_return": 0.0148,
+        "median_return": 0.0113,
+        "n": 599
+      },
+      {
+        "horizon_w": 4,
+        "decile": 2,
+        "mean_return": 0.0203,
+        "median_return": 0.0145,
+        "n": 529
+      },
+      {
+        "horizon_w": 4,
+        "decile": 3,
+        "mean_return": 0.0157,
+        "median_return": 0.0122,
+        "n": 469
+      },
+      {
+        "horizon_w": 4,
+        "decile": 4,
+        "mean_return": 0.0036,
+        "median_return": -0.0015,
+        "n": 461
+      },
+      {
+        "horizon_w": 4,
+        "decile": 5,
+        "mean_return": -0.0028,
+        "median_return": -0.0064,
+        "n": 503
+      },
+      {
+        "horizon_w": 4,
+        "decile": 6,
+        "mean_return": 0.0116,
+        "median_return": 0.0064,
+        "n": 519
+      },
+      {
+        "horizon_w": 4,
+        "decile": 7,
+        "mean_return": 0.0128,
+        "median_return": 0.0133,
+        "n": 537
+      },
+      {
+        "horizon_w": 4,
+        "decile": 8,
+        "mean_return": 0.035,
+        "median_return": 0.0239,
+        "n": 534
+      },
+      {
+        "horizon_w": 4,
+        "decile": 9,
+        "mean_return": 0.0123,
+        "median_return": 0.0158,
+        "n": 486
+      },
+      {
+        "horizon_w": 4,
+        "decile": 10,
+        "mean_return": 0.0096,
+        "median_return": 0.0071,
+        "n": 575
+      },
+      {
+        "horizon_w": 13,
+        "decile": 1,
+        "mean_return": 0.0551,
+        "median_return": 0.0309,
+        "n": 577
+      },
+      {
+        "horizon_w": 13,
+        "decile": 2,
+        "mean_return": 0.0398,
+        "median_return": 0.025,
+        "n": 519
+      },
+      {
+        "horizon_w": 13,
+        "decile": 3,
+        "mean_return": 0.0679,
+        "median_return": 0.0494,
+        "n": 457
+      },
+      {
+        "horizon_w": 13,
+        "decile": 4,
+        "mean_return": 0.0196,
+        "median_return": 0.0054,
+        "n": 453
+      },
+      {
+        "horizon_w": 13,
+        "decile": 5,
+        "mean_return": 0.0065,
+        "median_return": -0.0194,
+        "n": 485
+      },
+      {
+        "horizon_w": 13,
+        "decile": 6,
+        "mean_return": 0.0272,
+        "median_return": 0.0031,
+        "n": 508
+      },
+      {
+        "horizon_w": 13,
+        "decile": 7,
+        "mean_return": 0.0321,
+        "median_return": 0.0059,
+        "n": 530
+      },
+      {
+        "horizon_w": 13,
+        "decile": 8,
+        "mean_return": 0.1433,
+        "median_return": 0.0524,
+        "n": 527
+      },
+      {
+        "horizon_w": 13,
+        "decile": 9,
+        "mean_return": 0.0331,
+        "median_return": 0.0078,
+        "n": 482
+      },
+      {
+        "horizon_w": 13,
+        "decile": 10,
+        "mean_return": 0.045,
+        "median_return": 0.0204,
+        "n": 566
+      },
+      {
+        "horizon_w": 26,
+        "decile": 1,
+        "mean_return": 0.1214,
+        "median_return": 0.0695,
+        "n": 523
+      },
+      {
+        "horizon_w": 26,
+        "decile": 2,
+        "mean_return": 0.0846,
+        "median_return": 0.0437,
+        "n": 505
+      },
+      {
+        "horizon_w": 26,
+        "decile": 3,
+        "mean_return": 0.0881,
+        "median_return": 0.0461,
+        "n": 449
+      },
+      {
+        "horizon_w": 26,
+        "decile": 4,
+        "mean_return": 0.0545,
+        "median_return": 0.0059,
+        "n": 441
+      },
+      {
+        "horizon_w": 26,
+        "decile": 5,
+        "mean_return": 0.0602,
+        "median_return": 0.0028,
+        "n": 470
+      },
+      {
+        "horizon_w": 26,
+        "decile": 6,
+        "mean_return": 0.0901,
+        "median_return": 0.0003,
+        "n": 494
+      },
+      {
+        "horizon_w": 26,
+        "decile": 7,
+        "mean_return": 0.0651,
+        "median_return": 0.01,
+        "n": 526
+      },
+      {
+        "horizon_w": 26,
+        "decile": 8,
+        "mean_return": 0.2888,
+        "median_return": 0.0696,
+        "n": 519
+      },
+      {
+        "horizon_w": 26,
+        "decile": 9,
+        "mean_return": 0.069,
+        "median_return": 0.0171,
+        "n": 474
+      },
+      {
+        "horizon_w": 26,
+        "decile": 10,
+        "mean_return": 0.0928,
+        "median_return": 0.0274,
+        "n": 547
+      },
+      {
+        "horizon_w": 52,
+        "decile": 1,
+        "mean_return": 0.2032,
+        "median_return": 0.1559,
+        "n": 443
+      },
+      {
+        "horizon_w": 52,
+        "decile": 2,
+        "mean_return": 0.1573,
+        "median_return": 0.0271,
+        "n": 482
+      },
+      {
+        "horizon_w": 52,
+        "decile": 3,
+        "mean_return": 0.1144,
+        "median_return": 0.0349,
+        "n": 438
+      },
+      {
+        "horizon_w": 52,
+        "decile": 4,
+        "mean_return": 0.1011,
+        "median_return": 0.0199,
+        "n": 434
+      },
+      {
+        "horizon_w": 52,
+        "decile": 5,
+        "mean_return": 0.1351,
+        "median_return": 0.0149,
+        "n": 447
+      },
+      {
+        "horizon_w": 52,
+        "decile": 6,
+        "mean_return": 0.2119,
+        "median_return": 0.021,
+        "n": 473
+      },
+      {
+        "horizon_w": 52,
+        "decile": 7,
+        "mean_return": 0.1733,
+        "median_return": 0.0416,
+        "n": 497
+      },
+      {
+        "horizon_w": 52,
+        "decile": 8,
+        "mean_return": 0.6852,
+        "median_return": 0.1234,
+        "n": 488
+      },
+      {
+        "horizon_w": 52,
+        "decile": 9,
+        "mean_return": 0.1984,
+        "median_return": 0.0454,
+        "n": 431
+      },
+      {
+        "horizon_w": 52,
+        "decile": 10,
+        "mean_return": 0.2051,
+        "median_return": 0.1407,
+        "n": 503
+      }
+    ],
+    "spread_top_minus_bottom": {
+      "4w": -0.0052,
+      "13w": -0.0101,
+      "26w": -0.0287,
+      "52w": 0.0019
+    },
+    "monotonic": {
+      "4w": false,
+      "13w": false,
+      "26w": false,
+      "52w": false
+    },
+    "n_total": 6246,
+    "best_horizon": "26w",
+    "beats_best_component": false
+  }
 }

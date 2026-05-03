@@ -166,6 +166,39 @@ def compute_component_calibration(component_col: str,
     }
 
 
+def compute_composite_calibration(horizons: Iterable[int] = DEFAULT_HORIZONS) -> dict:
+    """Decile calibration for the summed `score` column (composite hate)."""
+    return compute_component_calibration("score", horizons=horizons)
+
+
+def _summarise_composite_vs_components(components_payload: dict, composite_payload: dict) -> dict:
+    """Compute the 'beats best single component' verdict and pick the
+    horizon where the composite has the widest decile spread."""
+    spreads_composite = composite_payload.get("spread_top_minus_bottom", {})
+    horizons_w = list(spreads_composite.keys())
+    component_spreads_by_horizon = {h: 0.0 for h in horizons_w}
+    for c, block in components_payload.items():
+        for h, s in block.get("spread_top_minus_bottom", {}).items():
+            if s is not None and abs(s) > abs(component_spreads_by_horizon.get(h, 0.0)):
+                component_spreads_by_horizon[h] = s
+    # Composite "beats" if its absolute spread at 26w AND 52w is >= max single-component absolute spread
+    beats = False
+    s26 = spreads_composite.get("26w")
+    s52 = spreads_composite.get("52w")
+    if s26 is not None and s52 is not None:
+        beats = (
+            abs(s26) >= abs(component_spreads_by_horizon.get("26w", 0.0))
+            and abs(s52) >= abs(component_spreads_by_horizon.get("52w", 0.0))
+        )
+    valid = {h: s for h, s in spreads_composite.items() if s is not None}
+    best_horizon = max(valid.items(), key=lambda kv: abs(kv[1]))[0] if valid else None
+    return {
+        **composite_payload,
+        "best_horizon": best_horizon,
+        "beats_best_component": beats,
+    }
+
+
 def build_components_payload(horizons: Iterable[int] = DEFAULT_HORIZONS) -> dict:
     """Layer A: per-component calibration for all four components."""
     out_components: dict[str, dict] = {}
@@ -177,12 +210,14 @@ def build_components_payload(horizons: Iterable[int] = DEFAULT_HORIZONS) -> dict
             log.warning("Column %s not in scores; skipping component %s", col, c)
             out_components[c] = {"calibration": [], "spread_top_minus_bottom": {},
                                  "monotonic": {}, "n_total": 0}
+    composite_raw = compute_composite_calibration(horizons=horizons)
+    composite = _summarise_composite_vs_components(out_components, composite_raw)
     return {
         "as_of": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
         "build": datetime.now(timezone.utc).strftime("%Y%m%d-%H%M"),
         "horizons_weeks": list(horizons),
         "components": out_components,
-        "composite": None,   # filled in by Task 4
+        "composite": composite,
     }
 
 

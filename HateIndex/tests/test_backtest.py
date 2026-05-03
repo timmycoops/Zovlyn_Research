@@ -87,3 +87,17 @@ def test_main_writes_backtest_components_json(fake_parquets, tmp_path):
     assert "components" in out
     assert "as_of" in out
     assert out["horizons_weeks"] == [4, 13, 26, 52]
+
+
+def test_composite_calibration_present(fake_parquets):
+    payload = bt.build_components_payload(horizons=(13,))
+    comp = payload["composite"]
+    assert comp is not None
+    assert "calibration" in comp
+    assert "best_horizon" in comp
+    assert "beats_best_component" in comp
+
+
+def test_composite_beats_best_component_is_boolean(fake_parquets):
+    payload = bt.build_components_payload()
+    assert isinstance(payload["composite"]["beats_best_component"], bool)
