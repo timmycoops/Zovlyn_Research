@@ -48,6 +48,14 @@ jobs:
         run: python -m scripts.ingest_constituents
         continue-on-error: true   # constituent fetch failures should not fail the cron
 
+      - name: Ingest ASIC short sales
+        run: python -m scripts.ingest_short_sales
+        continue-on-error: true   # ASIC fetch failures should not fail the cron
+
+      - name: Compute flows
+        run: python -m scripts.compute_flows
+        continue-on-error: true
+
       - name: Compute hate scores
         run: python -m scripts.compute_scores
 

@@ -4,7 +4,7 @@
 PYTHON ?= $(shell test -x $(CURDIR)/.venv/bin/python && echo $(CURDIR)/.venv/bin/python || echo python3)
 PIP    ?= $(shell test -x $(CURDIR)/.venv/bin/pip    && echo $(CURDIR)/.venv/bin/pip    || echo pip3)
 
-.PHONY: help install ingest constituents score rrg site backtest refresh test serve clean
+.PHONY: help install ingest constituents flows score rrg site backtest refresh test serve clean
 
 help:
 	@echo "Targets:"
@@ -12,6 +12,7 @@ help:
 	@echo "  refresh   - run the full weekly pipeline (ingest -> score -> rrg -> site)"
 	@echo "  ingest    - pull prices and CFTC into data/raw/"
 	@echo "  constituents - pull weekly closes for sector constituents"
+	@echo "  flows     - pull ASIC short sales and compute flow z-scores"
 	@echo "  score     - compute hate scores from raw"
 	@echo "  rrg       - compute RRG from raw"
 	@echo "  site      - build docs/data.json"
@@ -31,6 +32,10 @@ ingest:
 constituents:
 	$(PYTHON) -m scripts.ingest_constituents
 
+flows:
+	$(PYTHON) -m scripts.ingest_short_sales
+	$(PYTHON) -m scripts.compute_flows
+
 score:
 	$(PYTHON) -m scripts.compute_scores
 
@@ -43,7 +48,7 @@ site:
 backtest:
 	$(PYTHON) -m scripts.backtest
 
-refresh: ingest constituents score rrg site
+refresh: ingest constituents flows score rrg site
 	@echo "Pipeline refresh complete. Open docs/index.html or run 'make serve'."
 
 test:
