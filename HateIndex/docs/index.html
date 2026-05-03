@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hate Index · Zovlyn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0E0520;
+    --panel: #1A0B33;
+    --panel-hi: #241043;
+    --border: #3A1F5C;
+    --text: #F5F0FF;
+    --text-mute: #9485B5;
+    --text-dim: #6B5C8A;
+    --orange: #F95B3D;
+    --pink: #FEB7C7;
+    --purple: #6B7ACC;
+    --blue: #4654A3;
+    --navy: #270949;
+    --green: #4ADE80;
+  }
+  * { box-sizing: border-box; }
+  html, body, #root { margin: 0; padding: 0; min-height: 100%; background: var(--bg); }
+  body {
+    font-family: "Geist", -apple-system, sans-serif;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+  .display { font-family: 'Fraunces', serif; font-feature-settings: "ss01"; letter-spacing: -0.02em; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .panel { background: linear-gradient(180deg, var(--panel) 0%, rgba(26,11,51,0.88) 100%); border: 1px solid var(--border); border-radius: 6px; }
+  .panel-hi { background: var(--panel-hi); border: 1px solid var(--border); border-radius: 4px; }
+  .recharts-cartesian-axis-tick text { fill: var(--text-mute); font-family: 'JetBrains Mono'; font-size: 10px; }
+  .recharts-tooltip-wrapper { outline: none; }
+  .row-hover { transition: background 0.12s; }
+  .row-hover:hover, .row-selected { background: var(--panel-hi) !important; }
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- React + Recharts via UMD CDN -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/prop-types@15/prop-types.min.js"></script>
+<script crossorigin src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useMemo } = React;
+const {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  ReferenceLine, Cell, LineChart, Line,
+} = Recharts;
+
+// ─── Brand ───────────────────────────────────────────────────────────────
+const BRAND = {
+  navy: '#270949', blue: '#4654A3', orange: '#F95B3D', pink: '#FEB7C7', purple: '#6B7ACC',
+  bg: '#0E0520', panel: '#1A0B33', panelHi: '#241043', border: '#3A1F5C',
+  text: '#F5F0FF', textMute: '#9485B5', textDim: '#6B5C8A',
+  green: '#4ADE80', red: '#F95B3D',
+};
+const COMPONENT_COLORS = {
+  drawdown: BRAND.orange, momentum: BRAND.pink, positioning: BRAND.purple,
+  flows: BRAND.blue, valuation: '#8B5CF6', sentiment: '#EC4899',
+};
+const COMPONENT_LABELS = {
+  drawdown: 'Drawdown', momentum: 'Rel. Momentum', positioning: 'CFTC Positioning',
+  flows: 'ETF Flows', valuation: 'Valuation', sentiment: 'Sentiment',
+};
+
+// ─── Inline SVG icons (replaces lucide-react) ────────────────────────────
+const SvgIcon = ({ size = 16, color = 'currentColor', children }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color}
+       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    {children}
+  </svg>
+);
+const TrendingDown = (p) => <SvgIcon {...p}><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></SvgIcon>;
+const Activity     = (p) => <SvgIcon {...p}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></SvgIcon>;
+const AlertCircle  = (p) => <SvgIcon {...p}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></SvgIcon>;
+const Target       = (p) => <SvgIcon {...p}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></SvgIcon>;
+const Compass      = (p) => <SvgIcon {...p}><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></SvgIcon>;
+
+// ─── Mock data (used when data.json is missing) ──────────────────────────
+const RAW = [
+  { name: 'Lithium',     ticker: 'LIT',   drawdown: 2.4, momentum: 2.1, positioning: 1.7, flows: 2.3, valuation: 1.9, sentiment: 1.8, drift: -0.04 },
+  { name: 'Nickel',      ticker: 'NICK',  drawdown: 2.1, momentum: 1.7, positioning: 1.9, flows: 1.5, valuation: 1.6, sentiment: 1.7, drift: -0.02 },
+  { name: 'Rare Earths', ticker: 'REMX',  drawdown: 1.8, momentum: 1.6, positioning: 0.9, flows: 1.7, valuation: 1.4, sentiment: 1.5, drift: -0.03 },
+  { name: 'PGMs',        ticker: 'PPLT',  drawdown: 1.6, momentum: 1.4, positioning: 1.6, flows: 1.2, valuation: 1.7, sentiment: 1.1, drift: -0.01 },
+  { name: 'Nat Gas',     ticker: 'UNG',   drawdown: 1.7, momentum: 1.2, positioning: 1.3, flows: 0.8, valuation: 0.9, sentiment: 1.2, drift: 0.01 },
+  { name: 'Thermal Coal',ticker: 'KOL',   drawdown: 1.1, momentum: 0.7, positioning: 0.6, flows: 1.0, valuation: 1.3, sentiment: 0.9, drift: 0.02 },
+  { name: 'Iron Ore',    ticker: 'IOAU',  drawdown: 0.9, momentum: 0.6, positioning: 0.4, flows: 0.5, valuation: 0.8, sentiment: 0.7, drift: 0.00 },
+  { name: 'Crude Oil',   ticker: 'USO',   drawdown: 0.4, momentum: 0.2, positioning: 0.5, flows: 0.6, valuation: 0.3, sentiment: 0.4, drift: 0.01 },
+  { name: 'Uranium',     ticker: 'URA',   drawdown: -0.2, momentum: 0.1, positioning: -0.4, flows: -0.6, valuation: 0.2, sentiment: -0.3, drift: 0.04 },
+  { name: 'Copper',      ticker: 'COPX',  drawdown: -0.5, momentum: -0.4, positioning: -0.7, flows: -0.5, valuation: 0.1, sentiment: -0.3, drift: 0.06 },
+  { name: 'Silver',      ticker: 'SLV',   drawdown: -1.1, momentum: -0.9, positioning: -1.2, flows: -0.8, valuation: -0.6, sentiment: -0.7, drift: 0.05 },
+  { name: 'Gold',        ticker: 'GLD',   drawdown: -1.6, momentum: -1.4, positioning: -1.0, flows: -1.3, valuation: -0.9, sentiment: -1.1, drift: 0.07 },
+];
+const RRG_DATA = {
+  'Lithium':      [[94, 95], [95, 98], [96, 101], [98, 103], [100, 104.5], [101.8, 104]],
+  'Nickel':       [[97, 98], [96, 97], [95, 96], [94.5, 95], [94, 94], [93.5, 93]],
+  'Rare Earths':  [[95, 96], [95.5, 98], [96, 100], [96.8, 101.5], [97.2, 102.3], [97.8, 102.8]],
+  'PGMs':         [[97, 97], [96.5, 98], [96.5, 99.5], [96.8, 100.7], [97.2, 101], [97.7, 101.2]],
+  'Nat Gas':      [[98, 99], [97.5, 98], [97, 97], [96.5, 96], [96, 95], [95.5, 94.5]],
+  'Thermal Coal': [[99, 100], [98.5, 99.5], [98, 99], [97.5, 98.5], [97, 98], [96.7, 97.5]],
+  'Iron Ore':     [[101, 99], [100.5, 98], [100, 97.5], [99.5, 97], [99, 96.5], [98.5, 96]],
+  'Crude Oil':    [[102, 101], [101.5, 100], [101, 99], [100.7, 98.5], [100.2, 98], [99.8, 97.7]],
+  'Uranium':      [[100, 101], [101, 102], [102, 103], [102.6, 103.5], [103.2, 103.8], [103.6, 103.6]],
+  'Copper':       [[101, 102], [102, 103], [103, 103.5], [104, 103.5], [104.8, 103.2], [105.3, 102.8]],
+  'Silver':       [[103, 103], [104, 103.3], [104.8, 103.3], [105.3, 102.9], [105.7, 102.5], [105.9, 102]],
+  'Gold':         [[104, 103], [105, 103], [105.6, 102.6], [106.1, 102.1], [106.5, 101.6], [106.8, 101.1]],
+};
+
+function quadrant(x, y) {
+  if (x >= 100 && y >= 100) return 'Leading';
+  if (x < 100 && y >= 100) return 'Improving';
+  if (x < 100 && y < 100) return 'Lagging';
+  return 'Weakening';
+}
+function rotationStatus(tail) {
+  const startQ = quadrant(tail[0][0], tail[0][1]);
+  const endQ = quadrant(tail[tail.length - 1][0], tail[tail.length - 1][1]);
+  return startQ === endQ ? endQ : `${startQ}→${endQ}`;
+}
+
+function genSparkline(seed, drift, current) {
+  const points = []; let x = current - 104 * drift - 2; let rng = seed;
+  for (let i = 0; i < 104; i++) {
+    rng = (rng * 9301 + 49297) % 233280;
+    const noise = (rng / 233280 - 0.5) * 0.6;
+    x = x + drift + noise * 0.15;
+    points.push({ w: i, v: +x.toFixed(2) });
+  }
+  points[points.length - 1].v = current;
+  return points;
+}
+
+function buildAugmented(rawArray, rrgMap, sparklines) {
+  const sorted = [...rawArray]
+    .map(d => ({ ...d, score: +(d.drawdown + d.momentum + d.positioning + d.flows + d.valuation + d.sentiment).toFixed(2) }))
+    .sort((a, b) => b.score - a.score);
+  return sorted.map(d => {
+    const tail = rrgMap[d.name] || [[100,100],[100,100],[100,100],[100,100],[100,100],[100,100]];
+    const status = rotationStatus(tail);
+    const justEntered = status.includes('→Improving') || status.includes('→Leading');
+    return { ...d, tail, status, justEntered, history: sparklines[d.name] };
+  });
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────
+const fmtScore = (v) => (v > 0 ? '+' : '') + v.toFixed(2);
+function colorForScore(score) {
+  if (score >= 8) return BRAND.orange;
+  if (score >= 4) return BRAND.pink;
+  if (score >= 0) return BRAND.purple;
+  return BRAND.blue;
+}
+function HateBadge({ score }) {
+  let label, bg, fg;
+  if (score >= 8) { label = 'CAPITULATION'; bg = '#F95B3D33'; fg = BRAND.orange; }
+  else if (score >= 4) { label = 'HATED'; bg = '#FEB7C71F'; fg = BRAND.pink; }
+  else if (score >= 0) { label = 'NEUTRAL'; bg = '#6B7ACC22'; fg = BRAND.purple; }
+  else if (score >= -3) { label = 'LIKED'; bg = '#4654A322'; fg = BRAND.blue; }
+  else { label = 'EUPHORIC'; bg = '#4ADE8022'; fg = BRAND.green; }
+  return <span style={{ background: bg, color: fg, padding: '2px 8px', borderRadius: 3, fontFamily: 'JetBrains Mono', fontSize: 9, fontWeight: 600, letterSpacing: '0.08em' }}>{label}</span>;
+}
+function Sparkline({ data, color }) {
+  return (
+    <ResponsiveContainer width="100%" height={28}>
+      <LineChart data={data}>
+        <Line type="monotone" dataKey="v" stroke={color} strokeWidth={1.4} dot={false} isAnimationActive={false} />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+}
+
+// ─── RRG ────────────────────────────────────────────────────────────────
+function RRGPanel({ data, selected, setSelected }) {
+  const W = 1100, H = 540;
+  const PAD = { top: 30, right: 30, bottom: 50, left: 60 };
+  const CHART_W = W - PAD.left - PAD.right;
+  const CHART_H = H - PAD.top - PAD.bottom;
+  const X_MIN = 92, X_MAX = 108, Y_MIN = 92, Y_MAX = 108;
+  const xScale = (x) => PAD.left + ((x - X_MIN) / (X_MAX - X_MIN)) * CHART_W;
+  const yScale = (y) => PAD.top + (1 - (y - Y_MIN) / (Y_MAX - Y_MIN)) * CHART_H;
+  const cx = xScale(100), cy = yScale(100);
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
+      <defs>
+        <radialGradient id="leadingGlow" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0%" stopColor={BRAND.green} stopOpacity="0.1" />
+          <stop offset="100%" stopColor={BRAND.green} stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="improvingGlow" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0%" stopColor={BRAND.orange} stopOpacity="0.1" />
+          <stop offset="100%" stopColor={BRAND.orange} stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <rect x={PAD.left} y={PAD.top} width={cx - PAD.left} height={cy - PAD.top} fill={`${BRAND.orange}08`} />
+      <rect x={cx} y={PAD.top} width={PAD.left + CHART_W - cx} height={cy - PAD.top} fill={`${BRAND.green}0A`} />
+      <rect x={PAD.left} y={cy} width={cx - PAD.left} height={PAD.top + CHART_H - cy} fill={`${BRAND.purple}06`} />
+      <rect x={cx} y={cy} width={PAD.left + CHART_W - cx} height={PAD.top + CHART_H - cy} fill={`${BRAND.pink}06`} />
+      <rect x={PAD.left} y={PAD.top} width={cx - PAD.left} height={cy - PAD.top} fill="url(#improvingGlow)" />
+      <rect x={cx} y={PAD.top} width={PAD.left + CHART_W - cx} height={cy - PAD.top} fill="url(#leadingGlow)" />
+
+      {[94, 96, 98, 102, 104, 106].map(v => (
+        <g key={`gx${v}`}>
+          <line x1={xScale(v)} y1={PAD.top} x2={xScale(v)} y2={PAD.top + CHART_H} stroke={BRAND.border} strokeOpacity={0.4} strokeDasharray="2 4" />
+          <text x={xScale(v)} y={PAD.top + CHART_H + 16} fill={BRAND.textDim} fontSize={9} textAnchor="middle" fontFamily="JetBrains Mono">{v}</text>
+        </g>
+      ))}
+      {[94, 96, 98, 102, 104, 106].map(v => (
+        <g key={`gy${v}`}>
+          <line x1={PAD.left} y1={yScale(v)} x2={PAD.left + CHART_W} y2={yScale(v)} stroke={BRAND.border} strokeOpacity={0.4} strokeDasharray="2 4" />
+          <text x={PAD.left - 8} y={yScale(v) + 3} fill={BRAND.textDim} fontSize={9} textAnchor="end" fontFamily="JetBrains Mono">{v}</text>
+        </g>
+      ))}
+      <line x1={PAD.left} y1={cy} x2={PAD.left + CHART_W} y2={cy} stroke={BRAND.textMute} strokeWidth={1} strokeOpacity={0.6} />
+      <line x1={cx} y1={PAD.top} x2={cx} y2={PAD.top + CHART_H} stroke={BRAND.textMute} strokeWidth={1} strokeOpacity={0.6} />
+
+      <text x={PAD.left + 14} y={PAD.top + 22} fill={BRAND.orange} fontSize={11} fontFamily="JetBrains Mono" fontWeight={600} letterSpacing="0.15em">IMPROVING</text>
+      <text x={PAD.left + 14} y={PAD.top + 36} fill={BRAND.textDim} fontSize={9} fontFamily="JetBrains Mono">underperforming · accelerating</text>
+      <text x={PAD.left + CHART_W - 14} y={PAD.top + 22} fill={BRAND.green} fontSize={11} fontFamily="JetBrains Mono" fontWeight={600} letterSpacing="0.15em" textAnchor="end">LEADING</text>
+      <text x={PAD.left + CHART_W - 14} y={PAD.top + 36} fill={BRAND.textDim} fontSize={9} fontFamily="JetBrains Mono" textAnchor="end">outperforming · accelerating</text>
+      <text x={PAD.left + 14} y={PAD.top + CHART_H - 14} fill={BRAND.purple} fontSize={11} fontFamily="JetBrains Mono" fontWeight={600} letterSpacing="0.15em">LAGGING</text>
+      <text x={PAD.left + 14} y={PAD.top + CHART_H - 28} fill={BRAND.textDim} fontSize={9} fontFamily="JetBrains Mono">underperforming · decelerating</text>
+      <text x={PAD.left + CHART_W - 14} y={PAD.top + CHART_H - 14} fill={BRAND.pink} fontSize={11} fontFamily="JetBrains Mono" fontWeight={600} letterSpacing="0.15em" textAnchor="end">WEAKENING</text>
+      <text x={PAD.left + CHART_W - 14} y={PAD.top + CHART_H - 28} fill={BRAND.textDim} fontSize={9} fontFamily="JetBrains Mono" textAnchor="end">outperforming · decelerating</text>
+
+      <text x={PAD.left + CHART_W / 2} y={H - 12} fill={BRAND.textMute} fontSize={10} textAnchor="middle" fontFamily="JetBrains Mono" letterSpacing="0.1em">JdK RS-RATIO →</text>
+      <text x={16} y={PAD.top + CHART_H / 2} fill={BRAND.textMute} fontSize={10} textAnchor="middle" fontFamily="JetBrains Mono" letterSpacing="0.1em" transform={`rotate(-90, 16, ${PAD.top + CHART_H / 2})`}>JdK RS-MOMENTUM →</text>
+
+      {data.map(d => {
+        const isSelected = selected === d.name;
+        const isDimmed = selected && !isSelected;
+        const opacity = isDimmed ? 0.12 : 1;
+        const baseColor = colorForScore(d.score);
+        const last = d.tail[d.tail.length - 1];
+        const isHated = d.score >= 4;
+        const isCapit = d.score >= 8;
+        const segments = [];
+        for (let i = 0; i < d.tail.length - 1; i++) {
+          segments.push({
+            x1: xScale(d.tail[i][0]), y1: yScale(d.tail[i][1]),
+            x2: xScale(d.tail[i + 1][0]), y2: yScale(d.tail[i + 1][1]),
+            opacity: 0.25 + (i / d.tail.length) * 0.6,
+            width: 1 + (i / d.tail.length) * 1.5,
+          });
+        }
+        return (
+          <g key={d.name} opacity={opacity}
+             onMouseEnter={() => setSelected(d.name)}
+             onMouseLeave={() => setSelected(null)}
+             style={{ cursor: 'pointer', transition: 'opacity 0.15s' }}>
+            {segments.map((s, i) => (
+              <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
+                    stroke={baseColor} strokeWidth={isSelected ? s.width + 1 : s.width}
+                    strokeOpacity={s.opacity} strokeLinecap="round" />
+            ))}
+            {d.tail.slice(0, -1).map((p, i) => (
+              <circle key={i} cx={xScale(p[0])} cy={yScale(p[1])} r={1.5}
+                      fill={baseColor} opacity={0.3 + (i / d.tail.length) * 0.5} />
+            ))}
+            {isCapit && <circle cx={xScale(last[0])} cy={yScale(last[1])} r={14} fill={baseColor} opacity={0.18} />}
+            {isHated && !isCapit && <circle cx={xScale(last[0])} cy={yScale(last[1])} r={11} fill={baseColor} opacity={0.12} />}
+            <circle cx={xScale(last[0])} cy={yScale(last[1])}
+                    r={isSelected ? 8 : isHated ? 6 : 4.5}
+                    fill={baseColor} stroke={BRAND.bg} strokeWidth={2} />
+            <text x={xScale(last[0]) + 11} y={yScale(last[1]) + 4}
+                  fill={isSelected ? BRAND.text : BRAND.textMute}
+                  fontSize={isSelected ? 12 : 10} fontFamily="JetBrains Mono"
+                  fontWeight={isSelected ? 600 : 400}>
+              {d.ticker}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+// ─── Main dashboard ──────────────────────────────────────────────────────
+function HateIndexDashboard() {
+  const [selected, setSelected] = useState(null);
+  const [liveData, setLiveData] = useState(null);
+  const [asOf, setAsOf] = useState('— mock data —');
+  const [build, setBuild] = useState('dev');
+
+  // Load live data.json if present, else fall back to mocks
+  useEffect(() => {
+    fetch('./data.json')
+      .then(r => r.ok ? r.json() : null)
+      .then(j => {
+        if (j) {
+          setLiveData(j);
+          setAsOf(j.as_of || '');
+          setBuild(j.build || 'live');
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const data = useMemo(() => {
+    if (liveData?.commodities) {
+      // Map live JSON into the augmented shape
+      return liveData.commodities.map(c => ({
+        name: c.name,
+        ticker: c.ticker,
+        ...c.components,
+        score: c.score,
+        tail: c.rrg_tail,
+        status: c.status,
+        justEntered: c.just_entered,
+        history: (c.score_history || []).map((p, i) => ({ w: i, v: p.score })),
+      })).sort((a, b) => b.score - a.score);
+    }
+    const sparklines = Object.fromEntries(
+      RAW.map((d, i) => [d.name, genSparkline(i * 137 + 11, d.drift, d.drawdown + d.momentum + d.positioning + d.flows + d.valuation + d.sentiment)])
+    );
+    return buildAugmented(RAW, RRG_DATA, sparklines);
+  }, [liveData]);
+
+  const flagged = data.filter(d => d.score >= 4 && d.justEntered);
+  const mostHated = data[0] || { name: '—', score: 0 };
+  const breadthHated = data.filter(d => d.score > 0).length;
+  const stackedData = data.map(d => ({
+    name: d.name, drawdown: d.drawdown, momentum: d.momentum, positioning: d.positioning,
+    flows: d.flows, valuation: d.valuation, sentiment: d.sentiment,
+  }));
+
+  return (
+    <div style={{
+      minHeight: '100vh',
+      background: `radial-gradient(1200px 600px at 10% -10%, ${BRAND.navy} 0%, transparent 60%), radial-gradient(800px 400px at 90% 110%, ${BRAND.blue}22 0%, transparent 70%), ${BRAND.bg}`,
+      color: BRAND.text,
+      padding: '24px 32px 40px',
+    }}>
+      <header style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 28, paddingBottom: 18, borderBottom: `1px solid ${BRAND.border}` }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+            <div style={{ width: 8, height: 8, background: BRAND.orange, borderRadius: '50%', boxShadow: `0 0 12px ${BRAND.orange}` }} />
+            <span className="mono" style={{ fontSize: 10, color: BRAND.textMute, letterSpacing: '0.2em' }}>ZOVLYN · COMMODITY RESEARCH</span>
+          </div>
+          <h1 className="display" style={{ fontSize: 44, fontWeight: 500, margin: 0, lineHeight: 1 }}>
+            Hate <em style={{ color: BRAND.orange, fontStyle: 'italic', fontWeight: 600 }}>Index</em>
+          </h1>
+          <p style={{ color: BRAND.textMute, fontSize: 13, margin: '8px 0 0', maxWidth: 600 }}>
+            Composite z-score across six capitulation signals, mapped onto sector rotation. The buy zone: hated AND rotating into Improving / Leading.
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
+          <div style={{ textAlign: 'right' }}>
+            <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>LAST RUN</div>
+            <div className="mono" style={{ fontSize: 13, color: BRAND.text, marginTop: 2 }}>{asOf}</div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>BUILD</div>
+            <div className="mono" style={{ fontSize: 13, color: BRAND.text, marginTop: 2 }}>{build}</div>
+          </div>
+        </div>
+      </header>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
+        <KpiCard label="MOST HATED" value={mostHated.name} sub={`Composite ${fmtScore(mostHated.score)}`} icon={<TrendingDown size={16} />} accent={BRAND.orange} />
+        <KpiCard label="HATED & ROTATING" value={flagged.length.toString()} sub={flagged.length ? flagged.map(f => f.ticker).join(' · ') : 'no setups'} icon={<Target size={16} />} accent={BRAND.green} />
+        <KpiCard label="BREADTH" value={`${breadthHated}/${data.length}`} sub="composite > 0" icon={<Activity size={16} />} accent={BRAND.purple} />
+        <KpiCard label="DISPERSION" value={data.length ? (data[0].score - data[data.length-1].score).toFixed(1) : '—'} sub="top minus bottom" icon={<AlertCircle size={16} />} accent={BRAND.blue} />
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 16, marginBottom: 16 }}>
+        <div className="panel" style={{ padding: 20 }}>
+          <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>FIG 01 · COMPOSITE RANKING</div>
+          <h2 className="display" style={{ fontSize: 22, fontWeight: 500, margin: '4px 0 0' }}>Hate score by component</h2>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginTop: 14, marginBottom: 8 }}>
+            {Object.entries(COMPONENT_LABELS).map(([k, label]) => (
+              <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ width: 10, height: 10, background: COMPONENT_COLORS[k], borderRadius: 1 }} />
+                <span className="mono" style={{ fontSize: 10, color: BRAND.textMute }}>{label}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ height: 440, marginTop: 8 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={stackedData} layout="vertical" margin={{ top: 6, right: 30, bottom: 6, left: 8 }}
+                        onMouseMove={(e) => setSelected(e?.activeLabel || null)}
+                        onMouseLeave={() => setSelected(null)}>
+                <CartesianGrid strokeDasharray="2 4" stroke={BRAND.border} horizontal={false} />
+                <XAxis type="number" tickLine={false} axisLine={{ stroke: BRAND.border }} domain={[-8, 14]} />
+                <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={84}
+                       tick={(props) => {
+                         const isSel = selected === props.payload.value;
+                         return <text {...props} fill={isSel ? BRAND.orange : BRAND.textMute} fontFamily="JetBrains Mono" fontSize={10} fontWeight={isSel ? 600 : 400}>{props.payload.value}</text>;
+                       }} />
+                <Tooltip cursor={{ fill: `${BRAND.purple}1A` }}
+                  contentStyle={{ background: BRAND.panelHi, border: `1px solid ${BRAND.border}`, borderRadius: 4, fontFamily: 'JetBrains Mono', fontSize: 11 }}
+                  labelStyle={{ color: BRAND.text, fontWeight: 600, marginBottom: 4 }}
+                  formatter={(value, name) => [fmtScore(value), COMPONENT_LABELS[name]]} />
+                <ReferenceLine x={0} stroke={BRAND.textMute} strokeWidth={1} />
+                <ReferenceLine x={4} stroke={BRAND.pink} strokeDasharray="3 3" strokeOpacity={0.4} />
+                <ReferenceLine x={8} stroke={BRAND.orange} strokeDasharray="3 3" strokeOpacity={0.5} />
+                {Object.keys(COMPONENT_LABELS).map(k => (
+                  <Bar key={k} dataKey={k} stackId="a" fill={COMPONENT_COLORS[k]}>
+                    {stackedData.map((entry, i) => (
+                      <Cell key={i} fillOpacity={selected && selected !== entry.name ? 0.25 : 1} />
+                    ))}
+                  </Bar>
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="panel" style={{ padding: 20, display: 'flex', flexDirection: 'column' }}>
+          <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>FIG 02 · 2YR EVOLUTION</div>
+          <h2 className="display" style={{ fontSize: 22, fontWeight: 500, margin: '4px 0 14px' }}>Score history</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 1.2fr 70px', gap: 0, padding: '6px 8px', borderBottom: `1px solid ${BRAND.border}` }}>
+            {['Commodity', 'Score', '2Y', 'Status'].map(h => (
+              <div key={h} className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.1em', textAlign: h === 'Commodity' ? 'left' : 'right' }}>{h.toUpperCase()}</div>
+            ))}
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {data.map((d) => {
+              const turning = d.score >= 4 && d.justEntered;
+              const isSelected = selected === d.name;
+              return (
+                <div key={d.name}
+                     className={`row-hover ${isSelected ? 'row-selected' : ''}`}
+                     onMouseEnter={() => setSelected(d.name)}
+                     onMouseLeave={() => setSelected(null)}
+                     style={{ display: 'grid', gridTemplateColumns: '1fr 60px 1.2fr 70px', gap: 0, padding: '8px', alignItems: 'center', borderBottom: `1px solid ${BRAND.border}40`, cursor: 'pointer' }}>
+                  <div>
+                    <div style={{ fontSize: 12, color: isSelected ? BRAND.orange : BRAND.text, fontWeight: 500 }}>{d.name}</div>
+                    <div className="mono" style={{ fontSize: 9, color: BRAND.textDim }}>{d.ticker}</div>
+                  </div>
+                  <div className="mono" style={{ fontSize: 12, color: colorForScore(d.score), textAlign: 'right', fontWeight: 600 }}>
+                    {fmtScore(d.score)}
+                  </div>
+                  <div style={{ height: 28 }}>
+                    <Sparkline data={d.history || []} color={colorForScore(d.score)} />
+                  </div>
+                  <div className="mono" style={{ fontSize: 8, textAlign: 'right', color: turning ? BRAND.green : BRAND.textDim, letterSpacing: '0.05em' }}>
+                    {(d.status || '').toUpperCase()}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div className="panel" style={{ padding: 20, marginBottom: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 4 }}>
+          <div>
+            <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>FIG 03 · RELATIVE ROTATION GRAPH</div>
+            <h2 className="display" style={{ fontSize: 22, fontWeight: 500, margin: '4px 0 0' }}>Sector rotation map</h2>
+            <p style={{ fontSize: 12, color: BRAND.textMute, margin: '6px 0 0', maxWidth: 680 }}>
+              Each tail traces 6 weeks of momentum vs ASX 200. Sectors rotate clockwise: Lagging → Improving → Leading → Weakening.
+              Glow ring = HATED on the composite. Overlap of glow and Improving quadrant is the high-conviction setup.
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
+            <LegendDot dot={BRAND.orange} label="Capitulation (≥8σ)" />
+            <LegendDot dot={BRAND.pink} label="Hated (≥4σ)" />
+            <LegendDot dot={BRAND.purple} label="Neutral" />
+            <LegendDot dot={BRAND.blue} label="Liked" />
+          </div>
+        </div>
+        <div style={{ marginTop: 10 }}>
+          <RRGPanel data={data} selected={selected} setSelected={setSelected} />
+        </div>
+      </div>
+
+      <div className="panel" style={{ padding: 22 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+          <div>
+            <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>FIG 04 · WEEKLY SIGNAL</div>
+            <h2 className="display" style={{ fontSize: 22, fontWeight: 500, margin: '4px 0 0' }}>This week's setups</h2>
+          </div>
+          <div className="mono" style={{ fontSize: 10, color: BRAND.textMute }}>
+            CRITERIA · COMPOSITE ≥ 4 AND JUST ENTERED IMPROVING/LEADING
+          </div>
+        </div>
+        {flagged.length === 0 ? (
+          <div className="panel-hi" style={{ padding: 20, marginTop: 14 }}>
+            <div className="mono" style={{ fontSize: 11, color: BRAND.textMute }}>No commodities currently meet both criteria.</div>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(flagged.length, 3)}, 1fr)`, gap: 14, marginTop: 16 }}>
+            {flagged.map(f => (
+              <SignalCard key={f.name} f={f} onHover={setSelected} selected={selected === f.name} />
+            ))}
+          </div>
+        )}
+        <div style={{ borderTop: `1px solid ${BRAND.border}`, paddingTop: 16, marginTop: 18 }}>
+          <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em', marginBottom: 8 }}>METHODOLOGY</div>
+          <p style={{ fontSize: 11, color: BRAND.textMute, lineHeight: 1.6, margin: 0, maxWidth: 920 }}>
+            Hate score: dual z-score per component (60% time-series 10yr, 40% cross-sectional), sign-flipped, equal-weighted, summed.
+            RRG: JdK RS-Ratio = normalised price relative to ASX 200; RS-Momentum = rate of change of RS-Ratio. Both smoothed (window=10, smoothing=3, weekly bars).
+            Sources: yfinance, CFTC COT, FRED, GDELT.
+          </p>
+        </div>
+      </div>
+
+      <footer style={{ marginTop: 32, paddingTop: 20, borderTop: `1px solid ${BRAND.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="mono" style={{ fontSize: 9, color: BRAND.textDim }}>ZOVLYN PTY LTD · GENERATED BY GITHUB ACTIONS</div>
+        <div className="mono" style={{ fontSize: 9, color: BRAND.textDim }}>NOT INVESTMENT ADVICE · RESEARCH USE ONLY</div>
+      </footer>
+    </div>
+  );
+}
+
+function KpiCard({ label, value, sub, icon, accent }) {
+  return (
+    <div className="panel" style={{ padding: '16px 18px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: 0, right: 0, opacity: 0.06, color: accent, lineHeight: 0.8, transform: 'translate(20%, -20%)' }}>
+        {icon && React.cloneElement(icon, { size: 80 })}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ color: accent }}>{icon}</div>
+        <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>{label}</div>
+      </div>
+      <div className="display" style={{ fontSize: 26, fontWeight: 600, marginTop: 6, color: BRAND.text }}>{value}</div>
+      <div className="mono" style={{ fontSize: 10, color: BRAND.textMute, marginTop: 2 }}>{sub}</div>
+    </div>
+  );
+}
+
+function SignalCard({ f, onHover, selected }) {
+  return (
+    <div className="panel-hi"
+         onMouseEnter={() => onHover(f.name)}
+         onMouseLeave={() => onHover(null)}
+         style={{
+           padding: 18, position: 'relative', overflow: 'hidden',
+           border: `1px solid ${selected ? BRAND.green : BRAND.border}`,
+           transition: 'border-color 0.15s',
+         }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, width: 3, height: '100%', background: BRAND.green }} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <div className="display" style={{ fontSize: 24, fontWeight: 600, color: BRAND.text }}>{f.name}</div>
+          <div className="mono" style={{ fontSize: 10, color: BRAND.textMute, marginTop: 2 }}>{f.ticker} · COMPOSITE {fmtScore(f.score)}</div>
+        </div>
+        <HateBadge score={f.score} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginTop: 14 }}>
+        <Stat label="Drawdown" value={fmtScore(f.drawdown)} />
+        <Stat label="Positioning" value={fmtScore(f.positioning)} />
+        <Stat label="Flows" value={fmtScore(f.flows)} />
+      </div>
+      <div className="mono" style={{ fontSize: 10, color: BRAND.green, marginTop: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
+        <Compass size={12} /> ROTATION · {(f.status || '').toUpperCase()}
+      </div>
+    </div>
+  );
+}
+
+function Stat({ label, value }) {
+  return (
+    <div>
+      <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.1em' }}>{label.toUpperCase()}</div>
+      <div className="mono" style={{ fontSize: 14, color: BRAND.text, fontWeight: 600, marginTop: 2 }}>{value}</div>
+    </div>
+  );
+}
+
+function LegendDot({ dot, label }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ width: 8, height: 8, borderRadius: '50%', background: dot }} />
+      <span className="mono" style={{ fontSize: 9, color: BRAND.textMute }}>{label}</span>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<HateIndexDashboard />);
+</script>
+</body>
+</html>
