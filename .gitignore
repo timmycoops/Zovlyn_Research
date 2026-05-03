@@ -1,0 +1,17 @@
+# Windows "downloaded from internet" alternate-data-stream metadata.
+# Leaks into WSL2 when files are copied across from the Windows side.
+*:Zone.Identifier
+
+# Editor / OS cruft
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Python (HateIndex has its own .gitignore too; this is a safety net at root)
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.env

@@ -1,0 +1,14 @@
+# Normalise line endings to LF for all text files.
+# Prevents CRLF churn when files are edited from Windows tools while the repo
+# lives in WSL2 / Linux / macOS.
+* text=auto eol=lf
+
+# Treat these as binary regardless of detection
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.pdf  binary
+*.parquet binary
+*.zip  binary
