@@ -1,0 +1,122 @@
+{
+  "Lithium": {
+    "members": [
+      {"ticker": "ALB", "name": "Albemarle", "exchange": "NYSE", "role": "Major"},
+      {"ticker": "SQM", "name": "SQM", "exchange": "NYSE", "role": "Major"},
+      {"ticker": "PLS.AX", "name": "Pilbara Minerals", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "LTR.AX", "name": "Liontown Resources", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "MIN.AX", "name": "Mineral Resources", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "LAC", "name": "Lithium Americas", "exchange": "NYSE", "role": "Pure-play"},
+      {"ticker": "PMET.TO", "name": "Patriot Battery Metals", "exchange": "TSX", "role": "Pure-play"},
+      {"ticker": "LIT", "name": "Global X Lithium ETF", "exchange": "NYSE", "role": "ETF"}
+    ]
+  },
+  "Uranium": {
+    "members": [
+      {"ticker": "CCJ", "name": "Cameco", "exchange": "NYSE", "role": "Major"},
+      {"ticker": "PDN.AX", "name": "Paladin Energy", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "BOE.AX", "name": "Boss Energy", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "DNN", "name": "Denison Mines", "exchange": "NYSE", "role": "Pure-play"},
+      {"ticker": "NXE", "name": "NexGen Energy", "exchange": "NYSE", "role": "Pure-play"},
+      {"ticker": "URA", "name": "Global X Uranium ETF", "exchange": "NYSE", "role": "ETF"},
+      {"ticker": "URNM", "name": "Sprott Uranium Miners ETF", "exchange": "NYSE", "role": "ETF"}
+    ]
+  },
+  "Copper": {
+    "members": [
+      {"ticker": "FCX", "name": "Freeport-McMoRan", "exchange": "NYSE", "role": "Major"},
+      {"ticker": "BHP.AX", "name": "BHP Group", "exchange": "ASX", "role": "Major"},
+      {"ticker": "RIO.AX", "name": "Rio Tinto", "exchange": "ASX", "role": "Major"},
+      {"ticker": "SCCO", "name": "Southern Copper", "exchange": "NYSE", "role": "Major"},
+      {"ticker": "SFR.AX", "name": "Sandfire Resources", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "29M.AX", "name": "29Metals", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "COPX", "name": "Global X Copper Miners ETF", "exchange": "NYSE", "role": "ETF"}
+    ]
+  },
+  "Gold": {
+    "members": [
+      {"ticker": "NEM", "name": "Newmont", "exchange": "NYSE", "role": "Major"},
+      {"ticker": "NST.AX", "name": "Northern Star Resources", "exchange": "ASX", "role": "Major"},
+      {"ticker": "EVN.AX", "name": "Evolution Mining", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "GOLD", "name": "Barrick Gold", "exchange": "NYSE", "role": "Major"},
+      {"ticker": "AEM", "name": "Agnico Eagle Mines", "exchange": "NYSE", "role": "Major"},
+      {"ticker": "GLD", "name": "SPDR Gold Shares", "exchange": "NYSE", "role": "ETF"},
+      {"ticker": "GDX", "name": "VanEck Gold Miners ETF", "exchange": "NYSE", "role": "ETF"}
+    ]
+  },
+  "Silver": {
+    "members": [
+      {"ticker": "PAAS", "name": "Pan American Silver", "exchange": "NYSE", "role": "Major"},
+      {"ticker": "FSM", "name": "Fortuna Silver Mines", "exchange": "NYSE", "role": "Pure-play"},
+      {"ticker": "AG", "name": "First Majestic Silver", "exchange": "NYSE", "role": "Pure-play"},
+      {"ticker": "SLV", "name": "iShares Silver Trust", "exchange": "NYSE", "role": "ETF"},
+      {"ticker": "SIL", "name": "Global X Silver Miners ETF", "exchange": "NYSE", "role": "ETF"}
+    ]
+  },
+  "Rare Earths": {
+    "members": [
+      {"ticker": "MP", "name": "MP Materials", "exchange": "NYSE", "role": "Pure-play"},
+      {"ticker": "LYC.AX", "name": "Lynas Rare Earths", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "ILU.AX", "name": "Iluka Resources", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "ARU.AX", "name": "Arafura Rare Earths", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "REMX", "name": "VanEck Rare Earth & Strategic Metals ETF", "exchange": "NYSE", "role": "ETF"}
+    ]
+  },
+  "Crude Oil": {
+    "members": [
+      {"ticker": "XOM", "name": "ExxonMobil", "exchange": "NYSE", "role": "Major"},
+      {"ticker": "CVX", "name": "Chevron", "exchange": "NYSE", "role": "Major"},
+      {"ticker": "WDS.AX", "name": "Woodside Energy", "exchange": "ASX", "role": "Major"},
+      {"ticker": "STO.AX", "name": "Santos", "exchange": "ASX", "role": "Major"},
+      {"ticker": "OXY", "name": "Occidental Petroleum", "exchange": "NYSE", "role": "Pure-play"},
+      {"ticker": "USO", "name": "United States Oil Fund", "exchange": "NYSE", "role": "ETF"},
+      {"ticker": "XLE", "name": "Energy Select Sector SPDR", "exchange": "NYSE", "role": "ETF"}
+    ]
+  },
+  "Nat Gas": {
+    "members": [
+      {"ticker": "EQT", "name": "EQT Corporation", "exchange": "NYSE", "role": "Pure-play"},
+      {"ticker": "AR", "name": "Antero Resources", "exchange": "NYSE", "role": "Pure-play"},
+      {"ticker": "RRC", "name": "Range Resources", "exchange": "NYSE", "role": "Pure-play"},
+      {"ticker": "CHK", "name": "Chesapeake Energy", "exchange": "NASDAQ", "role": "Pure-play"},
+      {"ticker": "UNG", "name": "United States Natural Gas Fund", "exchange": "NYSE", "role": "ETF"}
+    ]
+  },
+  "PGMs": {
+    "members": [
+      {"ticker": "SBSW", "name": "Sibanye Stillwater", "exchange": "NYSE", "role": "Major"},
+      {"ticker": "AAL.L", "name": "Anglo American Platinum (parent)", "exchange": "LSE", "role": "Major"},
+      {"ticker": "IMPUY", "name": "Impala Platinum", "exchange": "OTC", "role": "Major"},
+      {"ticker": "PPLT", "name": "Aberdeen Standard Physical Platinum Shares", "exchange": "NYSE", "role": "ETF"},
+      {"ticker": "PALL", "name": "Aberdeen Standard Physical Palladium Shares", "exchange": "NYSE", "role": "ETF"}
+    ]
+  },
+  "Iron Ore": {
+    "members": [
+      {"ticker": "FMG.AX", "name": "Fortescue", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "BHP.AX", "name": "BHP Group", "exchange": "ASX", "role": "Major"},
+      {"ticker": "RIO.AX", "name": "Rio Tinto", "exchange": "ASX", "role": "Major"},
+      {"ticker": "VALE", "name": "Vale", "exchange": "NYSE", "role": "Major"},
+      {"ticker": "MGX.AX", "name": "Mount Gibson Iron", "exchange": "ASX", "role": "Junior"},
+      {"ticker": "CIA.TO", "name": "Champion Iron", "exchange": "TSX", "role": "Pure-play"}
+    ]
+  },
+  "Thermal Coal": {
+    "members": [
+      {"ticker": "BTU", "name": "Peabody Energy", "exchange": "NYSE", "role": "Major"},
+      {"ticker": "WHC.AX", "name": "Whitehaven Coal", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "NHC.AX", "name": "New Hope Corporation", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "YAL.AX", "name": "Yancoal Australia", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "ARCH", "name": "Arch Resources", "exchange": "NYSE", "role": "Pure-play"}
+    ]
+  },
+  "Nickel": {
+    "members": [
+      {"ticker": "VALE", "name": "Vale", "exchange": "NYSE", "role": "Major"},
+      {"ticker": "NIC.AX", "name": "Nickel Industries", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "WSA.AX", "name": "Western Areas (delisted; placeholder)", "exchange": "ASX", "role": "Junior"},
+      {"ticker": "IGO.AX", "name": "IGO Limited", "exchange": "ASX", "role": "Pure-play"},
+      {"ticker": "PICK", "name": "iShares MSCI Global Metals & Mining Producers ETF", "exchange": "NYSE", "role": "ETF"}
+    ]
+  }
+}
