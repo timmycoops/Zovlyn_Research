@@ -67,14 +67,14 @@ Work in phases. Each phase ends with a green test run and a `git commit`. Don't 
 - [ ] **Phase 3 — RRG.** `compute_rrg.py`. Outputs `data/processed/rrg.parquet`.
 - [ ] **Phase 4 — Site builder.** `build_site.py` reads processed parquets, emits `docs/data.json`. Open `docs/index.html` locally and verify it renders.
 - [ ] **Phase 5 — Workflow.** `.github/workflows/weekly.yml` ties it all together. Test with `workflow_dispatch` before relying on the cron.
-- [ ] **Phase 6 — Backtest.** `backtest.py` + new dashboard tab. Hit-rate, Sharpe, calibration plot, equity curve.
+- [x] **Phase 6 — Backtest.** Live as of 2026-05-04. Three-layer (per-component / composite / signal+controls), dashboard tab FIG 05, NOT in make refresh.
 - [x] **Phase 7a — Flow component (ASIC short sales).** Live as of 2026-05-03.
 - [ ] **Phase 7a.5 — Block crossings sub-component.** Awaiting URL hunt (current ASX endpoint is JS-rendered, returns 302).
 - [ ] **Phase 7b — ETF shares-outstanding (yfinance).** Estimated 80 LOC. Cross-checks the ASX-only signals for sectors with thin AU exposure.
 - [ ] **Phase 7c — Sentiment (GDELT).** Free tier, BigQuery.
 - [ ] **Phase 7d — Valuation.** Skip until clean source.
 
-**CURRENT PHASE: 7a.5 / 7b**
+**CURRENT PHASE: 7a.5 / 7b** (Phase 6 backtest now live; next is block-crossings URL hunt or ETF shares-outstanding)
 
 (Tim: update this line as you progress.)
 

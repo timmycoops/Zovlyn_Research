@@ -238,42 +238,86 @@ Notes:
 - `is_stale` is `true` when `as_of` is older than 10 days (set in `build_site.STALE_THRESHOLD_DAYS`). The dashboard can use this to warn the user that the cron may have failed.
 - `age_days` is the number of days between `as_of` and build time, for reference.
 
-## 6. Backtest spec (Phase 6)
+## 6. Backtest (Phase 6 — live)
 
-Generate a historical signal series: at every week t in the last 10 years, evaluate the signal rule. For each flagged event, compute forward returns at +4w, +13w, +26w, +52w using the commodity's primary ticker.
+The backtest is its own pipeline (`scripts/backtest.py`, `make backtest`), NOT
+chained into `make refresh`. Triggered manually or on a separate slower cron.
 
-Outputs to `docs/backtest.json`:
+Three layers, two output JSONs:
 
-```json
-{
-  "as_of": "2026-04-25",
-  "n_events": 47,
-  "horizons": {
-    "4":  {"mean": 0.018, "median": 0.012, "hit_rate": 0.55, "sharpe": 0.4, "vs_bench": 0.011},
-    "13": {"mean": 0.072, "median": 0.054, "hit_rate": 0.62, "sharpe": 0.7, "vs_bench": 0.043},
-    "26": {"mean": 0.144, "median": 0.098, "hit_rate": 0.66, "sharpe": 0.9, "vs_bench": 0.087},
-    "52": {"mean": 0.232, "median": 0.181, "hit_rate": 0.70, "sharpe": 1.1, "vs_bench": 0.142}
-  },
-  "events": [
-    {"date": "2020-03-23", "commodity": "Crude Oil", "score": 9.8, "fwd_4w": 0.21, "fwd_13w": 0.43, "fwd_26w": 0.81, "fwd_52w": 1.34}
-  ],
-  "calibration": [
-    {"score_decile": 1, "mean_fwd_26w": -0.04, "n": 142},
-    {"score_decile": 10, "mean_fwd_26w": 0.18, "n": 138}
-  ],
-  "equity_curve": [
-    {"date": "2016-01-08", "strategy": 1.00, "benchmark": 1.00}
-  ]
-}
-```
+### 6.1 Layer A — Per-component calibration
 
-Controls (must also be computed for honesty):
-- Same statistics for the benchmark over identical weeks
-- Hated-but-not-rotating
-- Rotating-but-not-hated
-- Random-time-random-commodity baseline (1000 bootstrap samples)
+For each component `k ∈ {drawdown, momentum, positioning, flows}` and each
+horizon `h ∈ {4, 13, 26, 52}` weeks:
 
-Survivorship: use point-in-time tickers. Maintain a small `data/raw/delisted.csv` for tickers that no longer exist (e.g. KOL).
+1. Take every (commodity, week) observation where `z_k` is defined.
+2. Bucket into deciles by `z_k`.
+3. Compute the mean forward return of the commodity's primary ticker over
+   horizon `h`, anchored at week T+1 (one week after observation; reflects the
+   "act on Monday after Friday signal" constraint).
+
+A component is "worth tracking" if mean returns are roughly monotonically
+increasing in decile, with sample sizes large enough that the spread isn't
+noise. A flat or non-monotonic calibration is the actionable result — it tells
+us to retire that component, not "fail" the backtest.
+
+### 6.2 Layer B — Composite calibration
+
+Same decile exercise on the summed `score` column. The composite earns its
+place if its absolute decile spread at 26w AND 52w meets or exceeds the best
+single component's. If a single component dominates, the composite is
+decoration. The verdict block (`composite.beats_best_component`) records
+this.
+
+### 6.3 Layer C — Signal P&L with controls
+
+**Treatment** — every (commodity, week) where:
+- `score >= 4` AND
+- last quadrant transition was into Improving or Leading AND
+- that transition occurred within the last 4 weeks.
+
+**Controls:**
+- **hated_not_rotating**: `score >= 4` but no recent rotation transition.
+- **rotating_not_hated**: just-entered Improving/Leading but `score < 4`.
+- **inverse**: `score <= -4` (sanity check that the index has direction).
+- **random_bootstrap**: 1000 block-bootstrap samples (block_size=4 to preserve
+  serial correlation), sample_size matched to the treatment group size or 20
+  whichever is larger.
+
+For each group, at horizons 4w / 13w / 26w / 52w: hit rate, mean, median,
+Sharpe (annualised √52 multiplier), n. The treatment also produces an
+event-by-event detail list and an equal-weight equity curve vs `^AXJO`.
+
+The `verdict` block in `backtest.json` says, honestly, which horizons the
+treatment beat the random-bootstrap 95% CI on, and which it failed.
+
+### 6.4 Outputs
+
+- `docs/backtest_components.json` — Layers A + B
+- `docs/backtest.json` — Layer C
+
+Both are committed to the repo when `make backtest` runs, and consumed by the
+dashboard FIG 05 panel via `fetch('./backtest_components.json')` and
+`fetch('./backtest.json')`.
+
+### 6.5 Point-in-time correctness
+
+- Forward returns anchor at T+1, end at T+1+h.
+- CFTC positioning is already lagged 1 week at scoring time.
+- ASIC short-sales are released T+4 business days; the cron pulls with that
+  cut applied so the parquet is point-in-time clean.
+- Survivorship: tracked tickers in `prices.parquet` only — backtest events on
+  truly delisted tickers truncate at the last available date rather than
+  vanishing. (Maintain `data/raw/delisted.csv` if the universe ever evolves
+  significantly.)
+
+### 6.6 Tests
+
+`tests/test_returns.py` covers the pure helpers (`forward_return` T+1 anchor
+regression, decile bucketing, block bootstrap, monotonicity).
+`tests/test_backtest.py` covers the orchestration (calibration shape,
+composite presence, treatment exclusion of inverse signals, random-baseline
+shape, schema check).
 
 ## 7. Refresh schedule
 
@@ -283,4 +327,7 @@ Weekly cron, Saturday 08:00 AEST = Friday 22:00 UTC. CFTC drops Friday 15:30 ET 
 0 22 * * 5
 ```
 
-The full pipeline (ingest → score → RRG → site → backtest) should complete in under 60 seconds on a standard GitHub Actions runner.
+The full pipeline (ingest → constituents → flows → score → RRG → site) should
+complete in under 60 seconds on a standard GitHub Actions runner. The backtest
+is **not** in this chain — it runs separately via `make backtest` (manual or
+slower cron).
