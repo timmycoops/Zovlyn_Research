@@ -471,6 +471,7 @@ function ConstituentsTable({ rows }) {
 // ─── Main dashboard ──────────────────────────────────────────────────────
 function HateIndexDashboard() {
   const [selected, setSelected] = useState(null);
+  const [pinned, setPinned] = useState(null);
   const [liveData, setLiveData] = useState(null);
   const [asOf, setAsOf] = useState('— mock data —');
   const [build, setBuild] = useState('dev');
@@ -616,6 +617,7 @@ function HateIndexDashboard() {
                      className={`row-hover ${isSelected ? 'row-selected' : ''}`}
                      onMouseEnter={() => setSelected(d.name)}
                      onMouseLeave={() => setSelected(null)}
+                     onClick={() => setPinned(d.name)}
                      style={{ display: 'grid', gridTemplateColumns: '1fr 60px 1.2fr 70px', gap: 0, padding: '8px', alignItems: 'center', borderBottom: `1px solid ${BRAND.border}40`, cursor: 'pointer' }}>
                   <div>
                     <div style={{ fontSize: 12, color: isSelected ? BRAND.orange : BRAND.text, fontWeight: 500 }}>{d.name}</div>
@@ -663,10 +665,10 @@ function HateIndexDashboard() {
         <div style={{ marginBottom: 12 }}>
           <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>FIG 03.5 · COMMODITY DETAIL</div>
           <h2 className="display" style={{ fontSize: 22, fontWeight: 500, margin: '4px 0 0' }}>
-            {selected || 'Pick a commodity'}
+            {(selected || pinned) || 'Pick a commodity'}
           </h2>
         </div>
-        <CommodityDetailPanel data={data} selected={selected} setSelected={setSelected} />
+        <CommodityDetailPanel data={data} selected={selected || pinned} setSelected={setSelected} />
       </div>
 
       <div className="panel" style={{ padding: 22 }}>
