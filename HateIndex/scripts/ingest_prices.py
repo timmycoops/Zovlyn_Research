@@ -8,12 +8,12 @@ from __future__ import annotations
 
 import logging
 import sys
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
-import yfinance as yf
+
+from scripts._yf_retry import fetch_with_retry
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
@@ -38,48 +38,10 @@ UNIVERSE: list[tuple[str, list[str]]] = [
 ]
 BENCHMARK = "^AXJO"
 HISTORY_PERIOD = "10y"
-MAX_ATTEMPTS = 3
-BACKOFF_BASE_SECONDS = 2
-
-
-def _download_once(ticker: str) -> pd.DataFrame:
-    df = yf.download(
-        ticker,
-        period=HISTORY_PERIOD,
-        interval="1wk",
-        auto_adjust=True,
-        progress=False,
-    )
-    if df.empty:
-        raise RuntimeError(f"empty frame returned for {ticker}")
-    if isinstance(df.columns, pd.MultiIndex):
-        df.columns = df.columns.get_level_values(0)
-    out = (
-        df.reset_index()[["Date", "Close"]]
-        .rename(columns={"Date": "date", "Close": "close"})
-        .assign(ticker=ticker)
-        [["date", "ticker", "close"]]
-    )
-    out["date"] = pd.to_datetime(out["date"], utc=True)
-    return out
 
 
 def fetch(ticker: str) -> pd.DataFrame:
-    """Fetch weekly closes for a single ticker with retry-with-backoff."""
-    last_err: Exception | None = None
-    for attempt in range(1, MAX_ATTEMPTS + 1):
-        try:
-            log.info("Fetching %s (attempt %d/%d)", ticker, attempt, MAX_ATTEMPTS)
-            return _download_once(ticker)
-        except Exception as e:
-            last_err = e
-            if attempt < MAX_ATTEMPTS:
-                wait = BACKOFF_BASE_SECONDS ** attempt
-                log.warning("Attempt %d failed for %s (%s); retrying in %ds",
-                            attempt, ticker, e, wait)
-                time.sleep(wait)
-    log.error("All %d attempts failed for %s: %s", MAX_ATTEMPTS, ticker, last_err)
-    return pd.DataFrame(columns=["date", "ticker", "close"])
+    return fetch_with_retry(ticker, period=HISTORY_PERIOD, interval="1wk")
 
 
 def fetch_with_fallbacks(tickers: list[str]) -> tuple[pd.DataFrame, str | None]:
