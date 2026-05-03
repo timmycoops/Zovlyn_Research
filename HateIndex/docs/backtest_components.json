@@ -1,6 +1,6 @@
 {
   "as_of": "2026-05-03",
-  "build": "20260503-2212",
+  "build": "20260503-2226",
   "horizons_weeks": [
     4,
     13,
@@ -238,7 +238,7 @@
           "horizon_w": 52,
           "decile": 3,
           "mean_return": 0.1272,
-          "median_return": 0.0578,
+          "median_return": 0.0579,
           "n": 423
         },
         {
