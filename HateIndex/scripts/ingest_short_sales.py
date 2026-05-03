@@ -59,10 +59,32 @@ def fetch_one(d: date, session: requests.Session) -> pd.DataFrame | None:
         log.warning("HTTP %d for %s", r.status_code, url)
         return None
 
-    try:
-        df = pd.read_csv(io.BytesIO(r.content), encoding="utf-8")
-    except UnicodeDecodeError:
-        df = pd.read_csv(io.BytesIO(r.content), encoding="latin-1")
+    # ASIC CSVs vary by era:
+    #   - Recent (~2022+): UTF-8, comma-separated.
+    #   - Older (~2021): UTF-16 LE with BOM, tab-separated.
+    # Sniff the BOM and pick the right read_csv args; fall back through utf-8 → latin-1.
+    content = r.content
+    attempts: list[tuple[str, str]] = []
+    if content[:2] == b"\xff\xfe" or content[:2] == b"\xfe\xff":
+        attempts.append(("utf-16", "\t"))
+    attempts.append(("utf-8", ","))
+    attempts.append(("latin-1", ","))
+
+    df = None
+    last_err: Exception | None = None
+    for enc, sep in attempts:
+        try:
+            df = pd.read_csv(io.BytesIO(content), encoding=enc, sep=sep)
+            break
+        except (UnicodeDecodeError, pd.errors.ParserError) as e:
+            last_err = e
+            continue
+    if df is None:
+        log.warning("Could not parse %s: %s", url, last_err)
+        return None
+
+    # Older UTF-16 files have stray whitespace and BOM remnants in headers.
+    df.columns = [str(c).strip().lstrip("﻿") for c in df.columns]
 
     rename = {
         "Product Code": "ticker",
@@ -93,7 +115,8 @@ def existing_dates(path: Path) -> set[date]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--days", type=int, default=365)
+    parser.add_argument("--days", type=int, default=1825,
+                        help="Days of history to ensure on disk (default 1825 = ~5y)")
     parser.add_argument("--full", action="store_true")
     args = parser.parse_args()
 
