@@ -766,18 +766,18 @@
       <span>Offtake / supply</span>
     </div>
     <div class="legend-divider"></div>
-    <div class="legend-title">Edge thickness = stake</div>
+    <div class="legend-title">Edge thickness</div>
     <div class="legend-line-item">
       <div class="legend-line" style="border-top-width: 1px;"></div>
-      <span>Unknown / tiny</span>
+      <span>No stake / no flow data</span>
     </div>
     <div class="legend-line-item">
       <div class="legend-line" style="border-top-width: 3px;"></div>
-      <span>~25%</span>
+      <span>Equity ~25% &middot; or flow ~20 kt LCE/yr</span>
     </div>
     <div class="legend-line-item">
       <div class="legend-line" style="border-top-width: 5px;"></div>
-      <span>~100%</span>
+      <span>Equity ~100% &middot; or flow ~40 kt LCE/yr</span>
     </div>
     <div class="legend-divider"></div>
     <div class="legend-title">Node size = capacity (kt LCE/yr)</div>
@@ -1019,9 +1019,14 @@ const simulation = d3.forceSimulation(simNodes)
   .force('y', d3.forceY(height / 2).strength(0.04))
   .force('collide', d3.forceCollide(d => nodeRadius(d) + 3));
 
-// Stake → stroke-width scale (only meaningful for equity)
-//   unknown: 1px (thin, signals "not specified")
-//   known:   1 + 4 * sqrt(stake)  → 25% ≈ 3px, 50% ≈ 3.8px, 100% = 5px
+// Edge thickness — applied in priority order:
+//   (1) flow_kt_lce on offtake / financing → linear scale clamped 1.5–6px
+//                                            against the dataset's max flow.
+//                                            Surfaces annual volume visually.
+//   (2) equity with stake                  → 1 + 4 * sqrt(stake)
+//                                            → 25% ≈ 3px, 50% ≈ 3.8px, 100% = 5px
+//   (3) offtake without flow value         → 1.5px (default visible weight)
+//   (4) anything else                      → 1px (signals "not specified")
 function nodeRadius(d) {
   if (typeof d.capacity_kt_lce === 'number') {
     return 3 + Math.sqrt(d.capacity_kt_lce) * 0.9;
@@ -1029,7 +1034,12 @@ function nodeRadius(d) {
   return 3;
 }
 
+const maxFlow = d3.max(simLinks, l => l.flow_kt_lce) || 1;
+
 function strokeWidthFor(d) {
+  if ((d.type === 'offtake' || d.type === 'financing') && typeof d.flow_kt_lce === 'number') {
+    return Math.max(1.5, Math.min(6, 1.5 + (d.flow_kt_lce / maxFlow) * 4.5));
+  }
   if (d.type === 'equity' && typeof d.stake === 'number') {
     return 1 + 4 * Math.sqrt(d.stake);
   }
@@ -1166,8 +1176,8 @@ function showEmptyDetail() {
 function showDetail(d) {
   const conns = [];
   simLinks.forEach(l => {
-    if (l.source.id === d.id) conns.push({ node: l.target, type: l.type, dir: 'out', stake: l.stake });
-    if (l.target.id === d.id) conns.push({ node: l.source, type: l.type, dir: 'in',  stake: l.stake });
+    if (l.source.id === d.id) conns.push({ node: l.target, type: l.type, dir: 'out', stake: l.stake, flow: l.flow_kt_lce });
+    if (l.target.id === d.id) conns.push({ node: l.source, type: l.type, dir: 'in',  stake: l.stake, flow: l.flow_kt_lce });
   });
 
   const grouped = {};
@@ -1213,7 +1223,7 @@ function showDetail(d) {
               <span style="color:var(--fg-3);">${arrow}</span>
               <span class="name">${c.node.name}</span>
             </div>
-            <span class="connection-type">${c.type}${typeof c.stake === 'number' ? ' · ' + Math.round(c.stake * 100) + '%' : (c.type === 'equity' ? ' · —' : '')}</span>
+            <span class="connection-type">${c.type}${typeof c.stake === 'number' ? ' · ' + Math.round(c.stake * 100) + '%' : (c.type === 'equity' ? ' · —' : '')}${typeof c.flow === 'number' ? ' · ' + c.flow + ' kt LCE/yr' : ''}</span>
           </div>
         `;
       });
