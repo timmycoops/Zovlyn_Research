@@ -33,8 +33,22 @@ body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',syste
 
 /* ── Header ── */
 #hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;gap:18px;flex-shrink:0;flex-wrap:wrap;}
-#project-name{background:transparent;border:none;color:var(--text);font-size:16px;font-weight:700;width:260px;padding:2px 4px;border-radius:3px;}
+.hdr-id{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.hdr-id-line{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-2);}
+.ds-ticker{color:var(--accent);font-weight:800;}
+.ds-sep{color:var(--fg-3);}
+.ds-company{color:var(--fg);font-weight:700;}
+#project-name{background:transparent;border:none;color:var(--text);font-size:15px;font-weight:700;width:320px;max-width:60vw;padding:1px 4px;border-radius:3px;}
 #project-name:focus{outline:1px solid var(--accent);background:var(--card);}
+
+/* ── Deal-context strip (situation header) ── */
+#deal-strip{background:var(--bg-2);border-bottom:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(7,1fr);gap:0;padding:0;flex-shrink:0;}
+.ds-cell{padding:8px 14px;border-right:1px solid var(--line);text-align:left;min-width:0;}
+.ds-cell:last-child{border-right:none;}
+.ds-v{font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--fg);line-height:1.1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ds-l{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-2);margin-top:3px;}
 .kpi-bar{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap;}
 .kpi{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 12px;text-align:right;min-width:100px;}
 .kpi-val{font-size:18px;font-weight:700;font-family:var(--font-mono);line-height:1.1;}
@@ -452,6 +466,16 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
 .cat-uplift{font-size:11px;font-weight:700;font-family:var(--font-mono);margin-top:4px;color:var(--green);}
 .cat-desc{font-size:9px;color:var(--fg-2);line-height:1.3;margin-top:4px;min-height:26px;}
 
+/* ── As-of footer ── */
+#as-of-footer{margin:18px -14px -60px;padding:8px 16px 10px;background:var(--bg-2);
+  border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px 12px;
+  align-items:baseline;font-family:var(--font-mono);font-size:10px;color:var(--fg-2);}
+.aof-cell{display:inline-flex;gap:6px;align-items:baseline;}
+.aof-l{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-3);}
+.aof-v{color:var(--fg);font-weight:600;}
+.aof-sep{color:var(--fg-3);}
+.aof-disc{margin-left:auto;color:var(--fg-3);font-size:9px;font-style:italic;}
+
 /* ── Chart safety net: every Chart.js canvas fills its parent wrapper ── */
 .chart-wrap canvas, .mc-hist-wrap canvas, .mc-tornado-wrap canvas,
 .fnd-chart-wrap canvas, .peer-chart-wrap canvas,
@@ -478,6 +502,13 @@ body.drawer-open #sidebar-backdrop{display:block;}
   #hdr > div:first-of-type{flex:1;min-width:0;}
   #project-name{width:100%;font-size:14px;}
   #save-btn{padding:6px 10px;font-size:10px;}
+
+  /* Deal strip: wrap to compact grid */
+  #deal-strip{grid-template-columns:repeat(3,1fr);}
+  .ds-cell{padding:6px 10px;border-bottom:1px solid var(--line);}
+  .ds-cell:nth-child(3n){border-right:none;}
+  .ds-cell:nth-last-child(-n+1){border-bottom:none;}
+  .ds-v{font-size:12px;}
 
   /* KPI tiles: wrap two-up, full width row */
   .kpi-bar{margin-left:0;width:100%;display:grid;grid-template-columns:repeat(2,1fr);gap:6px;}
@@ -556,12 +587,19 @@ body.drawer-open #sidebar-backdrop{display:block;}
 
   /* Home link smaller */
   body > a[href="index.html"]{font-size:9px;}
+
+  /* As-of footer collapses */
+  #as-of-footer{margin:14px -10px -80px;padding:8px 12px 12px;font-size:9.5px;}
+  .aof-disc{margin-left:0;width:100%;margin-top:4px;}
 }
 
 @media (max-width: 480px){
   .kpi-bar{grid-template-columns:1fr;}
   .mv-out-grid{grid-template-columns:1fr;}
   .mc-percentiles{grid-template-columns:1fr 1fr;}
+  #deal-strip{grid-template-columns:repeat(2,1fr);}
+  .ds-cell:nth-child(3n){border-right:1px solid var(--line);}
+  .ds-cell:nth-child(2n){border-right:none;}
 }
 </style>
 </head>
@@ -573,9 +611,13 @@ body.drawer-open #sidebar-backdrop{display:block;}
 <!-- HEADER -->
 <div id="hdr">
   <button id="menu-btn" aria-label="Open inputs" onclick="document.body.classList.toggle('drawer-open')">≡</button>
-  <div>
+  <div class="hdr-id">
+    <div class="hdr-id-line">
+      <span id="ds-ticker" class="ds-ticker">QTWO.V</span>
+      <span class="ds-sep">·</span>
+      <span id="ds-company" class="ds-company">Q2 Metals</span>
+    </div>
     <input id="project-name" type="text" value="Unnamed Spodumene Project">
-    <div style="font-size:10px;color:var(--muted);margin-top:2px;font-family:var(--font-mono)">Hard Rock Lithium Mine · DCF Model · Q1 2026</div>
   </div>
   <button onclick="saveModel()" id="save-btn" style="
     background:var(--card2);border:1px solid var(--border2);color:var(--fg);
@@ -590,13 +632,24 @@ body.drawer-open #sidebar-backdrop{display:block;}
     Save HTML
   </button>
   <div class="kpi-bar">
-    <div class="kpi"><div class="kpi-val" id="k-npv" style="color: var(--green);">$0.64B</div><div class="kpi-lbl">NPV post-tax @WACC</div><div class="kpi-sub" id="k-npv2" style="color:var(--muted)">WACC: 10.0%</div></div>
-    <div class="kpi"><div class="kpi-val" id="k-npv8" style="color:var(--cyan)">$0.88B</div><div class="kpi-lbl">NPV post-tax @8%</div><div class="kpi-sub" id="k-npv8b" style="color:var(--muted)">discount rate: 8%</div></div>
-    <div class="kpi"><div class="kpi-val" id="k-irr" style="color:var(--teal)">21.5%</div><div class="kpi-lbl">IRR (post-tax)</div><div class="kpi-sub" style="color:var(--muted)" id="k-irr2">Target: 15%</div></div>
-    <div class="kpi"><div class="kpi-val" id="k-pb" style="color:var(--blue)">7.4 yrs</div><div class="kpi-lbl">Payback</div><div class="kpi-sub" style="color:var(--muted)" id="k-pb2">from first constr.</div></div>
-    <div class="kpi"><div class="kpi-val" id="k-ind" style="color:var(--accent)">$726</div><div class="kpi-lbl">Inducement</div><div class="kpi-sub" style="color:var(--muted)" id="k-ind2">min. SC6 $/t</div></div>
-    <div class="kpi"><div class="kpi-val" id="k-peak" style="color:var(--orange)">$800M</div><div class="kpi-lbl">Peak funding</div><div class="kpi-sub" style="color:var(--muted)">$M required</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-npv" style="color:var(--accent);">—</div><div class="kpi-lbl">NPV post-tax @ WACC</div><div class="kpi-sub" id="k-npv2">@ 8%: —</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-npv-share">—</div><div class="kpi-lbl">NPV / share FD</div><div class="kpi-sub" id="k-npv-share-sub">vs spot: —</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-irr">—</div><div class="kpi-lbl">IRR post-tax</div><div class="kpi-sub" id="k-irr2">Payback: —</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-aisc">—</div><div class="kpi-lbl">AISC ($/t SC6)</div><div class="kpi-sub" id="k-aisc-sub">Peak fund: —</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-evlce">—</div><div class="kpi-lbl">EV / t LCE implied</div><div class="kpi-sub" id="k-evlce-sub">at current MCAP</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-pnav">—</div><div class="kpi-lbl">P / NAV</div><div class="kpi-sub" id="k-pnav-sub">Inducement: —</div></div>
   </div>
+</div>
+
+<!-- SITUATION STRIP (deal context) -->
+<div id="deal-strip">
+  <div class="ds-cell"><div class="ds-v" id="ds-mcap">$395M</div><div class="ds-l">MCAP USD</div></div>
+  <div class="ds-cell"><div class="ds-v" id="ds-ev">$370M</div><div class="ds-l">EV USD</div></div>
+  <div class="ds-cell"><div class="ds-v" id="ds-cash">$25M</div><div class="ds-l">Cash</div></div>
+  <div class="ds-cell"><div class="ds-v" id="ds-shares">196M</div><div class="ds-l">Shares FD</div></div>
+  <div class="ds-cell"><div class="ds-v" id="ds-price">C$2.80</div><div class="ds-l">Last close</div></div>
+  <div class="ds-cell"><div class="ds-v" id="ds-asof">2026-04-22</div><div class="ds-l">As of</div></div>
+  <div class="ds-cell"><div class="ds-v" id="ds-stage">Maiden MRE</div><div class="ds-l">Stage</div></div>
 </div>
 
 <!-- WORKSPACE -->
@@ -731,12 +784,12 @@ body.drawer-open #sidebar-backdrop{display:block;}
     <button class="snav active" data-target="sec-overview">Overview</button>
     <button class="snav" data-target="sec-sched">Schedule</button>
     <button class="snav" data-target="sec-sens">Sensitivity</button>
-    <button class="snav" data-target="sec-mc">Monte Carlo</button>
-    <button class="snav" data-target="sec-val">Valuation</button>
     <button class="snav" data-target="sec-scenario">Scenarios</button>
-    <button class="snav" data-target="sec-funding">Funding</button>
-    <button class="snav" data-target="sec-peers">Peers</button>
+    <button class="snav" data-target="sec-mc">Monte Carlo</button>
     <button class="snav" data-target="sec-stress">Stress</button>
+    <button class="snav" data-target="sec-val">Valuation</button>
+    <button class="snav" data-target="sec-peers">Peers</button>
+    <button class="snav" data-target="sec-funding">Funding</button>
     <button class="snav" data-target="sec-thesis">Thesis</button>
   </div>
 
@@ -829,7 +882,6 @@ body.drawer-open #sidebar-backdrop{display:block;}
 
   <!-- Annual Table -->
   <div id="sec-sched" style="scroll-margin-top:60px;"></div>
-  <div id="sec-sched"></div>
   <div class="table-card">
     <div class="card-title" style="padding:10px 14px;border-bottom:1px solid var(--border);">
       <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);">
@@ -843,12 +895,12 @@ body.drawer-open #sidebar-backdrop{display:block;}
         <thead>
           <tr>
             <th rowspan="2" style="text-align:left;min-width:100px;">Year</th>
-            <th colspan="4" class="group" style="color:var(--purple);border-bottom:1px solid var(--border);">— Production (editable) —</th>
-            <th colspan="2" class="group" style="color:var(--teal);border-bottom:1px solid var(--border);">— Revenue —</th>
+            <th colspan="4" class="group" style="color:var(--accent);border-bottom:1px solid var(--border);">— Production (editable) —</th>
+            <th colspan="2" class="group" style="color:var(--cyan);border-bottom:1px solid var(--border);">— Revenue —</th>
             <th colspan="5" class="group" style="color:var(--red);border-bottom:1px solid var(--border);">— Operating Costs ($M) —</th>
-            <th colspan="2" class="group" style="color:var(--orange);border-bottom:1px solid var(--border);">— Capital —</th>
-            <th colspan="4" class="group" style="color:var(--blue);border-bottom:1px solid var(--border);">— P&amp;L —</th>
-            <th colspan="3" class="group" style="color:var(--green);border-bottom:1px solid var(--border);">— Cash Flow —</th>
+            <th colspan="2" class="group" style="color:var(--amber);border-bottom:1px solid var(--border);">— Capital —</th>
+            <th colspan="5" class="group" style="color:var(--fg);border-bottom:1px solid var(--border);">— P&amp;L —</th>
+            <th colspan="4" class="group" style="color:var(--green);border-bottom:1px solid var(--border);">— Cash Flow —</th>
           </tr>
           <tr>
             <th title="Editable: ore throughput">Thru (Mt)</th>
@@ -868,7 +920,9 @@ body.drawer-open #sidebar-backdrop{display:block;}
             <th>D&amp;A</th>
             <th>EBIT</th>
             <th>Tax</th>
+            <th title="Working capital change ($M)">&#916;WC</th>
             <th>FCF $M</th>
+            <th title="Discounted FCF for this year @ WACC">DCF</th>
             <th>Cum FCF</th>
             <th>Cum NPV</th>
           </tr>
@@ -892,6 +946,63 @@ body.drawer-open #sidebar-backdrop{display:block;}
   </div>
 
   <!-- Monte Carlo -->
+  <div id="sec-scenario"></div>
+  <div class="sec-block">
+    <div class="sec-block-hdr">
+      <span class="sec-block-title">Scenario Lock-In — Bear / Base / Bull Comparison</span>
+      <span class="sec-block-sub">Snapshot current model state · Compare three cases side-by-side with deltas</span>
+    </div>
+    <div class="sec-block-body">
+      <div style="font-size:10px;color:var(--fg-2);margin-bottom:10px;line-height:1.5;">
+        <b style="color:var(--fg)">Workflow:</b> adjust sidebar inputs (price, CAPEX, recovery…) → click <b style="color:var(--cyan)">Snap Current</b> under a slot to lock it in. Slots persist in-memory; click <b>Save HTML</b> in the header to export a version with scenarios baked in.
+      </div>
+      <div class="scn-grid" id="scn-grid">
+        <div class="scn-card bear empty" id="scn-bear">
+          <div class="scn-header">
+            <span class="scn-badge bear">▼ Bear case</span>
+            <div class="scn-actions">
+              <button class="scn-btn cap" onclick="scnCapture('bear')">Snap Current</button>
+              <button class="scn-btn" onclick="scnLoad('bear')">Load</button>
+              <button class="scn-btn" onclick="scnClear('bear')">Clear</button>
+            </div>
+          </div>
+          <div class="scn-empty-msg">Set sidebar to bear case<br>then click <b style="color:var(--cyan)">Snap Current</b></div>
+        </div>
+        <div class="scn-card base empty" id="scn-base">
+          <div class="scn-header">
+            <span class="scn-badge base">● Base case</span>
+            <div class="scn-actions">
+              <button class="scn-btn cap" onclick="scnCapture('base')">Snap Current</button>
+              <button class="scn-btn" onclick="scnLoad('base')">Load</button>
+              <button class="scn-btn" onclick="scnClear('base')">Clear</button>
+            </div>
+          </div>
+          <div class="scn-empty-msg">Snap base case here</div>
+        </div>
+        <div class="scn-card bull empty" id="scn-bull">
+          <div class="scn-header">
+            <span class="scn-badge bull">▲ Bull case</span>
+            <div class="scn-actions">
+              <button class="scn-btn cap" onclick="scnCapture('bull')">Snap Current</button>
+              <button class="scn-btn" onclick="scnLoad('bull')">Load</button>
+              <button class="scn-btn" onclick="scnClear('bull')">Clear</button>
+            </div>
+          </div>
+          <div class="scn-empty-msg">Snap bull case here</div>
+        </div>
+      </div>
+      <div id="scn-delta-wrap" style="display:none;margin-top:12px;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">Scenario deltas vs Base</div>
+        <div id="scn-delta-body"></div>
+      </div>
+      <!-- Hidden JSON store so that Save HTML persists scenarios -->
+      <textarea id="scn-store" style="display:none;"></textarea>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- DILUTION & FUNDING CASCADE                                            -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
   <div id="sec-mc"></div>
   <div class="table-card">
     <div class="card-title" style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
@@ -1094,6 +1205,59 @@ body.drawer-open #sidebar-backdrop{display:block;}
     </div>
   </div>
   <!-- Market Valuation -->
+  <div id="sec-stress"></div>
+  <div class="sec-block">
+    <div class="sec-block-hdr">
+      <span class="sec-block-title">Probabilistic Schedule &amp; Cycle Stress — Can It Survive?</span>
+      <span class="sec-block-sub">CPPP confidence cone · Historical lithium price replay</span>
+    </div>
+    <div class="sec-block-body">
+      <div style="font-size:10px;color:var(--fg-2);margin-bottom:12px;line-height:1.5;">
+        <b style="color:var(--fg)">Two lenses on project resilience.</b> <b style="color:var(--teal)">Left:</b> a CPPP-style fan chart showing cumulative NPV uncertainty <i>through time</i> — it's one thing to know NPV P50 at year 20, another to know when the bands cross zero. <b style="color:var(--accent)">Right:</b> replay real lithium price cycles through your mine to test survival.
+      </div>
+      <div class="stoch-grid">
+        <div class="stoch-left">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap;">
+            <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);">Cumulative NPV — probabilistic schedule</span>
+            <button id="stoch-run-btn" class="stoch-btn" onclick="runStochasticFan()">▶ Run CPPP Schedule (2,000 iter)</button>
+          </div>
+          <div id="stoch-fan-container">
+            <div class="stoch-msg" id="stoch-msg">Uses your Monte Carlo input ranges (price, grade, recovery, CAPEX, mining, processing)<br>to show how cumulative NPV uncertainty evolves year-by-year through mine life.</div>
+          </div>
+        </div>
+        <div class="stoch-right">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:10px;">Historical cycle replay</div>
+          <div class="cycle-presets" id="cycle-presets"></div>
+          <div id="cycle-result" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+            <div style="font-size:9px;color:var(--fg-2);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Project outcome under replayed prices</div>
+            <div class="cycle-kpi" id="cycle-kpi"></div>
+            <div id="cycle-commentary" style="font-size:10px;color:var(--fg);margin-top:8px;line-height:1.5;padding:8px 10px;background:rgba(26,28,22,.4);border-radius:5px;border-left:2px solid var(--accent);"></div>
+          </div>
+        </div>
+      </div>
+      <!-- DSCR / Debt-Covenant Timeline -->
+      <div class="dscr-wrap" style="margin-top:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:10px;">
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);">Debt-Service Coverage Ratio — covenant stress through ramp</span>
+          <span style="font-size:9px;color:var(--fg-2);font-family:var(--font-mono)">DSCR = Cash Flow Available ÷ Debt Service · Covenant typically 1.3×–1.5×</span>
+        </div>
+        <div class="dscr-controls">
+          <div class="dscr-ctrl"><label>Debt drawn ($M)</label><input type="number" id="dscr-debt" value="900" step="50" min="0"></div>
+          <div class="dscr-ctrl"><label>Interest rate (%)</label><input type="number" id="dscr-rate" value="8.5" step="0.25" min="0"></div>
+          <div class="dscr-ctrl"><label>Tenor (yrs)</label><input type="number" id="dscr-tenor" value="8" step="1" min="1"></div>
+          <div class="dscr-ctrl"><label>Grace (yrs)</label><input type="number" id="dscr-grace" value="2" step="1" min="0"></div>
+          <div class="dscr-ctrl"><label>DSCR covenant</label><input type="number" id="dscr-cov" value="1.3" step="0.05" min="1"></div>
+          <button class="scn-btn cap" onclick="renderDSCR()">Recalculate</button>
+        </div>
+        <div class="dscr-chart-wrap"><canvas id="dscr-chart"></canvas></div>
+        <div class="dscr-kpi" id="dscr-kpi"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- AUTO INVESTMENT THESIS                                                -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
   <div id="sec-val"></div>
   <div class="table-card">
     <div style="padding:10px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:rgba(26,28,22,.4);">
@@ -1202,62 +1366,46 @@ body.drawer-open #sidebar-backdrop{display:block;}
   <!-- ═══════════════════════════════════════════════════════════════════ -->
   <!-- SCENARIO LOCK-IN — Bear / Base / Bull comparison                     -->
   <!-- ═══════════════════════════════════════════════════════════════════ -->
-  <div id="sec-scenario"></div>
+  <div id="sec-peers"></div>
   <div class="sec-block">
     <div class="sec-block-hdr">
-      <span class="sec-block-title">Scenario Lock-In — Bear / Base / Bull Comparison</span>
-      <span class="sec-block-sub">Snapshot current model state · Compare three cases side-by-side with deltas</span>
+      <span class="sec-block-title">Peer Benchmarking — Global Hard-Rock Lithium</span>
+      <span class="sec-block-sub">Cost curve · Capital efficiency · Scale vs grade</span>
     </div>
     <div class="sec-block-body">
-      <div style="font-size:10px;color:var(--fg-2);margin-bottom:10px;line-height:1.5;">
-        <b style="color:var(--fg)">Workflow:</b> adjust sidebar inputs (price, CAPEX, recovery…) → click <b style="color:var(--cyan)">Snap Current</b> under a slot to lock it in. Slots persist in-memory; click <b>Save HTML</b> in the header to export a version with scenarios baked in.
+      <div style="font-size:10px;color:var(--fg-2);margin-bottom:12px;line-height:1.5;">
+        <b style="color:var(--fg)">Reference data</b> drawn from published FS/PFS/PEA where available (PMET Oct 2025 FS, PLS Pilgangoora, LTR Kathleen Valley, SGML Grota do Cirilo Phases 1–3, Greenbushes, Wodgina, MinRes Mt Marion). Your project auto-populates from the DCF model and is highlighted <b style="color:var(--accent)">gold</b>. Edit any cell to override.
       </div>
-      <div class="scn-grid" id="scn-grid">
-        <div class="scn-card bear empty" id="scn-bear">
-          <div class="scn-header">
-            <span class="scn-badge bear">▼ Bear case</span>
-            <div class="scn-actions">
-              <button class="scn-btn cap" onclick="scnCapture('bear')">Snap Current</button>
-              <button class="scn-btn" onclick="scnLoad('bear')">Load</button>
-              <button class="scn-btn" onclick="scnClear('bear')">Clear</button>
-            </div>
-          </div>
-          <div class="scn-empty-msg">Set sidebar to bear case<br>then click <b style="color:var(--cyan)">Snap Current</b></div>
+      <!-- Peer rank summary pills -->
+      <div class="pr-pills" id="peer-rank-pills"></div>
+      <div class="peer-grid">
+        <div class="peer-card">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">AISC Cost Curve (US$/t SC6 equiv)</div>
+          <div class="peer-chart-wrap"><canvas id="peer-aisc-chart"></canvas></div>
         </div>
-        <div class="scn-card base empty" id="scn-base">
-          <div class="scn-header">
-            <span class="scn-badge base">● Base case</span>
-            <div class="scn-actions">
-              <button class="scn-btn cap" onclick="scnCapture('base')">Snap Current</button>
-              <button class="scn-btn" onclick="scnLoad('base')">Load</button>
-              <button class="scn-btn" onclick="scnClear('base')">Clear</button>
-            </div>
-          </div>
-          <div class="scn-empty-msg">Snap base case here</div>
+        <div class="peer-card">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">Capital Intensity — CAPEX ($M) vs SC6 Production (ktpa)</div>
+          <div class="peer-chart-wrap"><canvas id="peer-capex-chart"></canvas></div>
         </div>
-        <div class="scn-card bull empty" id="scn-bull">
-          <div class="scn-header">
-            <span class="scn-badge bull">▲ Bull case</span>
-            <div class="scn-actions">
-              <button class="scn-btn cap" onclick="scnCapture('bull')">Snap Current</button>
-              <button class="scn-btn" onclick="scnLoad('bull')">Load</button>
-              <button class="scn-btn" onclick="scnClear('bull')">Clear</button>
-            </div>
+        <div class="peer-card peer-full">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">Grade × Resource Size — the Tier-1 map (bubble size = ktpa SC6)</div>
+          <div class="peer-chart-wrap peer-chart-tall"><canvas id="peer-grade-chart"></canvas></div>
+        </div>
+        <div class="peer-card peer-full">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+            <span>Peer detail table — click a cell to edit</span>
+            <button class="reset-btn" onclick="peerReset()">Reset peer defaults</button>
           </div>
-          <div class="scn-empty-msg">Snap bull case here</div>
+          <div style="overflow-x:auto;max-height:400px;">
+            <table class="peer-table" id="peer-table"></table>
+          </div>
         </div>
       </div>
-      <div id="scn-delta-wrap" style="display:none;margin-top:12px;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">Scenario deltas vs Base</div>
-        <div id="scn-delta-body"></div>
-      </div>
-      <!-- Hidden JSON store so that Save HTML persists scenarios -->
-      <textarea id="scn-store" style="display:none;"></textarea>
     </div>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════════════ -->
-  <!-- DILUTION & FUNDING CASCADE                                            -->
+  <!-- CPPP STOCHASTIC FAN + CYCLE STRESS TEST                               -->
   <!-- ═══════════════════════════════════════════════════════════════════ -->
   <div id="sec-funding"></div>
   <div class="sec-block">
@@ -1319,100 +1467,6 @@ body.drawer-open #sidebar-backdrop{display:block;}
   <!-- ═══════════════════════════════════════════════════════════════════ -->
   <!-- PEER BENCHMARKING                                                     -->
   <!-- ═══════════════════════════════════════════════════════════════════ -->
-  <div id="sec-peers"></div>
-  <div class="sec-block">
-    <div class="sec-block-hdr">
-      <span class="sec-block-title">Peer Benchmarking — Global Hard-Rock Lithium</span>
-      <span class="sec-block-sub">Cost curve · Capital efficiency · Scale vs grade</span>
-    </div>
-    <div class="sec-block-body">
-      <div style="font-size:10px;color:var(--fg-2);margin-bottom:12px;line-height:1.5;">
-        <b style="color:var(--fg)">Reference data</b> drawn from published FS/PFS/PEA where available (PMET Oct 2025 FS, PLS Pilgangoora, LTR Kathleen Valley, SGML Grota do Cirilo Phases 1–3, Greenbushes, Wodgina, MinRes Mt Marion). Your project auto-populates from the DCF model and is highlighted <b style="color:var(--accent)">gold</b>. Edit any cell to override.
-      </div>
-      <!-- Peer rank summary pills -->
-      <div class="pr-pills" id="peer-rank-pills"></div>
-      <div class="peer-grid">
-        <div class="peer-card">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">AISC Cost Curve (US$/t SC6 equiv)</div>
-          <div class="peer-chart-wrap"><canvas id="peer-aisc-chart"></canvas></div>
-        </div>
-        <div class="peer-card">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">Capital Intensity — CAPEX ($M) vs SC6 Production (ktpa)</div>
-          <div class="peer-chart-wrap"><canvas id="peer-capex-chart"></canvas></div>
-        </div>
-        <div class="peer-card peer-full">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">Grade × Resource Size — the Tier-1 map (bubble size = ktpa SC6)</div>
-          <div class="peer-chart-wrap peer-chart-tall"><canvas id="peer-grade-chart"></canvas></div>
-        </div>
-        <div class="peer-card peer-full">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-            <span>Peer detail table — click a cell to edit</span>
-            <button class="reset-btn" onclick="peerReset()">Reset peer defaults</button>
-          </div>
-          <div style="overflow-x:auto;max-height:400px;">
-            <table class="peer-table" id="peer-table"></table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════════════ -->
-  <!-- CPPP STOCHASTIC FAN + CYCLE STRESS TEST                               -->
-  <!-- ═══════════════════════════════════════════════════════════════════ -->
-  <div id="sec-stress"></div>
-  <div class="sec-block">
-    <div class="sec-block-hdr">
-      <span class="sec-block-title">Probabilistic Schedule &amp; Cycle Stress — Can It Survive?</span>
-      <span class="sec-block-sub">CPPP confidence cone · Historical lithium price replay</span>
-    </div>
-    <div class="sec-block-body">
-      <div style="font-size:10px;color:var(--fg-2);margin-bottom:12px;line-height:1.5;">
-        <b style="color:var(--fg)">Two lenses on project resilience.</b> <b style="color:var(--teal)">Left:</b> a CPPP-style fan chart showing cumulative NPV uncertainty <i>through time</i> — it's one thing to know NPV P50 at year 20, another to know when the bands cross zero. <b style="color:var(--accent)">Right:</b> replay real lithium price cycles through your mine to test survival.
-      </div>
-      <div class="stoch-grid">
-        <div class="stoch-left">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap;">
-            <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);">Cumulative NPV — probabilistic schedule</span>
-            <button id="stoch-run-btn" class="stoch-btn" onclick="runStochasticFan()">▶ Run CPPP Schedule (2,000 iter)</button>
-          </div>
-          <div id="stoch-fan-container">
-            <div class="stoch-msg" id="stoch-msg">Uses your Monte Carlo input ranges (price, grade, recovery, CAPEX, mining, processing)<br>to show how cumulative NPV uncertainty evolves year-by-year through mine life.</div>
-          </div>
-        </div>
-        <div class="stoch-right">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:10px;">Historical cycle replay</div>
-          <div class="cycle-presets" id="cycle-presets"></div>
-          <div id="cycle-result" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
-            <div style="font-size:9px;color:var(--fg-2);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Project outcome under replayed prices</div>
-            <div class="cycle-kpi" id="cycle-kpi"></div>
-            <div id="cycle-commentary" style="font-size:10px;color:var(--fg);margin-top:8px;line-height:1.5;padding:8px 10px;background:rgba(26,28,22,.4);border-radius:5px;border-left:2px solid var(--accent);"></div>
-          </div>
-        </div>
-      </div>
-      <!-- DSCR / Debt-Covenant Timeline -->
-      <div class="dscr-wrap" style="margin-top:14px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:10px;">
-          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);">Debt-Service Coverage Ratio — covenant stress through ramp</span>
-          <span style="font-size:9px;color:var(--fg-2);font-family:var(--font-mono)">DSCR = Cash Flow Available ÷ Debt Service · Covenant typically 1.3×–1.5×</span>
-        </div>
-        <div class="dscr-controls">
-          <div class="dscr-ctrl"><label>Debt drawn ($M)</label><input type="number" id="dscr-debt" value="900" step="50" min="0"></div>
-          <div class="dscr-ctrl"><label>Interest rate (%)</label><input type="number" id="dscr-rate" value="8.5" step="0.25" min="0"></div>
-          <div class="dscr-ctrl"><label>Tenor (yrs)</label><input type="number" id="dscr-tenor" value="8" step="1" min="1"></div>
-          <div class="dscr-ctrl"><label>Grace (yrs)</label><input type="number" id="dscr-grace" value="2" step="1" min="0"></div>
-          <div class="dscr-ctrl"><label>DSCR covenant</label><input type="number" id="dscr-cov" value="1.3" step="0.05" min="1"></div>
-          <button class="scn-btn cap" onclick="renderDSCR()">Recalculate</button>
-        </div>
-        <div class="dscr-chart-wrap"><canvas id="dscr-chart"></canvas></div>
-        <div class="dscr-kpi" id="dscr-kpi"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════════════ -->
-  <!-- AUTO INVESTMENT THESIS                                                -->
-  <!-- ═══════════════════════════════════════════════════════════════════ -->
   <div id="sec-thesis"></div>
   <div class="sec-block">
     <div class="sec-block-hdr">
@@ -1445,6 +1499,18 @@ body.drawer-open #sidebar-backdrop{display:block;}
     </div>
   </div>
 
+  <!-- As-of footer (data freshness + disclaimer) -->
+  <div id="as-of-footer">
+    <span class="aof-cell"><span class="aof-l">Spot SC6</span><span class="aof-v" id="aof-spot">$1,400/t</span></span>
+    <span class="aof-sep">·</span>
+    <span class="aof-cell"><span class="aof-l">FX</span><span class="aof-v" id="aof-fx">0.72 CAD/USD</span></span>
+    <span class="aof-sep">·</span>
+    <span class="aof-cell"><span class="aof-l">Last close</span><span class="aof-v" id="aof-close">C$2.80 (2026-04-22)</span></span>
+    <span class="aof-sep">·</span>
+    <span class="aof-cell"><span class="aof-l">Model rev</span><span class="aof-v" id="aof-rev">—</span></span>
+    <span class="aof-disc">Not investment advice. Indicative model — verify before use.</span>
+  </div>
+
 </div><!-- /main -->
 </div><!-- /workspace -->
 
@@ -1460,6 +1526,8 @@ if (window.Chart) {
   Chart.defaults.borderColor = 'rgba(58,61,51,0.5)';           // --line-2
   Chart.defaults.plugins.legend.labels.color = '#d8d4c2';      // --fg
 }
+const MODEL_VERSION = '2026-05-08 · v0.2 (workflow)';
+
 // Brand semantic colours for chart datasets — single source of truth
 const BRAND = {
   accent:  '#5dd3a8',   accentDim: 'rgba(93,211,168,0.18)',
@@ -1484,7 +1552,8 @@ const PROJECTS = {
       ticker: 'QTWO.V', company: 'Q2 Metals',
       jurisdiction: 'qc-canada', commodity: 'sc6', stage: 'mre'
     },
-    market: { lce_mt: 9.9, sharesFD: 196, lastClose: 2.80, fxCadUsd: 0.72 },
+    market: { lce_mt: 9.9, sharesFD: 196, lastClose: 2.80, fxCadUsd: 0.72,
+              cashUsd: 25, debtUsd: 0, asOf: '2026-04-22' },
     inputs: {
       mineLife: 30, constrYears: 2, rampYears: 3,
       ramp1: 55, ramp2: 80, tailYears: 3, tailPct: 65,
@@ -1509,7 +1578,8 @@ const PROJECTS = {
   blank: {
     identity: { name: 'New Project', ticker: '—', company: '—',
                 jurisdiction: '—', commodity: 'sc6', stage: 'mre' },
-    market: { lce_mt: 0, sharesFD: 100, lastClose: 0, fxCadUsd: 0.72 },
+    market: { lce_mt: 0, sharesFD: 100, lastClose: 0, fxCadUsd: 0.72,
+              cashUsd: 0, debtUsd: 0, asOf: '' },
     inputs: {
       mineLife: 20, constrYears: 2, rampYears: 2,
       ramp1: 60, ramp2: 90, tailYears: 0, tailPct: 80,
@@ -1533,8 +1603,41 @@ const PROJECTS = {
   }
 };
 
+const STAGE_LABEL = { mre:'Maiden MRE', pea:'Post-PEA', pfs:'Post-PFS', fs:'Full FS', con:'Construction' };
+function fmtMoneyM(v){
+  if(!isFinite(v)) return '—';
+  if(Math.abs(v) >= 1000) return '$' + (v/1000).toFixed(2) + 'B';
+  return '$' + Math.round(v) + 'M';
+}
+function populateDealStrip(p){
+  const text = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  const m = p.market || {};
+  const id = p.identity || {};
+  const fx = m.fxCadUsd || 0.72;
+  const mcapUsd = (m.sharesFD || 0) * (m.lastClose || 0) * fx;
+  const evUsd   = mcapUsd + (m.debtUsd || 0) - (m.cashUsd || 0);
+  text('ds-ticker',  id.ticker  || '—');
+  text('ds-company', id.company || '—');
+  text('ds-mcap',    fmtMoneyM(mcapUsd));
+  text('ds-ev',      fmtMoneyM(evUsd));
+  text('ds-cash',    m.cashUsd ? '$' + Math.round(m.cashUsd) + 'M' : '—');
+  text('ds-shares',  m.sharesFD ? Math.round(m.sharesFD) + 'M' : '—');
+  text('ds-price',   m.lastClose ? 'C$' + Number(m.lastClose).toFixed(2) : '—');
+  text('ds-asof',    m.asOf || '—');
+  text('ds-stage',   STAGE_LABEL[id.stage] || '—');
+
+  // As-of footer
+  const sc6 = (function(){ const el=document.getElementById('sc6Price'); return el ? parseFloat(el.value) : null; })();
+  text('aof-spot',  sc6 ? '$' + sc6.toLocaleString() + '/t' : '—');
+  text('aof-fx',    fx.toFixed(2) + ' CAD/USD');
+  text('aof-close', m.lastClose ? 'C$' + Number(m.lastClose).toFixed(2) + ' (' + (m.asOf || '—') + ')' : '—');
+  text('aof-rev',   MODEL_VERSION);
+}
+
+let _activeProject = null;
 function loadProject(key, opts = {}){
   const p = PROJECTS[key]; if(!p) return false;
+  _activeProject = p;
   const set = (id, v) => { const el = document.getElementById(id); if(el) el.value = v; };
 
   set('project-name', p.identity.name);
@@ -1547,6 +1650,7 @@ function loadProject(key, opts = {}){
     set('mv-shares',     p.market.sharesFD);
     set('mv-curr-price', p.market.lastClose);
   }
+  populateDealStrip(p);
   // Reset year-level overrides
   if(typeof OV === 'object') Object.keys(OV).forEach(k => delete OV[k]);
   // Sync price preset chips (Mid is the canonical default)
@@ -1786,25 +1890,60 @@ function render(){
   let pb = null, pbRow = rows.find(r => r.cumFCF >= 0 && r.t > 1);
   if(pbRow){ const prev = rows[pbRow.t - 2]; pb = prev ? pbRow.t - prev.cumFCF/(pbRow.cumFCF - prev.cumFCF) : pbRow.t; }
 
-  document.getElementById('k-npv').textContent  = '$' + (npv/1000).toFixed(2) + 'B';
-  document.getElementById('k-npv2').textContent = 'WACC: ' + g('discRate').toFixed(1) + '%';
-  document.getElementById('k-npv').style.color  = npv >= 0 ? BRAND.green : BRAND.red;
-  document.getElementById('k-npv8').textContent = '$' + (npv8/1000).toFixed(2) + 'B';
-  document.getElementById('k-npv8b').textContent= 'discount rate: 8%';
-  document.getElementById('k-irr').textContent  = irr !== null ? irr.toFixed(1) + '%' : 'N/A';
-  document.getElementById('k-irr2').textContent = 'Target: ' + gi('targetIRR') + '%';
-  document.getElementById('k-pb').textContent   = pb !== null ? pb.toFixed(1) + ' yrs' : 'N/A';
-  document.getElementById('k-pb2').textContent  = 'from first constr.';
-  document.getElementById('k-peak').textContent = '$' + Math.abs(peakFund).toFixed(0) + 'M';
+  // ── Compute AISC at full production for KPI ──
+  const _fp = prodRows.find(r => r.phase === 'P');
+  const aiscPerT = _fp ? (_fp.opex + _fp.sust) / _fp.sc6 * 1000 : null;
+
+  // ── Market-derived KPIs from active project profile ──
+  const mk = (_activeProject && _activeProject.market) || {};
+  const fx = mk.fxCadUsd || 0.72;
+  const sharesFD = mk.sharesFD || 0;
+  const lastClose = mk.lastClose || 0;
+  const lceMt = mk.lce_mt || 0;
+  const mcapUsd = sharesFD * lastClose * fx;                 // US$M
+  const evUsd   = mcapUsd + (mk.debtUsd || 0) - (mk.cashUsd || 0);
+  const navUsd  = npv;                                       // US$M, post-tax @ WACC
+  // NPV / share, fully diluted, in CAD (display currency)
+  const navPerShareCad = sharesFD > 0 ? (navUsd / fx) / sharesFD : null;
+  const evPerTLCE      = lceMt > 0 ? evUsd / lceMt : null;   // $/t LCE
+  const pnav           = navUsd > 0 && mcapUsd > 0 ? mcapUsd / navUsd : null;
 
   // ── Inducement ──
   const ind = calcInducement(gi('targetIRR'));
   const be  = calcBreakeven();
   const indLCE = ind / 0.1484;
-  document.getElementById('k-ind').textContent  = '$' + ind.toFixed(0);
-  document.getElementById('k-ind2').textContent = 'min. SC6 $/t';
-  document.getElementById('ind-price').textContent = '$' + ind.toFixed(0) + '/t SC6';
-  document.getElementById('ind-lce').textContent   = '$' + indLCE.toFixed(0) + '/t LCE equivalent';
+  const indEl = document.getElementById('ind-price'); if(indEl) indEl.textContent = '$' + ind.toFixed(0) + '/t SC6';
+  const indLceEl = document.getElementById('ind-lce'); if(indLceEl) indLceEl.textContent = '$' + indLCE.toFixed(0) + '/t LCE equivalent';
+
+  // ── KPI bar v2 ──
+  const $ = id => document.getElementById(id);
+  $('k-npv').textContent  = '$' + (npv/1000).toFixed(2) + 'B';
+  $('k-npv').style.color  = npv >= 0 ? BRAND.accent : BRAND.red;
+  $('k-npv2').textContent = '@ 8%: $' + (npv8/1000).toFixed(2) + 'B';
+
+  $('k-npv-share').textContent = navPerShareCad !== null ? 'C$' + navPerShareCad.toFixed(2) : '—';
+  $('k-npv-share').style.color = (navPerShareCad !== null && lastClose > 0)
+    ? (navPerShareCad >= lastClose ? BRAND.green : BRAND.red) : BRAND.fg;
+  $('k-npv-share-sub').textContent = lastClose > 0 ? 'vs spot: C$' + lastClose.toFixed(2) : 'vs spot: —';
+
+  $('k-irr').textContent  = irr !== null ? irr.toFixed(1) + '%' : 'N/A';
+  $('k-irr').style.color  = (irr !== null && irr >= gi('targetIRR')) ? BRAND.green : BRAND.amber;
+  $('k-irr2').textContent = 'Payback: ' + (pb !== null ? pb.toFixed(1) + ' yrs' : '—');
+
+  $('k-aisc').textContent = aiscPerT !== null ? '$' + aiscPerT.toFixed(0) : '—';
+  $('k-aisc').style.color = BRAND.fg;
+  $('k-aisc-sub').textContent = 'Peak fund: $' + Math.abs(peakFund).toFixed(0) + 'M';
+
+  $('k-evlce').textContent = evPerTLCE !== null ? '$' + evPerTLCE.toFixed(0) : '—';
+  $('k-evlce').style.color = BRAND.cyan;
+
+  $('k-pnav').textContent = pnav !== null ? pnav.toFixed(2) + '×' : '—';
+  $('k-pnav').style.color = pnav !== null && pnav < 0.5 ? BRAND.green : BRAND.fg;
+  $('k-pnav-sub').textContent = 'Inducement: $' + ind.toFixed(0) + '/t';
+
+  // As-of footer: refresh spot SC6 cell on every render so it tracks sidebar edits
+  const _aofSpot = document.getElementById('aof-spot');
+  if(_aofSpot) _aofSpot.textContent = '$' + Math.round(g('sc6Price')).toLocaleString() + '/t';
 
   // Cost breakdown metrics (at nameplate, full production)
   const fp = prodRows.find(r => r.phase === 'P');
@@ -2072,20 +2211,26 @@ function renderTable(rows){
     tdYear.innerHTML = `<span class="phase ${phMap[r.phase]}">${r.phase==='C'?'Constr':r.phase==='R'?'Ramp':r.phase==='T'?'Tail':r.phase==='X'?'Closure':'Prod'}</span> Y${r.t}${r.py?` (P${r.py})`:''}`;
     tr.appendChild(tdYear);
 
+    // Helpers for this row
+    const dim = () => { const td=document.createElement('td'); td.className='dim-val'; td.textContent='–'; return td; };
+    const dcfYear = (r.fcf || 0) / Math.pow(1 + g('discRate')/100, r.t);
+
     if(isC){
-      // Construction row - minimal data, span across production cols
-      const empties = [0,0,0,0,0,0,0,0,0,0,0];
-      empties.forEach(()=>{ const td=document.createElement('td'); td.className='dim-val'; td.textContent='–'; tr.appendChild(td); });
+      // Construction row: 11 production-side dims, then CAPEX, then 4 dims (sust + P&L), ΔWC dim, FCF, DCF, Cum FCF, Cum NPV
+      for(let i=0;i<11;i++) tr.appendChild(dim());
       const tdCpx = document.createElement('td'); tdCpx.className='neg'; tdCpx.textContent='('+r.cpx.toFixed(0)+')'; tr.appendChild(tdCpx);
-      const td2 = document.createElement('td'); td2.className='dim-val'; td2.textContent='–'; tr.appendChild(td2);
-      [0,0,0,0].forEach(()=>{ const td=document.createElement('td'); td.className='dim-val'; td.textContent='–'; tr.appendChild(td); });
+      for(let i=0;i<5;i++) tr.appendChild(dim()); // sust + EBITDA + D&A + EBIT + Tax
+      tr.appendChild(dim()); // ΔWC
       const tdFCF = document.createElement('td'); tdFCF.className=cls(r.fcf); tdFCF.textContent=r.fcf.toFixed(1); tr.appendChild(tdFCF);
+      const tdDCF = document.createElement('td'); tdDCF.className=cls(dcfYear)+' dim-val'; tdDCF.textContent=dcfYear.toFixed(1); tr.appendChild(tdDCF);
       const tdCum = document.createElement('td'); tdCum.className=cls(r.cumFCF); tdCum.textContent=r.cumFCF.toFixed(1); tr.appendChild(tdCum);
       const tdNPV = document.createElement('td'); tdNPV.className=cls(r.cumNPV); tdNPV.textContent=r.cumNPV.toFixed(1); tr.appendChild(tdNPV);
     } else if(isX){
-      const empties = 19;
-      for(let i=0;i<empties;i++){ const td=document.createElement('td'); td.className='dim-val'; td.textContent='–'; tr.appendChild(td); }
+      // Closure row: 18 dims (production + costs + capex + P&L) + ΔWC dim + FCF + DCF + Cum FCF + Cum NPV = 22 cells
+      for(let i=0;i<18;i++) tr.appendChild(dim());
+      tr.appendChild(dim()); // ΔWC
       const tdFCF = document.createElement('td'); tdFCF.className=cls(r.fcf); tdFCF.textContent=r.fcf.toFixed(1); tr.appendChild(tdFCF);
+      const tdDCF = document.createElement('td'); tdDCF.className=cls(dcfYear)+' dim-val'; tdDCF.textContent=dcfYear.toFixed(1); tr.appendChild(tdDCF);
       const tdCum = document.createElement('td'); tdCum.className=cls(r.cumFCF); tdCum.textContent=r.cumFCF.toFixed(1); tr.appendChild(tdCum);
       const tdNPV = document.createElement('td'); tdNPV.className=cls(r.cumNPV); tdNPV.textContent=r.cumNPV.toFixed(1); tr.appendChild(tdNPV);
     } else {
@@ -2155,8 +2300,15 @@ function renderTable(rows){
       const tdDA     = document.createElement('td'); tdDA.className='dim-val'; tdDA.textContent=r.da.toFixed(1); tr.appendChild(tdDA);
       const tdEBIT   = document.createElement('td'); tdEBIT.className=cls(r.ebit); tdEBIT.textContent=r.ebit.toFixed(1); tr.appendChild(tdEBIT);
       const tdTax    = document.createElement('td'); tdTax.className='neg'; tdTax.textContent=r.tax>0?'('+r.tax.toFixed(1)+')':'–'; tr.appendChild(tdTax);
-      // FCF
+      // ΔWC (positive value in r.wc means cash drag, displayed as parens)
+      const tdWC = document.createElement('td');
+      const wcVal = r.wc || 0;
+      tdWC.className = wcVal > 0 ? 'neg' : (wcVal < 0 ? 'pos' : 'dim-val');
+      tdWC.textContent = Math.abs(wcVal) < 0.05 ? '–' : (wcVal > 0 ? '('+wcVal.toFixed(1)+')' : (-wcVal).toFixed(1));
+      tr.appendChild(tdWC);
+      // FCF + Discounted FCF (per-year, at WACC)
       const tdFCF = document.createElement('td'); tdFCF.className=cls(r.fcf)+' '+rowCls; tdFCF.textContent=r.fcf.toFixed(1); tr.appendChild(tdFCF);
+      const tdDCF = document.createElement('td'); tdDCF.className=cls(dcfYear)+' dim-val'; tdDCF.textContent=dcfYear.toFixed(1); tr.appendChild(tdDCF);
       const tdCum = document.createElement('td'); tdCum.className=cls(r.cumFCF); tdCum.textContent=r.cumFCF.toFixed(1); tr.appendChild(tdCum);
       const tdNPV = document.createElement('td'); tdNPV.className=cls(r.cumNPV); tdNPV.textContent=r.cumNPV.toFixed(1); tr.appendChild(tdNPV);
     }
