@@ -452,6 +452,14 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
 .cat-uplift{font-size:11px;font-weight:700;font-family:var(--font-mono);margin-top:4px;color:var(--green);}
 .cat-desc{font-size:9px;color:var(--fg-2);line-height:1.3;margin-top:4px;min-height:26px;}
 
+/* ── Chart safety net: every Chart.js canvas fills its parent wrapper ── */
+.chart-wrap canvas, .mc-hist-wrap canvas, .mc-tornado-wrap canvas,
+.fnd-chart-wrap canvas, .peer-chart-wrap canvas,
+.stoch-chart-wrap canvas, .dscr-chart-wrap canvas{
+  width:100% !important; max-width:100% !important; height:100% !important;
+}
+.peer-chart-tall{height:280px;}
+
 /* ── Mobile menu button (hidden on desktop) ── */
 #menu-btn{display:none;background:var(--bg-3);border:1px solid var(--line-2);color:var(--fg);
   width:38px;height:34px;border-radius:var(--r);font-size:18px;line-height:1;cursor:pointer;
@@ -508,6 +516,16 @@ body.drawer-open #sidebar-backdrop{display:block;}
   .table-wrap{max-height:none;}
   .dcf{font-size:10.5px;}
   .dcf thead th, .dcf tbody td{padding:5px 7px;}
+
+  /* Charts: tighter heights on mobile, full-width canvases */
+  .chart-wrap{height:200px;}
+  .mc-hist-wrap{height:200px;}
+  .mc-tornado-wrap{height:240px;}
+  .fnd-chart-wrap{height:220px;}
+  .peer-chart-wrap{height:220px;}
+  .peer-chart-tall{height:240px;}
+  .stoch-chart-wrap{height:220px;}
+  .dscr-chart-wrap{height:200px;}
 
   /* Plant flow: horizontal scroll already, just shrink padding */
   .pf-wrap{padding:12px 10px;}
@@ -788,13 +806,13 @@ body.drawer-open #sidebar-backdrop{display:block;}
       <div class="card-title">Annual Cash Flows ($M)
         <span style="font-size:9px;color:var(--fg-2)">Stacked: Revenue · OPEX · Tax · CAPEX</span>
       </div>
-      <div class="chart-wrap"><canvas id="chart-cf" role="img" aria-label="Annual cash flow chart" style="box-sizing: border-box; display: block; height: 180px; width: 1317px;" width="1976" height="270"></canvas></div>
+      <div class="chart-wrap"><canvas id="chart-cf" role="img" aria-label="Annual cash flow chart"></canvas></div>
     </div>
     <div class="chart-card">
       <div class="card-title">Cumulative NPV ($M)
         <span style="font-size:9px;color:var(--fg-2)">Post-tax · Discounted at WACC</span>
       </div>
-      <div class="chart-wrap"><canvas id="chart-npv" role="img" aria-label="Cumulative NPV chart" style="box-sizing: border-box; display: block; height: 180px; width: 869px;" width="1304" height="270"></canvas></div>
+      <div class="chart-wrap"><canvas id="chart-npv" role="img" aria-label="Cumulative NPV chart"></canvas></div>
     </div>
   </div>
 
@@ -980,13 +998,13 @@ body.drawer-open #sidebar-backdrop{display:block;}
             <button class="mc-tab" onclick="mcTab('prob')">Probability Table</button>
           </div>
           <div id="mc-hist-panel">
-            <div class="mc-hist-wrap"><canvas id="mc-hist-canvas" role="img" aria-label="Monte Carlo NPV histogram" width="3268" height="270" style="display: block; box-sizing: border-box; height: 180px; width: 2179px;"></canvas></div>
+            <div class="mc-hist-wrap"><canvas id="mc-hist-canvas" role="img" aria-label="Monte Carlo NPV histogram"></canvas></div>
           </div>
           <div id="mc-irr-panel" style="display:none;">
-            <div class="mc-hist-wrap"><canvas id="mc-irr-canvas" role="img" aria-label="Monte Carlo IRR histogram" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas></div>
+            <div class="mc-hist-wrap"><canvas id="mc-irr-canvas" role="img" aria-label="Monte Carlo IRR histogram"></canvas></div>
           </div>
           <div id="mc-tornado-panel" style="display:none;">
-            <div class="mc-tornado-wrap"><canvas id="mc-tornado-canvas" role="img" aria-label="Tornado chart" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas></div>
+            <div class="mc-tornado-wrap"><canvas id="mc-tornado-canvas" role="img" aria-label="Tornado chart"></canvas></div>
           </div>
           <div id="mc-prob-panel" style="display:none;">
             <table class="mc-prob-table" id="mc-prob-table">
@@ -1313,7 +1331,7 @@ body.drawer-open #sidebar-backdrop{display:block;}
         </div>
         <div class="peer-card peer-full">
           <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">Grade × Resource Size — the Tier-1 map (bubble size = ktpa SC6)</div>
-          <div class="peer-chart-wrap" style="height:280px;"><canvas id="peer-grade-chart"></canvas></div>
+          <div class="peer-chart-wrap peer-chart-tall"><canvas id="peer-grade-chart"></canvas></div>
         </div>
         <div class="peer-card peer-full">
           <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
