@@ -10,27 +10,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* Zovlyn design tokens — see /CLAUDE.md. Token swap from legacy navy/amber palette.
-     Layout (header/tabs/filters) still uses the bespoke pattern; deeper port to a
-     canonical template is TBD. */
-  --bg:#0c0d0a;--surface:#131410;--card:#1a1c16;--card2:#1a1c16;
+  /* Zovlyn theme — matches main site */
+  --bg:#0c0d0a;--surface:#131410;--card:#1a1c16;--card2:#202218;
   --border:#2a2c24;--border2:#3a3d33;
-  --accent:#5dd3a8;--accent-2:#3aa881;--accent-dim:rgba(93,211,168,0.10);
-  --teal:#6acfe0;--blue:#64b5f6;--purple:#b39dff;
-  --green:#5dd380;--red:#ff5f56;--orange:#e8b658;--pink:#f48fb1;
+  --accent:#5dd3a8;--accent-2:#3aa881;--accent-dim:rgba(93,211,168,0.10);--accent-soft:rgba(93,211,168,0.18);
+  --teal:#4ea3f5;--blue:#4ea3f5;--purple:#b993f4;
+  --green:#5dd3a8;--red:#ec5e3a;--orange:#f95b3d;--pink:#ec96c0;
   --text:#d8d4c2;--muted:#8a8773;--dim:#5d5b4d;
-  --r:4px;
   --font:'Inter',system-ui,-apple-system,sans-serif;
   --mono:'JetBrains Mono','IBM Plex Mono',ui-monospace,monospace;
+  --r:4px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px;}
 body{padding:0 0 60px;}
 
-.hdr{padding:20px 28px 16px;border-bottom:1px solid var(--border);background:var(--surface);}
-.hdr-eyebrow{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--teal);margin-bottom:4px;}
+.hdr{padding:18px 28px 16px;border-bottom:1px solid var(--border);background:var(--surface);}
+.hdr-toprow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap;}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;padding:6px 10px;border:1px solid var(--border);border-radius:var(--r);transition:all 0.15s;}
+.back-link:hover{color:var(--accent);border-color:var(--accent);}
+.cross-link{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;padding:6px 10px;border:1px solid var(--accent-dim);background:var(--accent-dim);border-radius:var(--r);transition:all 0.15s;}
+.cross-link:hover{background:var(--accent-soft);border-color:var(--accent);}
+.hdr-eyebrow{font-family:var(--mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.18em;color:var(--accent);}
 .hdr-row{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
-.hdr-title{font-size:22px;font-weight:700;line-height:1.2;}
+.hdr-title{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1.2;letter-spacing:-0.01em;color:var(--text);}
 .hdr-title span{color:var(--accent);}
 .hdr-sub{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5;max-width:600px;}
 .kpi-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
@@ -69,17 +72,17 @@ tbody tr:hover{background:rgba(255,193,7,.04);}
 .editable:focus{border-color:var(--accent);outline:none;background:var(--card2);}
 .editable.changed{color:var(--accent);}
 .stage-badge{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:600;letter-spacing:.04em;}
-.stage-operating{background:rgba(105,240,174,.12);color:var(--green);}
-.stage-construction{background:rgba(100,181,246,.12);color:var(--blue);}
-.stage-care{background:rgba(255,171,64,.12);color:var(--orange);}
-.stage-dfs,.stage-pfs,.stage-feasibility{background:rgba(179,157,255,.12);color:var(--purple);}
-.stage-permitting{background:rgba(244,143,177,.12);color:var(--pink);}
-.stage-exploration{background:rgba(255,82,82,.12);color:var(--red);}
+.stage-operating{background:rgba(93,211,168,.14);color:var(--green);}
+.stage-construction{background:rgba(78,163,245,.14);color:var(--blue);}
+.stage-care{background:rgba(249,91,61,.14);color:var(--orange);}
+.stage-dfs,.stage-pfs,.stage-feasibility{background:rgba(185,147,244,.14);color:var(--purple);}
+.stage-permitting{background:rgba(236,150,192,.14);color:var(--pink);}
+.stage-exploration{background:rgba(236,94,58,.14);color:var(--red);}
 .type-badge{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:500;}
-.type-hard-rock{background:rgba(255,193,7,.1);color:var(--accent);}
-.type-brine{background:rgba(38,198,218,.1);color:var(--teal);}
-.type-clay{background:rgba(244,143,177,.1);color:var(--pink);}
-.type-lepidolite{background:rgba(179,157,255,.1);color:var(--purple);}
+.type-hard-rock{background:rgba(93,211,168,.12);color:var(--accent);}
+.type-brine{background:rgba(78,163,245,.12);color:var(--teal);}
+.type-clay{background:rgba(236,150,192,.12);color:var(--pink);}
+.type-lepidolite{background:rgba(185,147,244,.12);color:var(--purple);}
 
 .source-cell{font-size:10px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;}
 
@@ -109,7 +112,11 @@ tbody tr:hover{background:rgba(255,193,7,.04);}
 <body>
 
 <div class="hdr">
-  <div class="hdr-eyebrow">Zovlyn Research</div>
+  <div class="hdr-toprow">
+    <a class="back-link" href="index.html" title="Back to Zovlyn Research">&larr; ZOVLYN</a>
+    <div class="hdr-eyebrow">// Zovlyn Research</div>
+    <a class="cross-link" href="lithium-supply-chain-network/index.html" title="Open Lithium Supply Chain Network">View ownership network &rarr;</a>
+  </div>
   <div class="hdr-row">
     <div>
       <div class="hdr-title">Global Lithium <span>Supply Model</span></div>
@@ -316,32 +323,32 @@ tbody tr:hover{background:rgba(255,193,7,.04);}
             <span style="color:var(--muted);font-size:9px;font-weight:600;">CAGR</span>
             <span style="color:var(--muted);font-size:9px;font-weight:600;"></span>
 
-            <span style="color:#64b5f6;">Passenger EVs</span>
+            <span style="color:#4ea3f5;">Passenger EVs</span>
             <input type="number" id="dm-cat-pev-base" value="580" class="editable" style="width:55px;" oninput="renderDemand()">
             <input type="range" id="dm-cat-pev-cagr" min="5" max="35" value="20" step="1" oninput="renderDemand()" style="width:100%;">
             <span id="dm-cat-pev-cagr-val" style="font-family:var(--mono);font-size:10px;">20%</span>
 
-            <span style="color:#26c6da;">Commercial EV/Trucks</span>
+            <span style="color:#65d6e0;">Commercial EV/Trucks</span>
             <input type="number" id="dm-cat-cev-base" value="65" class="editable" style="width:55px;" oninput="renderDemand()">
             <input type="range" id="dm-cat-cev-cagr" min="5" max="50" value="30" step="1" oninput="renderDemand()">
             <span id="dm-cat-cev-cagr-val" style="font-family:var(--mono);font-size:10px;">30%</span>
 
-            <span style="color:#ffc107;">BESS / Grid Storage</span>
+            <span style="color:#ffd166;">BESS / Grid Storage</span>
             <input type="number" id="dm-cat-bess-base" value="140" class="editable" style="width:55px;" oninput="renderDemand()">
             <input type="range" id="dm-cat-bess-cagr" min="10" max="60" value="35" step="1" oninput="renderDemand()">
             <span id="dm-cat-bess-cagr-val" style="font-family:var(--mono);font-size:10px;">35%</span>
 
-            <span style="color:#b39dff;">E-bikes / Micro</span>
+            <span style="color:#b993f4;">E-bikes / Micro</span>
             <input type="number" id="dm-cat-ebike-base" value="55" class="editable" style="width:55px;" oninput="renderDemand()">
             <input type="range" id="dm-cat-ebike-cagr" min="0" max="25" value="10" step="1" oninput="renderDemand()">
             <span id="dm-cat-ebike-cagr-val" style="font-family:var(--mono);font-size:10px;">10%</span>
 
-            <span style="color:#ce93d8;">Consumer Electronics</span>
+            <span style="color:#c9aef5;">Consumer Electronics</span>
             <input type="number" id="dm-cat-ce-base" value="75" class="editable" style="width:55px;" oninput="renderDemand()">
             <input type="range" id="dm-cat-ce-cagr" min="0" max="15" value="3" step="1" oninput="renderDemand()">
             <span id="dm-cat-ce-cagr-val" style="font-family:var(--mono);font-size:10px;">3%</span>
 
-            <span style="color:#607d8b;">Ceramics/Glass/Industrial</span>
+            <span style="color:#8a8773;">Ceramics/Glass/Industrial</span>
             <input type="number" id="dm-cat-ind-base" value="85" class="editable" style="width:55px;" oninput="renderDemand()">
             <input type="range" id="dm-cat-ind-cagr" min="-5" max="10" value="2" step="1" oninput="renderDemand()">
             <span id="dm-cat-ind-cagr-val" style="font-family:var(--mono);font-size:10px;">2%</span>
@@ -360,15 +367,15 @@ tbody tr:hover{background:rgba(255,193,7,.04);}
       <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center;">
         <span style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em;">Benchmark Overlays:</span>
         <label style="font-size:11px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;">
-          <input type="checkbox" id="bm-alb-d" onchange="renderDemand()"><span style="color:#f48fb1;">Albemarle (Demand)</span></label>
+          <input type="checkbox" id="bm-alb-d" onchange="renderDemand()"><span style="color:#ec96c0;">Albemarle (Demand)</span></label>
         <label style="font-size:11px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;">
-          <input type="checkbox" id="bm-iea-d" onchange="renderDemand()"><span style="color:#64b5f6;">IEA STEPS (Demand)</span></label>
+          <input type="checkbox" id="bm-iea-d" onchange="renderDemand()"><span style="color:#4ea3f5;">IEA STEPS (Demand)</span></label>
         <label style="font-size:11px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;">
-          <input type="checkbox" id="bm-fm-d" onchange="renderDemand()"><span style="color:#ce93d8;">Fastmarkets (Demand)</span></label>
+          <input type="checkbox" id="bm-fm-d" onchange="renderDemand()"><span style="color:#c9aef5;">Fastmarkets (Demand)</span></label>
         <label style="font-size:11px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;">
-          <input type="checkbox" id="bm-alb-s" onchange="renderDemand()"><span style="color:#f48fb1;">Albemarle (Supply)</span></label>
+          <input type="checkbox" id="bm-alb-s" onchange="renderDemand()"><span style="color:#ec96c0;">Albemarle (Supply)</span></label>
         <label style="font-size:11px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;">
-          <input type="checkbox" id="bm-sp-s" onchange="renderDemand()"><span style="color:#80cbc4;">S&P Global (Supply)</span></label>
+          <input type="checkbox" id="bm-sp-s" onchange="renderDemand()"><span style="color:#7ee5bb;">S&P Global (Supply)</span></label>
       </div>
       <div style="position:relative;height:400px;"><canvas id="demandChart"></canvas></div>
       <div style="margin-top:8px;font-size:10px;color:var(--muted);">Circles = actuals (USGS/IEA/Benchmark). Triangles = estimates/forecasts. Dashed vertical line marks the actual/estimate boundary. Supply before 2024 from USGS aggregated data; 2024+ from your asset-level model. Demand scenarios only diverge after 2024. Tooltip shows surplus/deficit balance.</div>
@@ -716,9 +723,9 @@ function renderAll(){
 }
 
 const COMPANY_COLORS = [
-  '#ffc107','#26c6da','#69f0ae','#64b5f6','#b39dff','#f48fb1','#ffab40','#ff5252',
-  '#80cbc4','#fff176','#a5d6a7','#90caf9','#ce93d8','#ffcc80','#ef9a9a','#80deea',
-  '#c5e1a5','#ffe082','#b0bec5','#bcaaa4','#e6ee9c','#f8bbd0','#81d4fa','#dce775'
+  '#5dd3a8','#4ea3f5','#f95b3d','#ffd166','#b993f4','#ec96c0','#26c6da','#a3d870',
+  '#ff8b6e','#7ee5bb','#7fb8f5','#ffe4a3','#d4a574','#c9aef5','#f5b8d2','#65d6e0',
+  '#3aa881','#3a7fc7','#d44a2c','#ccaa55','#9876d4','#cc7aa3','#1eaab8','#82c558'
 ];
 
 function renderStackedChart(){
@@ -740,12 +747,12 @@ function renderStackedChart(){
     data:{labels:YEARS.map(y=>y<=2024?y:y+'E'),datasets},
     options:{
       responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:true,position:'bottom',labels:{color:'#94a3b8',font:{size:10},boxWidth:12,padding:8}},
+      plugins:{legend:{display:true,position:'bottom',labels:{color:'#8a8773',font:{size:10},boxWidth:12,padding:8}},
         tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.raw.toFixed(1)+' kt LCE'}}
       },
       scales:{
-        x:{stacked:true,ticks:{color:'#64748b'},grid:{color:'rgba(255,255,255,.04)'}},
-        y:{stacked:true,ticks:{color:'#64748b',callback:v=>v+'kt'},grid:{color:'rgba(255,255,255,.06)'},title:{display:true,text:'kt LCE/yr',color:'#64748b'}}
+        x:{stacked:true,ticks:{color:'#8a8773'},grid:{color:'rgba(216,212,194,0.05)'}},
+        y:{stacked:true,ticks:{color:'#8a8773',callback:v=>v+'kt'},grid:{color:'rgba(216,212,194,0.07)'},title:{display:true,text:'kt LCE/yr',color:'#8a8773'}}
       }
     }
   });
@@ -828,7 +835,7 @@ function editCell(el){
 function renderTypeChart(){
   const f = filtered();
   const types = [...new Set(f.map(d=>d.type))];
-  const colors = {'Hard Rock':'#ffc107','Brine':'#26c6da','Lepidolite':'#b39dff','Clay':'#f48fb1'};
+  const colors = {'Hard Rock':'#5dd3a8','Brine':'#4ea3f5','Lepidolite':'#b993f4','Clay':'#ec96c0'};
   const datasets = types.map(t=>({
     label:t,
     data:YEARS.map(y=>f.filter(d=>d.type===t).reduce((s,d)=>s+getProd(d,y),0)),
@@ -843,10 +850,10 @@ function renderTypeChart(){
     data:{labels:YEARS.map(y=>y<=2024?y:y+'E'),datasets},
     options:{
       responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:11},boxWidth:12}}},
+      plugins:{legend:{position:'bottom',labels:{color:'#8a8773',font:{size:11},boxWidth:12}}},
       scales:{
-        x:{ticks:{color:'#64748b'},grid:{color:'rgba(255,255,255,.04)'}},
-        y:{ticks:{color:'#64748b',callback:v=>v+'kt'},grid:{color:'rgba(255,255,255,.06)'}}
+        x:{ticks:{color:'#8a8773'},grid:{color:'rgba(216,212,194,0.05)'}},
+        y:{ticks:{color:'#8a8773',callback:v=>v+'kt'},grid:{color:'rgba(216,212,194,0.07)'}}
       }
     }
   });
@@ -855,7 +862,7 @@ function renderTypeChart(){
 function renderRegionChart(){
   const f = filtered();
   const regions = [...new Set(f.map(d=>d.region))];
-  const rColors = {'Australia':'#ffc107','South America':'#26c6da','North America':'#69f0ae','Africa':'#ffab40','China':'#ff5252','Europe':'#64b5f6'};
+  const rColors = {'Australia':'#5dd3a8','South America':'#4ea3f5','North America':'#a3d870','Africa':'#ffd166','China':'#f95b3d','Europe':'#b993f4'};
   const datasets = regions.map(r=>({
     label:r,
     data:YEARS.map(y=>f.filter(d=>d.region===r).reduce((s,d)=>s+getProd(d,y),0)),
@@ -870,10 +877,10 @@ function renderRegionChart(){
     data:{labels:YEARS.map(y=>y<=2024?y:y+'E'),datasets},
     options:{
       responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:11},boxWidth:12}}},
+      plugins:{legend:{position:'bottom',labels:{color:'#8a8773',font:{size:11},boxWidth:12}}},
       scales:{
-        x:{ticks:{color:'#64748b'},grid:{color:'rgba(255,255,255,.04)'}},
-        y:{ticks:{color:'#64748b',callback:v=>v+'kt'},grid:{color:'rgba(255,255,255,.06)'}}
+        x:{ticks:{color:'#8a8773'},grid:{color:'rgba(216,212,194,0.05)'}},
+        y:{ticks:{color:'#8a8773',callback:v=>v+'kt'},grid:{color:'rgba(216,212,194,0.07)'}}
       }
     }
   });
@@ -899,8 +906,8 @@ function renderCompanyChart(){
       responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw.toFixed(1)+' kt LCE'}}},
       scales:{
-        x:{ticks:{color:'#64748b',callback:v=>v+'kt'},grid:{color:'rgba(255,255,255,.06)'}},
-        y:{ticks:{color:'#e2e8f0',font:{size:11}},grid:{display:false}}
+        x:{ticks:{color:'#8a8773',callback:v=>v+'kt'},grid:{color:'rgba(216,212,194,0.07)'}},
+        y:{ticks:{color:'#d8d4c2',font:{size:11}},grid:{display:false}}
       }
     }
   });
@@ -1070,11 +1077,11 @@ function renderCostCurve(){
         annotation:undefined
       },
       scales:{
-        x:{ticks:{color:'#64748b',font:{size:9},maxRotation:60,minRotation:30},grid:{color:'rgba(255,255,255,.04)'}},
+        x:{ticks:{color:'#8a8773',font:{size:9},maxRotation:60,minRotation:30},grid:{color:'rgba(216,212,194,0.05)'}},
         y:{
-          ticks:{color:'#64748b',callback:v=>'$'+v.toLocaleString()},
-          grid:{color:'rgba(255,255,255,.06)'},
-          title:{display:true,text:'Cash Cost (US$/t LCE)',color:'#64748b'},
+          ticks:{color:'#8a8773',callback:v=>'$'+v.toLocaleString()},
+          grid:{color:'rgba(216,212,194,0.07)'},
+          title:{display:true,text:'Cash Cost (US$/t LCE)',color:'#8a8773'},
           min:0,
           max:Math.max(25000,priceLine+3000)
         }
@@ -1212,13 +1219,13 @@ function renderSC6Curve(){
         }}
       },
       scales:{
-        x:{ticks:{color:'#64748b',font:{size:9},maxRotation:55,minRotation:30},grid:{color:'rgba(255,255,255,.04)'}},
+        x:{ticks:{color:'#8a8773',font:{size:9},maxRotation:55,minRotation:30},grid:{color:'rgba(216,212,194,0.05)'}},
         y:{
           min:0,
           max:Math.max(1800,priceLine+300),
-          ticks:{color:'#64748b',callback:v=>'$'+v.toLocaleString()},
-          grid:{color:'rgba(255,255,255,.06)'},
-          title:{display:true,text:'FOB Cash Cost (US$/t SC6)',color:'#64748b'}
+          ticks:{color:'#8a8773',callback:v=>'$'+v.toLocaleString()},
+          grid:{color:'rgba(216,212,194,0.07)'},
+          title:{display:true,text:'FOB Cash Cost (US$/t SC6)',color:'#8a8773'}
         }
       }
     },
@@ -1411,7 +1418,7 @@ function renderDemand(){
     options:{
       responsive:true,maintainAspectRatio:false,
       plugins:{
-        legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:11},boxWidth:12,padding:12}},
+        legend:{position:'bottom',labels:{color:'#8a8773',font:{size:11},boxWidth:12,padding:12}},
         tooltip:{mode:'index',intersect:false,callbacks:{
           title:ctx=>{const y=ALL_DEMAND_YEARS[ctx[0].dataIndex];return y<=2024?y+' (Actual)':y+'E (Estimate)';},
           label:ctx=>ctx.dataset.label+': '+ctx.raw.toLocaleString()+' kt LCE',
@@ -1420,8 +1427,8 @@ function renderDemand(){
       },
       interaction:{mode:'index',intersect:false},
       scales:{
-        x:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},
-        y:{ticks:{color:'#64748b',callback:v=>v.toLocaleString()+'kt'},grid:{color:'rgba(255,255,255,.06)'},title:{display:true,text:'kt LCE/yr',color:'#64748b'}}
+        x:{ticks:{color:'#8a8773',font:{size:10}},grid:{color:'rgba(216,212,194,0.05)'}},
+        y:{ticks:{color:'#8a8773',callback:v=>v.toLocaleString()+'kt'},grid:{color:'rgba(216,212,194,0.07)'},title:{display:true,text:'kt LCE/yr',color:'#8a8773'}}
       }
     },
     plugins:[{
@@ -1459,7 +1466,7 @@ function renderDemand(){
     options:{
       responsive:true,maintainAspectRatio:false,
       plugins:{
-        legend:{position:'right',labels:{color:'#94a3b8',font:{size:11},padding:12}},
+        legend:{position:'right',labels:{color:'#8a8773',font:{size:11},padding:12}},
         tooltip:{callbacks:{label:ctx=>ctx.label+': '+ctx.raw+' kt LCE ('+Math.round(ctx.raw/(pieTotal||1)*100)+'%)'}}
       }
     }
@@ -1526,7 +1533,7 @@ function renderGWh(){
     options:{
       responsive:true,maintainAspectRatio:false,
       plugins:{
-        legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:11},boxWidth:12}},
+        legend:{position:'bottom',labels:{color:'#8a8773',font:{size:11},boxWidth:12}},
         tooltip:{mode:'index',intersect:false,callbacks:{
           title:ctx=>{const y=gwhYears[ctx[0].dataIndex];return y<=2024?y+' (Actual)':y+'E';},
           label:ctx=>{
@@ -1537,8 +1544,8 @@ function renderGWh(){
       },
       interaction:{mode:'index',intersect:false},
       scales:{
-        x:{ticks:{color:'#64748b',font:{size:9},maxRotation:45},grid:{color:'rgba(255,255,255,.04)'}},
-        y:{position:'left',ticks:{color:'#26c6da',callback:v=>v.toLocaleString()},grid:{color:'rgba(255,255,255,.06)'},title:{display:true,text:'GWh',color:'#26c6da'}},
+        x:{ticks:{color:'#8a8773',font:{size:9},maxRotation:45},grid:{color:'rgba(216,212,194,0.05)'}},
+        y:{position:'left',ticks:{color:'#26c6da',callback:v=>v.toLocaleString()},grid:{color:'rgba(216,212,194,0.07)'},title:{display:true,text:'GWh',color:'#26c6da'}},
         y1:{position:'right',ticks:{color:'#ffc107',callback:v=>v+'kt'},grid:{drawOnChartArea:false},title:{display:true,text:'kt LCE',color:'#ffc107'}}
       }
     }
@@ -1603,6 +1610,32 @@ function doConvert(){
 
 // Init
 renderAll();
+
+// ─── DEEP LINK FROM SISTER TOOLS ───
+(function applyDeepLink(){
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const co = params.get('company');
+    if (!co) return;
+    // Switch to Data Table tab so the result is immediately visible in row form
+    const tableTab = document.querySelector('[data-tab="table"]');
+    if (tableTab) tableTab.click();
+    // Wait for tab/table to render then highlight matching rows
+    setTimeout(() => {
+      const term = co.toLowerCase();
+      const rows = document.querySelectorAll('#table-body tr, table tbody tr');
+      let firstHit = null;
+      rows.forEach(tr => {
+        if (tr.textContent.toLowerCase().includes(term)) {
+          tr.style.background = 'var(--accent-dim)';
+          tr.style.outline = '1px solid var(--accent)';
+          if (!firstHit) firstHit = tr;
+        }
+      });
+      if (firstHit) firstHit.scrollIntoView({behavior:'smooth', block:'center'});
+    }, 600);
+  } catch(_) {}
+})();
 </script>
 </body>
 </html>

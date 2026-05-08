@@ -1,0 +1,34 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node (in case build tools added later)
+node_modules/
+package-lock.json
+yarn.lock
+npm-debug.log*
+
+# Python (in case scripts added)
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Local server / build output
+dist/
+build/
+.cache/
+
+# Local notes / scratch
+scratch/
+*.local.md
+TODO.local
