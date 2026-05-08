@@ -9,27 +9,74 @@
  * entity or relationship, modify the arrays below — no other
  * file changes are required.
  *
- * NODE SCHEMA
- *   { id, name, role, country, stage, resource?, capacity_kt_lce? }
+ * Consumed by:
+ *   - lithium-supply-chain-network/index.html  → relational view (Lithium Network)
+ *   - lithium_projects_map_*.html              → spatial view (Lithium Projects Map)
+ * Both tools read the same arrays; field semantics below note which fields
+ * each tool relies on.
+ *
+ * ─── NODE SCHEMA ────────────────────────────────────────────────
+ *   { id, name, role, country, stage,
+ *     resource?, capacity_kt_lce?, facility_country?, asset_match? }
+ *
  *   role     : miner | refiner | cam | cell | oem | investor | oilgas | recycler
  *   stage    : production | project
  *   resource : hardrock | brine | clay   (optional, for miners)
- *   country  : ISO-2 code (drives flag rendering in index.html)
+ *   country  : ISO-2 code. HQ / domicile / listing country.
+ *              Drives flag rendering in the Network detail panel.
+ *
+ *   facility_country : OPTIONAL ISO-2 code where this entity's primary
+ *              production / processing physically happens. Used by the Map to
+ *              plot the node and as the origin/destination of any flow it
+ *              participates in. Falls back to `country` when absent.
+ *              Only set when HQ ≠ facility — i.e. when the relationship the
+ *              Map should draw is not the legal/listing geography but the
+ *              physical-flow geography. Examples:
+ *                  Tianqi    country=CN, facility_country=AU (Kwinana)
+ *                  Albemarle country=US, facility_country=AU (Kemerton main)
+ *                  POSCO     country=KR, facility_country=AR (Sal de Oro JV)
+ *              Mining projects (Liontown, Pilbara, etc.) generally don't need
+ *              this — `country` already names the rock's location.
+ *
  *   capacity_kt_lce : OPTIONAL annual capacity in kilotonnes LCE-equivalent.
  *                     Universal unit so miners, refiners, and cell makers can
  *                     be compared on the same scale. Conventions:
  *                       miners/refiners — direct kt LCE/yr nameplate
  *                       cells           — GWh × 0.6  (LCE consumption)
  *                       cam             — kt cathode × ~0.4 (LCE content)
- *                     Drives node radius. Absent → minimum-size dot.
+ *                     Drives node radius in the Network and the Map.
+ *                     Absent → minimum-size dot.
  *
- * LINK SCHEMA
- *   { source, target, type, stake? }
+ *   asset_match : OPTIONAL string used to deep-link from the Network detail
+ *                 panel into the Global Lithium Supply Model
+ *                 (lithium_supply_model.html?company=...). Match the asset
+ *                 label as it appears in that model.
+ *
+ * ─── LINK SCHEMA ────────────────────────────────────────────────
+ *   { source, target, type, stake?, flow_kt_lce? }
+ *
  *   type  : equity | financing | offtake
  *   stake : OPTIONAL number 0–1 representing source's ownership of target.
- *           Only meaningful for type === 'equity'. e.g. 0.225 = 22.5%.
- *           When present, edge thickness scales with stake; when absent
- *           the edge renders at default thickness with a "—" stake label.
+ *           Meaningful only for type === 'equity'. e.g. 0.225 = 22.5%.
+ *           Network: drives edge thickness. When absent, edge renders at
+ *           default thickness with "—" stake label.
+ *
+ *   flow_kt_lce : OPTIONAL annual contracted / expected volume in
+ *                 kilotonnes LCE-equivalent flowing FROM source TO target.
+ *                 Meaningful primarily for type === 'offtake'
+ *                 (and 'financing' for prepay deals on a case-by-case basis).
+ *                 Map: arc thickness scales linearly with flow_kt_lce,
+ *                 clamped 1.5–6px. Hover shows the kt LCE/yr label. When
+ *                 absent, the arc renders thin and unlabelled.
+ *                 Conversion conventions when the source contract is in
+ *                 a different unit:
+ *                       SC6 spodumene concentrate → LCE  : tonnes / 7.5
+ *                       lithium hydroxide (LiOH·H2O) → LCE: tonnes / 5.32
+ *                       lithium carbonate (Li2CO3) → LCE  : 1:1
+ *                       cathode (NMC/NCA/LFP) → LCE        : tonnes × 0.4
+ *                 Always cite the source contract document in a sibling
+ *                 comment when adding a flow_kt_lce — these numbers are
+ *                 sacred per Zovlyn voice.
  *
  * Both source and target must reference an existing node id.
  * Orphan references are filtered at runtime but kept clean here.
@@ -269,9 +316,15 @@ const LINKS = [
   { source: 'codelco',    target: 'salaroz',    type: 'equity' },
 
   // Liontown
-  { source: 'liontown',   target: 'ford',       type: 'offtake' },
-  { source: 'liontown',   target: 'lgchem',     type: 'offtake' },
-  { source: 'liontown',   target: 'tesla',      type: 'offtake' },
+  { source: 'liontown',   target: 'ford',       type: 'offtake', flow_kt_lce: 20 },
+  // Liontown–Ford binding offtake (Jul 2022): 150 kdmt/yr SC6, 5-yr term, full vol yrs 3–5.
+  // 150 / 7.5 = 20 kt LCE/yr. Source: Liontown ASX 2022-07-04. Sibling 'ford→liontown' financing arc.
+  { source: 'liontown',   target: 'lgchem',     type: 'offtake', flow_kt_lce: 20 },
+  // Liontown–LG Chem binding offtake (May 2022, extended Jul 2024 to 15 years): 150 kdmt/yr SC6.
+  // 150 / 7.5 = 20 kt LCE/yr. Source: Liontown ASX 2022-05-02; LG Chem PR 2024-07.
+  { source: 'liontown',   target: 'tesla',      type: 'offtake', flow_kt_lce: 20 },
+  // Liontown–Tesla via LG Energy Solution (May 2022): 150 kdmt/yr SC6, full vol yrs 3–5.
+  // 150 / 7.5 = 20 kt LCE/yr. Source: Liontown ASX 2022-05-02.
 
   // Mineral Resources / Hancock / IGO
   { source: 'mineralres', target: 'wodgina',    type: 'equity', stake: 0.50 }, // 50/50 with Albemarle
@@ -284,7 +337,10 @@ const LINKS = [
   { source: 'hancock',    target: 'delta',      type: 'equity' },
 
   // Pilbara
-  { source: 'pilbara',    target: 'ganfeng',    type: 'offtake' },
+  { source: 'pilbara',    target: 'ganfeng',    type: 'offtake', flow_kt_lce: 41 },
+  // Pilbara–Ganfeng amended offtake (Jan 2024): up to 310 kdmt/yr SC6 in 2024;
+  // 260–310 kdmt/yr 2025–26 with optional tranches. 310 / 7.5 ≈ 41 kt LCE/yr.
+  // Source: Pilbara Minerals ASX 2024-01-15.
   { source: 'pilbara',    target: 'posco',      type: 'equity' },
   { source: 'pilbara',    target: 'salaroz',    type: 'equity' },
   { source: 'pilbara',    target: 'jvgfgpls',   type: 'equity' },
@@ -358,7 +414,10 @@ const LINKS = [
   // LG Chem
   { source: 'lgchem',     target: 'sayona',     type: 'offtake' },
   { source: 'lgchem',     target: 'piedmont',   type: 'offtake' },
-  { source: 'lgchem',     target: 'liontown',   type: 'offtake' },
+  { source: 'lgchem',     target: 'liontown',   type: 'financing' },
+  // LG Energy Solution debt facility / strategic financing to Liontown alongside offtake.
+  // Capital flow LGES → Liontown; product flow is the sibling 'liontown → lgchem' offtake link.
+  // Verify exact facility amount. Reference: Liontown ASX 2022-05-02 / 2024-07 announcements.
   { source: 'lgchem',     target: 'kemerton',   type: 'offtake' },
 
   // Mitsui / Mitsubishi
@@ -377,7 +436,10 @@ const LINKS = [
   { source: 'traxys',     target: 'aquatech',   type: 'financing' },
 
   // OEMs
-  { source: 'ford',       target: 'liontown',   type: 'offtake' },
+  { source: 'ford',       target: 'liontown',   type: 'financing' },
+  // Ford US$300M debt facility to Liontown alongside Kathleen Valley offtake (Jul 2022).
+  // Capital flow Ford → Liontown; product flow is the sibling 'liontown → ford' offtake link.
+  // Source: Liontown ASX 2022-07-04.
   { source: 'ford',       target: 'ioneer',     type: 'offtake' },
   { source: 'ford',       target: 'lithamericas',type: 'equity' },
   { source: 'gm',         target: 'lithamericas', type: 'equity' },
