@@ -160,25 +160,34 @@
   .attribution {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
     align-items: flex-end;
     padding-left: 18px;
     border-left: 1px solid var(--line);
+    text-decoration: none;
+    transition: border-color 0.15s ease;
   }
+  .attribution:hover { border-left-color: var(--accent); }
   .attribution-label {
-    font-size: 8.5px;
+    font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.16em;
-    color: var(--fg-3);
+    color: var(--fg-2);
     font-weight: 500;
   }
   .attribution-source {
     font-family: var(--mono);
-    font-size: 11px;
-    line-height: 1.25;
+    font-size: 13px;
+    line-height: 1.2;
     color: var(--accent);
     text-align: right;
     letter-spacing: 0;
+    font-weight: 500;
+  }
+  .attribution:hover .attribution-source {
+    text-decoration: underline;
+    text-decoration-color: var(--accent-2);
+    text-underline-offset: 3px;
   }
 
   /* ═══ Sidebars ═══ */
@@ -647,7 +656,15 @@
     }
     header { padding: 0 14px; gap: 8px; }
     .header-meta .stat:nth-child(3) { display: none; } /* hide snapshot on mobile */
-    .attribution { display: none; }
+    .attribution {
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      padding-left: 10px;
+    }
+    .attribution-label { font-size: 9px; }
+    .attribution-source { font-size: 10.5px; text-align: left; }
+    .attribution-source br { display: none; }
     .brand-sub { display: none; }
     .drawer-toggle { display: inline-flex; }
 
@@ -702,10 +719,10 @@
       <span class="stat-num">May '26</span>
       <span>Snapshot</span>
     </div>
-    <div class="attribution">
-      <span class="attribution-label">Data</span>
+    <a class="attribution" href="https://github.com/timmycoops/Zovlyn_Research/tree/main/lithium-supply-chain-network#data-attribution" target="_blank" rel="noopener" title="View full data attribution & methodology">
+      <span class="attribution-label">Data source</span>
       <span class="attribution-source">Daniel&nbsp;Jimenez<br>iLiMarkets</span>
-    </div>
+    </a>
     <button class="drawer-toggle" id="toggle-left" aria-label="Open filters">☰ Filters</button>
     <button class="drawer-toggle" id="toggle-right" aria-label="Open detail">Detail ☰</button>
   </div>
