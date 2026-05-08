@@ -33,6 +33,13 @@ body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',syste
 
 /* ── Header ── */
 #hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;gap:18px;flex-shrink:0;flex-wrap:wrap;}
+.hdr-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.hdr-btn{background:var(--bg-3);border:1px solid var(--line-2);color:var(--fg);
+  padding:6px 12px;border-radius:var(--r);cursor:pointer;font-size:10.5px;font-weight:700;
+  font-family:var(--font-mono);letter-spacing:.05em;text-transform:uppercase;
+  transition:all .12s;white-space:nowrap;}
+.hdr-btn:hover{border-color:var(--accent);color:var(--accent);}
+.hdr-btn:active{background:var(--line);}
 .hdr-id{display:flex;flex-direction:column;gap:2px;min-width:0;}
 .hdr-id-line{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-2);}
 .ds-ticker{color:var(--accent);font-weight:800;}
@@ -769,6 +776,127 @@ body.drawer-open #sidebar-backdrop{display:block;}
   .aof-disc{margin-left:0;width:100%;margin-top:4px;}
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   PRINT — IC one-pager (Cmd-P → PDF). Inverts to light theme for paper.
+   ══════════════════════════════════════════════════════════════════════ */
+@media print{
+  @page { size: A4 portrait; margin: 12mm; }
+  html, body{background:#fff;color:#111;height:auto;overflow:visible;font-size:9.5pt;}
+
+  /* Re-color tokens for print */
+  :root{
+    --bg:#ffffff;--bg-2:#f7f7f4;--bg-3:#f0efe8;
+    --line:#cfcdc1;--line-2:#a8a594;
+    --fg:#1a1a1a;--fg-2:#555;--fg-3:#888;
+    --accent-dim:rgba(93,211,168,0.12);
+  }
+
+  /* Hide chrome */
+  body > a[href="index.html"], #menu-btn, #sidebar-backdrop, #sidebar,
+  .hdr-actions, #sec-nav,
+  #as-of-footer{display:none !important;}
+
+  /* Hide deep-interactive sections we can't fit on a one-pager */
+  #sec-mc, #sec-stress, #sec-funding, #sec-peers,
+  .pf-wrap, .pf-bottom,
+  .table-wrap{display:none !important;}
+
+  /* Re-stack workspace; main fills page */
+  #workspace{display:block;}
+  #main{padding:0;overflow:visible;}
+
+  /* Header inverts; hairline border */
+  #hdr{background:#fff;border-bottom:1.5pt solid #111;padding:6pt 0;}
+  .hdr-id-line{color:#444;}
+  .ds-ticker{color:#1a8a64;}
+  #project-name{color:#111;font-size:13pt;width:auto;max-width:none;}
+
+  /* KPI bar prints as 6-up, no shadows */
+  .kpi-bar{margin-left:auto;display:grid;grid-template-columns:repeat(6,1fr);gap:4pt;width:auto;}
+  .kpi{background:#fff;border:0.5pt solid #aaa;padding:5pt 8pt;min-width:0;}
+  .kpi-val{color:#1a1a1a !important;font-size:11pt;}
+  .kpi-lbl, .kpi-sub{color:#555 !important;}
+
+  /* Deal strip prints inline 7-up */
+  #deal-strip{background:#f7f7f4;border-bottom:0.5pt solid #aaa;
+    grid-template-columns:repeat(7,1fr);}
+  .ds-cell{padding:4pt 6pt;border-color:#ccc;}
+  .ds-v{color:#111;font-size:9.5pt;}
+  .ds-l{color:#666;}
+
+  /* Section blocks — light, hairline border */
+  .sec-block{background:#fff;border:0.5pt solid #aaa;page-break-inside:avoid;margin-bottom:8pt;}
+  .sec-block-hdr{background:#f0efe8;padding:5pt 8pt;}
+  .sec-block-title{color:#111;font-size:9pt;}
+  .sec-block-sub{color:#666;font-size:8pt;}
+  .sec-block-body{padding:6pt 8pt;}
+
+  /* Football field — keep, but compact */
+  .ff-row-lbl{color:#1a1a1a;}
+  .ff-axis{color:#555;}
+  .ff-axis::before{background:#aaa;}
+  .ff-tick::after{background:#aaa;}
+  .ff-row{border-bottom:0.5pt solid #ddd;}
+  .ff-bar.dcf{background:#5dd3a8;}
+  .ff-bar.comps{background:#6acfe0;}
+  .ff-bar.prec{background:#e8b658;}
+  .ff-bar.trade{background:#888;}
+  .ff-bar-edge{color:#444;}
+  .ff-marker{background:#111;}
+  .ff-marker::before{background:#fff;color:#111;border:0.5pt solid #111;padding:1pt 3pt;}
+
+  /* NAV bridge — invert backgrounds */
+  .nb-step{background:#f7f7f4;border-color:#ccc;color:#111;}
+  .nb-step.nb-headline, .nb-step.nb-result{background:rgba(93,211,168,.12);border-color:#1a8a64;}
+  .nb-step.nb-headline .nb-v, .nb-step.nb-result .nb-v{color:#1a8a64;}
+  .nb-lbl{color:#666;}
+  .nb-sub{color:#888;}
+  .nb-op{color:#888;}
+
+  /* Charts (the two base-case ones in Overview) */
+  .chart-card{background:#fff;border:0.5pt solid #aaa;break-inside:avoid;}
+  .chart-wrap{height:160pt;}
+  .card-title{color:#111;}
+
+  /* Cost pills */
+  .cost-pills .pill{background:#f7f7f4;border-color:#ccc;color:#111;}
+  .pill-val{color:#111;}
+  .pill-lbl{color:#666;}
+
+  /* Scenario cards (bear/base/bull) */
+  .scn-card{background:#fff;}
+  .scn-kpi-item{background:#f7f7f4;}
+
+  /* Risk register prints in full */
+  .risk-table{font-size:8.5pt;}
+  .risk-table thead th{background:#f0efe8;color:#444;}
+  .risk-table tbody td{color:#111;}
+  .risk-mitig{color:#555;}
+  .risk-dots{color:#bbb;}
+  .risk-dots .on{color:#1a1a1a;}
+
+  /* Section anchor divs are zero-height — fine */
+  /* Force a page break before the risk register so it gets clean placement */
+  #sec-thesis{page-break-before:always;}
+
+  /* Hide the Auto Thesis content (interactive) but keep risk register at top of Thesis */
+  #sec-thesis ~ .sec-block:not(:first-of-type){display:none !important;}
+
+  /* Hide the WACC builder INPUTS but keep the headline computed value */
+  .wacc-inputs{display:none !important;}
+  .wacc-grid{grid-template-columns:1fr;}
+
+  /* Disclaimer banner at very bottom */
+  body::after{
+    content:'Not investment advice. Indicative model — verify before use. Generated from mining_dcf.html.';
+    display:block;font-family:'JetBrains Mono', monospace;font-size:7.5pt;color:#888;
+    text-align:center;margin-top:12pt;padding-top:6pt;border-top:0.5pt solid #ccc;
+  }
+
+  /* Avoid orphaning headers */
+  .sec-block-hdr{page-break-after:avoid;}
+}
+
 @media (max-width: 480px){
   .kpi-bar{grid-template-columns:1fr;}
   .mv-out-grid{grid-template-columns:1fr;}
@@ -795,18 +923,12 @@ body.drawer-open #sidebar-backdrop{display:block;}
     </div>
     <input id="project-name" type="text" value="Unnamed Spodumene Project">
   </div>
-  <button onclick="saveModel()" id="save-btn" style="
-    background:var(--card2);border:1px solid var(--border2);color:var(--fg);
-    padding:6px 14px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;
-    font-family:var(--font-mono);letter-spacing:.05em;transition:all .15s;white-space:nowrap;
-    display:flex;align-items:center;gap:6px;flex-shrink:0;">
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2 1h7l2 2v9H2V1z" stroke="var(--fg)" stroke-width="1" fill="none"></path>
-      <rect x="4" y="1" width="4" height="3" fill="var(--fg)" rx="0.5"></rect>
-      <rect x="3" y="7" width="7" height="4" fill="none" stroke="var(--fg)" stroke-width="1" rx="0.5"></rect>
-    </svg>
-    Save HTML
-  </button>
+  <div class="hdr-actions">
+    <button onclick="saveModel()" id="save-btn" class="hdr-btn">Save HTML</button>
+    <button onclick="shareLink()" id="share-btn" class="hdr-btn">Share Link</button>
+    <button onclick="exportCSV()" id="csv-btn"  class="hdr-btn">Export CSV</button>
+    <button onclick="printOnePager()" id="print-btn" class="hdr-btn">Print / PDF</button>
+  </div>
   <div class="kpi-bar">
     <div class="kpi"><div class="kpi-val" id="k-npv" style="color:var(--accent);">—</div><div class="kpi-lbl">NPV post-tax @ WACC</div><div class="kpi-sub" id="k-npv2">@ 8%: —</div></div>
     <div class="kpi"><div class="kpi-val" id="k-npv-share">—</div><div class="kpi-lbl">NPV / share FD</div><div class="kpi-sub" id="k-npv-share-sub">vs spot: —</div></div>
@@ -1919,7 +2041,7 @@ if (window.Chart) {
   Chart.defaults.borderColor = 'rgba(58,61,51,0.5)';           // --line-2
   Chart.defaults.plugins.legend.labels.color = '#d8d4c2';      // --fg
 }
-const MODEL_VERSION = '2026-05-08 · v0.3 (decision-grade)';
+const MODEL_VERSION = '2026-05-08 · v0.4 (memo-ready)';
 
 // Brand semantic colours for chart datasets — single source of truth
 const BRAND = {
@@ -2073,6 +2195,157 @@ function loadProject(key, opts = {}){
 
 // Backward-compat shim — older inline handlers may still call this
 function loadCiscoPreset(){ return loadProject('qtwo'); }
+
+// ══════════════════════════════════════════════════════════════════════
+// URL STATE — capture all inputs into a base64 hash for shareable links
+// ══════════════════════════════════════════════════════════════════════
+function captureState(){
+  const out = {};
+  document.querySelectorAll('input[type="number"], input[type="text"]').forEach(el => {
+    if(el.id) out[el.id] = el.value;
+  });
+  // Year-level overrides
+  if(typeof OV === 'object') out.__OV = OV;
+  // Active project
+  const sw = document.getElementById('project-switcher');
+  if(sw) out.__PROJECT = sw.value;
+  return out;
+}
+
+function applyState(state){
+  if(!state || typeof state !== 'object') return;
+  if(state.__PROJECT && PROJECTS[state.__PROJECT]){
+    loadProject(state.__PROJECT, { skipRender: true });
+  }
+  Object.entries(state).forEach(([k, v]) => {
+    if(k === '__OV' || k === '__PROJECT') return;
+    const el = document.getElementById(k);
+    if(el && (el.tagName === 'INPUT')) el.value = v;
+  });
+  if(state.__OV && typeof OV === 'object'){
+    Object.keys(OV).forEach(k => delete OV[k]);
+    Object.assign(OV, state.__OV);
+  }
+}
+
+function shareLink(){
+  try{
+    const state = captureState();
+    // UTF-8 safe base64
+    const json = JSON.stringify(state);
+    const b64 = btoa(unescape(encodeURIComponent(json)));
+    const url = location.origin + location.pathname + location.search + '#s=' + b64;
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = document.getElementById('share-btn');
+        if(btn){ const orig = btn.textContent; btn.textContent = 'Link copied'; btn.style.color = 'var(--accent)';
+          setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1500); }
+      }).catch(() => prompt('Copy this share link:', url));
+    } else {
+      prompt('Copy this share link:', url);
+    }
+  } catch(e){
+    console.warn('shareLink failed', e);
+    alert('Could not generate share link: ' + e.message);
+  }
+}
+
+function loadFromHash(){
+  if(!location.hash || !location.hash.startsWith('#s=')) return false;
+  try{
+    const b64 = location.hash.slice(3);
+    const json = decodeURIComponent(escape(atob(b64)));
+    const state = JSON.parse(json);
+    applyState(state);
+    return true;
+  } catch(e){
+    console.warn('loadFromHash failed', e);
+    return false;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CSV EXPORT — annual schedule + precedents + peers
+// ══════════════════════════════════════════════════════════════════════
+function _csvCell(v){
+  if(v === null || v === undefined) return '';
+  const s = String(v);
+  if(/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+function _csvDownload(filename, rows){
+  const csv = rows.map(r => r.map(_csvCell).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+}
+
+function exportCSV(){
+  const tag = (() => {
+    const id = (_activeProject && _activeProject.identity) || {};
+    const ticker = (id.ticker || 'project').replace(/[^A-Za-z0-9]+/g, '_');
+    const today = new Date().toISOString().slice(0, 10);
+    return `${ticker}_${today}`;
+  })();
+
+  // 1. Annual schedule
+  const headers = ['Year','Phase','Through_Mt','Grade_pct','Recovery_pct','SC6_kt','Price_USDpt',
+                   'Revenue_USDM','Mining_USDM','Processing_USDM','GA_USDM','Royalty_USDM','Freight_USDM',
+                   'CAPEX_USDM','SustainingCAPEX_USDM','EBITDA_USDM','DA_USDM','EBIT_USDM','Tax_USDM',
+                   'WC_USDM','FCF_USDM','DiscountedFCF_USDM','CumFCF_USDM','CumNPV_USDM'];
+  const phaseLabel = { C:'Construction', R:'Ramp', P:'Production', T:'Tail', X:'Closure' };
+  const rows = (_model || buildModel());
+  const dr = g('discRate');
+  const scheduleRows = [headers].concat(rows.map(r => [
+    r.t,
+    phaseLabel[r.phase] || r.phase,
+    (r.through||0).toFixed(2), (r.grade||0).toFixed(2), (r.rec||0).toFixed(1),
+    (r.sc6||0).toFixed(0), (r.price||0).toFixed(0),
+    (r.rev||0).toFixed(2), (r.mining||0).toFixed(2), (r.proc||0).toFixed(2),
+    (r.ga||0).toFixed(2), (r.roy||0).toFixed(2), (r.frt||0).toFixed(2),
+    (r.cpx||0).toFixed(2), (r.sust||0).toFixed(2),
+    (r.ebitda||0).toFixed(2), (r.da||0).toFixed(2), (r.ebit||0).toFixed(2), (r.tax||0).toFixed(2),
+    (r.wc||0).toFixed(2),
+    (r.fcf||0).toFixed(2),
+    ((r.fcf||0) / Math.pow(1 + dr/100, r.t)).toFixed(2),
+    (r.cumFCF||0).toFixed(2), (r.cumNPV||0).toFixed(2),
+  ]));
+  _csvDownload(`${tag}_annual_schedule.csv`, scheduleRows);
+
+  // 2. Precedent transactions
+  if(typeof PRECEDENTS !== 'undefined'){
+    const ph = ['Date','Deal','Stage','EV_USDM','Resource_MtLCE','EV_per_t_LCE','Premium_pct','Structure'];
+    const pRows = [ph].concat(PRECEDENTS.map(p => [
+      p.date, p.deal, p.stageLbl, p.ev, p.lce, p.evtLCE,
+      p.premium === null ? '' : p.premium, p.structure
+    ]));
+    setTimeout(() => _csvDownload(`${tag}_precedents.csv`, pRows), 200);
+  }
+
+  // 3. Risk register
+  if(typeof RISKS !== 'undefined'){
+    const rh = ['Risk','Category','Likelihood','Impact','Score','Status','Mitigation'];
+    const rRows = [rh].concat([...RISKS]
+      .sort((a,b) => b.L*b.I - a.L*a.I)
+      .map(r => [r.name, r.cat, r.L, r.I, r.L*r.I, r.status, r.mitig]));
+    setTimeout(() => _csvDownload(`${tag}_risks.csv`, rRows), 400);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// PRINT / PDF — IC one-pager
+// ══════════════════════════════════════════════════════════════════════
+function printOnePager(){
+  document.body.classList.add('printing');
+  // Allow layout to settle before invoking print
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => document.body.classList.remove('printing'), 600);
+  }, 80);
+}
 
 // ══════════════════════════════════════════════════════════════════════
 // WACC BUILDER
@@ -5162,6 +5435,9 @@ buildCyclePresets();
   const isPristine = !nm || /Unnamed Spodumene Project/i.test(nm.value || '');
   if(isPristine) loadProject('qtwo', { skipRender: true });
 })();
+
+// If a #s= hash is present, hydrate from URL state (overrides QTWO defaults)
+loadFromHash();
 
 // Initial WACC compute + keep "Currently using" cell synced when sidebar discRate edits
 updateWACC();
