@@ -512,6 +512,17 @@ body.drawer-open #sidebar-backdrop{display:block;}
   .mc-var{grid-template-columns:1fr 1fr 1fr 1fr;font-size:10px;gap:4px;}
   .mc-var-name{grid-column:1 / -1;margin-bottom:2px;}
 
+  /* Funding cascade: stages and KPI summary stack/wrap on phone */
+  .fnd-stage-grid{grid-template-columns:1fr;gap:0;}
+  .fnd-stage{border-right:none;border-bottom:1px solid var(--line);}
+  .fnd-stage:last-child{border-bottom:none;}
+  .fnd-stage-name{font-size:10px;}
+  .fnd-stage-val{font-size:14px;}
+  .fnd-stage-raise{font-size:10px;}
+  .fnd-summary{grid-template-columns:repeat(2,1fr);}
+  .fnd-summary-val{font-size:15px;}
+  .fnd-arrow{display:none;}
+
   /* Tables: keep horizontal scroll */
   .table-wrap{max-height:none;}
   .dcf{font-size:10.5px;}
@@ -1777,7 +1788,7 @@ function render(){
 
   document.getElementById('k-npv').textContent  = '$' + (npv/1000).toFixed(2) + 'B';
   document.getElementById('k-npv2').textContent = 'WACC: ' + g('discRate').toFixed(1) + '%';
-  document.getElementById('k-npv').style.color  = npv >= 0 ? 'var(--green)' : 'var(--red)';
+  document.getElementById('k-npv').style.color  = npv >= 0 ? BRAND.green : BRAND.red;
   document.getElementById('k-npv8').textContent = '$' + (npv8/1000).toFixed(2) + 'B';
   document.getElementById('k-npv8b').textContent= 'discount rate: 8%';
   document.getElementById('k-irr').textContent  = irr !== null ? irr.toFixed(1) + '%' : 'N/A';
@@ -1980,8 +1991,8 @@ function renderCharts(rows){
     responsive: true, maintainAspectRatio: false,
     plugins: { legend: { display: false } },
     scales: {
-      x: { ticks: { color:'var(--fg-2)', font:{size:9}, maxRotation:0 }, grid:{color:'rgba(255,255,255,.04)'} },
-      y: { ticks: { color:'var(--fg-2)', font:{size:9} }, grid:{color:'rgba(255,255,255,.04)'} }
+      x: { ticks: { color:BRAND.fg2, font:{size:9}, maxRotation:0 }, grid:{color:'rgba(255,255,255,.04)'} },
+      y: { ticks: { color:BRAND.fg2, font:{size:9} }, grid:{color:'rgba(255,255,255,.04)'} }
     }
   };
 
@@ -1998,8 +2009,8 @@ function renderCharts(rows){
         { label:'Tax',        data: taxData,  backgroundColor: 'rgba(232,182,88,.55)',  stack:'s' },
         { label:'CAPEX',      data: cpxData,  backgroundColor: 'rgba(138,135,115,.55)', stack:'s' },
         { label:'Sust.CAPEX', data: sustData, backgroundColor: 'rgba(138,135,115,.55)',  stack:'s' },
-        { label:'FCF', type:'line', data: fcfData, borderColor:'var(--amber)', borderWidth:2,
-          pointRadius:2, pointBackgroundColor:'var(--amber)', fill:false, yAxisID:'y', tension:.3 }
+        { label:'FCF', type:'line', data: fcfData, borderColor:BRAND.amber, borderWidth:2,
+          pointRadius:2, pointBackgroundColor:BRAND.amber, fill:false, yAxisID:'y', tension:.3 }
       ]
     },
     options: { ...chartDefaults, scales: {
@@ -2018,7 +2029,7 @@ function renderCharts(rows){
       labels: npvLab,
       datasets: [{
         data: npvData,
-        borderColor: npvData[npvData.length-1] >= 0 ? 'var(--green)' : 'var(--red)',
+        borderColor: npvData[npvData.length-1] >= 0 ? BRAND.green : BRAND.red,
         borderWidth: 2, fill: true,
         backgroundColor: ctx => {
           const g = ctx.chart.ctx.createLinearGradient(0,0,0,180);
@@ -2429,7 +2440,7 @@ async function runMC(){
 
   // Percentile KPI boxes
   const pcLabels = ['P10','P25','P50','P75','P90'];
-  const pcColors = ['var(--red)','var(--amber)','var(--green)','var(--cyan)','var(--fg-2)'];
+  const pcColors = [BRAND.red,BRAND.amber,BRAND.green,BRAND.cyan,BRAND.fg2];
   document.getElementById('mc-percentiles').innerHTML = pcts.map((p,i) =>
     `<div class="mc-pc">
       <div class="mc-pc-val" style="color:${pcColors[i]};font-size:${Math.abs(npvPcts[i])>999?'13px':'16px'}">${npvPcts[i]>=0?'$':'($'}${Math.abs(npvPcts[i]/1000).toFixed(2)}${npvPcts[i]>=0?'':')'}<span style="font-size:11px">B</span></div>
@@ -2470,8 +2481,8 @@ async function runMC(){
     responsive:true, maintainAspectRatio:false,
     plugins:{ legend:{display:false} },
     scales:{
-      x:{ticks:{color:'var(--fg-2)',font:{size:9},maxRotation:0, autoSkip:true, maxTicksLimit:10},grid:{color:'rgba(58,61,51,.5)'}},
-      y:{ticks:{color:'var(--fg-2)',font:{size:9}},grid:{color:'rgba(58,61,51,.5)'}}
+      x:{ticks:{color:BRAND.fg2,font:{size:9},maxRotation:0, autoSkip:true, maxTicksLimit:10},grid:{color:'rgba(58,61,51,.5)'}},
+      y:{ticks:{color:BRAND.fg2,font:{size:9}},grid:{color:'rgba(58,61,51,.5)'}}
     }
   };
 
@@ -2482,12 +2493,12 @@ async function runMC(){
       datasets:[
         { label:'Frequency', data:npvHist.counts, backgroundColor:barColors, borderWidth:0, barPercentage:1.0, categoryPercentage:1.0 },
         { label:'Base NPV', type:'line', data:npvHist.labels.map(l=>parseFloat(l)*1000>=baseNPV-npvHist.step/2&&parseFloat(l)*1000<baseNPV+npvHist.step/2?Math.max(...npvHist.counts):null),
-          borderColor:'var(--amber)', borderWidth:2, pointRadius:0, fill:false }
+          borderColor:BRAND.amber, borderWidth:2, pointRadius:0, fill:false }
       ]
     },
     options:{...chartOpts,plugins:{...chartOpts.plugins,
       tooltip:{callbacks:{title:ls=>'NPV: $'+ls[0]+'B',label:c=>'Count: '+c.raw}}},
-      scales:{...chartOpts.scales,x:{...chartOpts.scales.x,title:{display:true,text:'NPV ($B) — P(NPV≥0): '+probPos.toFixed(0)+'%',color:'var(--fg)',font:{size:10}}}}}
+      scales:{...chartOpts.scales,x:{...chartOpts.scales.x,title:{display:true,text:'NPV ($B) — P(NPV≥0): '+probPos.toFixed(0)+'%',color:BRAND.fg,font:{size:10}}}}}
   });
 
   if(_mcIrrChart) _mcIrrChart.destroy();
@@ -2498,7 +2509,7 @@ async function runMC(){
         backgroundColor:irrHist.counts.map((_,i)=>irrHist.lo+(i+0.5)*irrHist.step>=g('targetIRR')?'rgba(93,211,128,.7)':'rgba(255,95,86,.7)'),
         borderWidth:0, barPercentage:1.0, categoryPercentage:1.0 }]
     },
-    options:{...chartOpts,scales:{...chartOpts.scales,x:{...chartOpts.scales.x,title:{display:true,text:'IRR (%) — P(IRR≥target): '+probIRR15.toFixed(0)+'%',color:'var(--fg)',font:{size:10}}}}}
+    options:{...chartOpts,scales:{...chartOpts.scales,x:{...chartOpts.scales.x,title:{display:true,text:'IRR (%) — P(IRR≥target): '+probIRR15.toFixed(0)+'%',color:BRAND.fg,font:{size:10}}}}}
   });
 
   // Tornado
@@ -2522,9 +2533,9 @@ async function runMC(){
       indexAxis:'y', responsive:true, maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Impact: $'+c.raw.toFixed(0)+'M'}}},
       scales:{
-        x:{ticks:{color:'var(--fg-2)',font:{size:9},callback:v=>'$'+v.toFixed(0)+'M'},grid:{color:'rgba(58,61,51,.5)'},
-           title:{display:true,text:'NPV impact vs base case ($M)',color:'var(--fg)',font:{size:10}}},
-        y:{ticks:{color:'var(--fg)',font:{size:10},font:{weight:'bold'}},grid:{display:false}}
+        x:{ticks:{color:BRAND.fg2,font:{size:9},callback:v=>'$'+v.toFixed(0)+'M'},grid:{color:'rgba(58,61,51,.5)'},
+           title:{display:true,text:'NPV impact vs base case ($M)',color:BRAND.fg,font:{size:10}}},
+        y:{ticks:{color:BRAND.fg,font:{size:10},font:{weight:'bold'}},grid:{display:false}}
       }
     }
   });
@@ -2677,8 +2688,8 @@ function loadCiscoPreset(){
   const btn = event.target;
   const orig = btn.textContent;
   btn.textContent = 'Cisco preset loaded';
-  btn.style.background = 'var(--green)';
-  setTimeout(() => { btn.textContent = orig; btn.style.background = 'var(--teal)'; }, 2500);
+  btn.style.background = BRAND.green;
+  setTimeout(() => { btn.textContent = orig; btn.style.background = BRAND.cyan; }, 2500);
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -2724,7 +2735,7 @@ function mvBuildStages(){
   const el = document.getElementById('mv-stages');
   if(!el) return;
   el.innerHTML = MV_STAGES.map((s,i) =>
-    `<button onclick="mvSetStage(${i})" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:${i===mvStageIdx?'rgba(232,182,88,.15)':'transparent'};border:1px solid ${i===mvStageIdx?'var(--amber)':'var(--border)'};font-family:var(--font-mono);font-size:9px;font-weight:700;color:${i===mvStageIdx?'var(--amber)':'var(--fg-2)'};transition:all .12s;white-space:nowrap;">${s.label}</button>`
+    `<button onclick="mvSetStage(${i})" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:${i===mvStageIdx?'rgba(232,182,88,.15)':'transparent'};border:1px solid ${i===mvStageIdx?BRAND.amber:BRAND.line};font-family:var(--font-mono);font-size:9px;font-weight:700;color:${i===mvStageIdx?BRAND.amber:BRAND.fg2};transition:all .12s;white-space:nowrap;">${s.label}</button>`
   ).join('');
 }
 
@@ -2736,12 +2747,12 @@ function mvBuildChips(chipId, comps){
   const isHR = chipId === 'mv-hr-chips';
   el.innerHTML = comps.map((c,i) => {
     const onclick = isHR ? `mvToggle('${chipId}',${i})` : '';
-    return `<div onclick="${onclick}" title="${c.note}" style="display:flex;justify-content:space-between;align-items:center;padding:5px 9px;border-radius:5px;cursor:${isHR?'pointer':'default'};background:${c.active?(isHR?'rgba(106,207,224,.1)':'rgba(106,207,224,.1)'):'rgba(26,28,22,.4)'};border:1px solid ${c.active?(isHR?'var(--cyan)':'var(--cyan)'):'var(--border)'};opacity:${c.active?1:0.5};transition:all .12s;margin-bottom:4px;">
+    return `<div onclick="${onclick}" title="${c.note}" style="display:flex;justify-content:space-between;align-items:center;padding:5px 9px;border-radius:5px;cursor:${isHR?'pointer':'default'};background:${c.active?(isHR?'rgba(106,207,224,.1)':'rgba(106,207,224,.1)'):'rgba(26,28,22,.4)'};border:1px solid ${c.active?(isHR?BRAND.cyan:BRAND.cyan):BRAND.line};opacity:${c.active?1:0.5};transition:all .12s;margin-bottom:4px;">
       <div>
-        <div style="font-size:10px;font-weight:700;color:${c.active?'var(--fg)':'var(--fg-2)'}">${c.name}</div>
+        <div style="font-size:10px;font-weight:700;color:${c.active?BRAND.fg:BRAND.fg2}">${c.name}</div>
         <div style="font-size:9px;color:var(--fg-2);font-family:var(--font-mono)">${c.date} · ${c.active?'included':'excluded'}</div>
       </div>
-      <div style="font-size:14px;font-weight:700;font-family:var(--font-mono);color:${isHR?'var(--cyan)':'var(--cyan)'}">${c.active?('$'+c.perT+'/t'):'—'}</div>
+      <div style="font-size:14px;font-weight:700;font-family:var(--font-mono);color:${isHR?BRAND.cyan:BRAND.cyan}">${c.active?('$'+c.perT+'/t'):'—'}</div>
     </div>`;
   }).join('');
 }
@@ -2807,10 +2818,10 @@ function updateMV(){
 
   const evTri = (evHR + evNPV) / 2;
   const barRows = [
-    { label:'Today (current market cap)', ev:currEV, color:'var(--red)', dark:'var(--bg)' },
-    { label:'Fair value — HR comps',      ev:evHR,   color:'var(--cyan)', dark:'var(--bg)' },
-    { label:'Acquisition ('+stage.label+')', ev:evNPV, color:'var(--amber)', dark:'var(--bg)' },
-    { label:'Triangulated mid-point',     ev:evTri,  color:'var(--fg-2)', dark:'var(--bg-3)' },
+    { label:'Today (current market cap)', ev:currEV, color:BRAND.red, dark:BRAND.bg },
+    { label:'Fair value — HR comps',      ev:evHR,   color:BRAND.cyan, dark:BRAND.bg },
+    { label:'Acquisition ('+stage.label+')', ev:evNPV, color:BRAND.amber, dark:BRAND.bg },
+    { label:'Triangulated mid-point',     ev:evTri,  color:BRAND.fg2, dark:BRAND.bg3 },
   ];
   const maxEV = Math.max(...barRows.map(b => b.ev)) * 1.15;
   const barsEl = document.getElementById('mv-bars');
@@ -2865,7 +2876,7 @@ function saveModel(){
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  if(btn){ const orig = btn.innerHTML; btn.innerHTML = 'Saved'; btn.style.color='var(--green)'; btn.style.borderColor='var(--green)'; setTimeout(()=>{ btn.innerHTML=orig; btn.style.color=''; btn.style.borderColor=''; }, 2000); }
+  if(btn){ const orig = btn.innerHTML; btn.innerHTML = 'Saved'; btn.style.color=BRAND.green; btn.style.borderColor=BRAND.green; setTimeout(()=>{ btn.innerHTML=orig; btn.style.color=''; btn.style.borderColor=''; }, 2000); }
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -2998,8 +3009,8 @@ function renderScenarios(){
     }
     card.classList.remove('empty');
     const k = s.kpi;
-    const npvColor = k.npv >= 0 ? 'var(--green)' : 'var(--red)';
-    const irrColor = k.irr >= gi('targetIRR') ? 'var(--green)' : k.irr >= 10 ? 'var(--amber)' : 'var(--red)';
+    const npvColor = k.npv >= 0 ? BRAND.green : BRAND.red;
+    const irrColor = k.irr >= gi('targetIRR') ? BRAND.green : k.irr >= 10 ? BRAND.amber : BRAND.red;
     card.innerHTML = `
       <div class="scn-header">
         <span class="scn-badge ${slot}">${slot==='bear'?'▼ Bear case':slot==='bull'?'▲ Bull case':'● Base case'}</span>
@@ -3074,12 +3085,12 @@ function renderScenarios(){
 // Stages use fractions consistent with MV_STAGES: MRE 20%, PEA 35%, PFS 55%, FS 72%, Construction 120%
 // Each stage: check if a raise is needed; if yes, compute shares issued at (stage value × raise discipline)
 const FND_STAGES = [
-  { id:'now',   label:'Today',        lo:0.08, mid:0.18, hi:0.35, raiseKey:null,             color:'var(--red)' },
-  { id:'pea',   label:'Post-PEA',     lo:0.20, mid:0.35, hi:0.50, raiseKey:'fnd-raisePEA',   color:'var(--amber)' },
-  { id:'pfs',   label:'Post-PFS',     lo:0.35, mid:0.55, hi:0.70, raiseKey:'fnd-raisePFS',   color:'var(--amber)' },
-  { id:'dfs',   label:'Post-DFS',     lo:0.55, mid:0.72, hi:0.90, raiseKey:'fnd-raiseDFS',   color:'var(--cyan)' },
-  { id:'fid',   label:'FID/Finance',  lo:0.80, mid:1.00, hi:1.30, raiseKey:'__capex__',      color:'var(--fg-2)' },
-  { id:'build', label:'In Production',lo:1.00, mid:1.20, hi:1.60, raiseKey:null,             color:'var(--green)' },
+  { id:'now',   label:'Today',        lo:0.08, mid:0.18, hi:0.35, raiseKey:null,             color:BRAND.red },
+  { id:'pea',   label:'Post-PEA',     lo:0.20, mid:0.35, hi:0.50, raiseKey:'fnd-raisePEA',   color:BRAND.amber },
+  { id:'pfs',   label:'Post-PFS',     lo:0.35, mid:0.55, hi:0.70, raiseKey:'fnd-raisePFS',   color:BRAND.amber },
+  { id:'dfs',   label:'Post-DFS',     lo:0.55, mid:0.72, hi:0.90, raiseKey:'fnd-raiseDFS',   color:BRAND.cyan },
+  { id:'fid',   label:'FID/Finance',  lo:0.80, mid:1.00, hi:1.30, raiseKey:'__capex__',      color:BRAND.fg2 },
+  { id:'build', label:'In Production',lo:1.00, mid:1.20, hi:1.60, raiseKey:null,             color:BRAND.green },
 ];
 
 let _fndChart = null;
@@ -3146,7 +3157,7 @@ function renderFunding(){
   const stagesEl = document.getElementById('fnd-stages');
   stagesEl.innerHTML = cascade.map((c, i) => {
     const isLast = i === cascade.length - 1;
-    const npvColor = c.npvPerShCAD > price0 * 2 ? 'var(--green)' : c.npvPerShCAD > price0 ? 'var(--amber)' : 'var(--red)';
+    const npvColor = c.npvPerShCAD > price0 * 2 ? BRAND.green : c.npvPerShCAD > price0 ? BRAND.amber : BRAND.red;
     return `<div class="fnd-stage">
       <div class="fnd-stage-name" style="color:${c.color}">${c.label}</div>
       <div class="fnd-stage-val" style="color:${npvColor}">C$${c.npvPerShCAD.toFixed(2)}</div>
@@ -3182,7 +3193,7 @@ function renderFunding(){
       <div class="fnd-summary-lbl">Total equity raised</div>
     </div>
     <div class="fnd-summary-kpi">
-      <div class="fnd-summary-val" style="color:${impliedUpside > 200 ? 'var(--green)' : impliedUpside > 50 ? 'var(--amber)' : 'var(--red)'}">${impliedUpside >= 0 ? '+' : ''}${impliedUpside.toFixed(0)}%</div>
+      <div class="fnd-summary-val" style="color:${impliedUpside > 200 ? BRAND.green : impliedUpside > 50 ? BRAND.amber : BRAND.red}">${impliedUpside >= 0 ? '+' : ''}${impliedUpside.toFixed(0)}%</div>
       <div class="fnd-summary-lbl">Upside to fully-built-out NPV/sh</div>
     </div>
   `;
@@ -3199,21 +3210,21 @@ function renderFunding(){
     type:'bar',
     data:{ labels,
       datasets:[
-        { type:'bar', label:'Shares out (M)', data:sharesData, backgroundColor:'rgba(138,135,115,.55)', borderColor:'var(--fg-2)', borderWidth:1, yAxisID:'y1', order:2 },
-        { type:'line', label:'NPV/share (C$, fully diluted)', data:npvData, borderColor:'var(--amber)', backgroundColor:'rgba(232,182,88,.15)',
-          borderWidth:3, fill:false, yAxisID:'y2', tension:.2, pointRadius:5, pointBackgroundColor:'var(--amber)', order:1 },
+        { type:'bar', label:'Shares out (M)', data:sharesData, backgroundColor:'rgba(138,135,115,.55)', borderColor:BRAND.fg2, borderWidth:1, yAxisID:'y1', order:2 },
+        { type:'line', label:'NPV/share (C$, fully diluted)', data:npvData, borderColor:BRAND.amber, backgroundColor:'rgba(232,182,88,.15)',
+          borderWidth:3, fill:false, yAxisID:'y2', tension:.2, pointRadius:5, pointBackgroundColor:BRAND.amber, order:1 },
         { type:'line', label:'Current price', data:labels.map(()=>price0), borderColor:'rgba(255,95,86,.6)', borderDash:[4,4],
           borderWidth:1.5, fill:false, yAxisID:'y2', pointRadius:0, order:0 }
       ]
     },
     options:{
       responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ position:'top', labels:{color:'var(--fg)', font:{size:10}, boxWidth:14}},
+      plugins:{ legend:{ position:'top', labels:{color:BRAND.fg, font:{size:10}, boxWidth:14}},
         tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.datasetIndex===0?c.raw.toFixed(0)+'M sh':'C$'+c.raw.toFixed(2))}} },
       scales:{
-        x:{ticks:{color:'var(--fg)',font:{size:10}},grid:{color:'rgba(58,61,51,.3)'}},
-        y1:{position:'left',ticks:{color:'var(--fg-2)',font:{size:9},callback:v=>v.toFixed(0)+'M'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'Shares out (M)',color:'var(--fg-2)',font:{size:10}}},
-        y2:{position:'right',ticks:{color:'var(--amber)',font:{size:9},callback:v=>'C$'+v.toFixed(2)},grid:{display:false},title:{display:true,text:'NPV per share (C$)',color:'var(--amber)',font:{size:10}}}
+        x:{ticks:{color:BRAND.fg,font:{size:10}},grid:{color:'rgba(58,61,51,.3)'}},
+        y1:{position:'left',ticks:{color:BRAND.fg2,font:{size:9},callback:v=>v.toFixed(0)+'M'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'Shares out (M)',color:BRAND.fg2,font:{size:10}}},
+        y2:{position:'right',ticks:{color:BRAND.amber,font:{size:9},callback:v=>'C$'+v.toFixed(2)},grid:{display:false},title:{display:true,text:'NPV per share (C$)',color:BRAND.amber,font:{size:10}}}
       }
     }
   });
@@ -3328,7 +3339,7 @@ function renderPeers(){
   const peersWithAISC = all.filter(p => p.ai).slice().sort((a,b) => a.ai - b.ai);
   const aiscLabels = peersWithAISC.map(p => p.n.length > 18 ? p.n.substring(0,18)+'…' : p.n);
   const aiscData = peersWithAISC.map(p => p.ai);
-  const aiscColors = peersWithAISC.map(p => p.isMe ? 'var(--amber)' : p.ai < 500 ? 'var(--green)' : p.ai < 800 ? 'var(--cyan)' : p.ai < 1000 ? 'var(--amber)' : 'var(--red)');
+  const aiscColors = peersWithAISC.map(p => p.isMe ? BRAND.amber : p.ai < 500 ? BRAND.green : p.ai < 800 ? BRAND.cyan : p.ai < 1000 ? BRAND.amber : BRAND.red);
   if(_peerAISCChart) _peerAISCChart.destroy();
   _peerAISCChart = new Chart(document.getElementById('peer-aisc-chart'), {
     type:'bar',
@@ -3337,8 +3348,8 @@ function renderPeers(){
       indexAxis:'y', responsive:true, maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'AISC: $'+c.raw.toFixed(0)+'/t SC6'}}},
       scales:{
-        x:{ticks:{color:'var(--fg-2)',font:{size:9},callback:v=>'$'+v},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'AISC (US$/t SC6 equiv)',color:'var(--fg)',font:{size:10}}},
-        y:{ticks:{color:'var(--fg)',font:{size:9}},grid:{display:false}}
+        x:{ticks:{color:BRAND.fg2,font:{size:9},callback:v=>'$'+v},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'AISC (US$/t SC6 equiv)',color:BRAND.fg,font:{size:10}}},
+        y:{ticks:{color:BRAND.fg,font:{size:9}},grid:{display:false}}
       }
     }
   });
@@ -3355,21 +3366,21 @@ function renderPeers(){
   _peerCAPEXChart = new Chart(document.getElementById('peer-capex-chart'), {
     type:'scatter',
     data:{ datasets:[
-      { label:'Peers', data:scatterData.filter(d=>!d.isMe), backgroundColor:scatterData.filter(d=>!d.isMe).map(d=>'rgba(106,207,224,.7)'), borderColor:'var(--cyan)', borderWidth:1, pointRadius:6, pointHoverRadius:8 },
-      { label:'This project', data:scatterData.filter(d=>d.isMe), backgroundColor:'var(--amber)', borderColor:'var(--fg)', borderWidth:2, pointRadius:11, pointHoverRadius:13, pointStyle:'rectRot' }
+      { label:'Peers', data:scatterData.filter(d=>!d.isMe), backgroundColor:scatterData.filter(d=>!d.isMe).map(d=>'rgba(106,207,224,.7)'), borderColor:BRAND.cyan, borderWidth:1, pointRadius:6, pointHoverRadius:8 },
+      { label:'This project', data:scatterData.filter(d=>d.isMe), backgroundColor:BRAND.amber, borderColor:BRAND.fg, borderWidth:2, pointRadius:11, pointHoverRadius:13, pointStyle:'rectRot' }
     ]},
     options:{
       responsive:true, maintainAspectRatio:false,
       plugins:{
-        legend:{position:'top',labels:{color:'var(--fg)',font:{size:10},boxWidth:12}},
+        legend:{position:'top',labels:{color:BRAND.fg,font:{size:10},boxWidth:12}},
         tooltip:{callbacks:{label:c=>{
           const d = c.raw; const inten = (d.x*1000/d.y).toFixed(0);
           return d.label + ': $' + d.x.toFixed(0) + 'M for ' + d.y.toFixed(0) + 'ktpa ($' + inten + '/t capacity)';
         }}}
       },
       scales:{
-        x:{type:'linear',ticks:{color:'var(--fg)',font:{size:9},callback:v=>'$'+(v>=1000?(v/1000).toFixed(1)+'B':v+'M')},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'CAPEX (US$M)',color:'var(--fg)',font:{size:10}}},
-        y:{ticks:{color:'var(--fg)',font:{size:9},callback:v=>v+'kt'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'SC6 production (ktpa)',color:'var(--fg)',font:{size:10}}}
+        x:{type:'linear',ticks:{color:BRAND.fg,font:{size:9},callback:v=>'$'+(v>=1000?(v/1000).toFixed(1)+'B':v+'M')},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'CAPEX (US$M)',color:BRAND.fg,font:{size:10}}},
+        y:{ticks:{color:BRAND.fg,font:{size:9},callback:v=>v+'kt'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'SC6 production (ktpa)',color:BRAND.fg,font:{size:10}}}
       }
     }
   });
@@ -3507,10 +3518,10 @@ async function runStochasticFan(){
       datasets:[
         { label:'P90', data:p90, borderColor:'rgba(138,135,115,.4)', backgroundColor:'rgba(138,135,115,.15)', fill:false, pointRadius:0, borderWidth:1 },
         { label:'P75', data:p75, borderColor:'rgba(138,135,115,.6)', backgroundColor:'rgba(138,135,115,.15)', fill:'-1', pointRadius:0, borderWidth:1 },
-        { label:'P50 (median)', data:p50, borderColor:'var(--amber)', backgroundColor:'rgba(138,135,115,.3)', fill:'-1', pointRadius:0, borderWidth:2.5 },
+        { label:'P50 (median)', data:p50, borderColor:BRAND.amber, backgroundColor:'rgba(138,135,115,.3)', fill:'-1', pointRadius:0, borderWidth:2.5 },
         { label:'P25', data:p25, borderColor:'rgba(138,135,115,.6)', backgroundColor:'rgba(138,135,115,.3)', fill:'-1', pointRadius:0, borderWidth:1 },
         { label:'P10', data:p10, borderColor:'rgba(138,135,115,.4)', backgroundColor:'rgba(138,135,115,.15)', fill:'-1', pointRadius:0, borderWidth:1 },
-        { label:'Base case', data:baseline, borderColor:'var(--green)', borderWidth:2, pointRadius:0, fill:false, borderDash:[6,4] }
+        { label:'Base case', data:baseline, borderColor:BRAND.green, borderWidth:2, pointRadius:0, fill:false, borderDash:[6,4] }
       ]
     },
     options:{
@@ -3522,8 +3533,8 @@ async function runStochasticFan(){
       },
       interaction:{mode:'index',intersect:false},
       scales:{
-        x:{ticks:{color:'var(--fg-2)',font:{size:9},maxTicksLimit:15},grid:{color:'rgba(58,61,51,.3)'}},
-        y:{ticks:{color:'var(--fg-2)',font:{size:9},callback:v=>'$'+(v/1000).toFixed(1)+'B'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'Cumulative NPV (US$M)',color:'var(--fg)',font:{size:10}}}
+        x:{ticks:{color:BRAND.fg2,font:{size:9},maxTicksLimit:15},grid:{color:'rgba(58,61,51,.3)'}},
+        y:{ticks:{color:BRAND.fg2,font:{size:9},callback:v=>'$'+(v/1000).toFixed(1)+'B'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'Cumulative NPV (US$M)',color:BRAND.fg,font:{size:10}}}
       }
     }
   });
@@ -3537,7 +3548,7 @@ async function runStochasticFan(){
   const finalSpread = perYear[T-1].p90 - perYear[T-1].p10;
   document.getElementById('stoch-summary').innerHTML = `
     <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:var(--amber)">${p50PosYr >= 0 ? 'Y' + (p50PosYr + 1) : 'never'}</div><div class="cycle-kpi-l">Year P50 crosses $0</div></div>
-    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${p10PosYr >= 0 ? 'var(--green)' : 'var(--red)'}">${p10PosYr >= 0 ? 'Y' + (p10PosYr + 1) : 'never'}</div><div class="cycle-kpi-l">Year P10 crosses $0</div></div>
+    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${p10PosYr >= 0 ? BRAND.green : BRAND.red}">${p10PosYr >= 0 ? 'Y' + (p10PosYr + 1) : 'never'}</div><div class="cycle-kpi-l">Year P10 crosses $0</div></div>
     <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:var(--fg-2)">$${(finalSpread/1000).toFixed(2)}B</div><div class="cycle-kpi-l">Final P10–P90 spread</div></div>
   `;
 
@@ -3639,13 +3650,13 @@ function runCycleReplay(id){
 
   // Render result
   document.getElementById('cycle-result').style.display = 'block';
-  const irrColor = irr !== null && irr >= gi('targetIRR') ? 'var(--green)' : irr !== null && irr >= 10 ? 'var(--amber)' : 'var(--red)';
-  const npvColor = npv >= 500 ? 'var(--green)' : npv >= 0 ? 'var(--cyan)' : 'var(--red)';
-  const survColor = survives ? 'var(--green)' : 'var(--red)';
+  const irrColor = irr !== null && irr >= gi('targetIRR') ? BRAND.green : irr !== null && irr >= 10 ? BRAND.amber : BRAND.red;
+  const npvColor = npv >= 500 ? BRAND.green : npv >= 0 ? BRAND.cyan : BRAND.red;
+  const survColor = survives ? BRAND.green : BRAND.red;
   document.getElementById('cycle-kpi').innerHTML = `
     <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${npvColor}">${npv>=0?'$':'-$'}${Math.abs(npv/1000).toFixed(2)}B</div><div class="cycle-kpi-l">Replayed NPV @WACC</div></div>
     <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${irrColor}">${irr!==null?irr.toFixed(1)+'%':'N/A'}</div><div class="cycle-kpi-l">Replayed IRR</div></div>
-    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${yrsUnder > 5 ? 'var(--red)' : yrsUnder > 2 ? 'var(--amber)' : 'var(--green)'}">${yrsUnder}</div><div class="cycle-kpi-l">Yrs FCF &lt; 0</div></div>
+    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${yrsUnder > 5 ? BRAND.red : yrsUnder > 2 ? BRAND.amber : BRAND.green}">${yrsUnder}</div><div class="cycle-kpi-l">Yrs FCF &lt; 0</div></div>
     <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:var(--amber)">$${Math.abs(minCum).toFixed(0)}M</div><div class="cycle-kpi-l">Max drawdown</div></div>
   `;
   document.getElementById('cycle-commentary').innerHTML = preset.commentary;
@@ -3750,10 +3761,10 @@ function renderSourcesUses(){
   const costEq     = 22;                        // public equity = NPV cost of dilution
 
   const sources = [
-    { k:'debt',   label:'Project Debt',     amt: totalUse*debtPct,   color:'var(--cyan)', cost:costDebt,   note:'~SOFR + 400bp' },
-    { k:'stream', label:'Streaming/Royalty',amt: totalUse*streamPct, color:'var(--fg-2)', cost:costStream, note:'1–3% NSR on concentrate revenue' },
-    { k:'strat',  label:'Strategic Equity', amt: totalUse*stratPct,  color:'var(--amber)', cost:costStrat,  note:'OEM/chem partner at stage value' },
-    { k:'eq',     label:'Public Equity',    amt: totalUse*eqPct,     color:'var(--red)', cost:costEq,     note:'Institutional book-build at discount' },
+    { k:'debt',   label:'Project Debt',     amt: totalUse*debtPct,   color:BRAND.cyan, cost:costDebt,   note:'~SOFR + 400bp' },
+    { k:'stream', label:'Streaming/Royalty',amt: totalUse*streamPct, color:BRAND.fg2, cost:costStream, note:'1–3% NSR on concentrate revenue' },
+    { k:'strat',  label:'Strategic Equity', amt: totalUse*stratPct,  color:BRAND.amber, cost:costStrat,  note:'OEM/chem partner at stage value' },
+    { k:'eq',     label:'Public Equity',    amt: totalUse*eqPct,     color:BRAND.red, cost:costEq,     note:'Institutional book-build at discount' },
   ].filter(s => s.amt > 0.01);
 
   const tot = sources.reduce((s,v)=>s+v.amt, 0) || 1;
@@ -3853,22 +3864,22 @@ function renderPeerGradeChart(){
     sc: p.sc,
     isMe: !!p.isMe
   }));
-  const stageColors = { prod:'var(--green)', constr:'var(--fg-2)', fs:'var(--cyan)', pfs:'var(--cyan)', pea:'var(--amber)', mre:'var(--amber)' };
+  const stageColors = { prod:BRAND.green, constr:BRAND.fg2, fs:BRAND.cyan, pfs:BRAND.cyan, pea:BRAND.amber, mre:BRAND.amber };
 
   if(_peerGradeChart) _peerGradeChart.destroy();
   _peerGradeChart = new Chart(canvas, {
     type:'bubble',
     data:{ datasets:[
-      { label:'Producing',   data:data.filter(d=>!d.isMe && d.stage==='prod'),   backgroundColor:'rgba(93,211,128,.55)', borderColor:'var(--green)', borderWidth:1 },
-      { label:'Construction',data:data.filter(d=>!d.isMe && d.stage==='constr'), backgroundColor:'rgba(138,135,115,.55)', borderColor:'var(--fg-2)', borderWidth:1 },
-      { label:'FS/PFS',      data:data.filter(d=>!d.isMe && (d.stage==='fs'||d.stage==='pfs')), backgroundColor:'rgba(106,207,224,.55)', borderColor:'var(--cyan)', borderWidth:1 },
-      { label:'PEA/MRE',     data:data.filter(d=>!d.isMe && (d.stage==='pea'||d.stage==='mre')), backgroundColor:'rgba(232,182,88,.55)', borderColor:'var(--amber)', borderWidth:1 },
-      { label:'This project',data:data.filter(d=>d.isMe), backgroundColor:'var(--amber)', borderColor:'var(--fg)', borderWidth:2, pointStyle:'rectRot' }
+      { label:'Producing',   data:data.filter(d=>!d.isMe && d.stage==='prod'),   backgroundColor:'rgba(93,211,128,.55)', borderColor:BRAND.green, borderWidth:1 },
+      { label:'Construction',data:data.filter(d=>!d.isMe && d.stage==='constr'), backgroundColor:'rgba(138,135,115,.55)', borderColor:BRAND.fg2, borderWidth:1 },
+      { label:'FS/PFS',      data:data.filter(d=>!d.isMe && (d.stage==='fs'||d.stage==='pfs')), backgroundColor:'rgba(106,207,224,.55)', borderColor:BRAND.cyan, borderWidth:1 },
+      { label:'PEA/MRE',     data:data.filter(d=>!d.isMe && (d.stage==='pea'||d.stage==='mre')), backgroundColor:'rgba(232,182,88,.55)', borderColor:BRAND.amber, borderWidth:1 },
+      { label:'This project',data:data.filter(d=>d.isMe), backgroundColor:BRAND.amber, borderColor:BRAND.fg, borderWidth:2, pointStyle:'rectRot' }
     ]},
     options:{
       responsive:true, maintainAspectRatio:false,
       plugins:{
-        legend:{position:'top',labels:{color:'var(--fg)',font:{size:10},boxWidth:10,padding:8}},
+        legend:{position:'top',labels:{color:BRAND.fg,font:{size:10},boxWidth:10,padding:8}},
         tooltip:{callbacks:{
           label:c=>{
             const d = c.raw;
@@ -3876,8 +3887,8 @@ function renderPeerGradeChart(){
           }}}
       },
       scales:{
-        x:{type:'logarithmic',ticks:{color:'var(--fg)',font:{size:9},callback:v=>v<1000?v+'Mt':(v/1000)+'Bt'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'Resource Size (Mt, log scale)',color:'var(--fg)',font:{size:10}}},
-        y:{ticks:{color:'var(--fg)',font:{size:9},callback:v=>v.toFixed(2)+'%'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'Grade (% Li₂O)',color:'var(--fg)',font:{size:10}}}
+        x:{type:'logarithmic',ticks:{color:BRAND.fg,font:{size:9},callback:v=>v<1000?v+'Mt':(v/1000)+'Bt'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'Resource Size (Mt, log scale)',color:BRAND.fg,font:{size:10}}},
+        y:{ticks:{color:BRAND.fg,font:{size:9},callback:v=>v.toFixed(2)+'%'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'Grade (% Li₂O)',color:BRAND.fg,font:{size:10}}}
       }
     }
   });
@@ -3943,14 +3954,14 @@ function renderDSCR(){
     data:{ labels:years,
       datasets:[
         { type:'bar', label:'DSCR', data:dscrArr, backgroundColor:barColors, borderWidth:0, yAxisID:'y1', order:2 },
-        { type:'line', label:'Covenant ('+cov+'×)', data:years.map(()=>cov), borderColor:'var(--red)', borderWidth:2, borderDash:[5,5], pointRadius:0, fill:false, yAxisID:'y1', order:0 },
-        { type:'line', label:'1.0× (breach)', data:years.map(()=>1), borderColor:'var(--amber)', borderWidth:1, borderDash:[2,4], pointRadius:0, fill:false, yAxisID:'y1', order:0 },
-        { type:'line', label:'Debt Service ($M)', data:dsArr, borderColor:'var(--fg-2)', backgroundColor:'rgba(138,135,115,.08)', borderWidth:1.5, pointRadius:2, fill:false, yAxisID:'y2', order:1 }
+        { type:'line', label:'Covenant ('+cov+'×)', data:years.map(()=>cov), borderColor:BRAND.red, borderWidth:2, borderDash:[5,5], pointRadius:0, fill:false, yAxisID:'y1', order:0 },
+        { type:'line', label:'1.0× (breach)', data:years.map(()=>1), borderColor:BRAND.amber, borderWidth:1, borderDash:[2,4], pointRadius:0, fill:false, yAxisID:'y1', order:0 },
+        { type:'line', label:'Debt Service ($M)', data:dsArr, borderColor:BRAND.fg2, backgroundColor:'rgba(138,135,115,.08)', borderWidth:1.5, pointRadius:2, fill:false, yAxisID:'y2', order:1 }
       ]},
     options:{
       responsive:true, maintainAspectRatio:false,
       plugins:{
-        legend:{position:'top',labels:{color:'var(--fg)',font:{size:10},boxWidth:12}},
+        legend:{position:'top',labels:{color:BRAND.fg,font:{size:10},boxWidth:12}},
         tooltip:{mode:'index',intersect:false,callbacks:{label:c=>{
           if(c.dataset.label==='DSCR') return 'DSCR: '+(c.raw===null?'n/a':c.raw.toFixed(2)+'×');
           if(c.dataset.label==='Debt Service ($M)') return 'DS: $'+c.raw.toFixed(1)+'M';
@@ -3958,9 +3969,9 @@ function renderDSCR(){
         }}}
       },
       scales:{
-        x:{ticks:{color:'var(--fg-2)',font:{size:9},maxTicksLimit:15},grid:{color:'rgba(58,61,51,.3)'}},
-        y1:{position:'left',min:0,ticks:{color:'var(--fg)',font:{size:9},callback:v=>v.toFixed(1)+'×'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'DSCR (×)',color:'var(--fg)',font:{size:10}}},
-        y2:{position:'right',ticks:{color:'var(--fg-2)',font:{size:9},callback:v=>'$'+v.toFixed(0)+'M'},grid:{display:false},title:{display:true,text:'Debt Service ($M)',color:'var(--fg-2)',font:{size:10}}}
+        x:{ticks:{color:BRAND.fg2,font:{size:9},maxTicksLimit:15},grid:{color:'rgba(58,61,51,.3)'}},
+        y1:{position:'left',min:0,ticks:{color:BRAND.fg,font:{size:9},callback:v=>v.toFixed(1)+'×'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'DSCR (×)',color:BRAND.fg,font:{size:10}}},
+        y2:{position:'right',ticks:{color:BRAND.fg2,font:{size:9},callback:v=>'$'+v.toFixed(0)+'M'},grid:{display:false},title:{display:true,text:'Debt Service ($M)',color:BRAND.fg2,font:{size:10}}}
       }
     }
   });
@@ -3973,10 +3984,10 @@ function renderDSCR(){
   const firstBreachLbl = firstBreach >= 0 ? years[firstBreach] : '—';
 
   document.getElementById('dscr-kpi').innerHTML = `
-    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${minDSCR && minDSCR >= cov ? 'var(--green)' : minDSCR && minDSCR >= 1 ? 'var(--amber)' : 'var(--red)'}">${minDSCR !== null ? minDSCR.toFixed(2)+'×' : 'n/a'}</div><div class="cycle-kpi-l">Min DSCR (during tenor)</div></div>
-    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${avgDSCR && avgDSCR >= 2 ? 'var(--green)' : avgDSCR && avgDSCR >= cov ? 'var(--cyan)' : 'var(--amber)'}">${avgDSCR !== null ? avgDSCR.toFixed(2)+'×' : 'n/a'}</div><div class="cycle-kpi-l">Avg DSCR (during tenor)</div></div>
-    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${breachYrs === 0 ? 'var(--green)' : breachYrs <= 1 ? 'var(--amber)' : 'var(--red)'}">${breachYrs}</div><div class="cycle-kpi-l">Yrs DSCR &lt; ${cov}×</div></div>
-    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${firstBreach < 0 ? 'var(--green)' : 'var(--red)'}">${firstBreachLbl}</div><div class="cycle-kpi-l">First covenant breach</div></div>
+    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${minDSCR && minDSCR >= cov ? BRAND.green : minDSCR && minDSCR >= 1 ? BRAND.amber : BRAND.red}">${minDSCR !== null ? minDSCR.toFixed(2)+'×' : 'n/a'}</div><div class="cycle-kpi-l">Min DSCR (during tenor)</div></div>
+    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${avgDSCR && avgDSCR >= 2 ? BRAND.green : avgDSCR && avgDSCR >= cov ? BRAND.cyan : BRAND.amber}">${avgDSCR !== null ? avgDSCR.toFixed(2)+'×' : 'n/a'}</div><div class="cycle-kpi-l">Avg DSCR (during tenor)</div></div>
+    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${breachYrs === 0 ? BRAND.green : breachYrs <= 1 ? BRAND.amber : BRAND.red}">${breachYrs}</div><div class="cycle-kpi-l">Yrs DSCR &lt; ${cov}×</div></div>
+    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${firstBreach < 0 ? BRAND.green : BRAND.red}">${firstBreachLbl}</div><div class="cycle-kpi-l">First covenant breach</div></div>
   `;
 }
 
@@ -4064,7 +4075,7 @@ function renderScorecard(){
   dims.forEach((d, i) => { totalScore += gradeScore[d.grade] * weights[i]; totalWeight += weights[i]; });
   const avgScore = totalScore / totalWeight;
   const overallGrade = avgScore >= 3.4 ? 'A' : avgScore >= 2.6 ? 'B' : avgScore >= 1.8 ? 'C' : avgScore >= 1.0 ? 'D' : 'F';
-  const overallColor = {A:'var(--green)', B:'var(--cyan)', C:'var(--amber)', D:'var(--amber)', F:'var(--red)'}[overallGrade];
+  const overallColor = {A:BRAND.green, B:BRAND.cyan, C:BRAND.amber, D:BRAND.amber, F:BRAND.red}[overallGrade];
   const As = dims.filter(d => d.grade==='A').length;
   const Ds = dims.filter(d => d.grade==='D' || d.grade==='F').length;
 
@@ -4102,13 +4113,13 @@ function renderCatalystCalendar(){
 
   // Stages use MV_STAGES fractions
   const stages = [
-    { name:'Today',      time:'now',      color:'var(--red)', frac:0.18,   desc:'Maiden MRE published' },
-    { name:'PEA',        time:'+6-12mo',  color:'var(--amber)', frac:0.35,   desc:'Preliminary economics, permitting initiated' },
-    { name:'PFS',        time:'+18-24mo', color:'var(--amber)', frac:0.55,   desc:'Mineral reserves, refined design, partner talks' },
-    { name:'DFS',        time:'+30-36mo', color:'var(--cyan)', frac:0.72,   desc:'Permits advanced, EPC tendered, offtake LOIs' },
-    { name:'FID',        time:'+42mo',    color:'var(--cyan)', frac:0.90,   desc:'Financing closed, ground-breaking, execution risk peak' },
-    { name:'First Conc.',time:'+5-6yr',   color:'var(--fg-2)', frac:1.05,   desc:'Ramp risk fades, cash flow begins' },
-    { name:'Full Prod',  time:'+7yr',     color:'var(--green)', frac:1.20,   desc:'Nameplate achieved, re-rate to producer multiple' },
+    { name:'Today',      time:'now',      color:BRAND.red, frac:0.18,   desc:'Maiden MRE published' },
+    { name:'PEA',        time:'+6-12mo',  color:BRAND.amber, frac:0.35,   desc:'Preliminary economics, permitting initiated' },
+    { name:'PFS',        time:'+18-24mo', color:BRAND.amber, frac:0.55,   desc:'Mineral reserves, refined design, partner talks' },
+    { name:'DFS',        time:'+30-36mo', color:BRAND.cyan, frac:0.72,   desc:'Permits advanced, EPC tendered, offtake LOIs' },
+    { name:'FID',        time:'+42mo',    color:BRAND.cyan, frac:0.90,   desc:'Financing closed, ground-breaking, execution risk peak' },
+    { name:'First Conc.',time:'+5-6yr',   color:BRAND.fg2, frac:1.05,   desc:'Ramp risk fades, cash flow begins' },
+    { name:'Full Prod',  time:'+7yr',     color:BRAND.green, frac:1.20,   desc:'Nameplate achieved, re-rate to producer multiple' },
   ];
 
   // Estimate shares at each stage (rough: grows via fnd stages)
@@ -4121,7 +4132,7 @@ function renderCatalystCalendar(){
     const projEV = npv * s.frac;
     const projCADperSh = projShares > 0 ? projEV / projShares / fx : 0;
     const upliftPct = price0 > 0 ? (projCADperSh / price0 - 1) * 100 : 0;
-    const upColor = upliftPct > 100 ? 'var(--green)' : upliftPct > 25 ? 'var(--cyan)' : upliftPct > 0 ? 'var(--amber)' : 'var(--red)';
+    const upColor = upliftPct > 100 ? BRAND.green : upliftPct > 25 ? BRAND.cyan : upliftPct > 0 ? BRAND.amber : BRAND.red;
     return `<div class="cat-item">
       <div class="cat-time">${s.time}</div>
       <div class="cat-dot" style="background:${s.color};box-shadow:0 0 0 3px ${s.color}22;"></div>
