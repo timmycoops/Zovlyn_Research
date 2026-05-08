@@ -9,20 +9,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* Zovlyn design tokens — see /CLAUDE.md. Token swap from legacy navy/amber palette.
-     Hardcoded literals throughout the file (e.g. #0f1e30, #c0d4e8) are NOT yet migrated;
-     deeper layout port to the QTWO research-report template is TBD. */
-  --bg:#0c0d0a;--surface:#131410;--card:#1a1c16;--card2:#1a1c16;
-  --border:#2a2c24;--border2:#3a3d33;
+  /* Zovlyn design tokens — canonical palette per /CLAUDE.md. */
+  --bg:#0c0d0a;--bg-2:#131410;--bg-3:#1a1c16;
+  --line:#2a2c24;--line-2:#3a3d33;
+  --fg:#d8d4c2;--fg-2:#8a8773;--fg-3:#5d5b4d;
   --accent:#5dd3a8;--accent-2:#3aa881;--accent-dim:rgba(93,211,168,0.10);
-  --teal:#6acfe0;--blue:#64b5f6;--purple:#b39dff;
-  --green:#5dd380;--red:#ff5f56;--orange:#e8b658;
-  --text:#d8d4c2;--muted:#8a8773;--dim:#5d5b4d;
+  --green:#5dd380;--red:#ff5f56;--amber:#e8b658;--cyan:#6acfe0;
+  /* legacy aliases — kept so historic var() refs stay working but resolve to brand colours */
+  --surface:var(--bg-2);--card:var(--bg-3);--card2:var(--bg-3);
+  --border:var(--line);--border2:var(--line-2);
+  --text:var(--fg);--muted:var(--fg-2);--dim:var(--fg-3);
+  --teal:var(--cyan);--blue:var(--cyan);--orange:var(--amber);
+  --purple:var(--fg-2);
   --r:4px;
   --font-mono:'JetBrains Mono','IBM Plex Mono',ui-monospace,'Cascadia Code',monospace;
+  --font-sans:'Inter',system-ui,'Segoe UI',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-html{height:100%;}body{height:100%;overflow:hidden;}
+html{height:100%;}
+body{height:100%;overflow:hidden;}
+@media (max-width: 900px){ body{height:auto;overflow-x:hidden;overflow-y:auto;} }
 body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;font-size:12px;display:flex;flex-direction:column;}
 
 /* ── Header ── */
@@ -43,7 +49,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',syste
 .sec{border-bottom:1px solid var(--border);}
 .sec-hdr{padding:9px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;transition:background .12s;}
 .sec-hdr:hover{background:rgba(255,255,255,.03);}
-.sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c8dff0;}
+.sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);}
 .sec-body{padding:10px 12px 12px;display:none;}
 .sec-body.open{display:block;}
 .chev{font-size:10px;color:var(--muted);transition:transform .2s;}
@@ -51,9 +57,9 @@ body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',syste
 
 /* ── Form rows ── */
 .fr{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
-.fr label{font-size:11px;color:#c0d4e8;flex:1;line-height:1.3;}
+.fr label{font-size:11px;color:var(--fg);flex:1;line-height:1.3;}
 .fr input[type=number],.fr select{
-  background:var(--card);border:1px solid var(--border2);color:#ffffff;
+  background:var(--card);border:1px solid var(--border2);color:var(--fg);
   padding:3px 7px;border-radius:4px;font-size:11px;font-family:var(--font-mono);
   width:80px;text-align:right;}
 .fr input[type=number]:focus,.fr select:focus{outline:none;border-color:var(--accent);}
@@ -63,7 +69,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',syste
 /* Presets */
 .presets{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
 .pr{padding:2px 8px;font-size:10px;border:1px solid var(--border);border-radius:10px;cursor:pointer;background:none;color:var(--muted);font-family:var(--font-mono);transition:all .12s;}
-.pr:hover,.pr.on{border-color:var(--accent);color:var(--accent);background:rgba(240,165,0,.1);}
+.pr:hover,.pr.on{border-color:var(--accent);color:var(--accent);background:rgba(232,182,88,.1);}
 
 .divider{border:none;border-top:1px solid var(--border);margin:8px 0;}
 .fr-note{font-size:10px;color:var(--muted);margin-bottom:6px;line-height:1.4;}
@@ -74,7 +80,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',syste
 /* ── Charts ── */
 .chart-row{display:grid;grid-template-columns:3fr 2fr;gap:12px;}
 .chart-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;}
-.card-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0d4e8;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+.card-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
 .chart-wrap{position:relative;height:180px;}
 
 /* Cost summary pills */
@@ -88,67 +94,67 @@ body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',syste
 .table-wrap{overflow-x:auto;max-height:340px;overflow-y:auto;}
 table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);white-space:nowrap;width:100%;}
 .dcf thead th{
-  position:sticky;top:0;z-index:3;background:#0f1e30;
-  padding:8px 10px;text-align:right;font-weight:700;color:#c8dff0;
+  position:sticky;top:0;z-index:3;background:var(--bg-3);
+  padding:8px 10px;text-align:right;font-weight:700;color:var(--fg);
   border-bottom:2px solid var(--border2);font-size:10px;letter-spacing:.04em;
   cursor:default;user-select:none;}
-.dcf thead th:first-child{text-align:left;position:sticky;left:0;z-index:4;background:#0f1e30;}
-.dcf thead th.group{text-align:center;color:#fff;font-weight:700;border-bottom:1px solid var(--border);font-size:9px;letter-spacing:.06em;}
+.dcf thead th:first-child{text-align:left;position:sticky;left:0;z-index:4;background:var(--bg-3);}
+.dcf thead th.group{text-align:center;color:var(--fg);font-weight:700;border-bottom:1px solid var(--border);font-size:9px;letter-spacing:.06em;}
 .dcf tbody td{
-  padding:6px 10px;text-align:right;border-bottom:1px solid rgba(44,66,96,.5);color:#e0eaf5;}
+  padding:6px 10px;text-align:right;border-bottom:1px solid rgba(58,61,51,.5);color:var(--fg);}
 .dcf tbody td:first-child{
   text-align:left;font-weight:700;position:sticky;left:0;background:var(--card);z-index:2;
-  border-right:1px solid var(--border2);color:#fff;}
-.dcf tbody tr:nth-child(even) td{background:rgba(26,40,60,.6);}
-.dcf tbody tr:nth-child(even) td:first-child{background:#1e324a;}
-.dcf tbody tr:hover td{background:rgba(100,181,246,.08);}
-.dcf tbody tr:hover td:first-child{background:rgba(100,181,246,.12);}
+  border-right:1px solid var(--border2);color:var(--fg);}
+.dcf tbody tr:nth-child(even) td{background:rgba(26,28,22,.6);}
+.dcf tbody tr:nth-child(even) td:first-child{background:var(--bg-3);}
+.dcf tbody tr:hover td{background:rgba(106,207,224,.08);}
+.dcf tbody tr:hover td:first-child{background:rgba(106,207,224,.12);}
 .dcf td.editable{cursor:pointer;padding:3px 6px;}
 .dcf td.editable input{
-  background:transparent;border:none;color:#fff;width:70px;
+  background:transparent;border:none;color:var(--fg);width:70px;
   text-align:right;font-family:var(--font-mono);font-size:11px;padding:2px 4px;border-radius:2px;}
-.dcf td.editable input:focus{outline:1px solid var(--accent);background:rgba(255,193,7,.08);}
+.dcf td.editable input:focus{outline:1px solid var(--accent);background:rgba(232,182,88,.08);}
 .dcf td.ov input{color:var(--accent);}
-.dcf td.construction{background:rgba(179,157,255,.07)!important;}
-.dcf td.construction:first-child{background:rgba(179,157,255,.12)!important;color:var(--purple);}
-.dcf td.ramp{background:rgba(100,181,246,.06)!important;}
-.dcf td.ramp:first-child{background:rgba(100,181,246,.1)!important;}
-.neg{color:#ff6b6b!important;font-weight:600;}
-.pos{color:#69f0ae!important;font-weight:600;}
-.strong-pos{color:#b9f6ca!important;font-weight:800;}
-.strong-neg{color:#ff8a80!important;font-weight:800;}
-.dim-val{color:#6e90b0;}
+.dcf td.construction{background:rgba(138,135,115,.07)!important;}
+.dcf td.construction:first-child{background:rgba(138,135,115,.12)!important;color:var(--purple);}
+.dcf td.ramp{background:rgba(106,207,224,.06)!important;}
+.dcf td.ramp:first-child{background:rgba(106,207,224,.1)!important;}
+.neg{color:var(--red)!important;font-weight:600;}
+.pos{color:var(--green)!important;font-weight:600;}
+.strong-pos{color:var(--green)!important;font-weight:800;}
+.strong-neg{color:var(--red)!important;font-weight:800;}
+.dim-val{color:var(--fg-2);}
 
 /* Phase badge */
 .phase{display:inline-block;font-size:9px;font-weight:700;border-radius:3px;padding:1px 6px;text-transform:uppercase;letter-spacing:.05em;}
-.ph-c{background:rgba(179,157,255,.25);color:#ce93d8;}
-.ph-r{background:rgba(100,181,246,.25);color:#90caf9;}
-.ph-p{background:rgba(105,240,174,.2);color:#69f0ae;}
-.ph-t{background:rgba(255,193,7,.2);color:#ffd54f;}
+.ph-c{background:rgba(138,135,115,.25);color:var(--fg-2);}
+.ph-r{background:rgba(106,207,224,.25);color:var(--cyan);}
+.ph-p{background:rgba(93,211,128,.2);color:var(--green);}
+.ph-t{background:rgba(232,182,88,.2);color:var(--amber);}
 
 /* ── Sensitivity ── */
 .sens-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .sens-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;}
 .sens-table{border-collapse:collapse;font-size:10px;font-family:var(--font-mono);}
 .sens-table td,.sens-table th{padding:5px 10px;text-align:center;border:1px solid var(--border2);}
-.sens-table th{background:#0f1e30;color:#c0d4e8;font-size:9px;font-weight:700;}
-.s5{background:rgba(105,240,174,.35);color:#b9f6ca;}
-.s4{background:rgba(105,240,174,.20);color:#69f0ae;}
-.s3{background:rgba(105,240,174,.10);color:#4caf50;}
-.s2{background:rgba(255,193,7,.18);color:#ffe082;}
-.s1{background:rgba(255,82,82,.18);color:#ff8a80;}
-.s0{background:rgba(255,82,82,.35);color:#ff5252;}
+.sens-table th{background:var(--bg-3);color:var(--fg);font-size:9px;font-weight:700;}
+.s5{background:rgba(93,211,128,.35);color:var(--green);}
+.s4{background:rgba(93,211,128,.20);color:var(--green);}
+.s3{background:rgba(93,211,128,.10);color:var(--green);}
+.s2{background:rgba(232,182,88,.18);color:var(--amber);}
+.s1{background:rgba(255,95,86,.18);color:var(--red);}
+.s0{background:rgba(255,95,86,.35);color:var(--red);}
 
 /* ── Inducement ── */
 .ind-card{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:14px;display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;}
 .ind-main{flex:1;min-width:180px;}
 .ind-price{font-size:36px;font-weight:800;font-family:var(--font-mono);color:var(--accent);line-height:1;}
 .ind-lce{font-size:13px;color:var(--muted);font-family:var(--font-mono);margin-top:4px;}
-.ind-label{font-size:10px;color:#a0bcd8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
+.ind-label{font-size:10px;color:var(--fg-2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
 .ind-meta{flex:2;min-width:240px;}
 .ind-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px;font-family:var(--font-mono);}
 .ind-row:last-child{border-bottom:none;}
-.ind-key{color:#b8d0e8;}
+.ind-key{color:var(--fg);}
 .ind-val{font-weight:600;}
 
 /* ── Tabs ── */
@@ -164,62 +170,62 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
 .mc-wrap{display:flex;flex-direction:column;gap:14px;}
 .mc-left{display:block;}
 .mc-controls{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;}
-.mc-ctrl-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0d4e8;margin-bottom:10px;}
+.mc-ctrl-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:10px;}
 .mc-var{display:grid;grid-template-columns:minmax(120px,1.5fr) 1fr 1fr 1fr;gap:6px;align-items:center;margin-bottom:8px;font-size:11px;font-family:var(--font-mono);}
-.mc-var-name{color:#c0d4e8;font-size:11px;}
-.mc-var input{background:var(--card);border:1px solid var(--border2);color:#fff;padding:4px 6px;border-radius:4px;font-size:11px;text-align:center;width:100%;font-family:var(--font-mono);}
+.mc-var-name{color:var(--fg);font-size:11px;}
+.mc-var input{background:var(--card);border:1px solid var(--border2);color:var(--fg);padding:4px 6px;border-radius:4px;font-size:11px;text-align:center;width:100%;font-family:var(--font-mono);}
 .mc-var input:focus{outline:1px solid var(--accent);}
-.mc-col-hdr{font-size:9px;color:#6e90b0;text-align:center;font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
+.mc-col-hdr{font-size:9px;color:var(--fg-2);text-align:center;font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
 .mc-dist-sel{display:flex;gap:4px;margin-bottom:8px;}
-.mc-dist-btn{padding:2px 9px;font-size:10px;border:1px solid var(--border2);border-radius:10px;cursor:pointer;background:none;color:#6e90b0;font-family:var(--font-mono);transition:all .12s;}
-.mc-dist-btn.on{border-color:var(--teal);color:var(--teal);background:rgba(38,198,218,.1);}
-.mc-run-btn{width:100%;padding:12px;background:var(--accent);color:#0a0d12;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;letter-spacing:.06em;transition:all .15s;margin-top:12px;box-shadow:0 2px 12px rgba(255,193,7,.3);}
-.mc-run-btn:hover{opacity:.9;box-shadow:0 4px 20px rgba(255,193,7,.5);transform:translateY(-1px);}
+.mc-dist-btn{padding:2px 9px;font-size:10px;border:1px solid var(--border2);border-radius:10px;cursor:pointer;background:none;color:var(--fg-2);font-family:var(--font-mono);transition:all .12s;}
+.mc-dist-btn.on{border-color:var(--teal);color:var(--teal);background:rgba(106,207,224,.1);}
+.mc-run-btn{width:100%;padding:12px;background:var(--accent);color:var(--bg);border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;letter-spacing:.06em;transition:all .15s;margin-top:12px;box-shadow:0 2px 12px rgba(232,182,88,.3);}
+.mc-run-btn:hover{opacity:.9;box-shadow:0 4px 20px rgba(232,182,88,.5);transform:translateY(-1px);}
 .mc-run-btn:disabled{opacity:.4;cursor:not-allowed;}
 .mc-result{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;}
 .mc-percentiles{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px;}
 .mc-pc{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px;text-align:center;}
 .mc-pc-val{font-size:15px;font-weight:800;font-family:var(--font-mono);line-height:1.2;}
-.mc-pc-lbl{font-size:9px;color:#6e90b0;text-transform:uppercase;letter-spacing:.07em;margin-top:2px;}
+.mc-pc-lbl{font-size:9px;color:var(--fg-2);text-transform:uppercase;letter-spacing:.07em;margin-top:2px;}
 .mc-hist-wrap{position:relative;height:180px;margin-bottom:10px;}
 .mc-tornado-wrap{position:relative;height:200px;}
-.mc-status{font-size:11px;color:#6e90b0;font-family:var(--font-mono);text-align:center;padding:8px;}
+.mc-status{font-size:11px;color:var(--fg-2);font-family:var(--font-mono);text-align:center;padding:8px;}
 .mc-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:10px;}
-.mc-tab{background:none;border:none;border-bottom:2px solid transparent;padding:6px 12px;cursor:pointer;color:#6e90b0;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-family:inherit;transition:all .12s;}
+.mc-tab{background:none;border:none;border-bottom:2px solid transparent;padding:6px 12px;cursor:pointer;color:var(--fg-2);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-family:inherit;transition:all .12s;}
 .mc-tab.on{color:var(--text);border-bottom-color:var(--teal);}
 .mc-prob-table{width:100%;border-collapse:collapse;font-size:11px;font-family:var(--font-mono);}
-.mc-prob-table td,.mc-prob-table th{padding:5px 10px;border-bottom:1px solid rgba(44,66,96,.5);}
-.mc-prob-table th{font-size:9px;color:#8ab0d0;font-weight:700;text-transform:uppercase;}
+.mc-prob-table td,.mc-prob-table th{padding:5px 10px;border-bottom:1px solid rgba(58,61,51,.5);}
+.mc-prob-table th{font-size:9px;color:var(--fg-2);font-weight:700;text-transform:uppercase;}
 /* ── Market Valuation ── */
 .mv-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px 18px;}
-.mv-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0d4e8;margin-bottom:8px;}
-.mv-comp{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(44,66,96,.4);}
+.mv-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;}
+.mv-comp{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(58,61,51,.4);}
 .mv-comp:last-child{border-bottom:none;}
-.mv-comp-name{font-size:11px;color:#c0d4e8;}
-.mv-comp-meta{font-size:9px;color:#6e90b0;margin-top:1px;font-family:var(--font-mono);}
+.mv-comp-name{font-size:11px;color:var(--fg);}
+.mv-comp-meta{font-size:9px;color:var(--fg-2);margin-top:1px;font-family:var(--font-mono);}
 .mv-comp-right{display:flex;align-items:center;gap:8px;}
-.mv-per-t{font-size:13px;font-weight:700;font-family:var(--font-mono);color:#ffc107;min-width:54px;text-align:right;}
+.mv-per-t{font-size:13px;font-weight:700;font-family:var(--font-mono);color:var(--amber);min-width:54px;text-align:right;}
 .mv-wt-wrap{display:flex;align-items:center;gap:4px;}
-.mv-wt-input{width:42px;background:var(--card);border:1px solid var(--border2);color:#fff;padding:2px 5px;border-radius:4px;font-size:10px;font-family:var(--font-mono);text-align:right;}
-.mv-wt-lbl{font-size:9px;color:#6e90b0;}
-.mv-output{padding:12px 18px;background:rgba(26,40,60,.6);border-top:1px solid var(--border);}
+.mv-wt-input{width:42px;background:var(--card);border:1px solid var(--border2);color:var(--fg);padding:2px 5px;border-radius:4px;font-size:10px;font-family:var(--font-mono);text-align:right;}
+.mv-wt-lbl{font-size:9px;color:var(--fg-2);}
+.mv-output{padding:12px 18px;background:rgba(26,28,22,.6);border-top:1px solid var(--border);}
 .mv-out-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
 .mv-out-card{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;}
 .mv-out-val{font-size:18px;font-weight:700;font-family:var(--font-mono);line-height:1.1;}
-.mv-out-lbl{font-size:9px;color:#8ab0d0;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
-.mv-out-sub{font-size:10px;color:#6e90b0;margin-top:3px;font-family:var(--font-mono);}
+.mv-out-lbl{font-size:9px;color:var(--fg-2);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+.mv-out-sub{font-size:10px;color:var(--fg-2);margin-top:3px;font-family:var(--font-mono);}
 .mv-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:11px;}
-.mv-bar-lbl{min-width:160px;color:#a0bcd8;}
+.mv-bar-lbl{min-width:160px;color:var(--fg-2);}
 .mv-bar-track{flex:1;height:16px;background:var(--card2);border-radius:4px;overflow:hidden;}
 .mv-bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding:0 7px;font-size:10px;font-weight:700;font-family:var(--font-mono);white-space:nowrap;}
 .mv-bar-val{min-width:60px;text-align:right;font-family:var(--font-mono);font-size:11px;font-weight:700;}
 .mv-stage-row{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
-.mv-stage-btn{padding:4px 10px;font-size:10px;font-weight:700;border:1px solid var(--border2);border-radius:12px;cursor:pointer;background:none;color:#6e90b0;font-family:var(--font-mono);transition:all .12s;}
-.mv-stage-btn.on{border-color:var(--teal);color:var(--teal);background:rgba(38,198,218,.1);}
+.mv-stage-btn{padding:4px 10px;font-size:10px;font-weight:700;border:1px solid var(--border2);border-radius:12px;cursor:pointer;background:none;color:var(--fg-2);font-family:var(--font-mono);transition:all .12s;}
+.mv-stage-btn.on{border-color:var(--teal);color:var(--teal);background:rgba(106,207,224,.1);}
 .mv-inputs-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px;}
 .mv-input-group{display:flex;align-items:center;gap:6px;}
-.mv-input-group label{font-size:10px;color:#8ab0d0;white-space:nowrap;}
-.mv-input-group input{width:70px;background:var(--card);border:1px solid var(--border2);color:#fff;padding:3px 7px;border-radius:4px;font-size:11px;font-family:var(--font-mono);text-align:right;}
+.mv-input-group label{font-size:10px;color:var(--fg-2);white-space:nowrap;}
+.mv-input-group input{width:70px;background:var(--card);border:1px solid var(--border2);color:var(--fg);padding:3px 7px;border-radius:4px;font-size:11px;font-family:var(--font-mono);text-align:right;}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
@@ -227,22 +233,22 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
 /* ── Plant Flow ── */
 .pf-wrap{display:flex;align-items:stretch;gap:0;padding:16px 18px;overflow-x:auto;}
 .pf-step{background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:13px 15px;min-width:130px;max-width:160px;flex-shrink:0;display:flex;flex-direction:column;gap:3px;position:relative;}
-.pf-step.highlight{border-color:var(--accent);box-shadow:0 0 0 1px rgba(240,165,0,.2);}
-.pf-step.out{border-color:var(--green);box-shadow:0 0 0 1px rgba(76,175,80,.2);}
+.pf-step.highlight{border-color:var(--accent);box-shadow:0 0 0 1px rgba(232,182,88,.2);}
+.pf-step.out{border-color:var(--green);box-shadow:0 0 0 1px rgba(93,211,128,.2);}
 .pf-num{font-size:22px;font-weight:800;font-family:var(--font-mono);line-height:1;color:var(--text);}
 .pf-unit{font-size:11px;font-family:var(--font-mono);color:var(--muted);margin-top:1px;}
-.pf-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:#8ab0d0;margin-bottom:3px;}
-.pf-formula{font-size:10px;color:#7a9cbd;font-family:var(--font-mono);margin-top:5px;line-height:1.4;border-top:1px solid var(--border);padding-top:5px;}
-.pf-formula b{color:#b8d0e8;}
+.pf-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--fg-2);margin-bottom:3px;}
+.pf-formula{font-size:10px;color:var(--fg-2);font-family:var(--font-mono);margin-top:5px;line-height:1.4;border-top:1px solid var(--border);padding-top:5px;}
+.pf-formula b{color:var(--fg);}
 .pf-arrow{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 6px;flex-shrink:0;min-width:56px;}
 .pf-arrow-line{width:100%;height:2px;background:linear-gradient(90deg,var(--border2),var(--muted));position:relative;margin-bottom:2px;}
 .pf-arrow-line::after{content:'▶';position:absolute;right:-7px;top:-8px;font-size:11px;color:var(--muted);}
-.pf-op{font-size:9px;font-family:var(--font-mono);color:var(--accent);text-align:center;line-height:1.3;margin-bottom:3px;background:rgba(240,165,0,.08);border-radius:3px;padding:2px 5px;}
+.pf-op{font-size:9px;font-family:var(--font-mono);color:var(--accent);text-align:center;line-height:1.3;margin-bottom:3px;background:rgba(232,182,88,.08);border-radius:3px;padding:2px 5px;}
 .pf-bottom{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;padding:0 18px 16px;border-top:1px solid var(--border);}
 .pf-stat{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;}
 .pf-stat-val{font-size:18px;font-weight:700;font-family:var(--font-mono);color:var(--teal);}
-.pf-stat-lbl{font-size:9px;color:#9ab8d2;text-transform:uppercase;letter-spacing:.07em;margin-top:2px;}
-.pf-stat-note{font-size:10px;color:#6e90b0;margin-top:3px;font-family:var(--font-mono);}
+.pf-stat-lbl{font-size:9px;color:var(--fg-2);text-transform:uppercase;letter-spacing:.07em;margin-top:2px;}
+.pf-stat-note{font-size:10px;color:var(--fg-2);margin-top:3px;font-family:var(--font-mono);}
 /* Table readability improvements */
 .dcf{font-size:12px;}
 .dcf thead th{padding:8px 10px;font-size:10px;}
@@ -250,49 +256,49 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
 .dcf tbody td:first-child{padding:6px 12px;font-size:11px;}
 
 /* ── Section Nav (sticky) ── */
-#sec-nav{position:sticky;top:0;z-index:5;background:rgba(15,30,48,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--border);display:flex;gap:2px;padding:6px 8px;margin:-14px -14px 0 -14px;flex-wrap:wrap;}
-.snav{background:none;border:1px solid transparent;border-radius:4px;padding:5px 10px;cursor:pointer;color:#8ab0d0;font-size:10px;font-weight:700;letter-spacing:.04em;font-family:inherit;transition:all .12s;text-transform:uppercase;}
-.snav:hover{color:#fff;border-color:var(--border2);}
-.snav.active{color:var(--accent);border-color:var(--accent);background:rgba(255,193,7,.08);}
+#sec-nav{position:sticky;top:0;z-index:5;background:rgba(26,28,22,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--border);display:flex;gap:2px;padding:6px 8px;margin:-14px -14px 0 -14px;flex-wrap:wrap;}
+.snav{background:none;border:1px solid transparent;border-radius:4px;padding:5px 10px;cursor:pointer;color:var(--fg-2);font-size:10px;font-weight:700;letter-spacing:.04em;font-family:inherit;transition:all .12s;text-transform:uppercase;}
+.snav:hover{color:var(--fg);border-color:var(--border2);}
+.snav.active{color:var(--accent);border-color:var(--accent);background:rgba(232,182,88,.08);}
 
 /* ── Section header block (used by new sections) ── */
 .sec-block{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
-.sec-block-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;background:linear-gradient(180deg,rgba(38,198,218,.04),transparent);}
-.sec-block-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#e0eaf5;display:flex;align-items:center;gap:8px;}
-.sec-block-sub{font-size:10px;color:#8ab0d0;font-family:var(--font-mono);}
+.sec-block-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;background:linear-gradient(180deg,rgba(106,207,224,.04),transparent);}
+.sec-block-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);display:flex;align-items:center;gap:8px;}
+.sec-block-sub{font-size:10px;color:var(--fg-2);font-family:var(--font-mono);}
 .sec-block-body{padding:14px 16px;}
 
 /* ── Scenario Comparison ── */
 .scn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px;}
 .scn-card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;position:relative;transition:all .15s;}
-.scn-card.bear{border-color:rgba(255,82,82,.45);}
-.scn-card.base{border-color:rgba(38,198,218,.45);}
-.scn-card.bull{border-color:rgba(105,240,174,.45);}
+.scn-card.bear{border-color:rgba(255,95,86,.45);}
+.scn-card.base{border-color:rgba(106,207,224,.45);}
+.scn-card.bull{border-color:rgba(93,211,128,.45);}
 .scn-card.empty{border-style:dashed;opacity:.6;}
 .scn-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);}
 .scn-badge{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;padding:3px 8px;border-radius:3px;}
-.scn-badge.bear{background:rgba(255,82,82,.15);color:#ff8a80;}
-.scn-badge.base{background:rgba(38,198,218,.15);color:#4dd0e1;}
-.scn-badge.bull{background:rgba(105,240,174,.15);color:#81c784;}
+.scn-badge.bear{background:rgba(255,95,86,.15);color:var(--red);}
+.scn-badge.base{background:rgba(106,207,224,.15);color:var(--cyan);}
+.scn-badge.bull{background:rgba(93,211,128,.15);color:var(--green);}
 .scn-actions{display:flex;gap:4px;}
-.scn-btn{background:none;border:1px solid var(--border2);color:#8ab0d0;font-size:9px;padding:2px 7px;border-radius:3px;cursor:pointer;font-family:var(--font-mono);letter-spacing:.04em;transition:all .12s;}
+.scn-btn{background:none;border:1px solid var(--border2);color:var(--fg-2);font-size:9px;padding:2px 7px;border-radius:3px;cursor:pointer;font-family:var(--font-mono);letter-spacing:.04em;transition:all .12s;}
 .scn-btn:hover{border-color:var(--accent);color:var(--accent);}
-.scn-btn.cap{background:rgba(38,198,218,.1);border-color:var(--teal);color:var(--teal);}
-.scn-btn.cap:hover{background:rgba(38,198,218,.2);}
+.scn-btn.cap{background:rgba(106,207,224,.1);border-color:var(--teal);color:var(--teal);}
+.scn-btn.cap:hover{background:rgba(106,207,224,.2);}
 .scn-kpi{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;}
 .scn-kpi-item{background:var(--card);border-radius:4px;padding:6px 8px;}
 .scn-kpi-val{font-size:14px;font-weight:700;font-family:var(--font-mono);line-height:1.1;}
-.scn-kpi-lbl{font-size:8px;color:#6e90b0;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
-.scn-inputs{font-size:10px;font-family:var(--font-mono);color:#b0c8e0;line-height:1.7;padding-top:6px;border-top:1px solid var(--border);}
-.scn-inputs .k{color:#6e90b0;display:inline-block;width:60px;}
-.scn-inputs .v{color:#e0eaf5;font-weight:600;}
-.scn-empty-msg{text-align:center;color:#6e90b0;font-size:11px;padding:32px 10px;font-style:italic;}
-.scn-delta-row{display:flex;justify-content:space-between;align-items:center;padding:5px 10px;font-size:10px;font-family:var(--font-mono);border-bottom:1px solid rgba(44,66,96,.4);}
+.scn-kpi-lbl{font-size:8px;color:var(--fg-2);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+.scn-inputs{font-size:10px;font-family:var(--font-mono);color:var(--fg);line-height:1.7;padding-top:6px;border-top:1px solid var(--border);}
+.scn-inputs .k{color:var(--fg-2);display:inline-block;width:60px;}
+.scn-inputs .v{color:var(--fg);font-weight:600;}
+.scn-empty-msg{text-align:center;color:var(--fg-2);font-size:11px;padding:32px 10px;font-style:italic;}
+.scn-delta-row{display:flex;justify-content:space-between;align-items:center;padding:5px 10px;font-size:10px;font-family:var(--font-mono);border-bottom:1px solid rgba(58,61,51,.4);}
 .scn-delta-row:last-child{border-bottom:none;}
-.scn-delta-lbl{color:#8ab0d0;}
+.scn-delta-lbl{color:var(--fg-2);}
 .scn-delta-val{font-weight:700;}
-.scn-up{color:#69f0ae;}
-.scn-dn{color:#ff6b6b;}
+.scn-up{color:var(--green);}
+.scn-dn{color:var(--red);}
 
 /* ── Dilution / Funding ── */
 .fnd-layout{display:grid;grid-template-columns:1fr 2fr;gap:14px;}
@@ -300,7 +306,7 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
 .fnd-inputs .fr{margin-bottom:5px;}
 .fnd-inputs .fr label{font-size:10px;}
 .fnd-inputs .fr input{width:90px;font-size:11px;}
-.fnd-mini-hdr{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#8ab0d0;margin:10px 0 6px;}
+.fnd-mini-hdr{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-2);margin:10px 0 6px;}
 .fnd-chart-area{display:flex;flex-direction:column;gap:14px;}
 .fnd-cascade{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px;}
 .fnd-stage-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:0;}
@@ -308,13 +314,13 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
 .fnd-stage:last-child{border-right:none;}
 .fnd-stage-name{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
 .fnd-stage-val{font-size:15px;font-weight:700;font-family:var(--font-mono);line-height:1.1;}
-.fnd-stage-sub{font-size:9px;color:#6e90b0;margin-top:2px;font-family:var(--font-mono);}
-.fnd-stage-raise{background:rgba(255,193,7,.08);border-top:1px solid var(--border);margin-top:8px;padding-top:6px;font-size:9px;font-family:var(--font-mono);color:#ffd54f;}
-.fnd-stage-sharesin{color:#b39dff;}
-.fnd-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;padding:10px 12px;background:rgba(10,20,35,.4);border-radius:6px;}
+.fnd-stage-sub{font-size:9px;color:var(--fg-2);margin-top:2px;font-family:var(--font-mono);}
+.fnd-stage-raise{background:rgba(232,182,88,.08);border-top:1px solid var(--border);margin-top:8px;padding-top:6px;font-size:9px;font-family:var(--font-mono);color:var(--amber);}
+.fnd-stage-sharesin{color:var(--fg-2);}
+.fnd-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;padding:10px 12px;background:rgba(26,28,22,.4);border-radius:6px;}
 .fnd-summary-kpi{text-align:center;}
 .fnd-summary-val{font-size:17px;font-weight:800;font-family:var(--font-mono);}
-.fnd-summary-lbl{font-size:8px;color:#8ab0d0;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+.fnd-summary-lbl{font-size:8px;color:var(--fg-2);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
 .fnd-chart-wrap{position:relative;height:200px;}
 .fnd-arrow{position:absolute;right:-7px;top:50%;transform:translateY(-50%);color:var(--border2);font-size:18px;z-index:1;}
 
@@ -324,95 +330,95 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
 .peer-card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px;}
 .peer-chart-wrap{position:relative;height:240px;}
 .peer-table{width:100%;border-collapse:collapse;font-size:11px;font-family:var(--font-mono);}
-.peer-table th{background:#0f1e30;color:#c8dff0;padding:7px 8px;font-size:9px;font-weight:700;text-align:right;letter-spacing:.05em;border-bottom:1px solid var(--border2);}
+.peer-table th{background:var(--bg-3);color:var(--fg);padding:7px 8px;font-size:9px;font-weight:700;text-align:right;letter-spacing:.05em;border-bottom:1px solid var(--border2);}
 .peer-table th:first-child,.peer-table th:nth-child(2){text-align:left;}
-.peer-table td{padding:6px 8px;text-align:right;border-bottom:1px solid rgba(44,66,96,.4);color:#e0eaf5;}
+.peer-table td{padding:6px 8px;text-align:right;border-bottom:1px solid rgba(58,61,51,.4);color:var(--fg);}
 .peer-table td:first-child,.peer-table td:nth-child(2){text-align:left;}
-.peer-table tr.me td{background:rgba(255,193,7,.08);font-weight:700;}
+.peer-table tr.me td{background:rgba(232,182,88,.08);font-weight:700;}
 .peer-table tr.me td:first-child{color:var(--accent);}
-.peer-table tr:hover td{background:rgba(100,181,246,.05);}
+.peer-table tr:hover td{background:rgba(106,207,224,.05);}
 .peer-flag{display:inline-block;font-size:9px;padding:1px 5px;border-radius:2px;margin-right:4px;font-family:var(--font-mono);font-weight:700;}
-.pf-au{background:rgba(255,193,7,.15);color:#ffd54f;}
-.pf-ca{background:rgba(100,181,246,.15);color:#90caf9;}
-.pf-br{background:rgba(105,240,174,.15);color:#81c784;}
-.pf-us{background:rgba(179,157,255,.15);color:#ce93d8;}
-.pf-af{background:rgba(255,138,101,.15);color:#ffab91;}
-.pf-cn{background:rgba(255,82,82,.15);color:#ff8a80;}
+.pf-au{background:rgba(232,182,88,.15);color:var(--amber);}
+.pf-ca{background:rgba(106,207,224,.15);color:var(--cyan);}
+.pf-br{background:rgba(93,211,128,.15);color:var(--green);}
+.pf-us{background:rgba(138,135,115,.15);color:var(--fg-2);}
+.pf-af{background:rgba(232,182,88,.15);color:var(--amber);}
+.pf-cn{background:rgba(255,95,86,.15);color:var(--red);}
 
 .peer-stage{display:inline-block;font-size:8px;padding:1px 4px;border-radius:2px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
-.ps-prod{background:rgba(105,240,174,.2);color:#69f0ae;}
-.ps-constr{background:rgba(179,157,255,.2);color:#b39dff;}
-.ps-fs{background:rgba(100,181,246,.2);color:#64b5f6;}
-.ps-pfs{background:rgba(38,198,218,.2);color:#4dd0e1;}
-.ps-pea{background:rgba(255,193,7,.2);color:#ffd54f;}
-.ps-mre{background:rgba(255,138,101,.2);color:#ffab91;}
+.ps-prod{background:rgba(93,211,128,.2);color:var(--green);}
+.ps-constr{background:rgba(138,135,115,.2);color:var(--fg-2);}
+.ps-fs{background:rgba(106,207,224,.2);color:var(--cyan);}
+.ps-pfs{background:rgba(106,207,224,.2);color:var(--cyan);}
+.ps-pea{background:rgba(232,182,88,.2);color:var(--amber);}
+.ps-mre{background:rgba(232,182,88,.2);color:var(--amber);}
 
 /* ── Stochastic Fan / Cycle Replay ── */
 .stoch-grid{display:grid;grid-template-columns:3fr 2fr;gap:14px;}
 .stoch-left{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px;}
 .stoch-right{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;}
 .stoch-chart-wrap{position:relative;height:260px;margin-bottom:10px;}
-.stoch-fan-legend{display:flex;justify-content:center;gap:16px;font-size:10px;color:#b0c8e0;margin-top:6px;font-family:var(--font-mono);}
+.stoch-fan-legend{display:flex;justify-content:center;gap:16px;font-size:10px;color:var(--fg);margin-top:6px;font-family:var(--font-mono);}
 .stoch-fan-legend .sw{display:inline-block;width:12px;height:10px;margin-right:5px;border-radius:2px;vertical-align:-1px;}
-.stoch-msg{font-size:11px;color:#6e90b0;font-style:italic;text-align:center;padding:40px 20px;}
-.stoch-btn{padding:10px 14px;background:var(--teal);color:#0a0d12;border:none;border-radius:6px;font-weight:800;font-size:11px;cursor:pointer;letter-spacing:.05em;transition:all .15s;}
+.stoch-msg{font-size:11px;color:var(--fg-2);font-style:italic;text-align:center;padding:40px 20px;}
+.stoch-btn{padding:10px 14px;background:var(--teal);color:var(--bg);border:none;border-radius:6px;font-weight:800;font-size:11px;cursor:pointer;letter-spacing:.05em;transition:all .15s;}
 .stoch-btn:hover{opacity:.9;}
 .stoch-btn:disabled{opacity:.4;cursor:not-allowed;}
 
 .cycle-presets{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
-.cycle-preset-btn{text-align:left;padding:8px 10px;background:var(--card);border:1px solid var(--border2);border-radius:5px;cursor:pointer;color:#c0d4e8;font-family:var(--font-mono);font-size:10px;transition:all .12s;line-height:1.4;}
-.cycle-preset-btn:hover{border-color:var(--teal);color:#e0eaf5;}
-.cycle-preset-btn.active{border-color:var(--accent);background:rgba(255,193,7,.08);color:#ffe082;}
-.cycle-preset-btn b{display:block;font-size:11px;color:#e0eaf5;font-weight:800;margin-bottom:2px;}
-.cycle-preset-btn .pn{font-size:9px;color:#8ab0d0;}
+.cycle-preset-btn{text-align:left;padding:8px 10px;background:var(--card);border:1px solid var(--border2);border-radius:5px;cursor:pointer;color:var(--fg);font-family:var(--font-mono);font-size:10px;transition:all .12s;line-height:1.4;}
+.cycle-preset-btn:hover{border-color:var(--teal);color:var(--fg);}
+.cycle-preset-btn.active{border-color:var(--accent);background:rgba(232,182,88,.08);color:var(--amber);}
+.cycle-preset-btn b{display:block;font-size:11px;color:var(--fg);font-weight:800;margin-bottom:2px;}
+.cycle-preset-btn .pn{font-size:9px;color:var(--fg-2);}
 
 .cycle-kpi{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;}
 .cycle-kpi-box{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:8px 10px;}
 .cycle-kpi-v{font-size:14px;font-weight:700;font-family:var(--font-mono);line-height:1.1;}
-.cycle-kpi-l{font-size:9px;color:#6e90b0;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+.cycle-kpi-l{font-size:9px;color:var(--fg-2);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
 
 /* Investment thesis card */
 .thesis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
 .thesis-col{padding:14px 16px;border-right:1px solid var(--border);}
 .thesis-col:last-child{border-right:none;}
-.thesis-col.bull{border-top:3px solid #69f0ae;}
-.thesis-col.watch{border-top:3px solid #ffc107;}
-.thesis-col.bear{border-top:3px solid #ff5252;}
+.thesis-col.bull{border-top:3px solid var(--green);}
+.thesis-col.watch{border-top:3px solid var(--amber);}
+.thesis-col.bear{border-top:3px solid var(--red);}
 .thesis-hdr{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
-.thesis-bull .thesis-hdr,.thesis-col.bull .thesis-hdr{color:#69f0ae;}
-.thesis-watch .thesis-hdr,.thesis-col.watch .thesis-hdr{color:#ffc107;}
-.thesis-bear .thesis-hdr,.thesis-col.bear .thesis-hdr{color:#ff5252;}
-.thesis-point{font-size:10.5px;color:#d0dfee;line-height:1.55;padding:4px 0 4px 14px;position:relative;}
+.thesis-bull .thesis-hdr,.thesis-col.bull .thesis-hdr{color:var(--green);}
+.thesis-watch .thesis-hdr,.thesis-col.watch .thesis-hdr{color:var(--amber);}
+.thesis-bear .thesis-hdr,.thesis-col.bear .thesis-hdr{color:var(--red);}
+.thesis-point{font-size:10.5px;color:var(--fg);line-height:1.55;padding:4px 0 4px 14px;position:relative;}
 .thesis-point::before{content:"▸";position:absolute;left:0;color:var(--dim);font-size:10px;}
 
 /* ── Sources & Uses Waterfall ── */
 .sou-wrap{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:14px;}
 .sou-bar{display:flex;width:100%;height:36px;border-radius:4px;overflow:hidden;margin:8px 0;border:1px solid var(--border);}
-.sou-seg{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--font-mono);color:#0d1520;transition:flex .2s;position:relative;}
+.sou-seg{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--font-mono);color:var(--bg);transition:flex .2s;position:relative;}
 .sou-seg:hover{filter:brightness(1.15);}
 .sou-legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:10px;}
 .sou-leg-item{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:7px 10px;border-left:3px solid;}
-.sou-leg-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#c0d4e8;}
+.sou-leg-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--fg);}
 .sou-leg-val{font-size:14px;font-weight:700;font-family:var(--font-mono);margin-top:2px;}
-.sou-leg-cost{font-size:9px;color:#8ab0d0;font-family:var(--font-mono);margin-top:1px;}
+.sou-leg-cost{font-size:9px;color:var(--fg-2);font-family:var(--font-mono);margin-top:1px;}
 
 /* ── Peer rank pills ── */
 .pr-pills{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;margin-bottom:12px;}
 .pr-pill{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 10px;border-left:3px solid;}
-.pr-pill.q1{border-left-color:#69f0ae;}
-.pr-pill.q2{border-left-color:#4dd0e1;}
-.pr-pill.q3{border-left-color:#ffab40;}
-.pr-pill.q4{border-left-color:#ff6b6b;}
-.pr-pill-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#8ab0d0;}
-.pr-pill-val{font-size:14px;font-weight:700;font-family:var(--font-mono);color:#e0eaf5;margin-top:1px;}
-.pr-pill-rank{font-size:9px;color:#b0c8e0;font-family:var(--font-mono);margin-top:1px;}
+.pr-pill.q1{border-left-color:var(--green);}
+.pr-pill.q2{border-left-color:var(--cyan);}
+.pr-pill.q3{border-left-color:var(--amber);}
+.pr-pill.q4{border-left-color:var(--red);}
+.pr-pill-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-2);}
+.pr-pill-val{font-size:14px;font-weight:700;font-family:var(--font-mono);color:var(--fg);margin-top:1px;}
+.pr-pill-rank{font-size:9px;color:var(--fg);font-family:var(--font-mono);margin-top:1px;}
 
 /* ── DSCR / covenant ── */
 .dscr-wrap{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px;}
 .dscr-controls{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border);}
 .dscr-ctrl{display:flex;align-items:center;gap:6px;}
-.dscr-ctrl label{font-size:10px;color:#c0d4e8;white-space:nowrap;}
-.dscr-ctrl input{width:70px;background:var(--card);border:1px solid var(--border2);color:#fff;padding:3px 6px;border-radius:4px;font-size:11px;font-family:var(--font-mono);text-align:right;}
+.dscr-ctrl label{font-size:10px;color:var(--fg);white-space:nowrap;}
+.dscr-ctrl input{width:70px;background:var(--card);border:1px solid var(--border2);color:var(--fg);padding:3px 6px;border-radius:4px;font-size:11px;font-family:var(--font-mono);text-align:right;}
 .dscr-chart-wrap{position:relative;height:220px;}
 .dscr-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;}
 
@@ -420,59 +426,143 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
 .scr-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0;}
 .scr-card{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:10px 11px;position:relative;overflow:hidden;}
 .scr-grade{font-size:28px;font-weight:900;font-family:var(--font-mono);line-height:1;position:absolute;right:12px;top:8px;opacity:.8;}
-.scr-grade.A{color:#69f0ae;}
-.scr-grade.B{color:#4dd0e1;}
-.scr-grade.C{color:#ffab40;}
-.scr-grade.D{color:#ff8a65;}
-.scr-grade.F{color:#ff5252;}
-.scr-dim{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#8ab0d0;margin-bottom:2px;}
-.scr-val{font-size:13px;font-weight:700;font-family:var(--font-mono);color:#e0eaf5;}
-.scr-rank{font-size:9px;color:#6e90b0;font-family:var(--font-mono);margin-top:2px;}
-.scr-overall{background:linear-gradient(135deg,rgba(38,198,218,.08),rgba(179,157,255,.08));border:1px solid var(--border2);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:8px;}
+.scr-grade.A{color:var(--green);}
+.scr-grade.B{color:var(--cyan);}
+.scr-grade.C{color:var(--amber);}
+.scr-grade.D{color:var(--amber);}
+.scr-grade.F{color:var(--red);}
+.scr-dim{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-2);margin-bottom:2px;}
+.scr-val{font-size:13px;font-weight:700;font-family:var(--font-mono);color:var(--fg);}
+.scr-rank{font-size:9px;color:var(--fg-2);font-family:var(--font-mono);margin-top:2px;}
+.scr-overall{background:linear-gradient(135deg,rgba(106,207,224,.08),rgba(138,135,115,.08));border:1px solid var(--border2);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:8px;}
 .scr-overall-grade{font-size:52px;font-weight:900;font-family:var(--font-mono);line-height:1;}
 .scr-overall-meta{flex:1;min-width:160px;}
-.scr-overall-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#8ab0d0;font-weight:700;}
-.scr-overall-sum{font-size:12px;color:#e0eaf5;margin-top:2px;font-family:var(--font-mono);}
+.scr-overall-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-2);font-weight:700;}
+.scr-overall-sum{font-size:12px;color:var(--fg);margin-top:2px;font-family:var(--font-mono);}
 
 /* ── Catalyst Calendar ── */
 .cat-wrap{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:10px;}
 .cat-timeline{position:relative;padding:8px 0 4px;}
-.cat-line{position:absolute;left:10px;right:10px;top:24px;height:2px;background:linear-gradient(90deg,#ff6b6b 0%,#ffab40 30%,#ffc107 50%,#4dd0e1 70%,#69f0ae 100%);opacity:.4;}
+.cat-line{position:absolute;left:10px;right:10px;top:24px;height:2px;background:linear-gradient(90deg,var(--red) 0%,var(--amber) 30%,var(--amber) 50%,var(--cyan) 70%,var(--green) 100%);opacity:.4;}
 .cat-items{display:grid;grid-template-columns:repeat(7,1fr);gap:0;position:relative;}
 .cat-item{text-align:center;padding:0 6px;position:relative;}
 .cat-dot{width:14px;height:14px;border-radius:50%;margin:16px auto 8px;border:2px solid var(--bg);position:relative;z-index:2;}
-.cat-stage{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#e0eaf5;}
-.cat-time{font-size:9px;color:#8ab0d0;font-family:var(--font-mono);margin-top:2px;}
-.cat-uplift{font-size:11px;font-weight:700;font-family:var(--font-mono);margin-top:4px;color:#69f0ae;}
-.cat-desc{font-size:9px;color:#6e90b0;line-height:1.3;margin-top:4px;min-height:26px;}
+.cat-stage{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--fg);}
+.cat-time{font-size:9px;color:var(--fg-2);font-family:var(--font-mono);margin-top:2px;}
+.cat-uplift{font-size:11px;font-weight:700;font-family:var(--font-mono);margin-top:4px;color:var(--green);}
+.cat-desc{font-size:9px;color:var(--fg-2);line-height:1.3;margin-top:4px;min-height:26px;}
+
+/* ── Mobile menu button (hidden on desktop) ── */
+#menu-btn{display:none;background:var(--bg-3);border:1px solid var(--line-2);color:var(--fg);
+  width:38px;height:34px;border-radius:var(--r);font-size:18px;line-height:1;cursor:pointer;
+  font-family:var(--font-mono);align-items:center;justify-content:center;flex-shrink:0;}
+#menu-btn:active{background:var(--line);}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(12,13,10,.65);z-index:998;}
+body.drawer-open #sidebar-backdrop{display:block;}
+
+/* ── Responsive (≤900px) ── */
+@media (max-width: 900px){
+  html, body{height:auto;overflow:visible;}
+  body{font-size:13px;}
+
+  #menu-btn{display:inline-flex;}
+  #hdr{padding:8px 12px;gap:10px;align-items:flex-start;}
+  #hdr > div:first-of-type{flex:1;min-width:0;}
+  #project-name{width:100%;font-size:14px;}
+  #save-btn{padding:6px 10px;font-size:10px;}
+
+  /* KPI tiles: wrap two-up, full width row */
+  .kpi-bar{margin-left:0;width:100%;display:grid;grid-template-columns:repeat(2,1fr);gap:6px;}
+  .kpi{min-width:0;padding:6px 9px;}
+  .kpi-val{font-size:15px;}
+
+  /* Workspace stacks; sidebar becomes off-canvas drawer */
+  #workspace{display:block;overflow:visible;}
+  #sidebar{position:fixed;top:0;left:0;bottom:0;width:88vw;max-width:320px;height:100vh;
+    z-index:999;transform:translateX(-100%);transition:transform .22s ease;
+    box-shadow:6px 0 24px rgba(0,0,0,.5);overflow-y:auto;}
+  body.drawer-open #sidebar{transform:translateX(0);}
+
+  /* Main fills page, scrolls with body */
+  #main{padding:10px 10px 80px;overflow:visible;}
+
+  /* Section nav: horizontal scroll chip strip */
+  #sec-nav{margin:-10px -10px 0;padding:6px 8px;flex-wrap:nowrap;overflow-x:auto;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  #sec-nav::-webkit-scrollbar{display:none;}
+  .snav{flex-shrink:0;font-size:10px;padding:5px 9px;}
+
+  /* Stack every multi-column grid */
+  .chart-row,
+  .sens-grid,
+  .scn-grid,
+  .mv-grid,
+  .fnd-layout,
+  .pf-bottom{grid-template-columns:1fr;gap:10px;}
+  .mv-out-grid{grid-template-columns:1fr 1fr;gap:8px;}
+  .mc-percentiles{grid-template-columns:repeat(2,1fr);gap:6px;}
+  .mc-var{grid-template-columns:1fr 1fr 1fr 1fr;font-size:10px;gap:4px;}
+  .mc-var-name{grid-column:1 / -1;margin-bottom:2px;}
+
+  /* Tables: keep horizontal scroll */
+  .table-wrap{max-height:none;}
+  .dcf{font-size:10.5px;}
+  .dcf thead th, .dcf tbody td{padding:5px 7px;}
+
+  /* Plant flow: horizontal scroll already, just shrink padding */
+  .pf-wrap{padding:12px 10px;}
+
+  /* Section block padding tighter */
+  .sec-block-hdr{padding:10px 12px;}
+  .sec-block-body{padding:10px 12px;}
+
+  /* Inducement card stacks */
+  .ind-card{padding:12px;gap:14px;}
+  .ind-main, .ind-meta{flex:1 1 100%;min-width:0;}
+  .ind-price{font-size:30px;}
+
+  /* Cost pills wrap evenly */
+  .cost-pills{gap:6px;}
+  .pill{flex:1 1 calc(50% - 6px);min-width:0;}
+
+  /* Home link smaller */
+  body > a[href="index.html"]{font-size:9px;}
+}
+
+@media (max-width: 480px){
+  .kpi-bar{grid-template-columns:1fr;}
+  .mv-out-grid{grid-template-columns:1fr;}
+  .mc-percentiles{grid-template-columns:1fr 1fr;}
+}
 </style>
 </head>
 <body>
 
 <!-- ← Home link (minimal, consistent across all tool pages) -->
-<a href="index.html" style="position:fixed;top:10px;left:14px;z-index:9999;color:rgba(238,242,247,.38);font:500 10px/1 'Inter','Segoe UI',system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;padding:4px 4px;transition:color .15s ease;" onmouseover="this.style.color='#00cfe0'" onmouseout="this.style.color='rgba(238,242,247,.38)'">← Home</a>
+<a href="index.html" style="position:fixed;top:10px;left:14px;z-index:9999;color:rgba(216,212,194,.38);font:500 10px/1 'Inter','Segoe UI',system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;padding:4px 4px;transition:color .15s ease;" onmouseover="this.style.color='var(--cyan)'" onmouseout="this.style.color='rgba(216,212,194,.38)'">← Home</a>
 
 <!-- HEADER -->
 <div id="hdr">
+  <button id="menu-btn" aria-label="Open inputs" onclick="document.body.classList.toggle('drawer-open')">≡</button>
   <div>
     <input id="project-name" type="text" value="Unnamed Spodumene Project">
     <div style="font-size:10px;color:var(--muted);margin-top:2px;font-family:var(--font-mono)">Hard Rock Lithium Mine · DCF Model · Q1 2026</div>
   </div>
   <button onclick="saveModel()" id="save-btn" style="
-    background:var(--card2);border:1px solid var(--border2);color:#c0d4e8;
+    background:var(--card2);border:1px solid var(--border2);color:var(--fg);
     padding:6px 14px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;
     font-family:var(--font-mono);letter-spacing:.05em;transition:all .15s;white-space:nowrap;
     display:flex;align-items:center;gap:6px;flex-shrink:0;">
     <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2 1h7l2 2v9H2V1z" stroke="#c0d4e8" stroke-width="1" fill="none"></path>
-      <rect x="4" y="1" width="4" height="3" fill="#c0d4e8" rx="0.5"></rect>
-      <rect x="3" y="7" width="7" height="4" fill="none" stroke="#c0d4e8" stroke-width="1" rx="0.5"></rect>
+      <path d="M2 1h7l2 2v9H2V1z" stroke="var(--fg)" stroke-width="1" fill="none"></path>
+      <rect x="4" y="1" width="4" height="3" fill="var(--fg)" rx="0.5"></rect>
+      <rect x="3" y="7" width="7" height="4" fill="none" stroke="var(--fg)" stroke-width="1" rx="0.5"></rect>
     </svg>
     Save HTML
   </button>
   <div class="kpi-bar">
     <div class="kpi"><div class="kpi-val" id="k-npv" style="color: var(--green);">$0.64B</div><div class="kpi-lbl">NPV post-tax @WACC</div><div class="kpi-sub" id="k-npv2" style="color:var(--muted)">WACC: 10.0%</div></div>
-    <div class="kpi"><div class="kpi-val" id="k-npv8" style="color:#80cbc4">$0.88B</div><div class="kpi-lbl">NPV post-tax @8%</div><div class="kpi-sub" id="k-npv8b" style="color:var(--muted)">discount rate: 8%</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-npv8" style="color:var(--cyan)">$0.88B</div><div class="kpi-lbl">NPV post-tax @8%</div><div class="kpi-sub" id="k-npv8b" style="color:var(--muted)">discount rate: 8%</div></div>
     <div class="kpi"><div class="kpi-val" id="k-irr" style="color:var(--teal)">21.5%</div><div class="kpi-lbl">IRR (post-tax)</div><div class="kpi-sub" style="color:var(--muted)" id="k-irr2">Target: 15%</div></div>
     <div class="kpi"><div class="kpi-val" id="k-pb" style="color:var(--blue)">7.4 yrs</div><div class="kpi-lbl">Payback</div><div class="kpi-sub" style="color:var(--muted)" id="k-pb2">from first constr.</div></div>
     <div class="kpi"><div class="kpi-val" id="k-ind" style="color:var(--accent)">$726</div><div class="kpi-lbl">Inducement</div><div class="kpi-sub" style="color:var(--muted)" id="k-ind2">min. SC6 $/t</div></div>
@@ -483,27 +573,31 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
 <!-- WORKSPACE -->
 <div id="workspace">
 
+<!-- Drawer backdrop (mobile) -->
+<div id="sidebar-backdrop" onclick="document.body.classList.remove('drawer-open')"></div>
+
 <!-- SIDEBAR -->
 <div id="sidebar">
 
-  <!-- CISCO PRESET BANNER -->
+  <!-- PROJECT SWITCHER -->
   <div class="sec">
-    <div style="padding:10px 14px;background:rgba(38,198,218,.07);border-bottom:1px solid var(--border);">
-      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);margin-bottom:6px;">🇨🇦 Quebec Project Preset</div>
-      <button onclick="loadCiscoPreset()" style="width: 100%; padding: 8px; background: var(--teal); color: rgb(0, 0, 0); border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; border-radius: 6px; font-weight: 800; font-size: 12px; cursor: pointer; letter-spacing: 0.04em;">
-        ▶ Load Cisco Lithium Project
-      </button>
-      <div style="font-size:9px;color:#6e90b0;margin-top:6px;line-height:1.5;font-family:var(--font-mono);">
-        295 Mt @ 1.36% · Q2 Metals (QTWO)<br>
-        7.5 Mtpa → ~1.3 Mt SC5.5/yr<br>
-        Calibrated to PMET FS Oct 2025<br>
-        All values in USD · FX 0.72 CAD/USD (1 CAD = US$0.72)
+    <div style="padding:10px 14px;background:var(--accent-dim);border-bottom:1px solid var(--line);">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:6px;">Project</div>
+      <select id="project-switcher" onchange="loadProject(this.value)"
+        style="width:100%;padding:7px 8px;background:var(--bg-3);border:1px solid var(--line-2);
+        color:var(--fg);border-radius:var(--r);font-family:var(--font-mono);font-size:11px;
+        font-weight:700;cursor:pointer;letter-spacing:.03em;">
+        <option value="qtwo">QTWO.V — Cisco (Quebec)</option>
+        <option value="blank">— Blank template</option>
+      </select>
+      <div id="project-notes" style="font-size:9px;color:var(--fg-2);margin-top:6px;line-height:1.5;font-family:var(--font-mono);">
+        295 Mt @ 1.36% · Q2 Metals (QTWO.V) · DMS-only · 7.5 Mtpa → ~1.3 Mt SC5.5/yr · calibrated to PMET FS Oct 2025
       </div>
     </div>
   </div>
   <div class="sec">
     <div class="sec-hdr open" onclick="toggleSec(this)">
-      <span class="sec-title">⛏ Mine Configuration</span><span class="chev">▶</span>
+      <span class="sec-title">Mine Configuration</span><span class="chev">▶</span>
     </div>
     <div class="sec-body open">
       <div class="fr"><label>Mine life</label><input type="number" id="mineLife" value="20" min="5" max="40" step="1"><span class="unit">years</span></div>
@@ -519,7 +613,7 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
   <!-- PRODUCTION -->
   <div class="sec">
     <div class="sec-hdr open" onclick="toggleSec(this)">
-      <span class="sec-title">⚙ Production Parameters</span><span class="chev">▶</span>
+      <span class="sec-title">Production Parameters</span><span class="chev">▶</span>
     </div>
     <div class="sec-body open">
       <div class="fr"><label>Nameplate throughput</label><input type="number" id="nameplate" value="3.0" min="0.5" max="20" step="0.5"><span class="unit">Mt/yr</span></div>
@@ -534,7 +628,7 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
   <!-- PRICING -->
   <div class="sec">
     <div class="sec-hdr open" onclick="toggleSec(this)">
-      <span class="sec-title">💲 Price Deck</span><span class="chev">▶</span>
+      <span class="sec-title">Price Deck</span><span class="chev">▶</span>
     </div>
     <div class="sec-body open">
       <div class="presets">
@@ -548,14 +642,14 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
       <div class="fr"><label>SC6 spodumene price</label><input type="number" id="sc6Price" value="1400" min="100" max="8000" step="50"><span class="unit">$/t</span></div>
       <div class="fr"><label>Real price escalator</label><input type="number" id="priceEsc" value="0" min="-5" max="10" step="0.5"><span class="unit">%/yr</span></div>
       <hr class="divider">
-      <div class="fr-note" style="color:#6e90b0">LCE equiv price shown in outputs.<br>1 t SC6 → 0.148 t LCE</div>
+      <div class="fr-note" style="color:var(--fg-2)">LCE equiv price shown in outputs.<br>1 t SC6 → 0.148 t LCE</div>
     </div>
   </div>
 
   <!-- COSTS -->
   <div class="sec">
     <div class="sec-hdr open" onclick="toggleSec(this)">
-      <span class="sec-title">📊 Operating Costs</span><span class="chev">▶</span>
+      <span class="sec-title">Operating Costs</span><span class="chev">▶</span>
     </div>
     <div class="sec-body open">
       <div class="fr"><label>Open pit mining</label><input type="number" id="miningCost" value="5.50" min="1" max="30" step="0.5"><span class="unit">$/t ore</span></div>
@@ -571,7 +665,7 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
   <!-- CAPITAL -->
   <div class="sec">
     <div class="sec-hdr open" onclick="toggleSec(this)">
-      <span class="sec-title">🏗 Capital Structure</span><span class="chev">▶</span>
+      <span class="sec-title">Capital Structure</span><span class="chev">▶</span>
     </div>
     <div class="sec-body open">
       <div class="fr"><label>Initial CAPEX</label><input type="number" id="initCapex" value="800" min="50" max="10000" step="25"><span class="unit">$M</span></div>
@@ -586,7 +680,7 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
   <!-- FINANCIAL -->
   <div class="sec">
     <div class="sec-hdr open" onclick="toggleSec(this)">
-      <span class="sec-title">📈 Financial &amp; Tax</span><span class="chev">▶</span>
+      <span class="sec-title">Financial &amp; Tax</span><span class="chev">▶</span>
     </div>
     <div class="sec-body open">
       <div class="fr"><label>Discount rate (WACC)</label><input type="number" id="discRate" value="10" min="4" max="25"><span class="unit">%</span></div>
@@ -605,24 +699,24 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
 
   <!-- Sticky section nav -->
   <div id="sec-nav">
-    <button class="snav active" data-target="sec-overview">📈 Overview</button>
-    <button class="snav" data-target="sec-sched">📋 Schedule</button>
-    <button class="snav" data-target="sec-sens">🎯 Sensitivity</button>
-    <button class="snav" data-target="sec-mc">🎲 Monte Carlo</button>
-    <button class="snav" data-target="sec-val">💰 Valuation</button>
-    <button class="snav" data-target="sec-scenario">🗂 Scenarios</button>
-    <button class="snav" data-target="sec-funding">💸 Funding</button>
-    <button class="snav" data-target="sec-peers">🏆 Peers</button>
-    <button class="snav" data-target="sec-stress">⚡ Stress</button>
-    <button class="snav" data-target="sec-thesis">🧠 Thesis</button>
+    <button class="snav active" data-target="sec-overview">Overview</button>
+    <button class="snav" data-target="sec-sched">Schedule</button>
+    <button class="snav" data-target="sec-sens">Sensitivity</button>
+    <button class="snav" data-target="sec-mc">Monte Carlo</button>
+    <button class="snav" data-target="sec-val">Valuation</button>
+    <button class="snav" data-target="sec-scenario">Scenarios</button>
+    <button class="snav" data-target="sec-funding">Funding</button>
+    <button class="snav" data-target="sec-peers">Peers</button>
+    <button class="snav" data-target="sec-stress">Stress</button>
+    <button class="snav" data-target="sec-thesis">Thesis</button>
   </div>
 
   <!-- Plant Flow Calculator -->
   <div id="sec-overview"></div>
   <div class="table-card" style="margin-bottom:0;">
     <div class="card-title" style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-      <span>⚗️ Plant Production Flow — ROM Ore → Spodumene Concentrate → LCE → Revenue</span>
-      <span style="font-size:9px;color:#6e90b0;font-family:var(--font-mono)">Live · updates with assumptions</span>
+      <span>Plant Production Flow — ROM Ore → Spodumene Concentrate → LCE → Revenue</span>
+      <span style="font-size:9px;color:var(--fg-2);font-family:var(--font-mono)">Live · updates with assumptions</span>
     </div>
     <div id="pf-flow" class="pf-wrap"><div class="pf-step "><div class="pf-label">ROM Ore Feed</div>
         <div class="pf-num">3.00</div>
@@ -692,13 +786,13 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
   <div class="chart-row">
     <div class="chart-card">
       <div class="card-title">Annual Cash Flows ($M)
-        <span style="font-size:9px;color:#6e90b0">Stacked: Revenue · OPEX · Tax · CAPEX</span>
+        <span style="font-size:9px;color:var(--fg-2)">Stacked: Revenue · OPEX · Tax · CAPEX</span>
       </div>
       <div class="chart-wrap"><canvas id="chart-cf" role="img" aria-label="Annual cash flow chart" style="box-sizing: border-box; display: block; height: 180px; width: 1317px;" width="1976" height="270"></canvas></div>
     </div>
     <div class="chart-card">
       <div class="card-title">Cumulative NPV ($M)
-        <span style="font-size:9px;color:#6e90b0">Post-tax · Discounted at WACC</span>
+        <span style="font-size:9px;color:var(--fg-2)">Post-tax · Discounted at WACC</span>
       </div>
       <div class="chart-wrap"><canvas id="chart-npv" role="img" aria-label="Cumulative NPV chart" style="box-sizing: border-box; display: block; height: 180px; width: 869px;" width="1304" height="270"></canvas></div>
     </div>
@@ -710,8 +804,8 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
   <div class="table-card">
     <div class="card-title" style="padding:10px 14px;border-bottom:1px solid var(--border);">
       <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);">
-        📋 Annual Cash Flow Schedule
-        <span style="color:#6e90b0;font-weight:400;margin-left:8px;">Amber = year override active</span>
+        Annual Cash Flow Schedule
+        <span style="color:var(--fg-2);font-weight:400;margin-left:8px;">Amber = year override active</span>
       </span>
       <button class="reset-btn" onclick="resetOverrides()">Reset all overrides</button>
     </div>
@@ -759,11 +853,11 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
   <div id="sec-sens"></div>
   <div class="sens-grid">
     <div class="sens-card">
-      <div class="card-title">NPV Sensitivity: Price vs. Mining+Processing Cost <span style="color:#6e90b0">(NPV@WACC, $M)</span></div>
+      <div class="card-title">NPV Sensitivity: Price vs. Mining+Processing Cost <span style="color:var(--fg-2)">(NPV@WACC, $M)</span></div>
       <div style="overflow-x:auto"><table class="sens-table" id="sens1"><tbody><tr><th>SC6 $/t ↓ / OPEX →</th><th>-20%</th><th>-10%</th><th>0%<br>(base)</th><th>10%</th><th>20%</th><th>30%</th></tr></tbody><tbody><tr><th>$450</th><td class="s1">($250)</td><td class="s0">($310)</td><td class="s0">($370)</td><td class="s0">($450)</td><td class="s0">($530)</td><td class="s0">($610)</td></tr></tbody><tbody><tr><th>$550</th><td class="s2">($30)</td><td class="s2">($90)</td><td class="s1">($140)</td><td class="s1">($200)</td><td class="s1">($250)</td><td class="s0">($310)</td></tr></tbody><tbody><tr><th>$650</th><td class="s4">$190</td><td class="s4">$140</td><td class="s3">$80</td><td class="s3">$30</td><td class="s2">($30)</td><td class="s2">($80)</td></tr></tbody><tbody><tr><th>$700</th><td class="s4">$300</td><td class="s4">$250</td><td class="s4">$190</td><td class="s4">$140</td><td class="s3">$80</td><td class="s3">$30</td></tr></tbody><tbody><tr><th>$800</th><td class="s5">$530</td><td class="s4">$470</td><td class="s4">$420</td><td class="s4">$360</td><td class="s4">$310</td><td class="s4">$250</td></tr></tbody><tbody><tr><th>$900</th><td class="s5">$750</td><td class="s5">$700</td><td class="s5">$640</td><td class="s5">$590</td><td class="s5">$530</td><td class="s4">$480</td></tr></tbody><tbody><tr><th>$1050</th><td class="s5">$1090</td><td class="s5">$1030</td><td class="s5">$980</td><td class="s5">$920</td><td class="s5">$870</td><td class="s5">$810</td></tr></tbody><tbody><tr><th>$1150</th><td class="s5">$1310</td><td class="s5">$1250</td><td class="s5">$1200</td><td class="s5">$1140</td><td class="s5">$1090</td><td class="s5">$1030</td></tr></tbody><tbody><tr><th>$1350</th><td class="s5">$1760</td><td class="s5">$1700</td><td class="s5">$1650</td><td class="s5">$1590</td><td class="s5">$1540</td><td class="s5">$1480</td></tr></tbody><tbody><tr><th>$1800</th><td class="s5">$2760</td><td class="s5">$2710</td><td class="s5">$2650</td><td class="s5">$2600</td><td class="s5">$2540</td><td class="s5">$2490</td></tr></tbody></table></div>
     </div>
     <div class="sens-card">
-      <div class="card-title">NPV Sensitivity: Price vs. CAPEX <span style="color:#6e90b0">(NPV@WACC, $M)</span></div>
+      <div class="card-title">NPV Sensitivity: Price vs. CAPEX <span style="color:var(--fg-2)">(NPV@WACC, $M)</span></div>
       <div style="overflow-x:auto"><table class="sens-table" id="sens2"><tbody><tr><th>SC6 $/t ↓ / CAPEX →</th><th>-30%</th><th>-15%</th><th>0%<br>(base)</th><th>15%</th><th>30%</th><th>50%</th></tr></tbody><tbody><tr><th>$450</th><td class="s1">($190)</td><td class="s1">($280)</td><td class="s0">($370)</td><td class="s0">($470)</td><td class="s0">($570)</td><td class="s0">($710)</td></tr></tbody><tbody><tr><th>$550</th><td class="s3">$30</td><td class="s2">($50)</td><td class="s1">($140)</td><td class="s1">($230)</td><td class="s0">($310)</td><td class="s0">($430)</td></tr></tbody><tbody><tr><th>$650</th><td class="s4">$260</td><td class="s4">$170</td><td class="s3">$80</td><td class="s2">($0)</td><td class="s2">($90)</td><td class="s1">($210)</td></tr></tbody><tbody><tr><th>$700</th><td class="s4">$370</td><td class="s4">$280</td><td class="s4">$190</td><td class="s4">$110</td><td class="s3">$20</td><td class="s2">($90)</td></tr></tbody><tbody><tr><th>$800</th><td class="s5">$590</td><td class="s5">$500</td><td class="s4">$420</td><td class="s4">$330</td><td class="s4">$240</td><td class="s4">$130</td></tr></tbody><tbody><tr><th>$900</th><td class="s5">$810</td><td class="s5">$730</td><td class="s5">$640</td><td class="s5">$550</td><td class="s4">$470</td><td class="s4">$350</td></tr></tbody><tbody><tr><th>$1050</th><td class="s5">$1150</td><td class="s5">$1060</td><td class="s5">$980</td><td class="s5">$890</td><td class="s5">$800</td><td class="s5">$690</td></tr></tbody><tbody><tr><th>$1150</th><td class="s5">$1370</td><td class="s5">$1290</td><td class="s5">$1200</td><td class="s5">$1110</td><td class="s5">$1030</td><td class="s5">$910</td></tr></tbody><tbody><tr><th>$1350</th><td class="s5">$1820</td><td class="s5">$1730</td><td class="s5">$1650</td><td class="s5">$1560</td><td class="s5">$1470</td><td class="s5">$1360</td></tr></tbody><tbody><tr><th>$1800</th><td class="s5">$2820</td><td class="s5">$2740</td><td class="s5">$2650</td><td class="s5">$2560</td><td class="s5">$2480</td><td class="s5">$2360</td></tr></tbody></table></div>
     </div>
   </div>
@@ -772,8 +866,8 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
   <div id="sec-mc"></div>
   <div class="table-card">
     <div class="card-title" style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-      <span>🎲 Monte Carlo Simulation — Confidence Intervals &amp; Probability Distribution</span>
-      <span style="font-size:9px;color:#6e90b0;font-family:var(--font-mono)">Define variable ranges · Run simulation · Read P10/P50/P90</span>
+      <span>Monte Carlo Simulation — Confidence Intervals &amp; Probability Distribution</span>
+      <span style="font-size:9px;color:var(--fg-2);font-family:var(--font-mono)">Define variable ranges · Run simulation · Read P10/P50/P90</span>
     </div>
     <div style="padding:16px 18px;">
 
@@ -782,9 +876,9 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
 
         <!-- Variable table -->
         <div>
-          <div class="mc-ctrl-title" style="margin-bottom:10px;">📐 Input variable ranges — set P10 / Base / P90 for each driver</div>
+          <div class="mc-ctrl-title" style="margin-bottom:10px;">Input variable ranges — set P10 / Base / P90 for each driver</div>
           <div style="display:grid;grid-template-columns:minmax(120px,1.6fr) 1fr 1fr 1fr;gap:6px;margin-bottom:8px;padding:0 2px;">
-            <span class="mc-col-hdr" style="text-align:left;color:#b0c8e0">Variable</span>
+            <span class="mc-col-hdr" style="text-align:left;color:var(--fg)">Variable</span>
             <span class="mc-col-hdr">Low (P10)</span>
             <span class="mc-col-hdr">Base (P50)</span>
             <span class="mc-col-hdr">High (P90)</span>
@@ -830,7 +924,7 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
         <!-- Settings + run button -->
         <div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:12px;">
           <div>
-            <div style="font-size:10px;color:#b0c8e0;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Distribution type</div>
+            <div style="font-size:10px;color:var(--fg);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Distribution type</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
               <button class="mc-dist-btn on" id="dist-pert" onclick="setDist('pert')">PERT</button>
               <button class="mc-dist-btn" id="dist-triangular" onclick="setDist('triangular')">Triangular</button>
@@ -839,16 +933,16 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
             </div>
           </div>
           <div>
-            <div style="font-size:10px;color:#b0c8e0;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">Iterations</div>
-            <select id="mc-iters" style="width:100%;background:var(--card);border:1px solid var(--border2);color:#fff;padding:6px 8px;border-radius:6px;font-size:12px;font-family:var(--font-mono);">
+            <div style="font-size:10px;color:var(--fg);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">Iterations</div>
+            <select id="mc-iters" style="width:100%;background:var(--card);border:1px solid var(--border2);color:var(--fg);padding:6px 8px;border-radius:6px;font-size:12px;font-family:var(--font-mono);">
               <option value="500">500 — fast preview</option>
               <option value="2000" selected="">2,000 — standard</option>
               <option value="5000">5,000 — precise</option>
               <option value="10000">10,000 — high confidence</option>
             </select>
           </div>
-          <div style="font-size:10px;color:#6e90b0;line-height:1.6;background:var(--card);border-radius:6px;padding:10px;border-left:3px solid var(--teal);">
-            <span style="color:#26c6da;font-weight:700">PERT recommended</span> — gives 4× more weight to the base case than to P10/P90 extremes. Closely mirrors how mining engineers build estimates. Price and CAPEX typically dominate the swing.
+          <div style="font-size:10px;color:var(--fg-2);line-height:1.6;background:var(--card);border-radius:6px;padding:10px;border-left:3px solid var(--teal);">
+            <span style="color:var(--cyan);font-weight:700">PERT recommended</span> — gives 4× more weight to the base case than to P10/P90 extremes. Closely mirrors how mining engineers build estimates. Price and CAPEX typically dominate the swing.
           </div>
           <button class="mc-run-btn" id="mc-run-btn" onclick="runMC()">▶ &nbsp;RUN SIMULATION</button>
         </div>
@@ -858,25 +952,25 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
       <div id="mc-status" class="mc-status" style="background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: 20px; text-align: center; font-size: 13px; color: rgb(110, 144, 176); display: none;">Running… 100% (10,000 / 10,000 iterations)</div>
       <div id="mc-output" style="display: block;">
         <div class="mc-percentiles" id="mc-percentiles" style="margin-bottom:14px;"><div class="mc-pc">
-      <div class="mc-pc-val" style="color:#ff6b6b;font-size:13px">$1.42<span style="font-size:11px">B</span></div>
+      <div class="mc-pc-val" style="color:var(--red);font-size:13px">$1.42<span style="font-size:11px">B</span></div>
       <div class="mc-pc-lbl">NPV P10</div>
-      <div style="font-size:10px;color:#6e90b0;font-family:var(--font-mono);margin-top:2px">IRR 24.4%</div>
+      <div style="font-size:10px;color:var(--fg-2);font-family:var(--font-mono);margin-top:2px">IRR 24.4%</div>
     </div><div class="mc-pc">
-      <div class="mc-pc-val" style="color:#ffab40;font-size:13px">$3.08<span style="font-size:11px">B</span></div>
+      <div class="mc-pc-val" style="color:var(--amber);font-size:13px">$3.08<span style="font-size:11px">B</span></div>
       <div class="mc-pc-lbl">NPV P25</div>
-      <div style="font-size:10px;color:#6e90b0;font-family:var(--font-mono);margin-top:2px">IRR 37.3%</div>
+      <div style="font-size:10px;color:var(--fg-2);font-family:var(--font-mono);margin-top:2px">IRR 37.3%</div>
     </div><div class="mc-pc">
-      <div class="mc-pc-val" style="color:#69f0ae;font-size:13px">$5.02<span style="font-size:11px">B</span></div>
+      <div class="mc-pc-val" style="color:var(--green);font-size:13px">$5.02<span style="font-size:11px">B</span></div>
       <div class="mc-pc-lbl">NPV P50</div>
-      <div style="font-size:10px;color:#6e90b0;font-family:var(--font-mono);margin-top:2px">IRR 51.0%</div>
+      <div style="font-size:10px;color:var(--fg-2);font-family:var(--font-mono);margin-top:2px">IRR 51.0%</div>
     </div><div class="mc-pc">
-      <div class="mc-pc-val" style="color:#64b5f6;font-size:13px">$6.90<span style="font-size:11px">B</span></div>
+      <div class="mc-pc-val" style="color:var(--cyan);font-size:13px">$6.90<span style="font-size:11px">B</span></div>
       <div class="mc-pc-lbl">NPV P75</div>
-      <div style="font-size:10px;color:#6e90b0;font-family:var(--font-mono);margin-top:2px">IRR 64.2%</div>
+      <div style="font-size:10px;color:var(--fg-2);font-family:var(--font-mono);margin-top:2px">IRR 64.2%</div>
     </div><div class="mc-pc">
-      <div class="mc-pc-val" style="color:#b39dff;font-size:13px">$8.32<span style="font-size:11px">B</span></div>
+      <div class="mc-pc-val" style="color:var(--fg-2);font-size:13px">$8.32<span style="font-size:11px">B</span></div>
       <div class="mc-pc-lbl">NPV P90</div>
-      <div style="font-size:10px;color:#6e90b0;font-family:var(--font-mono);margin-top:2px">IRR 74.4%</div>
+      <div style="font-size:10px;color:var(--fg-2);font-family:var(--font-mono);margin-top:2px">IRR 74.4%</div>
     </div></div>
         <div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;">
           <div class="mc-tabs">
@@ -898,70 +992,70 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
             <table class="mc-prob-table" id="mc-prob-table">
               <thead><tr><th>Probability</th><th>NPV ≥ ($M)</th><th>IRR ≥ (%)</th><th>Interpretation</th></tr></thead>
               <tbody id="mc-prob-body"><tr>
-      <td style="color:#c0d4e8;font-weight:700">95% probability</td>
-      <td style="color:#69f0ae;font-weight:700">$0.51B</td>
-      <td style="color:#69f0ae">16.5%</td>
-      <td style="color:#8ab0d0;font-size:10px">✅ Very likely economic</td>
+      <td style="color:var(--fg);font-weight:700">95% probability</td>
+      <td style="color:var(--green);font-weight:700">$0.51B</td>
+      <td style="color:var(--green)">16.5%</td>
+      <td style="color:var(--fg-2);font-size:10px">Very likely economic</td>
     </tr><tr>
-      <td style="color:#c0d4e8;font-weight:700">90% probability</td>
-      <td style="color:#69f0ae;font-weight:700">$1.42B</td>
-      <td style="color:#69f0ae">24.4%</td>
-      <td style="color:#8ab0d0;font-size:10px">✅ Very likely economic</td>
+      <td style="color:var(--fg);font-weight:700">90% probability</td>
+      <td style="color:var(--green);font-weight:700">$1.42B</td>
+      <td style="color:var(--green)">24.4%</td>
+      <td style="color:var(--fg-2);font-size:10px">Very likely economic</td>
     </tr><tr>
-      <td style="color:#c0d4e8;font-weight:700">80% probability</td>
-      <td style="color:#69f0ae;font-weight:700">$2.59B</td>
-      <td style="color:#69f0ae">33.6%</td>
-      <td style="color:#8ab0d0;font-size:10px">✅ Very likely economic</td>
+      <td style="color:var(--fg);font-weight:700">80% probability</td>
+      <td style="color:var(--green);font-weight:700">$2.59B</td>
+      <td style="color:var(--green)">33.6%</td>
+      <td style="color:var(--fg-2);font-size:10px">Very likely economic</td>
     </tr><tr>
-      <td style="color:#c0d4e8;font-weight:700">75% probability</td>
-      <td style="color:#69f0ae;font-weight:700">$3.08B</td>
-      <td style="color:#69f0ae">37.3%</td>
-      <td style="color:#8ab0d0;font-size:10px">✅ Very likely economic</td>
+      <td style="color:var(--fg);font-weight:700">75% probability</td>
+      <td style="color:var(--green);font-weight:700">$3.08B</td>
+      <td style="color:var(--green)">37.3%</td>
+      <td style="color:var(--fg-2);font-size:10px">Very likely economic</td>
     </tr><tr>
-      <td style="color:#c0d4e8;font-weight:700">70% probability</td>
-      <td style="color:#69f0ae;font-weight:700">$3.53B</td>
-      <td style="color:#69f0ae">40.5%</td>
-      <td style="color:#8ab0d0;font-size:10px">✅ Very likely economic</td>
+      <td style="color:var(--fg);font-weight:700">70% probability</td>
+      <td style="color:var(--green);font-weight:700">$3.53B</td>
+      <td style="color:var(--green)">40.5%</td>
+      <td style="color:var(--fg-2);font-size:10px">Very likely economic</td>
     </tr><tr>
-      <td style="color:#c0d4e8;font-weight:700">60% probability</td>
-      <td style="color:#69f0ae;font-weight:700">$4.32B</td>
-      <td style="color:#69f0ae">46.1%</td>
-      <td style="color:#8ab0d0;font-size:10px">✅ Very likely economic</td>
+      <td style="color:var(--fg);font-weight:700">60% probability</td>
+      <td style="color:var(--green);font-weight:700">$4.32B</td>
+      <td style="color:var(--green)">46.1%</td>
+      <td style="color:var(--fg-2);font-size:10px">Very likely economic</td>
     </tr><tr>
-      <td style="color:#c0d4e8;font-weight:700">50% probability</td>
-      <td style="color:#69f0ae;font-weight:700">$5.02B</td>
-      <td style="color:#69f0ae">51.0%</td>
-      <td style="color:#8ab0d0;font-size:10px">✅ Very likely economic</td>
+      <td style="color:var(--fg);font-weight:700">50% probability</td>
+      <td style="color:var(--green);font-weight:700">$5.02B</td>
+      <td style="color:var(--green)">51.0%</td>
+      <td style="color:var(--fg-2);font-size:10px">Very likely economic</td>
     </tr><tr>
-      <td style="color:#c0d4e8;font-weight:700">40% probability</td>
-      <td style="color:#69f0ae;font-weight:700">$5.75B</td>
-      <td style="color:#69f0ae">56.1%</td>
-      <td style="color:#8ab0d0;font-size:10px">✅ Very likely economic</td>
+      <td style="color:var(--fg);font-weight:700">40% probability</td>
+      <td style="color:var(--green);font-weight:700">$5.75B</td>
+      <td style="color:var(--green)">56.1%</td>
+      <td style="color:var(--fg-2);font-size:10px">Very likely economic</td>
     </tr><tr>
-      <td style="color:#c0d4e8;font-weight:700">30% probability</td>
-      <td style="color:#69f0ae;font-weight:700">$6.50B</td>
-      <td style="color:#69f0ae">61.3%</td>
-      <td style="color:#8ab0d0;font-size:10px">✅ Very likely economic</td>
+      <td style="color:var(--fg);font-weight:700">30% probability</td>
+      <td style="color:var(--green);font-weight:700">$6.50B</td>
+      <td style="color:var(--green)">61.3%</td>
+      <td style="color:var(--fg-2);font-size:10px">Very likely economic</td>
     </tr><tr>
-      <td style="color:#c0d4e8;font-weight:700">25% probability</td>
-      <td style="color:#69f0ae;font-weight:700">$6.90B</td>
-      <td style="color:#69f0ae">64.2%</td>
-      <td style="color:#8ab0d0;font-size:10px">✅ Very likely economic</td>
+      <td style="color:var(--fg);font-weight:700">25% probability</td>
+      <td style="color:var(--green);font-weight:700">$6.90B</td>
+      <td style="color:var(--green)">64.2%</td>
+      <td style="color:var(--fg-2);font-size:10px">Very likely economic</td>
     </tr><tr>
-      <td style="color:#c0d4e8;font-weight:700">20% probability</td>
-      <td style="color:#69f0ae;font-weight:700">$7.31B</td>
-      <td style="color:#69f0ae">67.4%</td>
-      <td style="color:#8ab0d0;font-size:10px">✅ Very likely economic</td>
+      <td style="color:var(--fg);font-weight:700">20% probability</td>
+      <td style="color:var(--green);font-weight:700">$7.31B</td>
+      <td style="color:var(--green)">67.4%</td>
+      <td style="color:var(--fg-2);font-size:10px">Very likely economic</td>
     </tr><tr>
-      <td style="color:#c0d4e8;font-weight:700">10% probability</td>
-      <td style="color:#69f0ae;font-weight:700">$8.32B</td>
-      <td style="color:#69f0ae">74.4%</td>
-      <td style="color:#8ab0d0;font-size:10px">✅ Very likely economic</td>
+      <td style="color:var(--fg);font-weight:700">10% probability</td>
+      <td style="color:var(--green);font-weight:700">$8.32B</td>
+      <td style="color:var(--green)">74.4%</td>
+      <td style="color:var(--fg-2);font-size:10px">Very likely economic</td>
     </tr><tr>
-      <td style="color:#c0d4e8;font-weight:700">5% probability</td>
-      <td style="color:#69f0ae;font-weight:700">$9.01B</td>
-      <td style="color:#69f0ae">80.1%</td>
-      <td style="color:#8ab0d0;font-size:10px">✅ Very likely economic</td>
+      <td style="color:var(--fg);font-weight:700">5% probability</td>
+      <td style="color:var(--green);font-weight:700">$9.01B</td>
+      <td style="color:var(--green)">80.1%</td>
+      <td style="color:var(--fg-2);font-size:10px">Very likely economic</td>
     </tr></tbody>
             </table>
           </div>
@@ -973,20 +1067,20 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
   <!-- Market Valuation -->
   <div id="sec-val"></div>
   <div class="table-card">
-    <div style="padding:10px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:rgba(10,20,35,.4);">
-      <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:#c0d4e8;">💰 Market Valuation — Where Is The Company Now &amp; What Could It Be Worth?</span>
-      <span style="font-size:9px;color:#6e90b0;font-family:var(--font-mono)">Live · NPV linked to DCF above</span>
+    <div style="padding:10px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:rgba(26,28,22,.4);">
+      <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--fg);">Market Valuation — Where Is The Company Now &amp; What Could It Be Worth?</span>
+      <span style="font-size:9px;color:var(--fg-2);font-family:var(--font-mono)">Live · NPV linked to DCF above</span>
     </div>
 
     <!-- Compact inputs -->
-    <div style="padding:8px 18px;border-bottom:1px solid var(--border);display:flex;gap:18px;flex-wrap:wrap;align-items:center;background:rgba(15,25,40,.3);">
+    <div style="padding:8px 18px;border-bottom:1px solid var(--border);display:flex;gap:18px;flex-wrap:wrap;align-items:center;background:rgba(26,28,22,.3);">
       <div class="mv-input-group"><label>LCE resource (Mt)</label><input type="number" id="mv-lce" value="9.9" step="0.1" min="0.1" oninput="updateMV()"></div>
       <div class="mv-input-group"><label>Shares (M)</label><input type="number" id="mv-shares" value="196" step="5" min="50" oninput="updateMV()"></div>
       <div class="mv-input-group"><label>CAD→USD FX (1 CAD in USD)</label><input type="number" id="mv-fx" value="0.72" step="0.01" min="0.55" max="1.0" oninput="updateMV()"></div>
       <div class="mv-input-group"><label>Current price (C$/sh)</label><input type="number" id="mv-curr-price" value="2.80" step="0.05" min="0.01" oninput="updateMV()"></div>
       <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
-        <span style="font-size:9px;color:#6e90b0;font-family:var(--font-mono)">Acquisition stage:</span>
-        <div id="mv-stages" style="display:flex;gap:4px;"><button onclick="mvSetStage(0)" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:rgba(255,193,7,.15);border:1px solid #ffc107;font-family:var(--font-mono);font-size:9px;font-weight:700;color:#ffc107;transition:all .12s;white-space:nowrap;">Maiden MRE</button><button onclick="mvSetStage(1)" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:transparent;border:1px solid var(--border);font-family:var(--font-mono);font-size:9px;font-weight:700;color:#6e90b0;transition:all .12s;white-space:nowrap;">Post-PEA</button><button onclick="mvSetStage(2)" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:transparent;border:1px solid var(--border);font-family:var(--font-mono);font-size:9px;font-weight:700;color:#6e90b0;transition:all .12s;white-space:nowrap;">Post-PFS</button><button onclick="mvSetStage(3)" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:transparent;border:1px solid var(--border);font-family:var(--font-mono);font-size:9px;font-weight:700;color:#6e90b0;transition:all .12s;white-space:nowrap;">Full FS</button><button onclick="mvSetStage(4)" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:transparent;border:1px solid var(--border);font-family:var(--font-mono);font-size:9px;font-weight:700;color:#6e90b0;transition:all .12s;white-space:nowrap;">Construction</button></div>
+        <span style="font-size:9px;color:var(--fg-2);font-family:var(--font-mono)">Acquisition stage:</span>
+        <div id="mv-stages" style="display:flex;gap:4px;"><button onclick="mvSetStage(0)" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:rgba(232,182,88,.15);border:1px solid var(--amber);font-family:var(--font-mono);font-size:9px;font-weight:700;color:var(--amber);transition:all .12s;white-space:nowrap;">Maiden MRE</button><button onclick="mvSetStage(1)" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:transparent;border:1px solid var(--border);font-family:var(--font-mono);font-size:9px;font-weight:700;color:var(--fg-2);transition:all .12s;white-space:nowrap;">Post-PEA</button><button onclick="mvSetStage(2)" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:transparent;border:1px solid var(--border);font-family:var(--font-mono);font-size:9px;font-weight:700;color:var(--fg-2);transition:all .12s;white-space:nowrap;">Post-PFS</button><button onclick="mvSetStage(3)" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:transparent;border:1px solid var(--border);font-family:var(--font-mono);font-size:9px;font-weight:700;color:var(--fg-2);transition:all .12s;white-space:nowrap;">Full FS</button><button onclick="mvSetStage(4)" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:transparent;border:1px solid var(--border);font-family:var(--font-mono);font-size:9px;font-weight:700;color:var(--fg-2);transition:all .12s;white-space:nowrap;">Construction</button></div>
       </div>
     </div>
 
@@ -995,81 +1089,81 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
 
       <!-- Card 1: Today -->
       <div style="padding:20px 22px;border-right:1px solid var(--border);">
-        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#ff6b6b;margin-bottom:14px;display:flex;align-items:center;gap:7px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:#ff6b6b;display:inline-block;flex-shrink:0;"></span>
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--red);margin-bottom:14px;display:flex;align-items:center;gap:7px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:var(--red);display:inline-block;flex-shrink:0;"></span>
           Today — current market
         </div>
-        <div id="mv-c1-mc" style="font-size:30px;font-weight:700;font-family:var(--font-mono);color:#ffffff;line-height:1;margin-bottom:4px;">$381M</div>
-        <div style="font-size:10px;color:#6e90b0;margin-bottom:16px;">market cap (USD)</div>
-        <div id="mv-c1-cad" style="font-size:22px;font-weight:700;font-family:var(--font-mono);color:#e0eaf5;line-height:1;margin-bottom:3px;">C$2.80/sh</div>
-        <div style="font-size:10px;color:#6e90b0;margin-bottom:16px;">per share (CAD)</div>
+        <div id="mv-c1-mc" style="font-size:30px;font-weight:700;font-family:var(--font-mono);color:var(--fg);line-height:1;margin-bottom:4px;">$381M</div>
+        <div style="font-size:10px;color:var(--fg-2);margin-bottom:16px;">market cap (USD)</div>
+        <div id="mv-c1-cad" style="font-size:22px;font-weight:700;font-family:var(--font-mono);color:var(--fg);line-height:1;margin-bottom:3px;">C$2.80/sh</div>
+        <div style="font-size:10px;color:var(--fg-2);margin-bottom:16px;">per share (CAD)</div>
         <div style="border-top:1px solid var(--border);padding-top:12px;">
-          <div id="mv-c1-lce" style="font-size:18px;font-weight:700;font-family:var(--font-mono);color:#ff6b6b;margin-bottom:2px;">$38/t LCE</div>
-          <div style="font-size:9px;color:#6e90b0;margin-bottom:8px;">implied $/t LCE</div>
-          <div id="mv-c1-npvpct" style="font-size:11px;font-family:var(--font-mono);color:#6e90b0;">59.5% of DCF NPV ($641M)</div>
+          <div id="mv-c1-lce" style="font-size:18px;font-weight:700;font-family:var(--font-mono);color:var(--red);margin-bottom:2px;">$38/t LCE</div>
+          <div style="font-size:9px;color:var(--fg-2);margin-bottom:8px;">implied $/t LCE</div>
+          <div id="mv-c1-npvpct" style="font-size:11px;font-family:var(--font-mono);color:var(--fg-2);">59.5% of DCF NPV ($641M)</div>
         </div>
       </div>
 
       <!-- Card 2: Fair value (comps) -->
-      <div style="padding:20px 22px;border-right:1px solid var(--border);background:rgba(38,198,218,.03);">
-        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#26c6da;margin-bottom:14px;display:flex;align-items:center;gap:7px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:#26c6da;display:inline-block;flex-shrink:0;"></span>
+      <div style="padding:20px 22px;border-right:1px solid var(--border);background:rgba(106,207,224,.03);">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);margin-bottom:14px;display:flex;align-items:center;gap:7px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:var(--cyan);display:inline-block;flex-shrink:0;"></span>
           Fair value — M&amp;A comps
         </div>
-        <div id="mv-c2-mc" style="font-size:30px;font-weight:700;font-family:var(--font-mono);color:#26c6da;line-height:1;margin-bottom:4px;">$1.18B</div>
-        <div style="font-size:10px;color:#6e90b0;margin-bottom:16px;">market cap (USD)</div>
-        <div id="mv-c2-cad" style="font-size:22px;font-weight:700;font-family:var(--font-mono);color:#e0eaf5;line-height:1;margin-bottom:3px;">C$8.37/sh</div>
-        <div style="font-size:10px;color:#6e90b0;margin-bottom:16px;">per share (CAD)</div>
+        <div id="mv-c2-mc" style="font-size:30px;font-weight:700;font-family:var(--font-mono);color:var(--cyan);line-height:1;margin-bottom:4px;">$1.18B</div>
+        <div style="font-size:10px;color:var(--fg-2);margin-bottom:16px;">market cap (USD)</div>
+        <div id="mv-c2-cad" style="font-size:22px;font-weight:700;font-family:var(--font-mono);color:var(--fg);line-height:1;margin-bottom:3px;">C$8.37/sh</div>
+        <div style="font-size:10px;color:var(--fg-2);margin-bottom:16px;">per share (CAD)</div>
         <div style="border-top:1px solid var(--border);padding-top:12px;">
-          <div id="mv-c2-lce" style="font-size:18px;font-weight:700;font-family:var(--font-mono);color:#26c6da;margin-bottom:2px;">$119/t LCE avg</div>
-          <div style="font-size:9px;color:#6e90b0;margin-bottom:8px;">weighted avg $/t LCE (active comps)</div>
-          <div id="mv-c2-mult" style="font-size:13px;font-weight:700;font-family:var(--font-mono);color:#26c6da;">6.0× current price</div>
+          <div id="mv-c2-lce" style="font-size:18px;font-weight:700;font-family:var(--font-mono);color:var(--cyan);margin-bottom:2px;">$119/t LCE avg</div>
+          <div style="font-size:9px;color:var(--fg-2);margin-bottom:8px;">weighted avg $/t LCE (active comps)</div>
+          <div id="mv-c2-mult" style="font-size:13px;font-weight:700;font-family:var(--font-mono);color:var(--cyan);">6.0× current price</div>
         </div>
       </div>
 
       <!-- Card 3: Acquisition scenario -->
-      <div style="padding:20px 22px;background:rgba(255,193,7,.03);">
-        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#ffc107;margin-bottom:14px;display:flex;align-items:center;gap:7px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:#ffc107;display:inline-block;flex-shrink:0;"></span>
+      <div style="padding:20px 22px;background:rgba(232,182,88,.03);">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:14px;display:flex;align-items:center;gap:7px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:var(--amber);display:inline-block;flex-shrink:0;"></span>
           Acquisition — NPV discount
         </div>
-        <div id="mv-c3-mc" style="font-size:30px;font-weight:700;font-family:var(--font-mono);color:#ffc107;line-height:1;margin-bottom:4px;">$128M</div>
-        <div style="font-size:10px;color:#6e90b0;margin-bottom:16px;">acquisition EV (USD)</div>
-        <div id="mv-c3-cad" style="font-size:22px;font-weight:700;font-family:var(--font-mono);color:#e0eaf5;line-height:1;margin-bottom:3px;">C$0.91/sh</div>
-        <div style="font-size:10px;color:#6e90b0;margin-bottom:16px;">per share (CAD)</div>
+        <div id="mv-c3-mc" style="font-size:30px;font-weight:700;font-family:var(--font-mono);color:var(--amber);line-height:1;margin-bottom:4px;">$128M</div>
+        <div style="font-size:10px;color:var(--fg-2);margin-bottom:16px;">acquisition EV (USD)</div>
+        <div id="mv-c3-cad" style="font-size:22px;font-weight:700;font-family:var(--font-mono);color:var(--fg);line-height:1;margin-bottom:3px;">C$0.91/sh</div>
+        <div style="font-size:10px;color:var(--fg-2);margin-bottom:16px;">per share (CAD)</div>
         <div style="border-top:1px solid var(--border);padding-top:12px;">
-          <div id="mv-c3-npvpct" style="font-size:18px;font-weight:700;font-family:var(--font-mono);color:#ffc107;margin-bottom:2px;">20% of NPV (Maiden MRE · 10–30% range)</div>
-          <div style="font-size:9px;color:#6e90b0;margin-bottom:8px;">% of post-tax NPV@WACC</div>
-          <div id="mv-c3-mult" style="font-size:13px;font-weight:700;font-family:var(--font-mono);color:#ffc107;">0.6× current price</div>
+          <div id="mv-c3-npvpct" style="font-size:18px;font-weight:700;font-family:var(--font-mono);color:var(--amber);margin-bottom:2px;">20% of NPV (Maiden MRE · 10–30% range)</div>
+          <div style="font-size:9px;color:var(--fg-2);margin-bottom:8px;">% of post-tax NPV@WACC</div>
+          <div id="mv-c3-mult" style="font-size:13px;font-weight:700;font-family:var(--font-mono);color:var(--amber);">0.6× current price</div>
         </div>
       </div>
     </div>
 
     <!-- ═══ Range bar ═══ -->
-    <div style="padding:14px 22px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:rgba(10,20,35,.3);">
-      <div style="font-size:9px;color:#8ab0d0;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Share price range — all scenarios vs current</div>
-      <div id="mv-bars"><div class="mv-bar-row"><div class="mv-bar-lbl" style="font-size:10px">Today (current market cap)</div><div class="mv-bar-track"><div class="mv-bar-fill" style="width:28.1%;background:#ff5252;color:#501313">$381M · C$2.70/sh</div></div><div class="mv-bar-val" style="color:#ff5252;font-size:12px">current</div></div><div class="mv-bar-row"><div class="mv-bar-lbl" style="font-size:10px">Fair value — HR comps</div><div class="mv-bar-track"><div class="mv-bar-fill" style="width:87.0%;background:#26c6da;color:#04342C">$1.18B · C$8.37/sh</div></div><div class="mv-bar-val" style="color:#26c6da;font-size:12px">6.0×</div></div><div class="mv-bar-row"><div class="mv-bar-lbl" style="font-size:10px">Acquisition (Maiden MRE)</div><div class="mv-bar-track"><div class="mv-bar-fill" style="width:9.4%;background:#ffc107;color:#412402">$128M · C$0.91/sh</div></div><div class="mv-bar-val" style="color:#ffc107;font-size:12px">0.6×</div></div><div class="mv-bar-row"><div class="mv-bar-lbl" style="font-size:10px">Triangulated mid-point</div><div class="mv-bar-track"><div class="mv-bar-fill" style="width:48.2%;background:#b39dff;color:#26215C">$655M · C$4.64/sh</div></div><div class="mv-bar-val" style="color:#b39dff;font-size:12px">3.3×</div></div></div>
+    <div style="padding:14px 22px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:rgba(26,28,22,.3);">
+      <div style="font-size:9px;color:var(--fg-2);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Share price range — all scenarios vs current</div>
+      <div id="mv-bars"><div class="mv-bar-row"><div class="mv-bar-lbl" style="font-size:10px">Today (current market cap)</div><div class="mv-bar-track"><div class="mv-bar-fill" style="width:28.1%;background:var(--red);color:var(--bg)">$381M · C$2.70/sh</div></div><div class="mv-bar-val" style="color:var(--red);font-size:12px">current</div></div><div class="mv-bar-row"><div class="mv-bar-lbl" style="font-size:10px">Fair value — HR comps</div><div class="mv-bar-track"><div class="mv-bar-fill" style="width:87.0%;background:var(--cyan);color:var(--bg)">$1.18B · C$8.37/sh</div></div><div class="mv-bar-val" style="color:var(--cyan);font-size:12px">6.0×</div></div><div class="mv-bar-row"><div class="mv-bar-lbl" style="font-size:10px">Acquisition (Maiden MRE)</div><div class="mv-bar-track"><div class="mv-bar-fill" style="width:9.4%;background:var(--amber);color:var(--bg)">$128M · C$0.91/sh</div></div><div class="mv-bar-val" style="color:var(--amber);font-size:12px">0.6×</div></div><div class="mv-bar-row"><div class="mv-bar-lbl" style="font-size:10px">Triangulated mid-point</div><div class="mv-bar-track"><div class="mv-bar-fill" style="width:48.2%;background:var(--fg-2);color:var(--bg-3)">$655M · C$4.64/sh</div></div><div class="mv-bar-val" style="color:var(--fg-2);font-size:12px">3.3×</div></div></div>
     </div>
 
     <!-- ═══ Comp reference (collapsible) ═══ -->
     <div>
       <div onclick="mvToggleComps()" style="padding:9px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;" id="mv-comps-hdr">
-        <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#8ab0d0;">Transaction comparables — click to expand</span>
+        <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-2);">Transaction comparables — click to expand</span>
         <div style="display:flex;gap:20px;align-items:center;">
-          <span style="font-size:10px;color:#6e90b0;font-family:var(--font-mono)">Hard rock avg: <span id="mv-hr-wavg-sm" style="color:#26c6da;font-weight:700">$119/t</span> &nbsp;·&nbsp; Brine avg: <span id="mv-br-wavg-sm" style="color:#64b5f6;font-weight:700">$77/t</span></span>
-          <span id="mv-comps-chev" style="font-size:10px;color:#6e90b0">▼</span>
+          <span style="font-size:10px;color:var(--fg-2);font-family:var(--font-mono)">Hard rock avg: <span id="mv-hr-wavg-sm" style="color:var(--cyan);font-weight:700">$119/t</span> &nbsp;·&nbsp; Brine avg: <span id="mv-br-wavg-sm" style="color:var(--cyan);font-weight:700">$77/t</span></span>
+          <span id="mv-comps-chev" style="font-size:10px;color:var(--fg-2)">▼</span>
         </div>
       </div>
       <div id="mv-comps-body" style="display:none;padding:12px 18px 14px;border-top:1px solid var(--border);">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
           <div>
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#26c6da;margin-bottom:8px;">Hard rock — click to toggle</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--cyan);margin-bottom:8px;">Hard rock — click to toggle</div>
             <div id="mv-hr-chips"></div>
           </div>
           <div>
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#64b5f6;margin-bottom:8px;">Brine — reference</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--cyan);margin-bottom:8px;">Brine — reference</div>
             <div id="mv-br-chips"></div>
-            <div style="margin-top:10px;padding:8px 10px;background:rgba(44,66,96,.3);border-radius:5px;border-left:2px solid var(--border2);font-size:9px;color:#6e90b0;font-family:var(--font-mono);line-height:1.6;">Hard rock typically trades at a 20–60% premium to brine at equivalent stages. Cisco is a pegmatite asset — brine comps shown for reference only.</div>
+            <div style="margin-top:10px;padding:8px 10px;background:rgba(58,61,51,.3);border-radius:5px;border-left:2px solid var(--border2);font-size:9px;color:var(--fg-2);font-family:var(--font-mono);line-height:1.6;">Hard rock typically trades at a 20–60% premium to brine at equivalent stages. Cisco is a pegmatite asset — brine comps shown for reference only.</div>
           </div>
         </div>
       </div>
@@ -1082,12 +1176,12 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
   <div id="sec-scenario"></div>
   <div class="sec-block">
     <div class="sec-block-hdr">
-      <span class="sec-block-title">🗂 Scenario Lock-In — Bear / Base / Bull Comparison</span>
+      <span class="sec-block-title">Scenario Lock-In — Bear / Base / Bull Comparison</span>
       <span class="sec-block-sub">Snapshot current model state · Compare three cases side-by-side with deltas</span>
     </div>
     <div class="sec-block-body">
-      <div style="font-size:10px;color:#8ab0d0;margin-bottom:10px;line-height:1.5;">
-        💡 <b style="color:#e0eaf5">Workflow:</b> adjust sidebar inputs (price, CAPEX, recovery…) → click <b style="color:#26c6da">Snap Current</b> under a slot to lock it in. Slots persist in-memory; click <b>Save HTML</b> in the header to export a version with scenarios baked in.
+      <div style="font-size:10px;color:var(--fg-2);margin-bottom:10px;line-height:1.5;">
+        <b style="color:var(--fg)">Workflow:</b> adjust sidebar inputs (price, CAPEX, recovery…) → click <b style="color:var(--cyan)">Snap Current</b> under a slot to lock it in. Slots persist in-memory; click <b>Save HTML</b> in the header to export a version with scenarios baked in.
       </div>
       <div class="scn-grid" id="scn-grid">
         <div class="scn-card bear empty" id="scn-bear">
@@ -1099,7 +1193,7 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
               <button class="scn-btn" onclick="scnClear('bear')">Clear</button>
             </div>
           </div>
-          <div class="scn-empty-msg">Set sidebar to bear case<br>then click <b style="color:#26c6da">Snap Current</b></div>
+          <div class="scn-empty-msg">Set sidebar to bear case<br>then click <b style="color:var(--cyan)">Snap Current</b></div>
         </div>
         <div class="scn-card base empty" id="scn-base">
           <div class="scn-header">
@@ -1125,7 +1219,7 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
         </div>
       </div>
       <div id="scn-delta-wrap" style="display:none;margin-top:12px;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0d4e8;margin-bottom:8px;">Scenario deltas vs Base</div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">Scenario deltas vs Base</div>
         <div id="scn-delta-body"></div>
       </div>
       <!-- Hidden JSON store so that Save HTML persists scenarios -->
@@ -1139,12 +1233,12 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
   <div id="sec-funding"></div>
   <div class="sec-block">
     <div class="sec-block-hdr">
-      <span class="sec-block-title">💸 Dilution &amp; Funding Cascade — The Junior's Journey to FID</span>
+      <span class="sec-block-title">Dilution &amp; Funding Cascade — The Junior's Journey to FID</span>
       <span class="sec-block-sub">Stage-gated raises · Fully-diluted NPV/share at each milestone</span>
     </div>
     <div class="sec-block-body">
-      <div style="font-size:10px;color:#8ab0d0;margin-bottom:12px;line-height:1.5;">
-        💡 <b style="color:#e0eaf5">The problem for juniors:</b> a US$1.5–2B build CAPEX dwarfs the current market cap. Equity must come from somewhere. This model walks the cap table through PEA → PFS → DFS → FID → construction, showing how shares grow and NPV/share gets eaten at each stage. <b style="color:var(--accent)">Stage values</b> use the fractions from the Market Valuation module above.
+      <div style="font-size:10px;color:var(--fg-2);margin-bottom:12px;line-height:1.5;">
+        <b style="color:var(--fg)">The problem for juniors:</b> a US$1.5–2B build CAPEX dwarfs the current market cap. Equity must come from somewhere. This model walks the cap table through PEA → PFS → DFS → FID → construction, showing how shares grow and NPV/share gets eaten at each stage. <b style="color:var(--accent)">Stage values</b> use the fractions from the Market Valuation module above.
       </div>
       <div class="fnd-layout">
         <div class="fnd-inputs">
@@ -1171,12 +1265,12 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
         </div>
         <div class="fnd-chart-area">
           <div class="fnd-cascade">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0d4e8;margin-bottom:10px;">Cap table evolution — stage by stage</div>
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:10px;">Cap table evolution — stage by stage</div>
             <div class="fnd-stage-grid" id="fnd-stages"></div>
             <div class="fnd-summary" id="fnd-summary"></div>
           </div>
           <div class="fnd-cascade">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0d4e8;margin-bottom:10px;">Shares outstanding &amp; NPV per share across stages</div>
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:10px;">Shares outstanding &amp; NPV per share across stages</div>
             <div class="fnd-chart-wrap"><canvas id="fnd-chart"></canvas></div>
           </div>
         </div>
@@ -1184,8 +1278,8 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
       <!-- Sources & Uses waterfall -->
       <div class="sou-wrap">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:10px;">
-          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0d4e8;">💧 Sources &amp; Uses — FID construction financing package</span>
-          <span style="font-size:9px;color:#6e90b0;font-family:var(--font-mono)">Bar widths = $ proportion · Annotations = implied cost of capital</span>
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);">Sources &amp; Uses — FID construction financing package</span>
+          <span style="font-size:9px;color:var(--fg-2);font-family:var(--font-mono)">Bar widths = $ proportion · Annotations = implied cost of capital</span>
         </div>
         <div id="sou-bar" class="sou-bar"></div>
         <div id="sou-legend" class="sou-legend"></div>
@@ -1199,30 +1293,30 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
   <div id="sec-peers"></div>
   <div class="sec-block">
     <div class="sec-block-hdr">
-      <span class="sec-block-title">🏆 Peer Benchmarking — Global Hard-Rock Lithium</span>
+      <span class="sec-block-title">Peer Benchmarking — Global Hard-Rock Lithium</span>
       <span class="sec-block-sub">Cost curve · Capital efficiency · Scale vs grade</span>
     </div>
     <div class="sec-block-body">
-      <div style="font-size:10px;color:#8ab0d0;margin-bottom:12px;line-height:1.5;">
-        💡 <b style="color:#e0eaf5">Reference data</b> drawn from published FS/PFS/PEA where available (PMET Oct 2025 FS, PLS Pilgangoora, LTR Kathleen Valley, SGML Grota do Cirilo Phases 1–3, Greenbushes, Wodgina, MinRes Mt Marion). Your project auto-populates from the DCF model and is highlighted <b style="color:var(--accent)">gold</b>. Edit any cell to override.
+      <div style="font-size:10px;color:var(--fg-2);margin-bottom:12px;line-height:1.5;">
+        <b style="color:var(--fg)">Reference data</b> drawn from published FS/PFS/PEA where available (PMET Oct 2025 FS, PLS Pilgangoora, LTR Kathleen Valley, SGML Grota do Cirilo Phases 1–3, Greenbushes, Wodgina, MinRes Mt Marion). Your project auto-populates from the DCF model and is highlighted <b style="color:var(--accent)">gold</b>. Edit any cell to override.
       </div>
       <!-- Peer rank summary pills -->
       <div class="pr-pills" id="peer-rank-pills"></div>
       <div class="peer-grid">
         <div class="peer-card">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0d4e8;margin-bottom:8px;">AISC Cost Curve (US$/t SC6 equiv)</div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">AISC Cost Curve (US$/t SC6 equiv)</div>
           <div class="peer-chart-wrap"><canvas id="peer-aisc-chart"></canvas></div>
         </div>
         <div class="peer-card">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0d4e8;margin-bottom:8px;">Capital Intensity — CAPEX ($M) vs SC6 Production (ktpa)</div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">Capital Intensity — CAPEX ($M) vs SC6 Production (ktpa)</div>
           <div class="peer-chart-wrap"><canvas id="peer-capex-chart"></canvas></div>
         </div>
         <div class="peer-card peer-full">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0d4e8;margin-bottom:8px;">Grade × Resource Size — the Tier-1 map (bubble size = ktpa SC6)</div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">Grade × Resource Size — the Tier-1 map (bubble size = ktpa SC6)</div>
           <div class="peer-chart-wrap" style="height:280px;"><canvas id="peer-grade-chart"></canvas></div>
         </div>
         <div class="peer-card peer-full">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0d4e8;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
             <span>Peer detail table — click a cell to edit</span>
             <button class="reset-btn" onclick="peerReset()">Reset peer defaults</button>
           </div>
@@ -1240,17 +1334,17 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
   <div id="sec-stress"></div>
   <div class="sec-block">
     <div class="sec-block-hdr">
-      <span class="sec-block-title">⚡ Probabilistic Schedule &amp; Cycle Stress — Can It Survive?</span>
+      <span class="sec-block-title">Probabilistic Schedule &amp; Cycle Stress — Can It Survive?</span>
       <span class="sec-block-sub">CPPP confidence cone · Historical lithium price replay</span>
     </div>
     <div class="sec-block-body">
-      <div style="font-size:10px;color:#8ab0d0;margin-bottom:12px;line-height:1.5;">
-        💡 <b style="color:#e0eaf5">Two lenses on project resilience.</b> <b style="color:var(--teal)">Left:</b> a CPPP-style fan chart showing cumulative NPV uncertainty <i>through time</i> — it's one thing to know NPV P50 at year 20, another to know when the bands cross zero. <b style="color:var(--accent)">Right:</b> replay real lithium price cycles through your mine to test survival.
+      <div style="font-size:10px;color:var(--fg-2);margin-bottom:12px;line-height:1.5;">
+        <b style="color:var(--fg)">Two lenses on project resilience.</b> <b style="color:var(--teal)">Left:</b> a CPPP-style fan chart showing cumulative NPV uncertainty <i>through time</i> — it's one thing to know NPV P50 at year 20, another to know when the bands cross zero. <b style="color:var(--accent)">Right:</b> replay real lithium price cycles through your mine to test survival.
       </div>
       <div class="stoch-grid">
         <div class="stoch-left">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap;">
-            <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0d4e8;">Cumulative NPV — probabilistic schedule</span>
+            <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);">Cumulative NPV — probabilistic schedule</span>
             <button id="stoch-run-btn" class="stoch-btn" onclick="runStochasticFan()">▶ Run CPPP Schedule (2,000 iter)</button>
           </div>
           <div id="stoch-fan-container">
@@ -1258,20 +1352,20 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
           </div>
         </div>
         <div class="stoch-right">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0d4e8;margin-bottom:10px;">Historical cycle replay</div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:10px;">Historical cycle replay</div>
           <div class="cycle-presets" id="cycle-presets"></div>
           <div id="cycle-result" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
-            <div style="font-size:9px;color:#8ab0d0;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Project outcome under replayed prices</div>
+            <div style="font-size:9px;color:var(--fg-2);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Project outcome under replayed prices</div>
             <div class="cycle-kpi" id="cycle-kpi"></div>
-            <div id="cycle-commentary" style="font-size:10px;color:#c0d4e8;margin-top:8px;line-height:1.5;padding:8px 10px;background:rgba(10,20,35,.4);border-radius:5px;border-left:2px solid var(--accent);"></div>
+            <div id="cycle-commentary" style="font-size:10px;color:var(--fg);margin-top:8px;line-height:1.5;padding:8px 10px;background:rgba(26,28,22,.4);border-radius:5px;border-left:2px solid var(--accent);"></div>
           </div>
         </div>
       </div>
       <!-- DSCR / Debt-Covenant Timeline -->
       <div class="dscr-wrap" style="margin-top:14px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:10px;">
-          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0d4e8;">🏦 Debt-Service Coverage Ratio — covenant stress through ramp</span>
-          <span style="font-size:9px;color:#6e90b0;font-family:var(--font-mono)">DSCR = Cash Flow Available ÷ Debt Service · Covenant typically 1.3×–1.5×</span>
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);">Debt-Service Coverage Ratio — covenant stress through ramp</span>
+          <span style="font-size:9px;color:var(--fg-2);font-family:var(--font-mono)">DSCR = Cash Flow Available ÷ Debt Service · Covenant typically 1.3×–1.5×</span>
         </div>
         <div class="dscr-controls">
           <div class="dscr-ctrl"><label>Debt drawn ($M)</label><input type="number" id="dscr-debt" value="900" step="50" min="0"></div>
@@ -1293,14 +1387,14 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
   <div id="sec-thesis"></div>
   <div class="sec-block">
     <div class="sec-block-hdr">
-      <span class="sec-block-title">🧠 Auto Investment Thesis — Synthesised From The Model</span>
+      <span class="sec-block-title">Auto Investment Thesis — Synthesised From The Model</span>
       <span class="sec-block-sub">Updated on every input change · Bull / Watch / Bear framing</span>
     </div>
     <div class="sec-block-body">
       <!-- Investment Scorecard -->
       <div style="margin-bottom:14px;">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0d4e8;margin-bottom:4px;">📊 Investment Scorecard — peer-ranked grades across 8 dimensions</div>
-        <div style="font-size:9.5px;color:#8ab0d0;margin-bottom:10px;">Each dimension graded A–F based on position in the global peer set (top 20% = A, next 20% = B, …). Overall grade is weighted by how much each dimension typically drives junior lithium returns.</div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:4px;">Investment Scorecard — peer-ranked grades across 8 dimensions</div>
+        <div style="font-size:9.5px;color:var(--fg-2);margin-bottom:10px;">Each dimension graded A–F based on position in the global peer set (top 20% = A, next 20% = B, …). Overall grade is weighted by how much each dimension typically drives junior lithium returns.</div>
         <div class="scr-grid" id="scr-grid"></div>
         <div class="scr-overall" id="scr-overall"></div>
       </div>
@@ -1311,8 +1405,8 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
       <!-- Catalyst Calendar -->
       <div class="cat-wrap">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:10px;">
-          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0d4e8;">📅 Catalyst Calendar — stage-gated value creation timeline</span>
-          <span style="font-size:9px;color:#6e90b0;font-family:var(--font-mono)">Uplift = NPV×stage-fraction ÷ fully-diluted shares (vs current price)</span>
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);">Catalyst Calendar — stage-gated value creation timeline</span>
+          <span style="font-size:9px;color:var(--fg-2);font-family:var(--font-mono)">Uplift = NPV×stage-fraction ÷ fully-diluted shares (vs current price)</span>
         </div>
         <div class="cat-timeline">
           <div class="cat-line"></div>
@@ -1327,6 +1421,127 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
+// ══════════════════════════════════════════════════════════════════════
+// CHART.JS CANONICAL DEFAULTS — see /CLAUDE.md
+// ══════════════════════════════════════════════════════════════════════
+if (window.Chart) {
+  Chart.defaults.color = '#8a8773';                            // --fg-2
+  Chart.defaults.font.family = "'JetBrains Mono', monospace";
+  Chart.defaults.font.size = 10.5;
+  Chart.defaults.borderColor = 'rgba(58,61,51,0.5)';           // --line-2
+  Chart.defaults.plugins.legend.labels.color = '#d8d4c2';      // --fg
+}
+// Brand semantic colours for chart datasets — single source of truth
+const BRAND = {
+  accent:  '#5dd3a8',   accentDim: 'rgba(93,211,168,0.18)',
+  green:   '#5dd380',   greenDim:  'rgba(93,211,128,0.18)',
+  red:     '#ff5f56',   redDim:    'rgba(255,95,86,0.18)',
+  amber:   '#e8b658',   amberDim:  'rgba(232,182,88,0.18)',
+  cyan:    '#6acfe0',   cyanDim:   'rgba(106,207,224,0.18)',
+  fg:      '#d8d4c2',   fg2:       '#8a8773', fg3: '#5d5b4d',
+  line:    '#2a2c24',   line2:     '#3a3d33',
+  bg:      '#0c0d0a',   bg2:       '#131410', bg3: '#1a1c16'
+};
+
+// ══════════════════════════════════════════════════════════════════════
+// PROJECT PROFILES — per-asset defaults. Reference data (peers, precedents,
+// price decks, tax regimes) will live in COMMODITIES / REGIMES in Phase 2.
+// To add a new project: copy `qtwo`, change identity / inputs / mc.
+// ══════════════════════════════════════════════════════════════════════
+const PROJECTS = {
+  qtwo: {
+    identity: {
+      name: 'Cisco Lithium Project — Eeyou Istchee, Quebec',
+      ticker: 'QTWO.V', company: 'Q2 Metals',
+      jurisdiction: 'qc-canada', commodity: 'sc6', stage: 'mre'
+    },
+    market: { lce_mt: 9.9, sharesFD: 196, lastClose: 2.80, fxCadUsd: 0.72 },
+    inputs: {
+      mineLife: 30, constrYears: 2, rampYears: 3,
+      ramp1: 55, ramp2: 80, tailYears: 3, tailPct: 65,
+      nameplate: 7.5, grade: 1.36, recovery: 72, sc6Grade: 5.5,
+      sc6Price: 1400, priceEsc: 0,
+      miningCost: 13.50, procCost: 21.50, gaFixed: 28,
+      royalty: 2.5, freight: 43, opexEsc: 2.5,
+      initCapex: 1795, capex1: 30, capex2: 70,
+      sustCapex: 18, wc: 4, salvage: -60,
+      discRate: 10, taxRate: 26.5, deprYears: 20, targetIRR: 18
+    },
+    mc: {
+      price:  { lo: 600,   base: 900,   hi: 1600 },
+      grade:  { lo: 1.22,  base: 1.36,  hi: 1.50 },
+      rec:    { lo: 67,    base: 72,    hi: 76 },
+      capex:  { lo: 1400,  base: 1795,  hi: 2450 },
+      mining: { lo: 11.00, base: 13.50, hi: 18.00 },
+      proc:   { lo: 18.00, base: 21.50, hi: 28.00 }
+    },
+    notes: '295 Mt @ 1.36% · Q2 Metals (QTWO.V) · DMS-only · 7.5 Mtpa → ~1.3 Mt SC5.5/yr · calibrated to PMET FS Oct 2025'
+  },
+  blank: {
+    identity: { name: 'New Project', ticker: '—', company: '—',
+                jurisdiction: '—', commodity: 'sc6', stage: 'mre' },
+    market: { lce_mt: 0, sharesFD: 100, lastClose: 0, fxCadUsd: 0.72 },
+    inputs: {
+      mineLife: 20, constrYears: 2, rampYears: 2,
+      ramp1: 60, ramp2: 90, tailYears: 0, tailPct: 80,
+      nameplate: 3.0, grade: 1.40, recovery: 70, sc6Grade: 6.0,
+      sc6Price: 1400, priceEsc: 0,
+      miningCost: 18, procCost: 35, gaFixed: 20,
+      royalty: 2.5, freight: 50, opexEsc: 2.5,
+      initCapex: 800, capex1: 40, capex2: 60,
+      sustCapex: 15, wc: 5, salvage: -30,
+      discRate: 10, taxRate: 30, deprYears: 15, targetIRR: 15
+    },
+    mc: {
+      price:  { lo: 800,  base: 1400, hi: 2200 },
+      grade:  { lo: 1.20, base: 1.40, hi: 1.60 },
+      rec:    { lo: 65,   base: 70,   hi: 75 },
+      capex:  { lo: 700,  base: 800,  hi: 1100 },
+      mining: { lo: 14,   base: 18,   hi: 24 },
+      proc:   { lo: 28,   base: 35,   hi: 45 }
+    },
+    notes: 'Blank template — fill in inputs to model a new project.'
+  }
+};
+
+function loadProject(key, opts = {}){
+  const p = PROJECTS[key]; if(!p) return false;
+  const set = (id, v) => { const el = document.getElementById(id); if(el) el.value = v; };
+
+  set('project-name', p.identity.name);
+  Object.entries(p.inputs || {}).forEach(([k, v]) => set(k, v));
+  Object.entries(p.mc || {}).forEach(([k, r]) => {
+    ['lo', 'base', 'hi'].forEach(s => set(`mc-${k}-${s}`, r[s]));
+  });
+  if(p.market){
+    set('mv-lce',        p.market.lce_mt);
+    set('mv-shares',     p.market.sharesFD);
+    set('mv-curr-price', p.market.lastClose);
+  }
+  // Reset year-level overrides
+  if(typeof OV === 'object') Object.keys(OV).forEach(k => delete OV[k]);
+  // Sync price preset chips (Mid is the canonical default)
+  document.querySelectorAll('.presets .pr').forEach(b => {
+    b.classList.toggle('on', /Mid/.test(b.textContent));
+  });
+  // Update notes/banner
+  const noteEl = document.getElementById('project-notes');
+  if(noteEl) noteEl.textContent = p.notes || '';
+  // Sync switcher
+  const sw = document.getElementById('project-switcher');
+  if(sw) sw.value = key;
+  // Stage default for market valuation
+  if(typeof mvSetStage === 'function'){
+    const stageMap = { mre:0, pea:1, pfs:2, fs:3, con:4 };
+    mvSetStage(stageMap[p.identity.stage] ?? 0);
+  }
+  if(!opts.skipRender && typeof scheduleRender === 'function') scheduleRender();
+  return true;
+}
+
+// Backward-compat shim — older inline handlers may still call this
+function loadCiscoPreset(){ return loadProject('qtwo'); }
+
 // ══════════════════════════════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════════════════════════════
@@ -1747,8 +1962,8 @@ function renderCharts(rows){
     responsive: true, maintainAspectRatio: false,
     plugins: { legend: { display: false } },
     scales: {
-      x: { ticks: { color:'#6e90b0', font:{size:9}, maxRotation:0 }, grid:{color:'rgba(255,255,255,.04)'} },
-      y: { ticks: { color:'#6e90b0', font:{size:9} }, grid:{color:'rgba(255,255,255,.04)'} }
+      x: { ticks: { color:'var(--fg-2)', font:{size:9}, maxRotation:0 }, grid:{color:'rgba(255,255,255,.04)'} },
+      y: { ticks: { color:'var(--fg-2)', font:{size:9} }, grid:{color:'rgba(255,255,255,.04)'} }
     }
   };
 
@@ -1760,13 +1975,13 @@ function renderCharts(rows){
     data: {
       labels,
       datasets: [
-        { label:'Revenue',    data: revData,  backgroundColor: 'rgba(45,184,176,.55)',  stack:'s' },
-        { label:'OPEX',       data: opData,   backgroundColor: 'rgba(244,67,54,.55)',   stack:'s' },
-        { label:'Tax',        data: taxData,  backgroundColor: 'rgba(255,125,69,.55)',  stack:'s' },
-        { label:'CAPEX',      data: cpxData,  backgroundColor: 'rgba(155,141,255,.55)', stack:'s' },
-        { label:'Sust.CAPEX', data: sustData, backgroundColor: 'rgba(90,106,128,.55)',  stack:'s' },
-        { label:'FCF', type:'line', data: fcfData, borderColor:'#f0a500', borderWidth:2,
-          pointRadius:2, pointBackgroundColor:'#f0a500', fill:false, yAxisID:'y', tension:.3 }
+        { label:'Revenue',    data: revData,  backgroundColor: 'rgba(106,207,224,.55)',  stack:'s' },
+        { label:'OPEX',       data: opData,   backgroundColor: 'rgba(255,95,86,.55)',   stack:'s' },
+        { label:'Tax',        data: taxData,  backgroundColor: 'rgba(232,182,88,.55)',  stack:'s' },
+        { label:'CAPEX',      data: cpxData,  backgroundColor: 'rgba(138,135,115,.55)', stack:'s' },
+        { label:'Sust.CAPEX', data: sustData, backgroundColor: 'rgba(138,135,115,.55)',  stack:'s' },
+        { label:'FCF', type:'line', data: fcfData, borderColor:'var(--amber)', borderWidth:2,
+          pointRadius:2, pointBackgroundColor:'var(--amber)', fill:false, yAxisID:'y', tension:.3 }
       ]
     },
     options: { ...chartDefaults, scales: {
@@ -1785,11 +2000,11 @@ function renderCharts(rows){
       labels: npvLab,
       datasets: [{
         data: npvData,
-        borderColor: npvData[npvData.length-1] >= 0 ? '#4caf50' : '#f44336',
+        borderColor: npvData[npvData.length-1] >= 0 ? 'var(--green)' : 'var(--red)',
         borderWidth: 2, fill: true,
         backgroundColor: ctx => {
           const g = ctx.chart.ctx.createLinearGradient(0,0,0,180);
-          g.addColorStop(0,'rgba(76,175,80,.18)'); g.addColorStop(1,'rgba(76,175,80,.01)');
+          g.addColorStop(0,'rgba(93,211,128,.18)'); g.addColorStop(1,'rgba(93,211,128,.01)');
           return g;
         },
         pointRadius: 1, tension: .4
@@ -2196,12 +2411,12 @@ async function runMC(){
 
   // Percentile KPI boxes
   const pcLabels = ['P10','P25','P50','P75','P90'];
-  const pcColors = ['#ff6b6b','#ffab40','#69f0ae','#64b5f6','#b39dff'];
+  const pcColors = ['var(--red)','var(--amber)','var(--green)','var(--cyan)','var(--fg-2)'];
   document.getElementById('mc-percentiles').innerHTML = pcts.map((p,i) =>
     `<div class="mc-pc">
       <div class="mc-pc-val" style="color:${pcColors[i]};font-size:${Math.abs(npvPcts[i])>999?'13px':'16px'}">${npvPcts[i]>=0?'$':'($'}${Math.abs(npvPcts[i]/1000).toFixed(2)}${npvPcts[i]>=0?'':')'}<span style="font-size:11px">B</span></div>
       <div class="mc-pc-lbl">NPV ${pcLabels[i]}</div>
-      <div style="font-size:10px;color:#6e90b0;font-family:var(--font-mono);margin-top:2px">IRR ${irrPcts[i].toFixed(1)}%</div>
+      <div style="font-size:10px;color:var(--fg-2);font-family:var(--font-mono);margin-top:2px">IRR ${irrPcts[i].toFixed(1)}%</div>
     </div>`
   ).join('');
 
@@ -2230,15 +2445,15 @@ async function runMC(){
   // Colour bars: green if positive, red if negative
   const barColors = npvHist.counts.map((_,i) => {
     const midVal = npvHist.lo + (i + 0.5) * npvHist.step;
-    return midVal >= 0 ? 'rgba(105,240,174,.7)' : 'rgba(255,107,107,.7)';
+    return midVal >= 0 ? 'rgba(93,211,128,.7)' : 'rgba(255,95,86,.7)';
   });
 
   const chartOpts = {
     responsive:true, maintainAspectRatio:false,
     plugins:{ legend:{display:false} },
     scales:{
-      x:{ticks:{color:'#6e90b0',font:{size:9},maxRotation:0, autoSkip:true, maxTicksLimit:10},grid:{color:'rgba(44,66,96,.5)'}},
-      y:{ticks:{color:'#6e90b0',font:{size:9}},grid:{color:'rgba(44,66,96,.5)'}}
+      x:{ticks:{color:'var(--fg-2)',font:{size:9},maxRotation:0, autoSkip:true, maxTicksLimit:10},grid:{color:'rgba(58,61,51,.5)'}},
+      y:{ticks:{color:'var(--fg-2)',font:{size:9}},grid:{color:'rgba(58,61,51,.5)'}}
     }
   };
 
@@ -2249,12 +2464,12 @@ async function runMC(){
       datasets:[
         { label:'Frequency', data:npvHist.counts, backgroundColor:barColors, borderWidth:0, barPercentage:1.0, categoryPercentage:1.0 },
         { label:'Base NPV', type:'line', data:npvHist.labels.map(l=>parseFloat(l)*1000>=baseNPV-npvHist.step/2&&parseFloat(l)*1000<baseNPV+npvHist.step/2?Math.max(...npvHist.counts):null),
-          borderColor:'#ffc107', borderWidth:2, pointRadius:0, fill:false }
+          borderColor:'var(--amber)', borderWidth:2, pointRadius:0, fill:false }
       ]
     },
     options:{...chartOpts,plugins:{...chartOpts.plugins,
       tooltip:{callbacks:{title:ls=>'NPV: $'+ls[0]+'B',label:c=>'Count: '+c.raw}}},
-      scales:{...chartOpts.scales,x:{...chartOpts.scales.x,title:{display:true,text:'NPV ($B) — P(NPV≥0): '+probPos.toFixed(0)+'%',color:'#b0c8e0',font:{size:10}}}}}
+      scales:{...chartOpts.scales,x:{...chartOpts.scales.x,title:{display:true,text:'NPV ($B) — P(NPV≥0): '+probPos.toFixed(0)+'%',color:'var(--fg)',font:{size:10}}}}}
   });
 
   if(_mcIrrChart) _mcIrrChart.destroy();
@@ -2262,10 +2477,10 @@ async function runMC(){
     type:'bar',
     data:{ labels:irrHist.labels,
       datasets:[{ label:'Frequency', data:irrHist.counts,
-        backgroundColor:irrHist.counts.map((_,i)=>irrHist.lo+(i+0.5)*irrHist.step>=g('targetIRR')?'rgba(105,240,174,.7)':'rgba(255,107,107,.7)'),
+        backgroundColor:irrHist.counts.map((_,i)=>irrHist.lo+(i+0.5)*irrHist.step>=g('targetIRR')?'rgba(93,211,128,.7)':'rgba(255,95,86,.7)'),
         borderWidth:0, barPercentage:1.0, categoryPercentage:1.0 }]
     },
-    options:{...chartOpts,scales:{...chartOpts.scales,x:{...chartOpts.scales.x,title:{display:true,text:'IRR (%) — P(IRR≥target): '+probIRR15.toFixed(0)+'%',color:'#b0c8e0',font:{size:10}}}}}
+    options:{...chartOpts,scales:{...chartOpts.scales,x:{...chartOpts.scales.x,title:{display:true,text:'IRR (%) — P(IRR≥target): '+probIRR15.toFixed(0)+'%',color:'var(--fg)',font:{size:10}}}}}
   });
 
   // Tornado
@@ -2279,19 +2494,19 @@ async function runMC(){
     type:'bar',
     data:{ labels:tornLabels,
       datasets:[
-        { label:'Low case impact', data:tornLo.map(v=>Math.min(v,0)), backgroundColor:'rgba(255,107,107,.75)', stack:'s' },
-        { label:'High case impact', data:tornHi.map(v=>Math.max(v,0)), backgroundColor:'rgba(105,240,174,.75)', stack:'s' },
-        { label:'Neg high', data:tornHi.map(v=>Math.min(v,0)), backgroundColor:'rgba(255,107,107,.45)', stack:'s' },
-        { label:'Pos low', data:tornLo.map(v=>Math.max(v,0)), backgroundColor:'rgba(105,240,174,.45)', stack:'s' },
+        { label:'Low case impact', data:tornLo.map(v=>Math.min(v,0)), backgroundColor:'rgba(255,95,86,.75)', stack:'s' },
+        { label:'High case impact', data:tornHi.map(v=>Math.max(v,0)), backgroundColor:'rgba(93,211,128,.75)', stack:'s' },
+        { label:'Neg high', data:tornHi.map(v=>Math.min(v,0)), backgroundColor:'rgba(255,95,86,.45)', stack:'s' },
+        { label:'Pos low', data:tornLo.map(v=>Math.max(v,0)), backgroundColor:'rgba(93,211,128,.45)', stack:'s' },
       ]
     },
     options:{
       indexAxis:'y', responsive:true, maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Impact: $'+c.raw.toFixed(0)+'M'}}},
       scales:{
-        x:{ticks:{color:'#6e90b0',font:{size:9},callback:v=>'$'+v.toFixed(0)+'M'},grid:{color:'rgba(44,66,96,.5)'},
-           title:{display:true,text:'NPV impact vs base case ($M)',color:'#b0c8e0',font:{size:10}}},
-        y:{ticks:{color:'#c0d4e8',font:{size:10},font:{weight:'bold'}},grid:{display:false}}
+        x:{ticks:{color:'var(--fg-2)',font:{size:9},callback:v=>'$'+v.toFixed(0)+'M'},grid:{color:'rgba(58,61,51,.5)'},
+           title:{display:true,text:'NPV impact vs base case ($M)',color:'var(--fg)',font:{size:10}}},
+        y:{ticks:{color:'var(--fg)',font:{size:10},font:{weight:'bold'}},grid:{display:false}}
       }
     }
   });
@@ -2302,13 +2517,13 @@ async function runMC(){
   tbody.innerHTML = probs.map(p => {
     const npvAtP = percentile(npvs, 100-p);
     const irrAtP = percentile(irrs, 100-p);
-    const interp = npvAtP > 500 ? '✅ Very likely economic' : npvAtP > 0 ? '✅ Economic' : npvAtP > -200 ? '⚠️ Marginal' : '❌ Uneconomic';
-    const rowCls = npvAtP > 0 ? 'color:#69f0ae' : npvAtP > -100 ? 'color:#ffab40' : 'color:#ff6b6b';
+    const interp = npvAtP > 500 ? 'Very likely economic' : npvAtP > 0 ? 'Economic' : npvAtP > -200 ? 'WATCH — Marginal' : '— Uneconomic';
+    const rowCls = npvAtP > 0 ? 'color:var(--green)' : npvAtP > -100 ? 'color:var(--amber)' : 'color:var(--red)';
     return `<tr>
-      <td style="color:#c0d4e8;font-weight:700">${p}% probability</td>
+      <td style="color:var(--fg);font-weight:700">${p}% probability</td>
       <td style="${rowCls};font-weight:700">$${(npvAtP/1000).toFixed(2)}B</td>
       <td style="${rowCls}">${irrAtP.toFixed(1)}%</td>
-      <td style="color:#8ab0d0;font-size:10px">${interp}</td>
+      <td style="color:var(--fg-2);font-size:10px">${interp}</td>
     </tr>`;
   }).join('');
 
@@ -2443,8 +2658,8 @@ function loadCiscoPreset(){
   // Notify user
   const btn = event.target;
   const orig = btn.textContent;
-  btn.textContent = '✓ Cisco preset loaded';
-  btn.style.background = '#69f0ae';
+  btn.textContent = 'Cisco preset loaded';
+  btn.style.background = 'var(--green)';
   setTimeout(() => { btn.textContent = orig; btn.style.background = 'var(--teal)'; }, 2500);
 }
 
@@ -2491,7 +2706,7 @@ function mvBuildStages(){
   const el = document.getElementById('mv-stages');
   if(!el) return;
   el.innerHTML = MV_STAGES.map((s,i) =>
-    `<button onclick="mvSetStage(${i})" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:${i===mvStageIdx?'rgba(255,193,7,.15)':'transparent'};border:1px solid ${i===mvStageIdx?'#ffc107':'var(--border)'};font-family:var(--font-mono);font-size:9px;font-weight:700;color:${i===mvStageIdx?'#ffc107':'#6e90b0'};transition:all .12s;white-space:nowrap;">${s.label}</button>`
+    `<button onclick="mvSetStage(${i})" style="padding:3px 9px;border-radius:10px;cursor:pointer;background:${i===mvStageIdx?'rgba(232,182,88,.15)':'transparent'};border:1px solid ${i===mvStageIdx?'var(--amber)':'var(--border)'};font-family:var(--font-mono);font-size:9px;font-weight:700;color:${i===mvStageIdx?'var(--amber)':'var(--fg-2)'};transition:all .12s;white-space:nowrap;">${s.label}</button>`
   ).join('');
 }
 
@@ -2503,12 +2718,12 @@ function mvBuildChips(chipId, comps){
   const isHR = chipId === 'mv-hr-chips';
   el.innerHTML = comps.map((c,i) => {
     const onclick = isHR ? `mvToggle('${chipId}',${i})` : '';
-    return `<div onclick="${onclick}" title="${c.note}" style="display:flex;justify-content:space-between;align-items:center;padding:5px 9px;border-radius:5px;cursor:${isHR?'pointer':'default'};background:${c.active?(isHR?'rgba(38,198,218,.1)':'rgba(100,181,246,.1)'):'rgba(26,40,60,.4)'};border:1px solid ${c.active?(isHR?'#26c6da':'#64b5f6'):'var(--border)'};opacity:${c.active?1:0.5};transition:all .12s;margin-bottom:4px;">
+    return `<div onclick="${onclick}" title="${c.note}" style="display:flex;justify-content:space-between;align-items:center;padding:5px 9px;border-radius:5px;cursor:${isHR?'pointer':'default'};background:${c.active?(isHR?'rgba(106,207,224,.1)':'rgba(106,207,224,.1)'):'rgba(26,28,22,.4)'};border:1px solid ${c.active?(isHR?'var(--cyan)':'var(--cyan)'):'var(--border)'};opacity:${c.active?1:0.5};transition:all .12s;margin-bottom:4px;">
       <div>
-        <div style="font-size:10px;font-weight:700;color:${c.active?'#e0eaf5':'#6e90b0'}">${c.name}</div>
-        <div style="font-size:9px;color:#6e90b0;font-family:var(--font-mono)">${c.date} · ${c.active?'included':'excluded'}</div>
+        <div style="font-size:10px;font-weight:700;color:${c.active?'var(--fg)':'var(--fg-2)'}">${c.name}</div>
+        <div style="font-size:9px;color:var(--fg-2);font-family:var(--font-mono)">${c.date} · ${c.active?'included':'excluded'}</div>
       </div>
-      <div style="font-size:14px;font-weight:700;font-family:var(--font-mono);color:${isHR?'#26c6da':'#64b5f6'}">${c.active?('$'+c.perT+'/t'):'—'}</div>
+      <div style="font-size:14px;font-weight:700;font-family:var(--font-mono);color:${isHR?'var(--cyan)':'var(--cyan)'}">${c.active?('$'+c.perT+'/t'):'—'}</div>
     </div>`;
   }).join('');
 }
@@ -2574,10 +2789,10 @@ function updateMV(){
 
   const evTri = (evHR + evNPV) / 2;
   const barRows = [
-    { label:'Today (current market cap)', ev:currEV, color:'#ff5252', dark:'#501313' },
-    { label:'Fair value — HR comps',      ev:evHR,   color:'#26c6da', dark:'#04342C' },
-    { label:'Acquisition ('+stage.label+')', ev:evNPV, color:'#ffc107', dark:'#412402' },
-    { label:'Triangulated mid-point',     ev:evTri,  color:'#b39dff', dark:'#26215C' },
+    { label:'Today (current market cap)', ev:currEV, color:'var(--red)', dark:'var(--bg)' },
+    { label:'Fair value — HR comps',      ev:evHR,   color:'var(--cyan)', dark:'var(--bg)' },
+    { label:'Acquisition ('+stage.label+')', ev:evNPV, color:'var(--amber)', dark:'var(--bg)' },
+    { label:'Triangulated mid-point',     ev:evTri,  color:'var(--fg-2)', dark:'var(--bg-3)' },
   ];
   const maxEV = Math.max(...barRows.map(b => b.ev)) * 1.15;
   const barsEl = document.getElementById('mv-bars');
@@ -2632,7 +2847,7 @@ function saveModel(){
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  if(btn){ const orig = btn.innerHTML; btn.innerHTML = '✓ Saved'; btn.style.color='#69f0ae'; btn.style.borderColor='#69f0ae'; setTimeout(()=>{ btn.innerHTML=orig; btn.style.color=''; btn.style.borderColor=''; }, 2000); }
+  if(btn){ const orig = btn.innerHTML; btn.innerHTML = 'Saved'; btn.style.color='var(--green)'; btn.style.borderColor='var(--green)'; setTimeout(()=>{ btn.innerHTML=orig; btn.style.color=''; btn.style.borderColor=''; }, 2000); }
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -2756,7 +2971,7 @@ function renderScenarios(){
       // Restore empty-state HTML
       const currentHdr = card.querySelector('.scn-header').outerHTML;
       const msgs = {
-        bear: 'Set sidebar to bear case<br>then click <b style="color:#26c6da">Snap Current</b>',
+        bear: 'Set sidebar to bear case<br>then click <b style="color:var(--cyan)">Snap Current</b>',
         base: 'Snap base case here',
         bull: 'Snap bull case here'
       };
@@ -2765,8 +2980,8 @@ function renderScenarios(){
     }
     card.classList.remove('empty');
     const k = s.kpi;
-    const npvColor = k.npv >= 0 ? '#69f0ae' : '#ff6b6b';
-    const irrColor = k.irr >= gi('targetIRR') ? '#69f0ae' : k.irr >= 10 ? '#ffc107' : '#ff6b6b';
+    const npvColor = k.npv >= 0 ? 'var(--green)' : 'var(--red)';
+    const irrColor = k.irr >= gi('targetIRR') ? 'var(--green)' : k.irr >= 10 ? 'var(--amber)' : 'var(--red)';
     card.innerHTML = `
       <div class="scn-header">
         <span class="scn-badge ${slot}">${slot==='bear'?'▼ Bear case':slot==='bull'?'▲ Bull case':'● Base case'}</span>
@@ -2779,10 +2994,10 @@ function renderScenarios(){
       <div class="scn-kpi">
         <div class="scn-kpi-item"><div class="scn-kpi-val" style="color:${npvColor}">${scnFmtNPV(k.npv)}</div><div class="scn-kpi-lbl">NPV post-tax @WACC</div></div>
         <div class="scn-kpi-item"><div class="scn-kpi-val" style="color:${irrColor}">${k.irr!==null?k.irr.toFixed(1)+'%':'N/A'}</div><div class="scn-kpi-lbl">IRR post-tax</div></div>
-        <div class="scn-kpi-item"><div class="scn-kpi-val" style="color:#64b5f6">${k.pb!==null?k.pb.toFixed(1)+' yr':'–'}</div><div class="scn-kpi-lbl">Payback</div></div>
+        <div class="scn-kpi-item"><div class="scn-kpi-val" style="color:var(--cyan)">${k.pb!==null?k.pb.toFixed(1)+' yr':'–'}</div><div class="scn-kpi-lbl">Payback</div></div>
         <div class="scn-kpi-item"><div class="scn-kpi-val" style="color:var(--accent)">$${k.aisc.toFixed(0)}/t</div><div class="scn-kpi-lbl">AISC</div></div>
         <div class="scn-kpi-item"><div class="scn-kpi-val" style="color:var(--orange)">$${k.peak.toFixed(0)}M</div><div class="scn-kpi-lbl">Peak funding</div></div>
-        <div class="scn-kpi-item"><div class="scn-kpi-val" style="color:#b39dff">$${k.ind.toFixed(0)}/t</div><div class="scn-kpi-lbl">Inducement</div></div>
+        <div class="scn-kpi-item"><div class="scn-kpi-val" style="color:var(--fg-2)">$${k.ind.toFixed(0)}/t</div><div class="scn-kpi-lbl">Inducement</div></div>
       </div>
       <div class="scn-inputs">
         <div><span class="k">Price:</span><span class="v">$${s.inputs.sc6Price}/t</span></div>
@@ -2816,10 +3031,10 @@ function renderScenarios(){
     { k:'be',   l:'Breakeven',     fmt:(v)=>'$'+v.toFixed(0)+'/t SC6' },
   ];
   body.innerHTML = '<div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:0;font-family:var(--font-mono);">' +
-    '<div style="padding:5px 10px;font-size:9px;color:#6e90b0;font-weight:700;text-transform:uppercase;">Metric</div>' +
-    '<div style="padding:5px 10px;font-size:9px;color:#ff8a80;font-weight:700;text-transform:uppercase;text-align:right;">Bear vs Base</div>' +
-    '<div style="padding:5px 10px;font-size:9px;color:#b0c8e0;font-weight:700;text-transform:uppercase;text-align:right;">Base</div>' +
-    '<div style="padding:5px 10px;font-size:9px;color:#81c784;font-weight:700;text-transform:uppercase;text-align:right;">Bull vs Base</div>' +
+    '<div style="padding:5px 10px;font-size:9px;color:var(--fg-2);font-weight:700;text-transform:uppercase;">Metric</div>' +
+    '<div style="padding:5px 10px;font-size:9px;color:var(--red);font-weight:700;text-transform:uppercase;text-align:right;">Bear vs Base</div>' +
+    '<div style="padding:5px 10px;font-size:9px;color:var(--fg);font-weight:700;text-transform:uppercase;text-align:right;">Base</div>' +
+    '<div style="padding:5px 10px;font-size:9px;color:var(--green);font-weight:700;text-transform:uppercase;text-align:right;">Bull vs Base</div>' +
     metrics.map(m => {
       const bV = base.kpi[m.k];
       const bearD = bear ? (bear.kpi[m.k] - bV) : null;
@@ -2828,10 +3043,10 @@ function renderScenarios(){
       const lowerBetter = ['pb','peak','aisc','ind','be'].includes(m.k);
       const dCls = (d) => d === null ? '' : (lowerBetter ? (d < 0 ? 'scn-up' : d > 0 ? 'scn-dn' : '') : (d > 0 ? 'scn-up' : d < 0 ? 'scn-dn' : ''));
       const fmtD = (d) => d === null ? '—' : (d === 0 ? '0' : ((d>0?'+':'') + m.fmt(d)));
-      return '<div style="padding:6px 10px;font-size:10px;color:#c0d4e8;border-top:1px solid rgba(44,66,96,.4)">'+m.l+'</div>' +
-        '<div class="'+dCls(bearD)+'" style="padding:6px 10px;font-size:10px;text-align:right;border-top:1px solid rgba(44,66,96,.4);font-weight:700">'+fmtD(bearD)+'</div>' +
-        '<div style="padding:6px 10px;font-size:10px;color:#e0eaf5;text-align:right;border-top:1px solid rgba(44,66,96,.4);font-weight:700">'+m.fmt(bV)+'</div>' +
-        '<div class="'+dCls(bullD)+'" style="padding:6px 10px;font-size:10px;text-align:right;border-top:1px solid rgba(44,66,96,.4);font-weight:700">'+fmtD(bullD)+'</div>';
+      return '<div style="padding:6px 10px;font-size:10px;color:var(--fg);border-top:1px solid rgba(58,61,51,.4)">'+m.l+'</div>' +
+        '<div class="'+dCls(bearD)+'" style="padding:6px 10px;font-size:10px;text-align:right;border-top:1px solid rgba(58,61,51,.4);font-weight:700">'+fmtD(bearD)+'</div>' +
+        '<div style="padding:6px 10px;font-size:10px;color:var(--fg);text-align:right;border-top:1px solid rgba(58,61,51,.4);font-weight:700">'+m.fmt(bV)+'</div>' +
+        '<div class="'+dCls(bullD)+'" style="padding:6px 10px;font-size:10px;text-align:right;border-top:1px solid rgba(58,61,51,.4);font-weight:700">'+fmtD(bullD)+'</div>';
     }).join('') + '</div>';
 }
 
@@ -2841,12 +3056,12 @@ function renderScenarios(){
 // Stages use fractions consistent with MV_STAGES: MRE 20%, PEA 35%, PFS 55%, FS 72%, Construction 120%
 // Each stage: check if a raise is needed; if yes, compute shares issued at (stage value × raise discipline)
 const FND_STAGES = [
-  { id:'now',   label:'Today',        lo:0.08, mid:0.18, hi:0.35, raiseKey:null,             color:'#ff6b6b' },
-  { id:'pea',   label:'Post-PEA',     lo:0.20, mid:0.35, hi:0.50, raiseKey:'fnd-raisePEA',   color:'#ffab40' },
-  { id:'pfs',   label:'Post-PFS',     lo:0.35, mid:0.55, hi:0.70, raiseKey:'fnd-raisePFS',   color:'#ffc107' },
-  { id:'dfs',   label:'Post-DFS',     lo:0.55, mid:0.72, hi:0.90, raiseKey:'fnd-raiseDFS',   color:'#64b5f6' },
-  { id:'fid',   label:'FID/Finance',  lo:0.80, mid:1.00, hi:1.30, raiseKey:'__capex__',      color:'#b39dff' },
-  { id:'build', label:'In Production',lo:1.00, mid:1.20, hi:1.60, raiseKey:null,             color:'#69f0ae' },
+  { id:'now',   label:'Today',        lo:0.08, mid:0.18, hi:0.35, raiseKey:null,             color:'var(--red)' },
+  { id:'pea',   label:'Post-PEA',     lo:0.20, mid:0.35, hi:0.50, raiseKey:'fnd-raisePEA',   color:'var(--amber)' },
+  { id:'pfs',   label:'Post-PFS',     lo:0.35, mid:0.55, hi:0.70, raiseKey:'fnd-raisePFS',   color:'var(--amber)' },
+  { id:'dfs',   label:'Post-DFS',     lo:0.55, mid:0.72, hi:0.90, raiseKey:'fnd-raiseDFS',   color:'var(--cyan)' },
+  { id:'fid',   label:'FID/Finance',  lo:0.80, mid:1.00, hi:1.30, raiseKey:'__capex__',      color:'var(--fg-2)' },
+  { id:'build', label:'In Production',lo:1.00, mid:1.20, hi:1.60, raiseKey:null,             color:'var(--green)' },
 ];
 
 let _fndChart = null;
@@ -2913,7 +3128,7 @@ function renderFunding(){
   const stagesEl = document.getElementById('fnd-stages');
   stagesEl.innerHTML = cascade.map((c, i) => {
     const isLast = i === cascade.length - 1;
-    const npvColor = c.npvPerShCAD > price0 * 2 ? '#69f0ae' : c.npvPerShCAD > price0 ? '#ffc107' : '#ff6b6b';
+    const npvColor = c.npvPerShCAD > price0 * 2 ? 'var(--green)' : c.npvPerShCAD > price0 ? 'var(--amber)' : 'var(--red)';
     return `<div class="fnd-stage">
       <div class="fnd-stage-name" style="color:${c.color}">${c.label}</div>
       <div class="fnd-stage-val" style="color:${npvColor}">C$${c.npvPerShCAD.toFixed(2)}</div>
@@ -2921,8 +3136,8 @@ function renderFunding(){
       <div class="fnd-stage-sub fnd-stage-sharesin">${c.sharesAfter.toFixed(0)}M shares</div>
       ${c.raiseUSD > 0 ? `<div class="fnd-stage-raise">
         <b>+${c.sharesIssued.toFixed(0)}M</b> @ C$${c.raisePxCAD.toFixed(2)}<br>
-        <span style="color:#b8d0e8;">$${c.raiseUSD.toFixed(0)}M ${c.raiseLabel}</span>
-      </div>` : '<div class="fnd-stage-sub" style="color:#6e90b0;margin-top:6px;font-size:9px;">No raise</div>'}
+        <span style="color:var(--fg);">$${c.raiseUSD.toFixed(0)}M ${c.raiseLabel}</span>
+      </div>` : '<div class="fnd-stage-sub" style="color:var(--fg-2);margin-top:6px;font-size:9px;">No raise</div>'}
       ${isLast ? '' : '<span class="fnd-arrow">▶</span>'}
     </div>`;
   }).join('');
@@ -2937,11 +3152,11 @@ function renderFunding(){
 
   document.getElementById('fnd-summary').innerHTML = `
     <div class="fnd-summary-kpi">
-      <div class="fnd-summary-val" style="color:#e0eaf5">${final.sharesAfter.toFixed(0)}M</div>
+      <div class="fnd-summary-val" style="color:var(--fg)">${final.sharesAfter.toFixed(0)}M</div>
       <div class="fnd-summary-lbl">Final fully-diluted shares</div>
     </div>
     <div class="fnd-summary-kpi">
-      <div class="fnd-summary-val" style="color:#ff8a80">+${totalDilution.toFixed(0)}%</div>
+      <div class="fnd-summary-val" style="color:var(--red)">+${totalDilution.toFixed(0)}%</div>
       <div class="fnd-summary-lbl">Total dilution</div>
     </div>
     <div class="fnd-summary-kpi">
@@ -2949,7 +3164,7 @@ function renderFunding(){
       <div class="fnd-summary-lbl">Total equity raised</div>
     </div>
     <div class="fnd-summary-kpi">
-      <div class="fnd-summary-val" style="color:${impliedUpside > 200 ? '#69f0ae' : impliedUpside > 50 ? '#ffc107' : '#ff6b6b'}">${impliedUpside >= 0 ? '+' : ''}${impliedUpside.toFixed(0)}%</div>
+      <div class="fnd-summary-val" style="color:${impliedUpside > 200 ? 'var(--green)' : impliedUpside > 50 ? 'var(--amber)' : 'var(--red)'}">${impliedUpside >= 0 ? '+' : ''}${impliedUpside.toFixed(0)}%</div>
       <div class="fnd-summary-lbl">Upside to fully-built-out NPV/sh</div>
     </div>
   `;
@@ -2966,21 +3181,21 @@ function renderFunding(){
     type:'bar',
     data:{ labels,
       datasets:[
-        { type:'bar', label:'Shares out (M)', data:sharesData, backgroundColor:'rgba(179,157,255,.55)', borderColor:'#b39dff', borderWidth:1, yAxisID:'y1', order:2 },
-        { type:'line', label:'NPV/share (C$, fully diluted)', data:npvData, borderColor:'#ffc107', backgroundColor:'rgba(255,193,7,.15)',
-          borderWidth:3, fill:false, yAxisID:'y2', tension:.2, pointRadius:5, pointBackgroundColor:'#ffc107', order:1 },
-        { type:'line', label:'Current price', data:labels.map(()=>price0), borderColor:'rgba(255,107,107,.6)', borderDash:[4,4],
+        { type:'bar', label:'Shares out (M)', data:sharesData, backgroundColor:'rgba(138,135,115,.55)', borderColor:'var(--fg-2)', borderWidth:1, yAxisID:'y1', order:2 },
+        { type:'line', label:'NPV/share (C$, fully diluted)', data:npvData, borderColor:'var(--amber)', backgroundColor:'rgba(232,182,88,.15)',
+          borderWidth:3, fill:false, yAxisID:'y2', tension:.2, pointRadius:5, pointBackgroundColor:'var(--amber)', order:1 },
+        { type:'line', label:'Current price', data:labels.map(()=>price0), borderColor:'rgba(255,95,86,.6)', borderDash:[4,4],
           borderWidth:1.5, fill:false, yAxisID:'y2', pointRadius:0, order:0 }
       ]
     },
     options:{
       responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ position:'top', labels:{color:'#b0c8e0', font:{size:10}, boxWidth:14}},
+      plugins:{ legend:{ position:'top', labels:{color:'var(--fg)', font:{size:10}, boxWidth:14}},
         tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.datasetIndex===0?c.raw.toFixed(0)+'M sh':'C$'+c.raw.toFixed(2))}} },
       scales:{
-        x:{ticks:{color:'#b0c8e0',font:{size:10}},grid:{color:'rgba(44,66,96,.3)'}},
-        y1:{position:'left',ticks:{color:'#b39dff',font:{size:9},callback:v=>v.toFixed(0)+'M'},grid:{color:'rgba(44,66,96,.3)'},title:{display:true,text:'Shares out (M)',color:'#b39dff',font:{size:10}}},
-        y2:{position:'right',ticks:{color:'#ffc107',font:{size:9},callback:v=>'C$'+v.toFixed(2)},grid:{display:false},title:{display:true,text:'NPV per share (C$)',color:'#ffc107',font:{size:10}}}
+        x:{ticks:{color:'var(--fg)',font:{size:10}},grid:{color:'rgba(58,61,51,.3)'}},
+        y1:{position:'left',ticks:{color:'var(--fg-2)',font:{size:9},callback:v=>v.toFixed(0)+'M'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'Shares out (M)',color:'var(--fg-2)',font:{size:10}}},
+        y2:{position:'right',ticks:{color:'var(--amber)',font:{size:9},callback:v=>'C$'+v.toFixed(2)},grid:{display:false},title:{display:true,text:'NPV per share (C$)',color:'var(--amber)',font:{size:10}}}
       }
     }
   });
@@ -3032,7 +3247,7 @@ function peerGetMyProject(){
   const resource = (parseFloat(document.getElementById('mv-lce')?.value || 9.9)) / 0.1484 * 100 / g('grade'); // Mt implied
   const projectName = (document.getElementById('project-name')?.value || 'My Project').substring(0, 28);
   return {
-    n: '★ ' + projectName,
+    n: '' + projectName,
     c: 'ca', // default Quebec for Cisco preset
     s: 'mre',
     r: resource,
@@ -3095,7 +3310,7 @@ function renderPeers(){
   const peersWithAISC = all.filter(p => p.ai).slice().sort((a,b) => a.ai - b.ai);
   const aiscLabels = peersWithAISC.map(p => p.n.length > 18 ? p.n.substring(0,18)+'…' : p.n);
   const aiscData = peersWithAISC.map(p => p.ai);
-  const aiscColors = peersWithAISC.map(p => p.isMe ? '#ffc107' : p.ai < 500 ? '#69f0ae' : p.ai < 800 ? '#4dd0e1' : p.ai < 1000 ? '#ffab40' : '#ff6b6b');
+  const aiscColors = peersWithAISC.map(p => p.isMe ? 'var(--amber)' : p.ai < 500 ? 'var(--green)' : p.ai < 800 ? 'var(--cyan)' : p.ai < 1000 ? 'var(--amber)' : 'var(--red)');
   if(_peerAISCChart) _peerAISCChart.destroy();
   _peerAISCChart = new Chart(document.getElementById('peer-aisc-chart'), {
     type:'bar',
@@ -3104,8 +3319,8 @@ function renderPeers(){
       indexAxis:'y', responsive:true, maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'AISC: $'+c.raw.toFixed(0)+'/t SC6'}}},
       scales:{
-        x:{ticks:{color:'#6e90b0',font:{size:9},callback:v=>'$'+v},grid:{color:'rgba(44,66,96,.3)'},title:{display:true,text:'AISC (US$/t SC6 equiv)',color:'#b0c8e0',font:{size:10}}},
-        y:{ticks:{color:'#c0d4e8',font:{size:9}},grid:{display:false}}
+        x:{ticks:{color:'var(--fg-2)',font:{size:9},callback:v=>'$'+v},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'AISC (US$/t SC6 equiv)',color:'var(--fg)',font:{size:10}}},
+        y:{ticks:{color:'var(--fg)',font:{size:9}},grid:{display:false}}
       }
     }
   });
@@ -3122,21 +3337,21 @@ function renderPeers(){
   _peerCAPEXChart = new Chart(document.getElementById('peer-capex-chart'), {
     type:'scatter',
     data:{ datasets:[
-      { label:'Peers', data:scatterData.filter(d=>!d.isMe), backgroundColor:scatterData.filter(d=>!d.isMe).map(d=>'rgba(100,181,246,.7)'), borderColor:'#64b5f6', borderWidth:1, pointRadius:6, pointHoverRadius:8 },
-      { label:'This project', data:scatterData.filter(d=>d.isMe), backgroundColor:'#ffc107', borderColor:'#fff', borderWidth:2, pointRadius:11, pointHoverRadius:13, pointStyle:'rectRot' }
+      { label:'Peers', data:scatterData.filter(d=>!d.isMe), backgroundColor:scatterData.filter(d=>!d.isMe).map(d=>'rgba(106,207,224,.7)'), borderColor:'var(--cyan)', borderWidth:1, pointRadius:6, pointHoverRadius:8 },
+      { label:'This project', data:scatterData.filter(d=>d.isMe), backgroundColor:'var(--amber)', borderColor:'var(--fg)', borderWidth:2, pointRadius:11, pointHoverRadius:13, pointStyle:'rectRot' }
     ]},
     options:{
       responsive:true, maintainAspectRatio:false,
       plugins:{
-        legend:{position:'top',labels:{color:'#b0c8e0',font:{size:10},boxWidth:12}},
+        legend:{position:'top',labels:{color:'var(--fg)',font:{size:10},boxWidth:12}},
         tooltip:{callbacks:{label:c=>{
           const d = c.raw; const inten = (d.x*1000/d.y).toFixed(0);
           return d.label + ': $' + d.x.toFixed(0) + 'M for ' + d.y.toFixed(0) + 'ktpa ($' + inten + '/t capacity)';
         }}}
       },
       scales:{
-        x:{type:'linear',ticks:{color:'#b0c8e0',font:{size:9},callback:v=>'$'+(v>=1000?(v/1000).toFixed(1)+'B':v+'M')},grid:{color:'rgba(44,66,96,.3)'},title:{display:true,text:'CAPEX (US$M)',color:'#b0c8e0',font:{size:10}}},
-        y:{ticks:{color:'#b0c8e0',font:{size:9},callback:v=>v+'kt'},grid:{color:'rgba(44,66,96,.3)'},title:{display:true,text:'SC6 production (ktpa)',color:'#b0c8e0',font:{size:10}}}
+        x:{type:'linear',ticks:{color:'var(--fg)',font:{size:9},callback:v=>'$'+(v>=1000?(v/1000).toFixed(1)+'B':v+'M')},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'CAPEX (US$M)',color:'var(--fg)',font:{size:10}}},
+        y:{ticks:{color:'var(--fg)',font:{size:9},callback:v=>v+'kt'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'SC6 production (ktpa)',color:'var(--fg)',font:{size:10}}}
       }
     }
   });
@@ -3252,10 +3467,10 @@ async function runStochasticFan(){
   // Render fan chart
   cont.innerHTML = `<div class="stoch-chart-wrap"><canvas id="stoch-fan-canvas"></canvas></div>
     <div class="stoch-fan-legend">
-      <span><span class="sw" style="background:rgba(179,157,255,.15);"></span>P10–P90</span>
-      <span><span class="sw" style="background:rgba(179,157,255,.3);"></span>P25–P75</span>
-      <span><span class="sw" style="background:#ffc107;"></span>P50</span>
-      <span><span class="sw" style="background:#4caf50;"></span>Base case</span>
+      <span><span class="sw" style="background:rgba(138,135,115,.15);"></span>P10–P90</span>
+      <span><span class="sw" style="background:rgba(138,135,115,.3);"></span>P25–P75</span>
+      <span><span class="sw" style="background:var(--amber);"></span>P50</span>
+      <span><span class="sw" style="background:var(--green);"></span>Base case</span>
     </div>
     <div id="stoch-summary" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px;"></div>`;
 
@@ -3272,12 +3487,12 @@ async function runStochasticFan(){
     type:'line',
     data:{ labels,
       datasets:[
-        { label:'P90', data:p90, borderColor:'rgba(179,157,255,.4)', backgroundColor:'rgba(179,157,255,.15)', fill:false, pointRadius:0, borderWidth:1 },
-        { label:'P75', data:p75, borderColor:'rgba(179,157,255,.6)', backgroundColor:'rgba(179,157,255,.15)', fill:'-1', pointRadius:0, borderWidth:1 },
-        { label:'P50 (median)', data:p50, borderColor:'#ffc107', backgroundColor:'rgba(179,157,255,.3)', fill:'-1', pointRadius:0, borderWidth:2.5 },
-        { label:'P25', data:p25, borderColor:'rgba(179,157,255,.6)', backgroundColor:'rgba(179,157,255,.3)', fill:'-1', pointRadius:0, borderWidth:1 },
-        { label:'P10', data:p10, borderColor:'rgba(179,157,255,.4)', backgroundColor:'rgba(179,157,255,.15)', fill:'-1', pointRadius:0, borderWidth:1 },
-        { label:'Base case', data:baseline, borderColor:'#4caf50', borderWidth:2, pointRadius:0, fill:false, borderDash:[6,4] }
+        { label:'P90', data:p90, borderColor:'rgba(138,135,115,.4)', backgroundColor:'rgba(138,135,115,.15)', fill:false, pointRadius:0, borderWidth:1 },
+        { label:'P75', data:p75, borderColor:'rgba(138,135,115,.6)', backgroundColor:'rgba(138,135,115,.15)', fill:'-1', pointRadius:0, borderWidth:1 },
+        { label:'P50 (median)', data:p50, borderColor:'var(--amber)', backgroundColor:'rgba(138,135,115,.3)', fill:'-1', pointRadius:0, borderWidth:2.5 },
+        { label:'P25', data:p25, borderColor:'rgba(138,135,115,.6)', backgroundColor:'rgba(138,135,115,.3)', fill:'-1', pointRadius:0, borderWidth:1 },
+        { label:'P10', data:p10, borderColor:'rgba(138,135,115,.4)', backgroundColor:'rgba(138,135,115,.15)', fill:'-1', pointRadius:0, borderWidth:1 },
+        { label:'Base case', data:baseline, borderColor:'var(--green)', borderWidth:2, pointRadius:0, fill:false, borderDash:[6,4] }
       ]
     },
     options:{
@@ -3289,8 +3504,8 @@ async function runStochasticFan(){
       },
       interaction:{mode:'index',intersect:false},
       scales:{
-        x:{ticks:{color:'#6e90b0',font:{size:9},maxTicksLimit:15},grid:{color:'rgba(44,66,96,.3)'}},
-        y:{ticks:{color:'#6e90b0',font:{size:9},callback:v=>'$'+(v/1000).toFixed(1)+'B'},grid:{color:'rgba(44,66,96,.3)'},title:{display:true,text:'Cumulative NPV (US$M)',color:'#b0c8e0',font:{size:10}}}
+        x:{ticks:{color:'var(--fg-2)',font:{size:9},maxTicksLimit:15},grid:{color:'rgba(58,61,51,.3)'}},
+        y:{ticks:{color:'var(--fg-2)',font:{size:9},callback:v=>'$'+(v/1000).toFixed(1)+'B'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'Cumulative NPV (US$M)',color:'var(--fg)',font:{size:10}}}
       }
     }
   });
@@ -3303,9 +3518,9 @@ async function runStochasticFan(){
   // 3. Final P50 spread (uncertainty)
   const finalSpread = perYear[T-1].p90 - perYear[T-1].p10;
   document.getElementById('stoch-summary').innerHTML = `
-    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:#ffc107">${p50PosYr >= 0 ? 'Y' + (p50PosYr + 1) : 'never'}</div><div class="cycle-kpi-l">Year P50 crosses $0</div></div>
-    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${p10PosYr >= 0 ? '#69f0ae' : '#ff6b6b'}">${p10PosYr >= 0 ? 'Y' + (p10PosYr + 1) : 'never'}</div><div class="cycle-kpi-l">Year P10 crosses $0</div></div>
-    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:#b39dff">$${(finalSpread/1000).toFixed(2)}B</div><div class="cycle-kpi-l">Final P10–P90 spread</div></div>
+    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:var(--amber)">${p50PosYr >= 0 ? 'Y' + (p50PosYr + 1) : 'never'}</div><div class="cycle-kpi-l">Year P50 crosses $0</div></div>
+    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${p10PosYr >= 0 ? 'var(--green)' : 'var(--red)'}">${p10PosYr >= 0 ? 'Y' + (p10PosYr + 1) : 'never'}</div><div class="cycle-kpi-l">Year P10 crosses $0</div></div>
+    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:var(--fg-2)">$${(finalSpread/1000).toFixed(2)}B</div><div class="cycle-kpi-l">Final P10–P90 spread</div></div>
   `;
 
   btn.disabled = false;
@@ -3406,14 +3621,14 @@ function runCycleReplay(id){
 
   // Render result
   document.getElementById('cycle-result').style.display = 'block';
-  const irrColor = irr !== null && irr >= gi('targetIRR') ? '#69f0ae' : irr !== null && irr >= 10 ? '#ffc107' : '#ff6b6b';
-  const npvColor = npv >= 500 ? '#69f0ae' : npv >= 0 ? '#4dd0e1' : '#ff6b6b';
-  const survColor = survives ? '#69f0ae' : '#ff6b6b';
+  const irrColor = irr !== null && irr >= gi('targetIRR') ? 'var(--green)' : irr !== null && irr >= 10 ? 'var(--amber)' : 'var(--red)';
+  const npvColor = npv >= 500 ? 'var(--green)' : npv >= 0 ? 'var(--cyan)' : 'var(--red)';
+  const survColor = survives ? 'var(--green)' : 'var(--red)';
   document.getElementById('cycle-kpi').innerHTML = `
     <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${npvColor}">${npv>=0?'$':'-$'}${Math.abs(npv/1000).toFixed(2)}B</div><div class="cycle-kpi-l">Replayed NPV @WACC</div></div>
     <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${irrColor}">${irr!==null?irr.toFixed(1)+'%':'N/A'}</div><div class="cycle-kpi-l">Replayed IRR</div></div>
-    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${yrsUnder > 5 ? '#ff6b6b' : yrsUnder > 2 ? '#ffc107' : '#69f0ae'}">${yrsUnder}</div><div class="cycle-kpi-l">Yrs FCF &lt; 0</div></div>
-    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:#ffab40">$${Math.abs(minCum).toFixed(0)}M</div><div class="cycle-kpi-l">Max drawdown</div></div>
+    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${yrsUnder > 5 ? 'var(--red)' : yrsUnder > 2 ? 'var(--amber)' : 'var(--green)'}">${yrsUnder}</div><div class="cycle-kpi-l">Yrs FCF &lt; 0</div></div>
+    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:var(--amber)">$${Math.abs(minCum).toFixed(0)}M</div><div class="cycle-kpi-l">Max drawdown</div></div>
   `;
   document.getElementById('cycle-commentary').innerHTML = preset.commentary;
 }
@@ -3517,10 +3732,10 @@ function renderSourcesUses(){
   const costEq     = 22;                        // public equity = NPV cost of dilution
 
   const sources = [
-    { k:'debt',   label:'Project Debt',     amt: totalUse*debtPct,   color:'#4dd0e1', cost:costDebt,   note:'~SOFR + 400bp' },
-    { k:'stream', label:'Streaming/Royalty',amt: totalUse*streamPct, color:'#b39dff', cost:costStream, note:'1–3% NSR on concentrate revenue' },
-    { k:'strat',  label:'Strategic Equity', amt: totalUse*stratPct,  color:'#ffc107', cost:costStrat,  note:'OEM/chem partner at stage value' },
-    { k:'eq',     label:'Public Equity',    amt: totalUse*eqPct,     color:'#ff6b6b', cost:costEq,     note:'Institutional book-build at discount' },
+    { k:'debt',   label:'Project Debt',     amt: totalUse*debtPct,   color:'var(--cyan)', cost:costDebt,   note:'~SOFR + 400bp' },
+    { k:'stream', label:'Streaming/Royalty',amt: totalUse*streamPct, color:'var(--fg-2)', cost:costStream, note:'1–3% NSR on concentrate revenue' },
+    { k:'strat',  label:'Strategic Equity', amt: totalUse*stratPct,  color:'var(--amber)', cost:costStrat,  note:'OEM/chem partner at stage value' },
+    { k:'eq',     label:'Public Equity',    amt: totalUse*eqPct,     color:'var(--red)', cost:costEq,     note:'Institutional book-build at discount' },
   ].filter(s => s.amt > 0.01);
 
   const tot = sources.reduce((s,v)=>s+v.amt, 0) || 1;
@@ -3535,16 +3750,16 @@ function renderSourcesUses(){
   legend.innerHTML = sources.map(s =>
     `<div class="sou-leg-item" style="border-left-color:${s.color}">
       <div class="sou-leg-label" style="color:${s.color}">${s.label}</div>
-      <div class="sou-leg-val">$${s.amt.toFixed(0)}M <span style="font-size:9px;color:#6e90b0">(${(s.amt/tot*100).toFixed(0)}%)</span></div>
+      <div class="sou-leg-val">$${s.amt.toFixed(0)}M <span style="font-size:9px;color:var(--fg-2)">(${(s.amt/tot*100).toFixed(0)}%)</span></div>
       <div class="sou-leg-cost">@ ${s.cost.toFixed(1)}% · ${s.note}</div>
     </div>`).join('') +
-    `<div class="sou-leg-item" style="border-left-color:#26c6da;background:rgba(38,198,218,.06)">
-      <div class="sou-leg-label" style="color:#26c6da">Uses: Total Package</div>
+    `<div class="sou-leg-item" style="border-left-color:var(--cyan);background:rgba(106,207,224,.06)">
+      <div class="sou-leg-label" style="color:var(--cyan)">Uses: Total Package</div>
       <div class="sou-leg-val">$${totalUse.toFixed(0)}M</div>
       <div class="sou-leg-cost">CAPEX $${capex.toFixed(0)}M + 8% cont. + 3% fees</div>
     </div>` +
-    `<div class="sou-leg-item" style="border-left-color:#ffc107;background:rgba(255,193,7,.06)">
-      <div class="sou-leg-label" style="color:#ffc107">Implied WACC</div>
+    `<div class="sou-leg-item" style="border-left-color:var(--amber);background:rgba(232,182,88,.06)">
+      <div class="sou-leg-label" style="color:var(--amber)">Implied WACC</div>
       <div class="sou-leg-val">${wacc.toFixed(1)}%</div>
       <div class="sou-leg-cost">Blended cost of financing stack</div>
     </div>`;
@@ -3620,22 +3835,22 @@ function renderPeerGradeChart(){
     sc: p.sc,
     isMe: !!p.isMe
   }));
-  const stageColors = { prod:'#69f0ae', constr:'#b39dff', fs:'#64b5f6', pfs:'#4dd0e1', pea:'#ffab40', mre:'#ff8a65' };
+  const stageColors = { prod:'var(--green)', constr:'var(--fg-2)', fs:'var(--cyan)', pfs:'var(--cyan)', pea:'var(--amber)', mre:'var(--amber)' };
 
   if(_peerGradeChart) _peerGradeChart.destroy();
   _peerGradeChart = new Chart(canvas, {
     type:'bubble',
     data:{ datasets:[
-      { label:'Producing',   data:data.filter(d=>!d.isMe && d.stage==='prod'),   backgroundColor:'rgba(105,240,174,.55)', borderColor:'#69f0ae', borderWidth:1 },
-      { label:'Construction',data:data.filter(d=>!d.isMe && d.stage==='constr'), backgroundColor:'rgba(179,157,255,.55)', borderColor:'#b39dff', borderWidth:1 },
-      { label:'FS/PFS',      data:data.filter(d=>!d.isMe && (d.stage==='fs'||d.stage==='pfs')), backgroundColor:'rgba(100,181,246,.55)', borderColor:'#64b5f6', borderWidth:1 },
-      { label:'PEA/MRE',     data:data.filter(d=>!d.isMe && (d.stage==='pea'||d.stage==='mre')), backgroundColor:'rgba(255,171,64,.55)', borderColor:'#ffab40', borderWidth:1 },
-      { label:'This project',data:data.filter(d=>d.isMe), backgroundColor:'#ffc107', borderColor:'#fff', borderWidth:2, pointStyle:'rectRot' }
+      { label:'Producing',   data:data.filter(d=>!d.isMe && d.stage==='prod'),   backgroundColor:'rgba(93,211,128,.55)', borderColor:'var(--green)', borderWidth:1 },
+      { label:'Construction',data:data.filter(d=>!d.isMe && d.stage==='constr'), backgroundColor:'rgba(138,135,115,.55)', borderColor:'var(--fg-2)', borderWidth:1 },
+      { label:'FS/PFS',      data:data.filter(d=>!d.isMe && (d.stage==='fs'||d.stage==='pfs')), backgroundColor:'rgba(106,207,224,.55)', borderColor:'var(--cyan)', borderWidth:1 },
+      { label:'PEA/MRE',     data:data.filter(d=>!d.isMe && (d.stage==='pea'||d.stage==='mre')), backgroundColor:'rgba(232,182,88,.55)', borderColor:'var(--amber)', borderWidth:1 },
+      { label:'This project',data:data.filter(d=>d.isMe), backgroundColor:'var(--amber)', borderColor:'var(--fg)', borderWidth:2, pointStyle:'rectRot' }
     ]},
     options:{
       responsive:true, maintainAspectRatio:false,
       plugins:{
-        legend:{position:'top',labels:{color:'#b0c8e0',font:{size:10},boxWidth:10,padding:8}},
+        legend:{position:'top',labels:{color:'var(--fg)',font:{size:10},boxWidth:10,padding:8}},
         tooltip:{callbacks:{
           label:c=>{
             const d = c.raw;
@@ -3643,8 +3858,8 @@ function renderPeerGradeChart(){
           }}}
       },
       scales:{
-        x:{type:'logarithmic',ticks:{color:'#b0c8e0',font:{size:9},callback:v=>v<1000?v+'Mt':(v/1000)+'Bt'},grid:{color:'rgba(44,66,96,.3)'},title:{display:true,text:'Resource Size (Mt, log scale)',color:'#b0c8e0',font:{size:10}}},
-        y:{ticks:{color:'#b0c8e0',font:{size:9},callback:v=>v.toFixed(2)+'%'},grid:{color:'rgba(44,66,96,.3)'},title:{display:true,text:'Grade (% Li₂O)',color:'#b0c8e0',font:{size:10}}}
+        x:{type:'logarithmic',ticks:{color:'var(--fg)',font:{size:9},callback:v=>v<1000?v+'Mt':(v/1000)+'Bt'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'Resource Size (Mt, log scale)',color:'var(--fg)',font:{size:10}}},
+        y:{ticks:{color:'var(--fg)',font:{size:9},callback:v=>v.toFixed(2)+'%'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'Grade (% Li₂O)',color:'var(--fg)',font:{size:10}}}
       }
     }
   });
@@ -3699,25 +3914,25 @@ function renderDSCR(){
 
   if(_dscrChart) _dscrChart.destroy();
   const barColors = dscrArr.map((d,i) => {
-    if(d === null) return 'rgba(110,144,176,.3)';
-    if(d < 1) return 'rgba(255,82,82,.75)';
-    if(d < cov) return 'rgba(255,171,64,.75)';
-    if(d < 2) return 'rgba(77,208,225,.75)';
-    return 'rgba(105,240,174,.75)';
+    if(d === null) return 'rgba(138,135,115,.3)';
+    if(d < 1) return 'rgba(255,95,86,.75)';
+    if(d < cov) return 'rgba(232,182,88,.75)';
+    if(d < 2) return 'rgba(106,207,224,.75)';
+    return 'rgba(93,211,128,.75)';
   });
 
   _dscrChart = new Chart(canvas, {
     data:{ labels:years,
       datasets:[
         { type:'bar', label:'DSCR', data:dscrArr, backgroundColor:barColors, borderWidth:0, yAxisID:'y1', order:2 },
-        { type:'line', label:'Covenant ('+cov+'×)', data:years.map(()=>cov), borderColor:'#ff5252', borderWidth:2, borderDash:[5,5], pointRadius:0, fill:false, yAxisID:'y1', order:0 },
-        { type:'line', label:'1.0× (breach)', data:years.map(()=>1), borderColor:'#ff8a65', borderWidth:1, borderDash:[2,4], pointRadius:0, fill:false, yAxisID:'y1', order:0 },
-        { type:'line', label:'Debt Service ($M)', data:dsArr, borderColor:'#b39dff', backgroundColor:'rgba(179,157,255,.08)', borderWidth:1.5, pointRadius:2, fill:false, yAxisID:'y2', order:1 }
+        { type:'line', label:'Covenant ('+cov+'×)', data:years.map(()=>cov), borderColor:'var(--red)', borderWidth:2, borderDash:[5,5], pointRadius:0, fill:false, yAxisID:'y1', order:0 },
+        { type:'line', label:'1.0× (breach)', data:years.map(()=>1), borderColor:'var(--amber)', borderWidth:1, borderDash:[2,4], pointRadius:0, fill:false, yAxisID:'y1', order:0 },
+        { type:'line', label:'Debt Service ($M)', data:dsArr, borderColor:'var(--fg-2)', backgroundColor:'rgba(138,135,115,.08)', borderWidth:1.5, pointRadius:2, fill:false, yAxisID:'y2', order:1 }
       ]},
     options:{
       responsive:true, maintainAspectRatio:false,
       plugins:{
-        legend:{position:'top',labels:{color:'#b0c8e0',font:{size:10},boxWidth:12}},
+        legend:{position:'top',labels:{color:'var(--fg)',font:{size:10},boxWidth:12}},
         tooltip:{mode:'index',intersect:false,callbacks:{label:c=>{
           if(c.dataset.label==='DSCR') return 'DSCR: '+(c.raw===null?'n/a':c.raw.toFixed(2)+'×');
           if(c.dataset.label==='Debt Service ($M)') return 'DS: $'+c.raw.toFixed(1)+'M';
@@ -3725,9 +3940,9 @@ function renderDSCR(){
         }}}
       },
       scales:{
-        x:{ticks:{color:'#6e90b0',font:{size:9},maxTicksLimit:15},grid:{color:'rgba(44,66,96,.3)'}},
-        y1:{position:'left',min:0,ticks:{color:'#c0d4e8',font:{size:9},callback:v=>v.toFixed(1)+'×'},grid:{color:'rgba(44,66,96,.3)'},title:{display:true,text:'DSCR (×)',color:'#b0c8e0',font:{size:10}}},
-        y2:{position:'right',ticks:{color:'#b39dff',font:{size:9},callback:v=>'$'+v.toFixed(0)+'M'},grid:{display:false},title:{display:true,text:'Debt Service ($M)',color:'#b39dff',font:{size:10}}}
+        x:{ticks:{color:'var(--fg-2)',font:{size:9},maxTicksLimit:15},grid:{color:'rgba(58,61,51,.3)'}},
+        y1:{position:'left',min:0,ticks:{color:'var(--fg)',font:{size:9},callback:v=>v.toFixed(1)+'×'},grid:{color:'rgba(58,61,51,.3)'},title:{display:true,text:'DSCR (×)',color:'var(--fg)',font:{size:10}}},
+        y2:{position:'right',ticks:{color:'var(--fg-2)',font:{size:9},callback:v=>'$'+v.toFixed(0)+'M'},grid:{display:false},title:{display:true,text:'Debt Service ($M)',color:'var(--fg-2)',font:{size:10}}}
       }
     }
   });
@@ -3740,10 +3955,10 @@ function renderDSCR(){
   const firstBreachLbl = firstBreach >= 0 ? years[firstBreach] : '—';
 
   document.getElementById('dscr-kpi').innerHTML = `
-    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${minDSCR && minDSCR >= cov ? '#69f0ae' : minDSCR && minDSCR >= 1 ? '#ffab40' : '#ff6b6b'}">${minDSCR !== null ? minDSCR.toFixed(2)+'×' : 'n/a'}</div><div class="cycle-kpi-l">Min DSCR (during tenor)</div></div>
-    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${avgDSCR && avgDSCR >= 2 ? '#69f0ae' : avgDSCR && avgDSCR >= cov ? '#4dd0e1' : '#ffab40'}">${avgDSCR !== null ? avgDSCR.toFixed(2)+'×' : 'n/a'}</div><div class="cycle-kpi-l">Avg DSCR (during tenor)</div></div>
-    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${breachYrs === 0 ? '#69f0ae' : breachYrs <= 1 ? '#ffab40' : '#ff6b6b'}">${breachYrs}</div><div class="cycle-kpi-l">Yrs DSCR &lt; ${cov}×</div></div>
-    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${firstBreach < 0 ? '#69f0ae' : '#ff6b6b'}">${firstBreachLbl}</div><div class="cycle-kpi-l">First covenant breach</div></div>
+    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${minDSCR && minDSCR >= cov ? 'var(--green)' : minDSCR && minDSCR >= 1 ? 'var(--amber)' : 'var(--red)'}">${minDSCR !== null ? minDSCR.toFixed(2)+'×' : 'n/a'}</div><div class="cycle-kpi-l">Min DSCR (during tenor)</div></div>
+    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${avgDSCR && avgDSCR >= 2 ? 'var(--green)' : avgDSCR && avgDSCR >= cov ? 'var(--cyan)' : 'var(--amber)'}">${avgDSCR !== null ? avgDSCR.toFixed(2)+'×' : 'n/a'}</div><div class="cycle-kpi-l">Avg DSCR (during tenor)</div></div>
+    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${breachYrs === 0 ? 'var(--green)' : breachYrs <= 1 ? 'var(--amber)' : 'var(--red)'}">${breachYrs}</div><div class="cycle-kpi-l">Yrs DSCR &lt; ${cov}×</div></div>
+    <div class="cycle-kpi-box"><div class="cycle-kpi-v" style="color:${firstBreach < 0 ? 'var(--green)' : 'var(--red)'}">${firstBreachLbl}</div><div class="cycle-kpi-l">First covenant breach</div></div>
   `;
 }
 
@@ -3831,7 +4046,7 @@ function renderScorecard(){
   dims.forEach((d, i) => { totalScore += gradeScore[d.grade] * weights[i]; totalWeight += weights[i]; });
   const avgScore = totalScore / totalWeight;
   const overallGrade = avgScore >= 3.4 ? 'A' : avgScore >= 2.6 ? 'B' : avgScore >= 1.8 ? 'C' : avgScore >= 1.0 ? 'D' : 'F';
-  const overallColor = {A:'#69f0ae', B:'#4dd0e1', C:'#ffab40', D:'#ff8a65', F:'#ff5252'}[overallGrade];
+  const overallColor = {A:'var(--green)', B:'var(--cyan)', C:'var(--amber)', D:'var(--amber)', F:'var(--red)'}[overallGrade];
   const As = dims.filter(d => d.grade==='A').length;
   const Ds = dims.filter(d => d.grade==='D' || d.grade==='F').length;
 
@@ -3848,10 +4063,10 @@ function renderScorecard(){
     <div class="scr-overall-meta">
       <div class="scr-overall-lbl" style="color:${overallColor}">Overall Investment Grade</div>
       <div class="scr-overall-sum" style="margin-top:4px;">
-        <span style="color:#69f0ae">${As} A-grade dims</span> · <span style="color:#ff8a65">${Ds} weak dims</span> · Score ${avgScore.toFixed(2)}/4.0
+        <span style="color:var(--green)">${As} A-grade dims</span> · <span style="color:var(--amber)">${Ds} weak dims</span> · Score ${avgScore.toFixed(2)}/4.0
       </div>
     </div>
-    <div style="flex:2;min-width:240px;font-size:10.5px;color:#c0d4e8;line-height:1.5;padding-left:12px;border-left:1px solid var(--border);">${verdict}</div>
+    <div style="flex:2;min-width:240px;font-size:10.5px;color:var(--fg);line-height:1.5;padding-left:12px;border-left:1px solid var(--border);">${verdict}</div>
   `;
 }
 
@@ -3869,13 +4084,13 @@ function renderCatalystCalendar(){
 
   // Stages use MV_STAGES fractions
   const stages = [
-    { name:'Today',      time:'now',      color:'#ff6b6b', frac:0.18,   desc:'Maiden MRE published' },
-    { name:'PEA',        time:'+6-12mo',  color:'#ffab40', frac:0.35,   desc:'Preliminary economics, permitting initiated' },
-    { name:'PFS',        time:'+18-24mo', color:'#ffc107', frac:0.55,   desc:'Mineral reserves, refined design, partner talks' },
-    { name:'DFS',        time:'+30-36mo', color:'#4dd0e1', frac:0.72,   desc:'Permits advanced, EPC tendered, offtake LOIs' },
-    { name:'FID',        time:'+42mo',    color:'#64b5f6', frac:0.90,   desc:'Financing closed, ground-breaking, execution risk peak' },
-    { name:'First Conc.',time:'+5-6yr',   color:'#b39dff', frac:1.05,   desc:'Ramp risk fades, cash flow begins' },
-    { name:'Full Prod',  time:'+7yr',     color:'#69f0ae', frac:1.20,   desc:'Nameplate achieved, re-rate to producer multiple' },
+    { name:'Today',      time:'now',      color:'var(--red)', frac:0.18,   desc:'Maiden MRE published' },
+    { name:'PEA',        time:'+6-12mo',  color:'var(--amber)', frac:0.35,   desc:'Preliminary economics, permitting initiated' },
+    { name:'PFS',        time:'+18-24mo', color:'var(--amber)', frac:0.55,   desc:'Mineral reserves, refined design, partner talks' },
+    { name:'DFS',        time:'+30-36mo', color:'var(--cyan)', frac:0.72,   desc:'Permits advanced, EPC tendered, offtake LOIs' },
+    { name:'FID',        time:'+42mo',    color:'var(--cyan)', frac:0.90,   desc:'Financing closed, ground-breaking, execution risk peak' },
+    { name:'First Conc.',time:'+5-6yr',   color:'var(--fg-2)', frac:1.05,   desc:'Ramp risk fades, cash flow begins' },
+    { name:'Full Prod',  time:'+7yr',     color:'var(--green)', frac:1.20,   desc:'Nameplate achieved, re-rate to producer multiple' },
   ];
 
   // Estimate shares at each stage (rough: grows via fnd stages)
@@ -3888,7 +4103,7 @@ function renderCatalystCalendar(){
     const projEV = npv * s.frac;
     const projCADperSh = projShares > 0 ? projEV / projShares / fx : 0;
     const upliftPct = price0 > 0 ? (projCADperSh / price0 - 1) * 100 : 0;
-    const upColor = upliftPct > 100 ? '#69f0ae' : upliftPct > 25 ? '#4dd0e1' : upliftPct > 0 ? '#ffab40' : '#ff6b6b';
+    const upColor = upliftPct > 100 ? 'var(--green)' : upliftPct > 25 ? 'var(--cyan)' : upliftPct > 0 ? 'var(--amber)' : 'var(--red)';
     return `<div class="cat-item">
       <div class="cat-time">${s.time}</div>
       <div class="cat-dot" style="background:${s.color};box-shadow:0 0 0 3px ${s.color}22;"></div>
@@ -3933,6 +4148,14 @@ render = function(){
 // Restore scenario state if saved with HTML
 scnLoadFromStore();
 buildCyclePresets();
+
+// Auto-load default project (QTWO) on first open. Skip if a saved-state HTML
+// already populated the inputs (heuristic: project-name is non-default).
+(function autoLoadDefault(){
+  const nm = document.getElementById('project-name');
+  const isPristine = !nm || /Unnamed Spodumene Project/i.test(nm.value || '');
+  if(isPristine) loadProject('qtwo', { skipRender: true });
+})();
 
 render();
 </script>
