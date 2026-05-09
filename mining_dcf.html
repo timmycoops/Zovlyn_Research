@@ -3917,7 +3917,8 @@ function updateMV(){
   const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
   const fmtEV = ev => ev >= 1000 ? '$'+(ev/1000).toFixed(2)+'B' : '$'+ev.toFixed(0)+'M';
 
-  const currEV = currP / fx * shares;
+  // CAD price/share × USD-per-CAD × shares → USD market cap
+  const currEV = currP * fx * shares;
   const ciscoLce = lce > 0 ? currEV / lce : 0;
   const npvPctNow = npvM > 0 ? (currEV / npvM * 100) : 0;
   set('mv-c1-mc',     fmtEV(currEV));
