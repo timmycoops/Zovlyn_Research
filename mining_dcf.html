@@ -943,7 +943,7 @@ body.drawer-open #sidebar-backdrop{display:block;}
 <div id="deal-strip">
   <div class="ds-cell"><div class="ds-v" id="ds-mcap">$395M</div><div class="ds-l">MCAP USD</div></div>
   <div class="ds-cell"><div class="ds-v" id="ds-ev">$370M</div><div class="ds-l">EV USD</div></div>
-  <div class="ds-cell"><div class="ds-v" id="ds-cash">$25M</div><div class="ds-l">Cash</div></div>
+  <div class="ds-cell"><div class="ds-v" id="ds-cash">$25M</div><div class="ds-l">Cash USD</div></div>
   <div class="ds-cell"><div class="ds-v" id="ds-shares">196M</div><div class="ds-l">Shares FD</div></div>
   <div class="ds-cell"><div class="ds-v" id="ds-price">C$2.80</div><div class="ds-l">Last close</div></div>
   <div class="ds-cell"><div class="ds-v" id="ds-asof">2026-04-22</div><div class="ds-l">As of</div></div>
@@ -1019,7 +1019,7 @@ body.drawer-open #sidebar-backdrop{display:block;}
         <button class="pr" onclick="setPrice(2000,'Bull $2,000')">Bull</button>
         <button class="pr" onclick="setPrice(3500,'Super $3,500')">Super</button>
       </div>
-      <div class="fr"><label>SC6 spodumene price</label><input type="number" id="sc6Price" value="1400" min="100" max="8000" step="50"><span class="unit">$/t</span></div>
+      <div class="fr"><label>SC6 spodumene price</label><input type="number" id="sc6Price" value="1400" min="100" max="8000" step="50"><span class="unit">US$/t</span></div>
       <div class="fr"><label>Real price escalator</label><input type="number" id="priceEsc" value="0" min="-5" max="10" step="0.5"><span class="unit">%/yr</span></div>
       <hr class="divider">
       <div class="fr-note" style="color:var(--fg-2)">LCE equiv price shown in outputs.<br>1 t SC6 → 0.148 t LCE</div>
@@ -1032,11 +1032,11 @@ body.drawer-open #sidebar-backdrop{display:block;}
       <span class="sec-title">Operating Costs</span><span class="chev">▶</span>
     </div>
     <div class="sec-body open">
-      <div class="fr"><label>Open pit mining</label><input type="number" id="miningCost" value="5.50" min="1" max="30" step="0.5"><span class="unit">$/t ore</span></div>
-      <div class="fr"><label>Crushing &amp; flotation</label><input type="number" id="procCost" value="24.00" min="5" max="80" step="1"><span class="unit">$/t ore</span></div>
-      <div class="fr"><label>G&amp;A (fixed)</label><input type="number" id="gaFixed" value="15" min="2" max="80" step="1"><span class="unit">$M/yr</span></div>
+      <div class="fr"><label>Open pit mining</label><input type="number" id="miningCost" value="5.50" min="1" max="30" step="0.5"><span class="unit">US$/t ore</span></div>
+      <div class="fr"><label>Crushing &amp; flotation</label><input type="number" id="procCost" value="24.00" min="5" max="80" step="1"><span class="unit">US$/t ore</span></div>
+      <div class="fr"><label>G&amp;A (fixed)</label><input type="number" id="gaFixed" value="15" min="2" max="80" step="1"><span class="unit">US$M/yr</span></div>
       <div class="fr"><label>State royalty</label><input type="number" id="royalty" value="3.0" min="0" max="10" step="0.5"><span class="unit">% rev</span></div>
-      <div class="fr"><label>Port, freight &amp; selling</label><input type="number" id="freight" value="75" min="20" max="250" step="5"><span class="unit">$/t SC6</span></div>
+      <div class="fr"><label>Port, freight &amp; selling</label><input type="number" id="freight" value="75" min="20" max="250" step="5"><span class="unit">US$/t SC6</span></div>
       <hr class="divider">
       <div class="fr"><label>OPEX escalator</label><input type="number" id="opexEsc" value="2.0" min="-2" max="8" step="0.5"><span class="unit">%/yr</span></div>
     </div>
@@ -1048,12 +1048,12 @@ body.drawer-open #sidebar-backdrop{display:block;}
       <span class="sec-title">Capital Structure</span><span class="chev">▶</span>
     </div>
     <div class="sec-body open">
-      <div class="fr"><label>Initial CAPEX</label><input type="number" id="initCapex" value="800" min="50" max="10000" step="25"><span class="unit">$M</span></div>
+      <div class="fr"><label>Initial CAPEX</label><input type="number" id="initCapex" value="800" min="50" max="10000" step="25"><span class="unit">US$M</span></div>
       <div class="fr"><label>CAPEX: year 1 of constr.</label><input type="number" id="capex1" value="25" min="5" max="80"><span class="unit">%</span></div>
       <div class="fr"><label>CAPEX: year 2 of constr.</label><input type="number" id="capex2" value="75" min="5" max="80"><span class="unit">%</span></div>
-      <div class="fr"><label>Sustaining CAPEX</label><input type="number" id="sustCapex" value="28" min="5" max="200" step="2"><span class="unit">$/t SC6</span></div>
+      <div class="fr"><label>Sustaining CAPEX</label><input type="number" id="sustCapex" value="28" min="5" max="200" step="2"><span class="unit">US$/t SC6</span></div>
       <div class="fr"><label>Working capital (% rev)</label><input type="number" id="wc" value="5" min="0" max="20" step="1"><span class="unit">%</span></div>
-      <div class="fr"><label>Salvage / closure cost</label><input type="number" id="salvage" value="-30" min="-200" max="100" step="5"><span class="unit">$M</span></div>
+      <div class="fr"><label>Salvage / closure cost</label><input type="number" id="salvage" value="-30" min="-200" max="100" step="5"><span class="unit">US$M</span></div>
     </div>
   </div>
 
@@ -1677,7 +1677,7 @@ body.drawer-open #sidebar-backdrop{display:block;}
     <div style="padding:8px 18px;border-bottom:1px solid var(--border);display:flex;gap:18px;flex-wrap:wrap;align-items:center;background:rgba(26,28,22,.3);">
       <div class="mv-input-group"><label>LCE resource (Mt)</label><input type="number" id="mv-lce" value="9.9" step="0.1" min="0.1" oninput="updateMV()"></div>
       <div class="mv-input-group"><label>Shares (M)</label><input type="number" id="mv-shares" value="196" step="5" min="50" oninput="updateMV()"></div>
-      <div class="mv-input-group"><label>CAD→USD FX (1 CAD in USD)</label><input type="number" id="mv-fx" value="0.72" step="0.01" min="0.55" max="1.0" oninput="updateMV()"></div>
+      <div class="mv-input-group"><label>FX — 1 CAD in US$ (e.g. 0.72)</label><input type="number" id="mv-fx" value="0.72" step="0.01" min="0.55" max="1.0" oninput="updateMV()"></div>
       <div class="mv-input-group"><label>Current price (C$/sh)</label><input type="number" id="mv-curr-price" value="2.80" step="0.05" min="0.01" oninput="updateMV()"></div>
       <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
         <span style="font-size:9px;color:var(--fg-2);font-family:var(--font-mono)">Acquisition stage:</span>
@@ -2018,12 +2018,12 @@ body.drawer-open #sidebar-backdrop{display:block;}
   <div id="as-of-footer">
     <span class="aof-cell"><span class="aof-l">Spot SC6</span><span class="aof-v" id="aof-spot">$1,400/t</span></span>
     <span class="aof-sep">·</span>
-    <span class="aof-cell"><span class="aof-l">FX</span><span class="aof-v" id="aof-fx">0.72 CAD/USD</span></span>
+    <span class="aof-cell"><span class="aof-l">FX</span><span class="aof-v" id="aof-fx">USD/CAD 1.39 · 1 CAD = US$0.72</span></span>
     <span class="aof-sep">·</span>
     <span class="aof-cell"><span class="aof-l">Last close</span><span class="aof-v" id="aof-close">C$2.80 (2026-04-22)</span></span>
     <span class="aof-sep">·</span>
     <span class="aof-cell"><span class="aof-l">Model rev</span><span class="aof-v" id="aof-rev">—</span></span>
-    <span class="aof-disc">Not investment advice. Indicative model — verify before use.</span>
+    <span class="aof-disc">All $ values in USD unless prefixed C$. Not investment advice — verify before use.</span>
   </div>
 
 </div><!-- /main -->
@@ -2067,6 +2067,8 @@ const PROJECTS = {
       ticker: 'QTWO.V', company: 'Q2 Metals',
       jurisdiction: 'qc-canada', commodity: 'sc6', stage: 'mre'
     },
+    // fxCadUsd = USD per 1 CAD (multiplier: usd = cad × fxCadUsd).
+    // 0.72 → 1 CAD = US$0.72 → USD/CAD ≈ 1.39. Lower = CAD weaker.
     market: { lce_mt: 9.9, sharesFD: 196, lastClose: 2.80, fxCadUsd: 0.72,
               cashUsd: 25, debtUsd: 0, asOf: '2026-04-22',
               priceLow52w: 1.18, priceHigh52w: 3.45,
@@ -2150,7 +2152,10 @@ function populateDealStrip(p){
   // As-of footer
   const sc6 = (function(){ const el=document.getElementById('sc6Price'); return el ? parseFloat(el.value) : null; })();
   text('aof-spot',  sc6 ? '$' + sc6.toLocaleString() + '/t' : '—');
-  text('aof-fx',    fx.toFixed(2) + ' CAD/USD');
+  // FX displayed in two unambiguous forms: "USD/CAD 1.39" is the institutional pair quote,
+  // "(1 CAD = US$0.72)" is the literal multiplier we actually use in calculations.
+  const usdcad = fx > 0 ? (1 / fx) : 0;
+  text('aof-fx',    usdcad > 0 ? `USD/CAD ${usdcad.toFixed(2)} · 1 CAD = US$${fx.toFixed(2)}` : '—');
   text('aof-close', m.lastClose ? 'C$' + Number(m.lastClose).toFixed(2) + ' (' + (m.asOf || '—') + ')' : '—');
   text('aof-rev',   MODEL_VERSION);
 }
@@ -2405,7 +2410,7 @@ const RISKS = [
   { name:'Capex overrun',             cat:'Execution',  L:4, I:4, status:'watch', mitig:'Pre-PEA accuracy ±30%. PMET FS came in within band; lock EPC contractor early.' },
   { name:'Schedule slip — remote build',cat:'Execution',L:4, I:3, status:'watch', mitig:'James Bay remoteness compounds delays. Add 3–6mo buffer in base case.' },
   { name:'Lithium price drawdown',    cat:'Market',     L:4, I:5, status:'watch', mitig:'SC6 cycle volatility. Stress-test at $700/t covered in MC; offtake hedging at FID.' },
-  { name:'CAD/USD FX',                cat:'Market',     L:3, I:2, status:'mitig', mitig:'CAD opex vs USD revenue is a tailwind. Limited downside until BOC pivot.' },
+  { name:'USD/CAD FX',                cat:'Market',     L:3, I:2, status:'mitig', mitig:'CAD opex vs USD revenue is a tailwind. Limited downside until BOC pivot. (Model uses 1 CAD = US$0.72.)' },
   { name:'Offtake counterparty',      cat:'Commercial', L:2, I:3, status:'mitig', mitig:'Multiple offtakers active in James Bay (Ford, GM, LG, VW). Diversification credible.' },
   { name:'Tailings management (TSF)', cat:'Environmental',L:2,I:5,status:'watch', mitig:'Filtered/dry-stack TSF the standard for new builds. Extra capex ~5–8%.' },
   { name:'Water permit / impact',     cat:'Environmental',L:2,I:3,status:'watch', mitig:'Hydro-rich QC reduces conflict; baseline studies still essential.' },
@@ -3814,133 +3819,6 @@ function mcTab(tab){
   ['hist','irr','tornado','prob'].forEach(t=>{ document.getElementById('mc-'+t+'-panel').style.display=t===tab?'block':'none'; });
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// CISCO LITHIUM PROJECT — QUEBEC PRESET
-// Calibrated from: PMET Shaakichiuwaanaan FS (Oct 2025) + Q2 Metals Cisco MRE (Apr 20 2026)
-// MRE: 295 Mt @ 1.36% Li₂O Inferred (270 Mt OP + 24 Mt UG) → 9.9 Mt LCE
-// All monetary values in USD. FX assumption: 0.72 CAD/USD (1 CAD = US$0.72)
-// Key peer refs: PMET FS OPEX C$729/t SC5.5 (US$525/t) | AISC C$800/t (US$576/t)
-// Cisco advantage: 150km to Matagami rail vs PMET's 834km → ~US$80/t SC5.5 freight saving
-// ══════════════════════════════════════════════════════════════════════
-function loadCiscoPreset(){
-  const s = id => document.getElementById(id);
-  const FX = 0.72; // CAD/USD (1 CAD = US$0.72)
-
-  // Project identity
-  s('project-name').value = 'Cisco Lithium Project — Eeyou Istchee, Quebec';
-
-  // ── Mine configuration ──────────────────────────────────────────
-  s('mineLife').value     = 30;   // 295Mt ÷ 7.5Mtpa ≈ 39yr ore life; use 30 for reserve conversion assumption
-  s('constrYears').value  = 2;    // simplified 2yr (realistic 3yr for large plant; update when PEA published)
-  s('rampYears').value    = 3;    // large plant, DMS relatively simple but remote logistics
-  s('ramp1').value        = 55;   // yr1 ramp: logistics, commissioning challenges in James Bay
-  s('ramp2').value        = 80;   // yr2 ramp: DMS stabilisation
-  s('tailYears').value    = 3;    // declining ore quality in later open pit benches
-  s('tailPct').value      = 65;
-
-  // ── Production ──────────────────────────────────────────────────
-  // At 7.5 Mtpa, 1.36% grade, 72% recovery, SC5.5: → 1,336 kt SC5.5/yr
-  s('nameplate').value   = 7.5;
-  s('grade').value       = 1.36;  // confirmed MRE grade Apr 20 2026
-  s('recovery').value    = 72;    // DMS-only; PMET FS confirmed 72% for DMS
-  s('sc6Grade').value    = 5.5;   // SC5.5 product grade (PMET / Quebec standard)
-
-  // ── Price deck ──────────────────────────────────────────────────
-  // PMET FS long-term: US$1,221/t SC5.5. Current spot (Sep 2025): US$830/t SC6 ≈ US$760/t SC5.5
-  // Using US$1,400/t SC5.5 (Mid) as the default — above spot, in line with long-term consensus.
-  s('sc6Price').value    = 1400;
-  s('priceEsc').value    = 0;
-  // Sync the Price Deck preset buttons so "Mid" is visually active
-  document.querySelectorAll('.presets .pr').forEach(b => {
-    b.classList.toggle('on', /Mid/.test(b.textContent));
-  });
-
-  // ── Operating costs (USD, calibrated to PMET FS at 0.72 FX) ──
-  // PMET implied ~US$77/t ore all-in ex-transport on 5.1Mtpa OP+UG hybrid
-  // Cisco: predominantly OP (270/295 Mt), better logistics → lower unit costs
-  // Mining: US$13.50/t ore (C$18.75: open pit at 3.0:1 strip, includes blasting/hauling/drill)
-  // Processing: US$21.50/t ore (C$29.85: DMS-only, hydro power @ C$0.045/kWh is a major advantage)
-  // Note: combined US$35/t ore × 5.61 t ore/t SC5.5 = US$197/t SC5.5 mine+process
-  // G&A: US$28M/yr (C$39M: FIFO camp ~250 people, HSE, community, corporate)
-  // Royalty: 2.5% revenue (simplified; actual = QC mining duties 16% on profit >C$50M + 0.5% gross minimum)
-  // Freight: US$43/t SC5.5 (150km truck to Matagami @ C$0.19/t-km = C$28.5/t + CN Rail ~C$30/t = C$58.5 → US$42)
-  // → Implied total cash OPEX ≈ US$262-290/t SC5.5 → well below PMET's US$525 due to OP-dominant + logistics
-  s('miningCost').value  = 13.50;  // $/t ore
-  s('procCost').value    = 21.50;  // $/t ore (DMS only — materially cheaper than flotation)
-  s('gaFixed').value     = 28;     // $M/yr USD
-  s('royalty').value     = 2.5;    // % revenue (simplified Quebec mining duty proxy)
-  s('freight').value     = 43;     // $/t SC5.5 (road to Matagami + CN Rail to Bécancour)
-  s('opexEsc').value     = 2.5;    // CAD inflation pass-through ~2.5%/yr
-
-  // ── Capital structure ───────────────────────────────────────────
-  // PMET FS: C$1,978M gross for 5.1 Mtpa. Scale to 7.5 Mtpa using 0.6 power law:
-  //   C$1,978M × (7.5/5.1)^0.6 = C$1,978M × 1.26 = C$2,493M gross
-  //   Net of CTM-ITC (30% on ~35% of eligible spend): C$2,493M × 0.79 = C$1,969M
-  //   Using gross US$1,795M (C$2,493M × 0.72) as base — note net ~US$1,416M after credits
-  //   Range: US$1,400M – US$2,300M (±30% at PEA-level accuracy, no FS yet)
-  s('initCapex').value   = 1795;   // $M USD gross (range P10-P90: 1400-2300)
-  s('capex1').value      = 30;     // 30% in constr yr1 (site prep, early procurement)
-  s('capex2').value      = 70;     // 70% in constr yr2 (plant build, commissioning)
-  s('sustCapex').value   = 18;     // $/t SC5.5 (US$24M/yr at nameplate — lower than PMET UG sustaining)
-  s('wc').value          = 4;      // % revenue working capital
-  s('salvage').value     = -60;    // $M closure cost (larger remote site)
-
-  // ── Financial ──────────────────────────────────────────────────
-  // Quebec combined tax: Federal 15% + QC provincial 11.5% = 26.5%
-  // WACC: 10% base (junior project, single asset, pre-financing; institutional partner could lower to 8-9%)
-  // Target IRR: 18% (consistent with PMET FS 18.1% after-tax IRR; appropriate for world-class asset)
-  s('discRate').value    = 10;
-  s('taxRate').value     = 26.5;   // Federal 15% + Quebec 11.5%
-  s('deprYears').value   = 20;
-  s('targetIRR').value   = 18;
-
-  // ── Monte Carlo ranges (calibrated to Cisco-specific risk profile) ──
-  // Price: SC5.5 USD/t — wide range reflects lithium cycle volatility
-  document.getElementById('mc-price-lo').value    = 600;   // P10: bear market (2024 lows territory)
-  document.getElementById('mc-price-base').value  = 900;   // P50: conservative base
-  document.getElementById('mc-price-hi').value    = 1600;  // P90: bull case (approaching PMET FS assumption)
-  // Grade: MRE is 1.36% Inferred; small dilution risk, upside from high-grade zones
-  document.getElementById('mc-grade-lo').value    = 1.22;  // P10: dilution, lower-grade domains
-  document.getElementById('mc-grade-base').value  = 1.36;  // P50: confirmed MRE grade
-  document.getElementById('mc-grade-hi').value    = 1.50;  // P90: high-grade nova-style zones
-  // Recovery: DMS-only is well-proven on similar pegmatites
-  document.getElementById('mc-rec-lo').value      = 67;    // P10: coarser fines losses
-  document.getElementById('mc-rec-base').value    = 72;    // P50: PMET FS confirmed rate
-  document.getElementById('mc-rec-hi').value      = 76;    // P90: optimised plant
-  // CAPEX: pre-PEA accuracy ±30%; major risk is remote construction cost overrun
-  document.getElementById('mc-capex-lo').value    = 1400;  // P10: optimal execution, tax credits maxed
-  document.getElementById('mc-capex-base').value  = 1795;  // P50: gross, pre-credits
-  document.getElementById('mc-capex-hi').value    = 2450;  // P90: 30% overrun (common for remote QC builds)
-  // Mining: open pit at 3:1 strip — relatively low risk
-  document.getElementById('mc-mining-lo').value   = 11.00; // P10: efficient contractor
-  document.getElementById('mc-mining-base').value = 13.50; // P50: base case
-  document.getElementById('mc-mining-hi').value   = 18.00; // P90: strip creep, hard rock blasting
-  // Processing: DMS only — well-understood technology, low risk
-  document.getElementById('mc-proc-lo').value     = 18.00; // P10: high utilisation
-  document.getElementById('mc-proc-base').value   = 21.50; // P50: base case
-  document.getElementById('mc-proc-hi').value     = 28.00; // P90: reagent/maintenance cost creep
-
-  // ── Market Valuation inputs (Cisco-specific) ──
-  const mvLce = document.getElementById('mv-lce');
-  const mvShares = document.getElementById('mv-shares');
-  const mvCurrP = document.getElementById('mv-curr-price');
-  if(mvLce) mvLce.value = 9.9;     // 295 Mt @ 1.36% = 9.9 Mt LCE confirmed MRE
-  if(mvShares) mvShares.value = 196; // Current shares + minimal dilution assumption
-  if(mvCurrP) mvCurrP.value = 2.80;  // Current QTWO price (Apr 2026)
-  mvSetStage(0); // Maiden MRE stage — correct current stage
-
-  // Reset any year-level overrides
-  Object.keys(OV).forEach(k => delete OV[k]);
-
-  scheduleRender();
-
-  // Notify user
-  const btn = event.target;
-  const orig = btn.textContent;
-  btn.textContent = 'Cisco preset loaded';
-  btn.style.background = BRAND.green;
-  setTimeout(() => { btn.textContent = orig; btn.style.background = BRAND.cyan; }, 2500);
-}
 
 // ══════════════════════════════════════════════════════════════════════
 // MARKET VALUATION — $/t LCE · XY BUBBLE CHART + CHIP TOGGLES
