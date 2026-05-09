@@ -1113,7 +1113,7 @@ body.drawer-open #sidebar-backdrop{display:block;}
         <div class="pf-formula"><b>30k t</b> ÷ <b>6.0%</b><br>= 504kt at 6.0% Li₂O</div></div><div class="pf-arrow"><div class="pf-op">× 0.1484<br>t LCE/t SC6</div><div class="pf-arrow-line"></div></div><div class="pf-step "><div class="pf-label">LCE Equivalent</div>
         <div class="pf-num">74.8</div>
         <div class="pf-unit">kt LCE/yr</div>
-        <div class="pf-formula"><b>504kt SC6</b> × <b>0.1484</b><br>(Li₂O → Li₂CO₃ MW ratio)</div></div><div class="pf-arrow"><div class="pf-op">× $900<br>per t SC6</div><div class="pf-arrow-line"></div></div><div class="pf-step out"><div class="pf-label">Annual Revenue</div>
+        <div class="pf-formula"><b>504kt SC6</b> × <b>0.1484</b><br>(t LCE / t SC6 = 6% × 2.473)</div></div><div class="pf-arrow"><div class="pf-op">× $900<br>per t SC6</div><div class="pf-arrow-line"></div></div><div class="pf-step out"><div class="pf-label">Annual Revenue</div>
         <div class="pf-num">$453.6M</div>
         <div class="pf-unit">at nameplate</div>
         <div class="pf-formula"><b>504kt</b> × <b>$900/t</b><br>= $454M gross</div></div></div>
@@ -3155,7 +3155,7 @@ function renderPlantFlow(){
       label: 'LCE Equivalent',
       num: (lceKt).toFixed(0), unit: 'kt LCE/yr',
       numBig: (lceKt).toFixed(1), unitBig: 'kt LCE/yr',
-      formula: `<b>${sc6Kt.toFixed(0)}kt SC6</b> × <b>0.1484</b>\n(Li₂O → Li₂CO₃ MW ratio)`,
+      formula: `<b>${sc6Kt.toFixed(0)}kt SC6</b> × <b>0.1484</b>\n(t LCE / t SC6 = 6% × 2.473)`,
       cls: ''
     },
     {
@@ -4402,7 +4402,12 @@ function peerGetMyProject(){
   const sc6 = fp ? fp.sc6 : 0;
   const aisc = fp ? (fp.opex + fp.sust) / fp.sc6 * 1000 : 0;
   const capex = g('initCapex');
-  const resource = (parseFloat(document.getElementById('mv-lce')?.value || 9.9)) / 0.1484 * 100 / g('grade'); // Mt implied
+  // Implied ore tonnage (Mt) from contained LCE and Li₂O grade.
+  //   contained_LCE_t = ore_t × (grade_pct / 100) × 2.473
+  //   2.473 = Li₂CO₃ / Li₂O molar mass (74 / 30)
+  //   ore_Mt = LCE_Mt × 100 / (grade_pct × 2.473)
+  const _LI2O_TO_LCE = 2.473;
+  const resource = (parseFloat(document.getElementById('mv-lce')?.value || 9.9)) * 100 / (g('grade') * _LI2O_TO_LCE);
   const projectName = (document.getElementById('project-name')?.value || 'My Project').substring(0, 28);
   return {
     n: '' + projectName,
