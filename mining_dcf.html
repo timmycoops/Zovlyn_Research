@@ -969,16 +969,16 @@ body.drawer-open #sidebar-backdrop{display:block;}
         font-weight:700;cursor:pointer;letter-spacing:.03em;">
         <option value="qtwo">QTWO.V — Cisco (Quebec)</option>
         <optgroup label="Operating mines">
-          <option value="greenbushes">Greenbushes — Talison JV (WA)</option>
-          <option value="pilgangoora">PLS.AX — Pilgangoora (WA)</option>
-          <option value="wodgina">MIN.AX — Wodgina MARBL JV (WA)</option>
+          <option value="greenbushes">Greenbushes — Talison JV (WA) · since 1980s</option>
+          <option value="pilgangoora">PLS.AX — Pilgangoora (WA) · P1000 since 2025</option>
+          <option value="wodgina">MIN.AX — Wodgina MARBL JV (WA) · 3 trains</option>
+          <option value="sigma">SGML — Grota do Cirilo (BR) · P1 since 2023, P2/P3 expansion</option>
+          <option value="kathleenvalley">LTR.AX — Kathleen Valley (WA) · since 2024</option>
         </optgroup>
         <optgroup label="Development with published studies">
           <option value="pmet">PMET.V — Shaakichiuwaanaan (QC) · FS Oct 2025</option>
-          <option value="arcadiumjb">Arcadium / Rio — James Bay (QC) · FS 2024</option>
-          <option value="manono">AVZ.AX — Manono (DRC) · DFS 2020</option>
-          <option value="kathleenvalley">LTR.AX — Kathleen Valley (WA) · DFS 2021</option>
-          <option value="sigma">SGML — Grota do Cirilo P1+P2+P3 (BR)</option>
+          <option value="arcadiumjb">Arcadium / Rio — James Bay (QC) · FS 2024 (paused)</option>
+          <option value="manono">AVZ.AX — Manono (DRC) · DFS 2020 (license dispute)</option>
         </optgroup>
         <option value="blank">— Blank template</option>
       </select>
@@ -2276,11 +2276,11 @@ const PROJECTS = {
       nameplate: 3.0, grade: 1.40, recovery: 70, sc6Grade: 5.6,
       sc6Price: 1500, priceEsc: 0,
       miningCost: 28, procCost: 35, gaFixed: 35, royalty: 5.0, freight: 60, opexEsc: 2.5,
-      initCapex: 590, capex1: 100, capex2: 0, sustCapex: 45, wc: 5, salvage: -80,
+      initCapex: 0, capex1: 0, capex2: 0, sustCapex: 55, wc: 5, salvage: -80,
       discRate: 9, taxRate: 30, deprYears: 23, targetIRR: 14 },
     mc: { price:{lo:800,base:1500,hi:2200}, grade:{lo:1.25,base:1.40,hi:1.55}, rec:{lo:65,base:70,hi:75},
       capex:{lo:0,base:0,hi:200}, mining:{lo:24,base:28,hi:35}, proc:{lo:30,base:35,hi:45} },
-    notes: 'Kathleen Valley (LTR.AX) — DFS 2021, capex blew out from A$545M → A$895M (≈US$590M). Operating since 2024. 2H FY25 production 170-185kt SC6, AISC A$1,170-1,290/t (~US$770-850/t). FY29 target 550+ kt SC6/yr after open-pit → underground transition. Resource 156Mt @ 1.40% Li₂O. Verify against LTR ASX announcements; some inputs (sustaining, opex) reflect underground transition.'
+    notes: 'Kathleen Valley (LTR.AX) — operating since 2024. Original DFS 2021 capex blew out A$545M → A$895M (≈US$590M sunk). 2H FY25 production 170-185kt SC6, AISC A$1,170-1,290/t (~US$770-850/t). FY29 target 550+ kt/yr after open-pit → underground transition. Resource 156Mt @ 1.40% Li₂O. Going-forward DCF: initCapex set to 0 (build is sunk); sustaining elevated to capture UG transition spend. To value the asset on a rebuild basis, set initCapex = 590.'
   },
 
   // Source: Sigma Lithium technical reports Mar 2025 + 2Q25 results.
