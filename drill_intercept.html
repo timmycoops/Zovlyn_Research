@@ -941,7 +941,7 @@ function rebuildChartDatasets() {
     datasets.push({
       type:'line', data:isoCurveData(gm),
       borderColor:'rgba(58,61,51,0.7)', borderDash:[3,4], borderWidth:1,
-      fill:false, pointRadius:0, pointHoverRadius:0, tension:0, order:10,
+      fill:false, pointRadius:0, pointHoverRadius:0, tension:0,
     });
   });
   const grouped = {Au:[], Cu:[], U:[], Li:[], Poly:[]};
@@ -955,26 +955,26 @@ function rebuildChartDatasets() {
     datasets.push({
       type:'scatter', label:c.label, data:grouped[cat],
       backgroundColor:c.fill, borderColor:c.border, borderWidth:1,
-      pointRadius:5, pointHoverRadius:8, order:5,
+      pointRadius:5, pointHoverRadius:8,
     });
   });
   // "Other intercepts in current hole" — small green diamonds
   datasets.push({
     type:'scatter', label:'Other intercepts in hole', data:[],
     backgroundColor:'rgba(93,211,168,0.55)', borderColor:'#5dd3a8', borderWidth:1,
-    pointStyle:'rectRot', pointRadius:7, pointHoverRadius:9, order:3,
+    pointStyle:'rectRot', pointRadius:7, pointHoverRadius:9,
   });
   // Halo
   datasets.push({
     type:'scatter', label:'You · halo', data:[],
     backgroundColor:'rgba(93,211,168,0.18)', borderColor:'rgba(93,211,168,0.55)', borderWidth:1.5,
-    pointStyle:'circle', pointRadius:24, pointHoverRadius:26, order:2,
+    pointStyle:'circle', pointRadius:24, pointHoverRadius:26,
   });
   // Active diamond
   datasets.push({
     type:'scatter', label:'You', data:[],
     backgroundColor:'#5dd3a8', borderColor:'#0c0d0a', borderWidth:2,
-    pointStyle:'rectRot', pointRadius:11, pointHoverRadius:13, order:1,
+    pointStyle:'rectRot', pointRadius:11, pointHoverRadius:13,
   });
   benchChart.data.datasets = datasets;
   benchChart.update('none');
@@ -1104,7 +1104,6 @@ function depositZoneDatasets(p) {
     pointRadius: 0,
     pointHoverRadius: 0,
     tension: 0,
-    order: 8,
   }];
 }
 
@@ -1119,7 +1118,7 @@ function renderProfile() {
     datasets.push({
       type:'line', data:isoCurveData(gm),
       borderColor:'rgba(58,61,51,0.7)', borderDash:[3,4], borderWidth:1,
-      fill:false, pointRadius:0, pointHoverRadius:0, tension:0, order:10,
+      fill:false, pointRadius:0, pointHoverRadius:0, tension:0,
     });
   });
   // Deposit zones
@@ -1146,7 +1145,6 @@ function renderProfile() {
     pointStyle: 'rectRot',
     pointRadius: 8,
     pointHoverRadius: 10,
-    order: 1,
   });
 
   projectChart.data.datasets = datasets;
