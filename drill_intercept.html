@@ -494,7 +494,7 @@ table.sens tbody tr.proj-divider td{background:var(--bg-3);padding:5px 14px;text
         <p><strong>1. AuEq formula.</strong> NI 43-101 / JORC standard: <em>AuEq = Σ(grade × price × recovery) / (Au_price × Au_recovery)</em>. Each metal row carries its own price and recovery — edit them to match your assumptions. Defaults: Au $2,400/oz @ 90%, Ag $28/oz @ 75%, Cu $4.20/lb @ 88%, Pb $0.95/lb @ 80%, Zn $1.30/lb @ 85%, Ni $8/lb @ 70%, Mo $20/lb @ 80%, Co $15/lb @ 65%, Sn $14/lb @ 72%, Li₂O $14.50/lb @ 75%, U₃O₈ $80/lb @ 90%.</p>
         <p><strong>2. Multi-intercept holes.</strong> A drill hole can have several mineralised zones at different depths. Add as many intercepts as your assays show — each gets its own AuEq, true width, and gram-meters. The hole's "Total g·m" is the sum across intercepts; "Best g·m" is the largest single intercept. Save the whole hole as one record; the saved-holes table shows hole-level rollups.</p>
         <p><strong>3. Gram-meters and ranking.</strong> The universal cross-commodity ranking metric: <em>g·m = AuEq grade × true width</em>. Rank tile compares your <em>active</em> intercept against the 46-hole benchmark set. The benchmark scatter's iso-curves let you see the grade-vs-width trade-off explicitly.</p>
-        <p><strong>4. Project scatter — drilling universe + filters.</strong> Same log-log axes as the benchmark chart (true width × AuEq grade). Background cloud is 4,188 real drill intercepts across 1,180 projects, coloured by commodity group (Au / Cu / Li / Ni / U / Zn / Other). True width is assumed equal to downhole length — the source spreadsheet has no TW indicator, so all g·m figures are upper bounds. <strong>Filters:</strong> click a commodity pill to toggle that group on/off (also hides its KDE envelope and removes its projects from the summary table); drag the <em>Min g·m</em> slider to suppress low-significance intercepts; type into <em>Project search</em> for autocomplete from the universe. Matched-project halos always show, regardless of filter state. Toggle <em>KDE contours</em> to overlay per-commodity Gaussian kernel-density envelopes (50% solid fill = inner half of mass; 80% dashed = outer 80%) computed via <code>scipy.stats.gaussian_kde</code> on log10(width) × log10(AuEq grade). Stage indicator below tracks # holes &gt; 100 g·m for your saved holes. The summary table below the chart ranks all universe projects on n intercepts / best g·m / median g·m / # &gt;100 g·m / # &gt;1k g·m — click a row to highlight that project on the scatter.</p>
+        <p><strong>4. Project scatter — drilling universe + filters.</strong> Same log-log axes as the benchmark chart (true width × AuEq grade). Background cloud is 4,188 real drill intercepts across 1,180 projects, coloured by commodity group (Au / Cu / Li / Ni / U / Zn / Other). True width is assumed equal to downhole length — the source spreadsheet has no TW indicator, so all g·m figures are upper bounds. <strong>Filters:</strong> click a commodity pill to toggle that group on/off (also hides its KDE envelope and removes its projects from the summary table); drag the <em>Min g·m</em> slider to suppress low-significance intercepts; type into <em>Project search</em> for autocomplete from the universe. Matched-project halos always show, regardless of filter state. Toggle <em>KDE contours</em> to overlay per-commodity envelopes (50% solid fill = inner half of mass; 80% dashed = outer 80%). Envelopes are computed live in-browser as a Gaussian fit on log10(width) × log10(AuEq grade) — every filter change (commodity, min g·m, scope-to-table, project search) reshapes the contour. Initial scipy KDE on the full universe lives in <code>drill_universe.json</code> as a baseline reference but is no longer rendered. Stage indicator below tracks # holes &gt; 100 g·m for your saved holes. The summary table below the chart ranks all universe projects on n intercepts / best g·m / median g·m / # &gt;100 g·m / # &gt;1k g·m — click a row to highlight that project, or toggle <em>Scope chart to table</em> to filter the chart's cloud + KDE to just the visible top-50 rows.</p>
         <table>
           <thead><tr><th>Stage</th><th># total holes</th><th># &gt;100 g·m</th><th># &gt;1,000 g·m</th></tr></thead>
           <tbody>
@@ -1303,22 +1303,16 @@ function renderProfile() {
   });
 
   // KDE contours (filtered by enabled commodities + global toggle).
-  // Source: precomputed scipy KDE when scope is off, live Gaussian envelope when scope is on.
+  // Source: always the live Gaussian envelope on the same filter set that
+  // builds the cloud (commodity enabled + g·m ≥ minGm, plus scope if on).
+  // This guarantees the contour tracks every filter you change.
   if (contoursOn) {
     COMMODITY_LIST.forEach(c => {
       if (!enabledCommodities.has(c)) return;
       const pal = COMMODITY_PALETTE[c];
-      let outer = null, inner = null;
-      if (scopeToTable) {
-        outer = gaussianEnvelope(logPtsByC[c], 0.80);
-        inner = gaussianEnvelope(logPtsByC[c], 0.50);
-      } else {
-        const info = UNIVERSE.kde_contours && UNIVERSE.kde_contours[c];
-        if (info) {
-          outer = (info.contours['80'] && info.contours['80'][0]) || null;
-          inner = (info.contours['50'] && info.contours['50'][0]) || null;
-        }
-      }
+      const pts = logPtsByC[c];
+      const outer = gaussianEnvelope(pts, 0.80);
+      const inner = gaussianEnvelope(pts, 0.50);
       [{poly:outer, isInner:false}, {poly:inner, isInner:true}].forEach(({poly, isInner}) => {
         if (!poly || poly.length < 4) return;
         const data = poly.map(([x,y]) => clampPt(x,y));
@@ -1381,7 +1375,7 @@ function renderProfile() {
     el.profileMeta.textContent = universeN
       ? `universe · ${cloudShown.toLocaleString()}/${universeN.toLocaleString()} shown · ${(UNIVERSE.projects||[]).length.toLocaleString()} projects${filterTail}`
       : 'universe loading…';
-    el.profileSub.textContent = `Background cloud = real intercepts coloured by commodity. KDE contours = inner 50% (solid fill) and outer 80% (dashed) probability mass on log10 axes. Click a commodity pill to toggle, drag the slider to filter low-significance intercepts, or type a project name to highlight matches.`;
+    el.profileSub.textContent = `Background cloud = real intercepts coloured by commodity. KDE contours = inner 50% (solid fill) and outer 80% (dashed) probability mass on log10 axes — recomputed live as a Gaussian envelope from whatever the current filters allow through (commodity, min g·m, scope). Click a pill, drag the slider, or type a project name and watch the envelope shift.`;
   } else {
     const above100 = projHoles.filter(h => (h.hole_gm||0) > 100).length;
     const above1k  = projHoles.filter(h => (h.hole_gm||0) > 1000).length;
