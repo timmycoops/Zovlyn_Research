@@ -159,7 +159,11 @@ input[type=range].t-range{width:100%;accent-color:var(--accent);height:18px}
 .legend-pill.cu::before{background:var(--red)}
 .legend-pill.u::before{background:var(--green)}
 .legend-pill.li::before{background:var(--fg-2)}
+.legend-pill.ni::before{background:var(--cyan)}
+.legend-pill.zn::before{background:#b08ad6}
+.legend-pill.other::before{background:var(--fg-3)}
 .legend-pill.poly::before{background:var(--cyan)}
+.legend-pill.match::before{background:rgba(93,211,168,0.5);border:1.5px solid var(--accent);width:10px;height:10px;border-radius:50%}
 .legend-pill.user::before{background:var(--accent);width:11px;height:11px;border-radius:1px;border:1.5px solid var(--bg);transform:rotate(45deg);box-shadow:0 0 0 3px rgba(93,211,168,0.22);animation:pulse 2.4s ease-in-out infinite}
 .legend-pill.iso::before{background:transparent;border-top:1px dashed var(--fg-3);width:14px;height:0;border-radius:0}
 .legend-pill.off{opacity:0.35}
@@ -263,7 +267,7 @@ table.sens tbody tr.proj-divider td{background:var(--bg-3);padding:5px 14px;text
     <span>METALS · <strong>11 incl. Li₂O · U₃O₈</strong></span>
     <span>BASIS · <strong>NI 43-101 AuEq</strong></span>
     <span>BENCHMARKS · <strong id="benchCount">…</strong></span>
-    <span>DEPOSIT PROFILES · <strong id="profileCount">…</strong></span>
+    <span>UNIVERSE · <strong id="profileCount">…</strong></span>
   </div>
 </header>
 
@@ -374,17 +378,25 @@ table.sens tbody tr.proj-divider td{background:var(--bg-3);padding:5px 14px;text
       </div>
     </div>
 
-    <!-- Project scatter — your intercepts vs deposit zones -->
+    <!-- Project scatter — drilling universe + your holes -->
     <div class="card">
-      <div class="card-h">Project scatter · your intercepts vs deposit zones <span class="meta" id="profileMeta">live · this browser</span></div>
+      <div class="card-h">Project scatter · drilling universe + your holes <span class="meta" id="profileMeta">universe loading…</span></div>
       <div class="card-b">
         <div class="legend-pills" style="padding-bottom:6px">
           <span class="legend-pill user static">Your saved intercepts</span>
-          <span id="depositPills" style="display:contents"></span>
-          <button class="legend-toggle on" id="overlayToggle">Overlay deposits</button>
+          <span class="legend-pill match static" id="matchPill" style="display:none">Matched project</span>
+          <span class="legend-sep">│</span>
+          <span class="legend-pill au static">Au</span>
+          <span class="legend-pill cu static">Cu</span>
+          <span class="legend-pill li static">Li</span>
+          <span class="legend-pill ni static">Ni</span>
+          <span class="legend-pill u static">U</span>
+          <span class="legend-pill zn static">Zn</span>
+          <span class="legend-pill other static">Other</span>
+          <button class="legend-toggle on" id="overlayToggle">KDE contours</button>
         </div>
         <div class="chart-wrap-tall"><canvas id="profileChart"></canvas></div>
-        <div class="kpi-eq" style="margin-top:8px;color:var(--fg-2)" id="profileSub">Save holes from your project to plot them here. Shaded boxes show typical (width × AuEq) ranges for reference deposits — approximate.</div>
+        <div class="kpi-eq" style="margin-top:8px;color:var(--fg-2)" id="profileSub">Loading drill universe…</div>
         <div class="stage-row" id="stageRow">
           <div class="stage-cell" data-stage="discovery"><span class="l">Discovery</span><span class="v">≥1 hole &gt;100 g·m</span></div>
           <div class="stage-cell" data-stage="scoping"><span class="l">Scoping</span><span class="v">5–15 &gt;100</span></div>
@@ -423,7 +435,7 @@ table.sens tbody tr.proj-divider td{background:var(--bg-3);padding:5px 14px;text
         <p><strong>1. AuEq formula.</strong> NI 43-101 / JORC standard: <em>AuEq = Σ(grade × price × recovery) / (Au_price × Au_recovery)</em>. Each metal row carries its own price and recovery — edit them to match your assumptions. Defaults: Au $2,400/oz @ 90%, Ag $28/oz @ 75%, Cu $4.20/lb @ 88%, Pb $0.95/lb @ 80%, Zn $1.30/lb @ 85%, Ni $8/lb @ 70%, Mo $20/lb @ 80%, Co $15/lb @ 65%, Sn $14/lb @ 72%, Li₂O $14.50/lb @ 75%, U₃O₈ $80/lb @ 90%.</p>
         <p><strong>2. Multi-intercept holes.</strong> A drill hole can have several mineralised zones at different depths. Add as many intercepts as your assays show — each gets its own AuEq, true width, and gram-meters. The hole's "Total g·m" is the sum across intercepts; "Best g·m" is the largest single intercept. Save the whole hole as one record; the saved-holes table shows hole-level rollups.</p>
         <p><strong>3. Gram-meters and ranking.</strong> The universal cross-commodity ranking metric: <em>g·m = AuEq grade × true width</em>. Rank tile compares your <em>active</em> intercept against the 46-hole benchmark set. The benchmark scatter's iso-curves let you see the grade-vs-width trade-off explicitly.</p>
-        <p><strong>4. Project scatter.</strong> Same log-log axes as the benchmark chart (true width × AuEq grade). Each green diamond is one of your saved intercepts for the current "Project name". Shaded boxes are typical (width × AuEq) ranges for 7 reference deposits — approximate, sourced from public technical reports. Toggle off the deposit overlay if it's getting busy. Stage indicator below shows where your hole count puts you on this rough scale (based on # holes &gt; 100 g·m):</p>
+        <p><strong>4. Project scatter — drilling universe.</strong> Same log-log axes as the benchmark chart (true width × AuEq grade). Background cloud is 4,188 real drill intercepts across 1,180 projects, coloured by commodity group (Au / Cu / Li / Ni / U / Zn / Other). True width is assumed equal to downhole length — the source spreadsheet has no TW indicator, so all g·m figures are upper bounds. Toggle <em>KDE contours</em> to overlay per-commodity Gaussian kernel-density envelopes (50% solid fill = inner half of mass; 80% dashed = outer 80%). Computed via <code>scipy.stats.gaussian_kde</code> on log10(width) × log10(AuEq grade). Type a Project name in the inputs — if it matches a project in the universe, those intercepts are highlighted as green halos. Your saved intercepts plot on top as bright green diamonds. Stage indicator below tracks # holes &gt; 100 g·m:</p>
         <table>
           <thead><tr><th>Stage</th><th># total holes</th><th># &gt;100 g·m</th><th># &gt;1,000 g·m</th></tr></thead>
           <tbody>
@@ -512,7 +524,17 @@ const BENCHMARKS_FALLBACK = [
 ];
 
 let BENCHMARKS = BENCHMARKS_FALLBACK;
-let DEPOSIT_PROFILES = [];
+let UNIVERSE = {meta:{}, intercepts:[], kde_contours:{}, projects:[]};
+const COMMODITY_PALETTE = {
+  Au:    {dot:'rgba(232,182,88,0.40)',  fill:'rgba(232,182,88,0.10)',  border:'#e8b658'},
+  Cu:    {dot:'rgba(255,95,86,0.40)',   fill:'rgba(255,95,86,0.10)',   border:'#ff5f56'},
+  Li:    {dot:'rgba(138,135,115,0.45)', fill:'rgba(138,135,115,0.10)', border:'#a8a597'},
+  Ni:    {dot:'rgba(106,207,224,0.40)', fill:'rgba(106,207,224,0.10)', border:'#6acfe0'},
+  U:     {dot:'rgba(93,211,128,0.40)',  fill:'rgba(93,211,128,0.10)',  border:'#5dd380'},
+  Zn:    {dot:'rgba(176,138,214,0.40)', fill:'rgba(176,138,214,0.10)', border:'#b08ad6'},
+  Other: {dot:'rgba(120,118,100,0.40)', fill:'rgba(120,118,100,0.10)', border:'#787664'},
+};
+const COMMODITY_LIST = ['Au','Cu','Li','Ni','U','Zn','Other'];
 const STORAGE_KEY = 'zovlyn_drill_holes';
 const LEGACY_KEY = 'zovlyn_drill_intercepts';
 
@@ -546,8 +568,8 @@ const el = {
   grpICount: document.getElementById('grpICount'),
   profileMeta: document.getElementById('profileMeta'),
   profileSub: document.getElementById('profileSub'),
-  depositPills: document.getElementById('depositPills'),
   overlayToggle: document.getElementById('overlayToggle'),
+  matchPill: document.getElementById('matchPill'),
   stageRow: document.getElementById('stageRow'),
 };
 
@@ -1004,15 +1026,7 @@ function setUserPoints(activeIntercept, otherIntercepts) {
   benchChart.update('none');
 }
 
-// ─── Project scatter chart (deposit zones + user intercepts) ───
-function withAlpha(hex, alpha) {
-  if (typeof hex !== 'string' || !hex.startsWith('#') || hex.length !== 7) return hex;
-  const r = parseInt(hex.slice(1,3), 16);
-  const g = parseInt(hex.slice(3,5), 16);
-  const b = parseInt(hex.slice(5,7), 16);
-  return `rgba(${r},${g},${b},${alpha})`;
-}
-
+// ─── Project scatter chart (drilling universe + KDE contours + user intercepts) ───
 // Project chart shares axes with the benchmark scatter (log-log: width × AuEq)
 const projectChart = new Chart(document.getElementById('profileChart'), {
   type: 'scatter',
@@ -1032,9 +1046,9 @@ const projectChart = new Chart(document.getElementById('profileChart'), {
           title: ctx => {
             const m = ctx[0].raw.meta;
             if (!m) return '';
-            return m.is_user
-              ? `${m.project || 'Your project'} · ${m.holeId || '—'}`
-              : `${m.name} · ${m.stage}`;
+            if (m.is_user)     return `${m.project || 'Your project'} · ${m.holeId || '—'}`;
+            if (m.is_universe) return `${m.project} · ${m.commodity}`;
+            return '';
           },
           label: ctx => {
             const m = ctx.raw.meta;
@@ -1045,10 +1059,10 @@ const projectChart = new Chart(document.getElementById('profileChart'), {
                 `intercept ${m.from}–${m.to} m`,
               ];
             }
-            return [
-              `${m.total_holes} holes · best ${fmt(m.best_hole_gm,0)} g·m`,
-              m.deposit_type || '',
-            ];
+            if (m.is_universe) {
+              return [`${fmtSmart(m.grade)} g/t × ${fmtSmart(m.width)} m = ${fmt(m.gm,0)} g·m`];
+            }
+            return '';
           }
         }
       }
@@ -1071,49 +1085,29 @@ const projectChart = new Chart(document.getElementById('profileChart'), {
   plugins: [isoLabelsPlugin]
 });
 
-let overlayOn = true;
+let contoursOn = true;
 el.overlayToggle.addEventListener('click', () => {
-  overlayOn = !overlayOn;
-  el.overlayToggle.classList.toggle('on', overlayOn);
-  el.depositPills.style.display = overlayOn ? 'contents' : 'none';
+  contoursOn = !contoursOn;
+  el.overlayToggle.classList.toggle('on', contoursOn);
   renderProfile();
 });
 
-function depositZoneDatasets(p) {
-  if (!p.intercept_zone) return [];
-  const z = p.intercept_zone;
-  const wMin = z.width_typical[0], wMax = z.width_typical[1];
-  const gMin = z.grade_typical[0], gMax = z.grade_typical[1];
-  const color = p.color || '#8a8773';
-  // Closed rectangle (5 points) on log-log plane
-  return [{
-    type:'line',
-    label: p.name,
-    data: [
-      {x: wMin, y: gMin},
-      {x: wMax, y: gMin},
-      {x: wMax, y: gMax},
-      {x: wMin, y: gMax},
-      {x: wMin, y: gMin},
-    ],
-    borderColor: color,
-    backgroundColor: withAlpha(color, 0.10),
-    borderWidth: 1.2,
-    borderDash: [2,3],
-    fill: true,
-    pointRadius: 0,
-    pointHoverRadius: 0,
-    tension: 0,
-  }];
+function clampPt(x, y) {
+  return {
+    x: Math.max(X_MIN, Math.min(X_MAX*0.99, x)),
+    y: Math.max(Y_MIN, Math.min(Y_MAX*0.99, y)),
+  };
 }
 
 function renderProfile() {
   const projName = (el.projName.value || '').trim();
+  const projNameLc = projName.toLowerCase();
   const all = loadSaved();
-  const projHoles = projName ? all.filter(h => (h.projName || '').trim().toLowerCase() === projName.toLowerCase()) : [];
+  const projHoles = projName ? all.filter(h => (h.projName || '').trim().toLowerCase() === projNameLc) : [];
 
   const datasets = [];
-  // Iso-curves (drawn first so deposit zones and dots sit on top)
+
+  // Iso-curves first (back)
   isoLevels.forEach(({gm}) => {
     datasets.push({
       type:'line', data:isoCurveData(gm),
@@ -1121,76 +1115,110 @@ function renderProfile() {
       fill:false, pointRadius:0, pointHoverRadius:0, tension:0,
     });
   });
-  // Deposit zones
-  if (overlayOn) {
-    DEPOSIT_PROFILES.forEach(p => {
-      depositZoneDatasets(p).forEach(ds => datasets.push(ds));
+
+  // KDE contours per commodity (toggleable). 80% drawn first (dashed outer envelope),
+  // 50% second (filled inner core). Iso-curves are below; cloud + dots above.
+  if (contoursOn && UNIVERSE.kde_contours) {
+    COMMODITY_LIST.forEach(c => {
+      const info = UNIVERSE.kde_contours[c];
+      if (!info) return;
+      const pal = COMMODITY_PALETTE[c];
+      ['80','50'].forEach(level => {
+        const polys = info.contours[level];
+        if (!polys) return;
+        const isInner = level === '50';
+        polys.forEach(poly => {
+          const data = poly.map(([x,y]) => clampPt(x,y));
+          datasets.push({
+            type:'line', data,
+            borderColor: pal.border,
+            backgroundColor: isInner ? pal.fill : 'transparent',
+            borderWidth: isInner ? 1.4 : 0.8,
+            borderDash: isInner ? [] : [3,3],
+            fill: isInner,
+            pointRadius: 0, pointHoverRadius: 0, tension: 0.25,
+          });
+        });
+      });
     });
   }
-  // User saved hole intercepts
+
+  // Background cloud — split universe into matched / unmatched, group unmatched by commodity.
+  const matched = [];
+  const unmatchedByC = {};
+  COMMODITY_LIST.forEach(c => unmatchedByC[c] = []);
+  (UNIVERSE.intercepts || []).forEach(([p, c, w, g]) => {
+    if (!isFinite(w) || !isFinite(g) || w <= 0 || g <= 0) return;
+    const pt = clampPt(w, g);
+    pt.meta = {project:p || '(no project)', commodity:c, width:w, grade:g, gm:w*g, is_universe:true};
+    if (projNameLc && p && p.toLowerCase() === projNameLc) {
+      matched.push(pt);
+    } else {
+      const key = COMMODITY_LIST.includes(c) ? c : 'Other';
+      unmatchedByC[key].push(pt);
+    }
+  });
+  COMMODITY_LIST.forEach(c => {
+    if (!unmatchedByC[c].length) return;
+    const pal = COMMODITY_PALETTE[c];
+    datasets.push({
+      type:'scatter', label:c, data:unmatchedByC[c],
+      backgroundColor: pal.dot, borderColor: 'transparent', borderWidth: 0,
+      pointRadius: 1.8, pointHoverRadius: 5, hoverBackgroundColor: pal.border,
+    });
+  });
+  // Matched dots — bright halo
+  if (matched.length) {
+    datasets.push({
+      type:'scatter', label:'Matched project (universe)', data:matched,
+      backgroundColor:'rgba(93,211,168,0.6)', borderColor:'#5dd3a8', borderWidth:1.5,
+      pointStyle:'circle', pointRadius:5, pointHoverRadius:7,
+    });
+  }
+  // User saved hole intercepts — bright diamonds on top
   const userPoints = projHoles.flatMap(h =>
-    (h.intercepts || []).map(ic => ({
-      x: Math.max(X_MIN, Math.min(X_MAX*0.99, ic.trueW || 0)),
-      y: Math.max(Y_MIN, Math.min(Y_MAX*0.99, ic.auEq || 0)),
-      meta: {is_user:true, project:h.projName, holeId:h.holeId, from:ic.from, to:ic.to, auEq:ic.auEq, trueW:ic.trueW, gm:ic.gm},
-    }))
-  ).filter(p => p.x > 0 && p.y > 0 && (p.meta.gm > 0));
+    (h.intercepts || []).map(ic => {
+      const pt = clampPt(ic.trueW || 0, ic.auEq || 0);
+      pt.meta = {is_user:true, project:h.projName, holeId:h.holeId, from:ic.from, to:ic.to, auEq:ic.auEq, trueW:ic.trueW, gm:ic.gm};
+      return pt;
+    })
+  ).filter(p => p.meta.gm > 0);
   datasets.push({
-    type:'scatter',
-    label: projName || 'Your saved intercepts',
-    data: userPoints,
-    backgroundColor: '#5dd3a8',
-    borderColor: '#0c0d0a',
-    borderWidth: 1.5,
-    pointStyle: 'rectRot',
-    pointRadius: 8,
-    pointHoverRadius: 10,
+    type:'scatter', label: projName || 'Your saved intercepts', data: userPoints,
+    backgroundColor:'#5dd3a8', borderColor:'#0c0d0a', borderWidth:1.5,
+    pointStyle:'rectRot', pointRadius:9, pointHoverRadius:11,
   });
 
   projectChart.data.datasets = datasets;
   projectChart.update('none');
 
-  // Tooltip needs to associate dataset.label with deposit meta on hover.
-  // Cleaner: store meta on the line points themselves so the line tooltip works.
-  // Done above via depositZoneDatasets — but our filter only allows scatter.
-  // Update the deposit zone datasets so their first point carries meta and
-  // we can extend the filter to permit it. (Skipped for now — the rectangle
-  // is the visual; tooltip happens only on the scatter dots.)
-
   // Header sub + stage indicator
   const total = projHoles.length;
+  const universeN = (UNIVERSE.intercepts || []).length;
   if (!projName) {
-    el.profileMeta.textContent = 'enter project name';
-    el.profileSub.textContent = 'Enter a Project name above and save holes to plot them here. Shaded boxes show typical (width × AuEq) ranges for reference deposits — approximate.';
-  } else if (!total) {
-    el.profileMeta.textContent = `"${projName}" · 0 holes saved`;
-    el.profileSub.textContent = `No saved holes for "${projName}" yet. Save the current hole to populate.`;
+    el.profileMeta.textContent = universeN
+      ? `universe · ${universeN.toLocaleString()} intercepts · ${(UNIVERSE.projects||[]).length.toLocaleString()} projects`
+      : 'universe loading…';
+    el.profileSub.textContent = `Background cloud is the full intercept universe (${universeN.toLocaleString()} dots, coloured by commodity). KDE contours outline where each commodity's mineralisation typically lives — solid fill = inner 50% of mass, dashed = 80%. Type a Project name in inputs to highlight matching intercepts.`;
   } else {
     const above100 = projHoles.filter(h => (h.hole_gm||0) > 100).length;
     const above1k  = projHoles.filter(h => (h.hole_gm||0) > 1000).length;
-    el.profileMeta.textContent = `"${projName}" · ${total} holes · ${above100} >100 g·m · ${above1k} >1k g·m`;
-    el.profileSub.textContent = `Each green diamond is one intercept across your saved holes. Shaded boxes are typical (width × AuEq) ranges for reference deposits — approximate, see methodology.`;
+    el.profileMeta.textContent = `"${projName}" · saved ${total} · matched ${matched.length} in universe · ${above100} >100 g·m · ${above1k} >1k g·m`;
+    el.profileSub.textContent = matched.length
+      ? `Found ${matched.length} matching intercepts in the universe — green halos. Your saved holes (sharp diamonds) plot on top.`
+      : `No "${projName}" matches in the universe (${universeN.toLocaleString()} intercepts loaded). Your saved holes plot as green diamonds on top.`;
   }
-  const above100 = projHoles.filter(h => (h.hole_gm||0) > 100).length;
-  let stage = null;
-  if (above100 >= 80)      stage = 'fs';
-  else if (above100 >= 30) stage = 'pfs';
-  else if (above100 >= 15) stage = 'pea';
-  else if (above100 >= 5)  stage = 'scoping';
-  else if (above100 >= 1)  stage = 'discovery';
-  [...el.stageRow.children].forEach(c => c.classList.toggle('on', c.dataset.stage === stage));
-}
+  if (el.matchPill) el.matchPill.style.display = matched.length ? 'inline-flex' : 'none';
 
-// Render deposit pills (visible only when overlay is on)
-function renderDepositPills() {
-  if (!DEPOSIT_PROFILES.length) {
-    el.depositPills.innerHTML = '';
-    return;
-  }
-  el.depositPills.innerHTML = DEPOSIT_PROFILES.map(p =>
-    `<span class="legend-pill-dep" style="color:${p.color || '#8a8773'}">${escapeHtml(p.name)}</span>`
-  ).join('');
-  el.depositPills.style.display = overlayOn ? 'contents' : 'none';
+  // Stage indicator
+  const above100Stage = projHoles.filter(h => (h.hole_gm||0) > 100).length;
+  let stage = null;
+  if (above100Stage >= 80)      stage = 'fs';
+  else if (above100Stage >= 30) stage = 'pfs';
+  else if (above100Stage >= 15) stage = 'pea';
+  else if (above100Stage >= 5)  stage = 'scoping';
+  else if (above100Stage >= 1)  stage = 'discovery';
+  [...el.stageRow.children].forEach(c => c.classList.toggle('on', c.dataset.stage === stage));
 }
 
 // ─── Saved holes (localStorage) ─────────────────────────────
@@ -1484,18 +1512,20 @@ async function init() {
       if (Array.isArray(j) && j.length) BENCHMARKS = j;
     }
   } catch (e) { /* keep fallback */ }
-  // Fetch deposit profiles
+  // Fetch drilling universe (KDE-ready intercepts + per-commodity contours)
   try {
-    const r = await fetch('deposit_profiles.json', {cache:'no-store'});
+    const r = await fetch('drill_universe.json', {cache:'no-store'});
     if (r.ok) {
       const j = await r.json();
-      if (Array.isArray(j)) DEPOSIT_PROFILES = j;
+      if (j && Array.isArray(j.intercepts)) UNIVERSE = j;
     }
   } catch (e) { /* keep empty */ }
   el.benchCount.textContent = BENCHMARKS.length + ' holes';
-  el.profileCount.textContent = DEPOSIT_PROFILES.length;
+  const uN = (UNIVERSE.intercepts || []).length;
+  el.profileCount.textContent = uN
+    ? `${uN.toLocaleString()} intercepts / ${(UNIVERSE.projects||[]).length.toLocaleString()} projects`
+    : '—';
   rebuildChartDatasets();
-  renderDepositPills();
   // Seed first intercept
   el.interceptStack.appendChild(buildInterceptCard({active:true}));
   renderSaved();
