@@ -441,7 +441,12 @@ table.sens tbody tr.proj-divider td{background:var(--bg-3);padding:5px 14px;text
 
     <!-- Top projects table -->
     <div class="card">
-      <div class="card-h">Top projects in universe <span class="meta" id="projTableMeta">sortable · click row to highlight</span></div>
+      <div class="card-h">Top projects in universe
+        <span style="display:flex;gap:10px;align-items:center;margin-left:auto">
+          <button class="legend-toggle" id="scopeToggle" title="Filter chart cloud + KDE to just the projects visible in this table">Scope chart to table</button>
+          <span class="meta" id="projTableMeta">sortable · click row to highlight</span>
+        </span>
+      </div>
       <div class="card-b" style="padding:0;overflow-x:auto">
         <table class="sens" id="projTable">
           <thead>
@@ -1144,6 +1149,50 @@ const enabledCommodities = new Set(COMMODITY_LIST);
 let minGm = 0;
 let projectStats = [];   // computed once on init
 let tableSort = {col:'n', dir:'desc'};
+let scopeToTable = false;
+let scopedProjects = new Set();        // recomputed from visible-table rows when scope is on
+let scopedInterceptCounts = {};        // commodity -> # filtered intercepts (for subtitle)
+
+// Gaussian envelope on log10(width) x log10(grade). Replaces precomputed
+// scipy KDE contours when "Scope chart to table" is on. For a 2D Gaussian,
+// the level-set f(x) = k forms an ellipse; semi-axes scale by k_sigma where
+// k_sigma = sqrt(-2 ln(1 - fraction)). 50% mass -> ~1.177σ, 80% -> ~1.794σ.
+function gaussianEnvelope(points, fraction) {
+  if (points.length < 6) return null;
+  const n = points.length;
+  let sx = 0, sy = 0;
+  for (const [x,y] of points) { sx += x; sy += y; }
+  const mx = sx / n, my = sy / n;
+  let cxx = 0, cyy = 0, cxy = 0;
+  for (const [x,y] of points) {
+    const dx = x - mx, dy = y - my;
+    cxx += dx*dx; cyy += dy*dy; cxy += dx*dy;
+  }
+  cxx /= n; cyy /= n; cxy /= n;
+  // Eigenvalues of [[cxx,cxy],[cxy,cyy]] — real, since matrix is symmetric
+  const tr = cxx + cyy;
+  const det = cxx*cyy - cxy*cxy;
+  const disc = Math.sqrt(Math.max(0, tr*tr/4 - det));
+  const l1 = Math.max(0, tr/2 + disc);
+  const l2 = Math.max(0, tr/2 - disc);
+  const angle = Math.atan2(2*cxy, cxx - cyy) / 2;
+  const kSigma = Math.sqrt(Math.max(0, -2 * Math.log(1 - fraction)));
+  const a = kSigma * Math.sqrt(l1);
+  const b = kSigma * Math.sqrt(l2);
+  if (!isFinite(a) || !isFinite(b) || a <= 0 || b <= 0) return null;
+  const ca = Math.cos(angle), sa = Math.sin(angle);
+  const pts = [];
+  const N = 48;
+  for (let i = 0; i <= N; i++) {
+    const t = 2 * Math.PI * i / N;
+    const ex = a * Math.cos(t);
+    const ey = b * Math.sin(t);
+    const lx = mx + ex * ca - ey * sa;
+    const ly = my + ex * sa + ey * ca;
+    pts.push([Math.pow(10, lx), Math.pow(10, ly)]);
+  }
+  return pts;
+}
 
 el.overlayToggle.addEventListener('click', () => {
   contoursOn = !contoursOn;
@@ -1157,12 +1206,11 @@ document.querySelectorAll('.commodity-toggle').forEach(btn => {
     const c = btn.dataset.c;
     if (enabledCommodities.has(c)) { enabledCommodities.delete(c); btn.classList.remove('on'); btn.classList.add('off'); }
     else { enabledCommodities.add(c); btn.classList.add('on'); btn.classList.remove('off'); }
-    renderProfile();
-    renderProjectTable();
+    renderAll();
   });
 });
 
-// Min g·m slider
+// Min g·m slider (doesn't change scope, only chart cloud rendering)
 const minGmSlider = document.getElementById('minGmSlider');
 const minGmVal = document.getElementById('minGmVal');
 minGmSlider.addEventListener('input', () => {
@@ -1175,13 +1223,11 @@ minGmSlider.addEventListener('input', () => {
 const projSearch = document.getElementById('projSearch');
 projSearch.addEventListener('input', () => {
   el.projName.value = projSearch.value;
-  renderProfile();
-  renderProjectTable();
+  renderAll();
 });
 projSearch.addEventListener('change', () => {
   el.projName.value = projSearch.value;
-  renderProfile();
-  renderProjectTable();
+  renderAll();
 });
 
 // Filter reset
@@ -1193,10 +1239,11 @@ document.getElementById('filterReset').addEventListener('click', () => {
   minGmVal.textContent = '0';
   contoursOn = true;
   el.overlayToggle.classList.add('on');
+  scopeToTable = false;
+  document.getElementById('scopeToggle').classList.remove('on');
   projSearch.value = '';
   el.projName.value = '';
-  renderProfile();
-  renderProjectTable();
+  renderAll();
 });
 
 function clampPt(x, y) {
@@ -1223,57 +1270,70 @@ function renderProfile() {
     });
   });
 
-  // KDE contours per commodity (filtered by enabled commodities + global toggle).
-  if (contoursOn && UNIVERSE.kde_contours) {
-    COMMODITY_LIST.forEach(c => {
-      if (!enabledCommodities.has(c)) return;
-      const info = UNIVERSE.kde_contours[c];
-      if (!info) return;
-      const pal = COMMODITY_PALETTE[c];
-      ['80','50'].forEach(level => {
-        const polys = info.contours[level];
-        if (!polys) return;
-        const isInner = level === '50';
-        polys.forEach(poly => {
-          const data = poly.map(([x,y]) => clampPt(x,y));
-          datasets.push({
-            type:'line', data,
-            borderColor: pal.border,
-            backgroundColor: isInner ? pal.fill : 'transparent',
-            borderWidth: isInner ? 1.4 : 0.8,
-            borderDash: isInner ? [] : [3,3],
-            fill: isInner,
-            pointRadius: 0, pointHoverRadius: 0, tension: 0.25,
-          });
-        });
-      });
-    });
-  }
-
-  // Background cloud — split universe into matched / unmatched, group unmatched by commodity.
-  // Honor commodity toggle + min g·m filter. Matched halos always show (explicit search).
+  // First pass: walk universe, classify each intercept (in-scope / matched / unmatched-by-commodity).
+  // Also collect per-commodity log-space point sets for live envelope recompute when scope is on.
   const matched = [];
   const unmatchedByC = {};
-  COMMODITY_LIST.forEach(c => unmatchedByC[c] = []);
+  const logPtsByC = {};            // for live envelope when scope is on
+  COMMODITY_LIST.forEach(c => { unmatchedByC[c] = []; logPtsByC[c] = []; });
   let cloudShown = 0, cloudTotal = 0;
+  scopedInterceptCounts = {};
   (UNIVERSE.intercepts || []).forEach(([p, c, w, g]) => {
     if (!isFinite(w) || !isFinite(g) || w <= 0 || g <= 0) return;
     cloudTotal++;
     const gm = w * g;
     const isMatched = projNameLc && p && p.toLowerCase() === projNameLc;
+    const inScope = scopeToTable ? (p && scopedProjects.has(p)) : true;
     const key = COMMODITY_LIST.includes(c) ? c : 'Other';
     const pt = clampPt(w, g);
     pt.meta = {project:p || '(no project)', commodity:c, width:w, grade:g, gm, is_universe:true};
     if (isMatched) {
       matched.push(pt);
       cloudShown++;
-      return;
+    } else if (inScope && enabledCommodities.has(key) && gm >= minGm) {
+      cloudShown++;
+      unmatchedByC[key].push(pt);
     }
-    if (!enabledCommodities.has(key)) return;
-    if (gm < minGm) return;
-    cloudShown++;
-    unmatchedByC[key].push(pt);
+    // Envelope source: scoped intercepts (commodity + min-gm filtered), regardless of matched flag,
+    // so the user's project still contributes to its own commodity's envelope.
+    if (inScope && enabledCommodities.has(key) && gm >= minGm) {
+      logPtsByC[key].push([Math.log10(w), Math.log10(g)]);
+      scopedInterceptCounts[key] = (scopedInterceptCounts[key] || 0) + 1;
+    }
   });
+
+  // KDE contours (filtered by enabled commodities + global toggle).
+  // Source: precomputed scipy KDE when scope is off, live Gaussian envelope when scope is on.
+  if (contoursOn) {
+    COMMODITY_LIST.forEach(c => {
+      if (!enabledCommodities.has(c)) return;
+      const pal = COMMODITY_PALETTE[c];
+      let outer = null, inner = null;
+      if (scopeToTable) {
+        outer = gaussianEnvelope(logPtsByC[c], 0.80);
+        inner = gaussianEnvelope(logPtsByC[c], 0.50);
+      } else {
+        const info = UNIVERSE.kde_contours && UNIVERSE.kde_contours[c];
+        if (info) {
+          outer = (info.contours['80'] && info.contours['80'][0]) || null;
+          inner = (info.contours['50'] && info.contours['50'][0]) || null;
+        }
+      }
+      [{poly:outer, isInner:false}, {poly:inner, isInner:true}].forEach(({poly, isInner}) => {
+        if (!poly || poly.length < 4) return;
+        const data = poly.map(([x,y]) => clampPt(x,y));
+        datasets.push({
+          type:'line', data,
+          borderColor: pal.border,
+          backgroundColor: isInner ? pal.fill : 'transparent',
+          borderWidth: isInner ? 1.4 : 0.8,
+          borderDash: isInner ? [] : [3,3],
+          fill: isInner,
+          pointRadius: 0, pointHoverRadius: 0, tension: 0.25,
+        });
+      });
+    });
+  }
   COMMODITY_LIST.forEach(c => {
     if (!unmatchedByC[c].length) return;
     const pal = COMMODITY_PALETTE[c];
@@ -1330,10 +1390,11 @@ function renderProfile() {
       ? `Found ${matched.length} matching intercepts in the universe — green halos (always shown, ignore commodity / g·m filters). Your saved holes plot on top as bright diamonds.`
       : `No "${projName}" matches in the universe (${universeN.toLocaleString()} loaded). Your saved holes plot as green diamonds on top.`;
   }
+  if (scopeToTable) {
+    const scopedTotal = Object.values(scopedInterceptCounts).reduce((s,v)=>s+v, 0);
+    el.profileSub.textContent = `Scope: ${scopedProjects.size} projects from table · ${scopedTotal.toLocaleString()} intercepts after filters · KDE recomputed live as Gaussian envelope (50% solid / 80% dashed) on log10(width) × log10(grade).`;
+  }
   if (el.matchPill) el.matchPill.style.display = matched.length ? 'inline-flex' : 'none';
-
-  // Re-render table to track matched-row highlight
-  renderProjectTable();
 
   // Stage indicator
   const above100Stage = projHoles.filter(h => (h.hole_gm||0) > 100).length;
@@ -1426,6 +1487,22 @@ function renderProjectTable() {
   });
 }
 
+// Recompute the set of project names currently visible in the table.
+// Scope = top 50 after commodity filter + sort — same logic as renderProjectTable.
+function recomputeScopedProjects() {
+  if (!scopeToTable) { scopedProjects = new Set(); return; }
+  const filtered = projectStats.filter(p => enabledCommodities.has(p.primary));
+  const sorted = sortProjectStats(filtered);
+  scopedProjects = new Set(sorted.slice(0, 50).map(p => p.name));
+}
+
+// Render-pipeline orchestrator. Recompute scope, then redraw table + chart.
+function renderAll() {
+  recomputeScopedProjects();
+  renderProjectTable();
+  renderProfile();
+}
+
 // Sortable headers (delegated, attached once on init)
 function wireProjectTableHeaders() {
   document.querySelectorAll('#projTable th.sortable').forEach(th => {
@@ -1438,10 +1515,17 @@ function wireProjectTableHeaders() {
         // numeric columns default to descending; text columns to ascending
         tableSort.dir = ['n','best','median','above100','above1k'].includes(col) ? 'desc' : 'asc';
       }
-      renderProjectTable();
+      renderAll();
     });
   });
 }
+
+// Scope toggle handler
+document.getElementById('scopeToggle').addEventListener('click', () => {
+  scopeToTable = !scopeToTable;
+  document.getElementById('scopeToggle').classList.toggle('on', scopeToTable);
+  renderAll();
+});
 
 // Click a project row → drop into project name field, trigger highlight everywhere
 document.getElementById('projTableBody').addEventListener('click', e => {
@@ -1450,8 +1534,7 @@ document.getElementById('projTableBody').addEventListener('click', e => {
   const name = row.dataset.name;
   el.projName.value = name;
   document.getElementById('projSearch').value = name;
-  renderProfile();
-  renderProjectTable();
+  renderAll();
 });
 
 // ─── Saved holes (localStorage) ─────────────────────────────
@@ -1703,8 +1786,8 @@ function recomputeNow() {
   setUserPoints(activeIc, others);
 }
 
-// Project name change → re-render profile
-el.projName.addEventListener('input', () => { renderProfile(); });
+// Project name change → re-render profile + table (matched-row highlight follows)
+el.projName.addEventListener('input', () => { renderAll(); });
 
 // ─── Examples / clear ───────────────────────────────────────
 el.exFost.addEventListener('click', () => {
@@ -1723,7 +1806,7 @@ el.exFost.addEventListener('click', () => {
     ],
   }));
   recompute();
-  renderProfile();
+  renderAll();
 });
 el.clearBtn.addEventListener('click', () => {
   el.projName.value = '';
@@ -1732,7 +1815,7 @@ el.clearBtn.addEventListener('click', () => {
   el.interceptStack.innerHTML = '';
   el.interceptStack.appendChild(buildInterceptCard({active:true}));
   recompute();
-  renderProfile();
+  renderAll();
 });
 
 // ─── Init ───────────────────────────────────────────────────
@@ -1766,7 +1849,7 @@ async function init() {
   // Seed first intercept
   el.interceptStack.appendChild(buildInterceptCard({active:true}));
   renderSaved();
-  renderProfile();
+  renderAll();
   recompute();
 }
 init();
