@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drill Intercept Calculator / Zovlyn Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #0c0d0a; --bg-2: #131410; --bg-3: #1a1c16;
+  --line: #2a2c24; --line-2: #3a3d33;
+  --fg: #d8d4c2; --fg-2: #8a8773; --fg-3: #5d5b4d;
+  --accent: #5dd3a8; --accent-2: #3aa881; --accent-dim: rgba(93,211,168,0.10); --accent-soft: rgba(93,211,168,0.18);
+  --green: #5dd380; --amber: #e8b658; --red: #ff5f56; --cyan: #6acfe0;
+  --r: 4px;
+  --mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--mono);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+/* ─── Page chrome (system standard) ─── */
+.t-top{background:var(--bg-2);border-bottom:1px solid var(--line);padding:8px 24px;display:flex;align-items:center;gap:24px;font-size:11px;color:var(--fg-2);flex-wrap:wrap}
+.t-top .session{color:var(--accent);font-weight:600}
+.t-spacer{flex:1}
+.t-nav{padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:12px}
+.t-mark{display:flex;align-items:center;gap:12px}
+.t-badge{width:32px;height:32px;background:var(--accent);color:var(--bg);display:grid;place-items:center;font-weight:800;font-size:16px;border-radius:var(--r)}
+.t-mark-text{display:flex;flex-direction:column;line-height:1.05}
+.t-mark-name{font-weight:700;font-size:13px;color:var(--fg);letter-spacing:0.14em}
+.t-mark-sub{font-size:9.5px;color:var(--fg-3);letter-spacing:0.22em;font-weight:500}
+.t-nav-r{display:flex;gap:18px;font-size:11px;color:var(--fg-2);align-items:center}
+.t-nav-r a{color:var(--fg-2);letter-spacing:0.08em;text-transform:uppercase;transition:color .15s}
+.t-nav-r a:hover{color:var(--accent)}
+.t-nav-r a.home::before{content:'← '}
+
+/* ─── Cover ─── */
+.cover{max-width:1280px;margin:0 auto;padding:36px 24px 24px;border-bottom:1px solid var(--line)}
+.cover .tags{display:flex;gap:12px;flex-wrap:wrap;font-size:10.5px;color:var(--fg-3);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px}
+.cover .tags .accent{color:var(--accent)}
+.cover .tags .sep{color:var(--line-2)}
+.cover h1{font-weight:500;font-size:clamp(28px,4.5vw,44px);line-height:1.05;letter-spacing:-0.025em;color:var(--fg);margin-bottom:10px}
+.cover h1 .accent{color:var(--accent)}
+.cover .sub{font-family:var(--sans);font-size:15px;color:var(--fg-2);max-width:680px;line-height:1.55;margin-bottom:18px}
+.cover .meta{display:flex;gap:24px;flex-wrap:wrap;font-size:10.5px;color:var(--fg-3);letter-spacing:0.06em;padding-top:12px;border-top:1px dashed var(--line-2)}
+.cover .meta strong{color:var(--fg);font-weight:500}
+
+/* ─── Calculator shell ─── */
+.calc{max-width:1280px;margin:0 auto;padding:28px 24px 60px;display:grid;grid-template-columns:340px 1fr;gap:20px}
+@media (max-width:920px){.calc{grid-template-columns:1fr}}
+
+/* ─── Cards ─── */
+.card{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r)}
+.card-h{padding:12px 16px;border-bottom:1px dashed var(--line-2);font-size:10.5px;color:var(--accent);text-transform:uppercase;letter-spacing:0.14em;font-weight:600;display:flex;align-items:center;justify-content:space-between}
+.card-h::before{content:'▸ '}
+.card-h .meta{font-size:9.5px;color:var(--fg-3);letter-spacing:0.1em;font-weight:500}
+.card-b{padding:16px}
+
+/* ─── Inputs panel ─── */
+.controls .group{padding:14px 0;border-bottom:1px dashed var(--line-2)}
+.controls .group:last-child{border-bottom:none;padding-bottom:0}
+.controls .group:first-child{padding-top:0}
+.controls .group-h{font-size:10px;color:var(--fg-3);letter-spacing:0.14em;text-transform:uppercase;font-weight:600;margin-bottom:10px}
+.lbl{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}
+.lbl-name{font-size:10px;color:var(--fg-3);letter-spacing:0.14em;text-transform:uppercase;font-weight:600}
+.lbl-val{font-size:13px;color:var(--accent);font-feature-settings:'tnum';font-weight:600}
+.t-input,.t-select{background:var(--bg);border:1px solid var(--line-2);color:var(--fg);padding:9px 12px;font-family:var(--mono);font-size:13px;font-weight:600;border-radius:var(--r);width:100%;outline:none;transition:border-color .15s;font-feature-settings:'tnum'}
+.t-input:focus,.t-select:focus{border-color:var(--accent)}
+.t-input::placeholder{color:var(--fg-3)}
+.t-textarea{background:var(--bg);border:1px solid var(--line-2);color:var(--fg);padding:9px 12px;font-family:var(--mono);font-size:12px;border-radius:var(--r);width:100%;outline:none;resize:vertical;min-height:48px}
+.t-textarea:focus{border-color:var(--accent)}
+input[type=range].t-range{width:100%;accent-color:var(--accent);height:18px}
+.range-cap{font-size:9.5px;color:var(--fg-3);letter-spacing:0.08em;display:flex;justify-content:space-between;margin-top:4px;font-feature-settings:'tnum'}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.t-btn{font-size:11.5px;font-weight:600;padding:9px 14px;cursor:pointer;border-radius:var(--r);letter-spacing:0.06em;display:inline-flex;align-items:center;gap:6px;transition:all .15s;border:1px solid transparent;font-family:var(--mono)}
+.t-btn-s{background:transparent;color:var(--fg-2);border-color:var(--line-2);width:100%;justify-content:center;text-transform:uppercase}
+.t-btn-s:hover{color:var(--accent);border-color:var(--accent)}
+.t-btn-p{background:var(--accent);color:var(--bg);width:100%;justify-content:center;text-transform:uppercase;border-color:var(--accent)}
+.t-btn-p:hover{background:var(--accent-2);border-color:var(--accent-2)}
+
+/* ─── Metals table ─── */
+.metals-h{display:grid;grid-template-columns:54px 1fr 56px 1fr 60px 22px;gap:6px;font-size:9px;color:var(--fg-3);letter-spacing:0.1em;text-transform:uppercase;font-weight:600;padding:0 2px 6px}
+.metal-row{display:grid;grid-template-columns:54px 1fr 56px 1fr 60px 22px;gap:6px;align-items:center;margin-bottom:6px}
+.metal-row .m-input{background:var(--bg);border:1px solid var(--line-2);color:var(--fg);padding:6px 6px;font-family:var(--mono);font-size:11.5px;font-weight:600;border-radius:var(--r);width:100%;outline:none;font-feature-settings:'tnum';min-width:0}
+.metal-row .m-input:focus{border-color:var(--accent)}
+.metal-row.dim .m-input{color:var(--fg-3)}
+.metal-row.dim select.m-input{color:var(--fg-2)}
+.metal-row select.m-input{cursor:pointer}
+.metal-rm{background:transparent;border:1px solid var(--line-2);color:var(--fg-3);width:22px;height:26px;cursor:pointer;border-radius:var(--r);font-size:13px;line-height:1;display:grid;place-items:center;padding:0;font-family:var(--mono)}
+.metal-rm:hover{color:var(--red);border-color:var(--red)}
+.metal-rm:disabled{opacity:0.25;cursor:not-allowed}
+.btn-add{margin-top:6px;background:transparent;border:1px dashed var(--line-2);color:var(--fg-3);padding:7px;font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;border-radius:var(--r);width:100%;cursor:pointer;transition:all .15s}
+.btn-add:hover{color:var(--accent);border-color:var(--accent)}
+
+/* ─── Results panel ─── */
+.results{display:flex;flex-direction:column;gap:20px}
+
+/* KPI strip */
+.kpi-strip{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;border:1px solid var(--line);border-radius:var(--r);background:var(--line);gap:1px;overflow:hidden}
+@media (max-width:720px){.kpi-strip{grid-template-columns:1fr 1fr}}
+.kpi{background:var(--bg-2);padding:18px 18px;display:flex;flex-direction:column;gap:6px;justify-content:space-between;min-height:96px;position:relative}
+.kpi.hero{background:linear-gradient(180deg,var(--bg-2) 0%,#161812 100%)}
+.kpi.hero::after{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent)}
+.kpi-l{font-size:9.5px;color:var(--fg-3);text-transform:uppercase;letter-spacing:0.14em;font-weight:500}
+.kpi-v{font-size:30px;font-weight:600;color:var(--fg);font-feature-settings:'tnum';letter-spacing:-0.02em;line-height:1.05}
+.kpi-v.hl{color:var(--accent)}
+.kpi-v.amber{color:var(--amber)}
+.kpi-v.dim{color:var(--fg-2)}
+.kpi.hero .kpi-v{font-size:42px}
+.kpi-sub{font-size:10px;color:var(--fg-3);letter-spacing:0.04em;font-feature-settings:'tnum'}
+.kpi-sub .accent{color:var(--accent)}
+.kpi-eq{font-size:9.5px;color:var(--fg-3);letter-spacing:0.04em;font-family:var(--mono);font-feature-settings:'tnum'}
+
+/* ─── Chart card ─── */
+.chart-wrap{height:300px;position:relative}
+.chart-wrap-tall{height:440px;position:relative}
+@media (max-width:720px){.chart-wrap-tall{height:340px}}
+.legend-pills{display:flex;gap:8px;flex-wrap:wrap;padding:0 0 10px}
+.legend-pill{font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;color:var(--fg-2);display:inline-flex;align-items:center;gap:6px}
+.legend-pill::before{content:'';width:10px;height:10px;border-radius:50%;background:var(--cyan)}
+.legend-pill.user::before{background:var(--accent);width:12px;height:12px;border-radius:50%}
+.legend-pill.iso::before{background:transparent;border-top:1px dashed var(--fg-3);width:14px;height:0;border-radius:0}
+
+/* ─── Tables ─── */
+table.sens{width:100%;border-collapse:collapse;font-size:12px;font-feature-settings:'tnum'}
+table.sens thead th{padding:9px 14px;text-align:right;background:var(--bg-3);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--fg-3);border-bottom:1px solid var(--line)}
+table.sens thead th:first-child{text-align:left}
+table.sens tbody td{padding:7px 14px;border-bottom:1px solid var(--line);color:var(--fg-2);text-align:right}
+table.sens tbody td:first-child{text-align:left;color:var(--fg);font-weight:600}
+table.sens tbody tr:last-child td{border-bottom:none}
+table.sens tbody tr:hover td{background:var(--bg-3);color:var(--fg)}
+table.sens tbody tr.active td{background:var(--accent-dim);color:var(--fg)}
+.share-bar{display:inline-block;height:6px;background:var(--accent);border-radius:1px;vertical-align:middle;margin-left:6px;min-width:1px;max-width:80px}
+
+.bench-actions{display:flex;gap:4px;justify-content:flex-end}
+.bench-act-btn{background:transparent;border:1px solid var(--line-2);color:var(--fg-3);padding:3px 8px;font-family:var(--mono);font-size:9.5px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;border-radius:var(--r);cursor:pointer;transition:all .15s}
+.bench-act-btn:hover{color:var(--accent);border-color:var(--accent)}
+.bench-act-btn.del:hover{color:var(--red);border-color:var(--red)}
+.empty-state{font-family:var(--sans);font-size:13px;color:var(--fg-3);text-align:center;padding:24px 16px}
+
+/* ─── Footnotes ─── */
+.fn{font-family:var(--sans);font-size:12px;color:var(--fg-3);line-height:1.55}
+.fn p{margin-bottom:6px}
+.fn p strong{color:var(--fg-2);font-weight:600}
+
+/* Footer */
+.foot{border-top:1px solid var(--line);padding:24px;font-size:10.5px;color:var(--fg-3);letter-spacing:0.06em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;max-width:1280px;margin:0 auto}
+.foot a{color:var(--accent)}
+
+/* Reveal */
+.reveal{opacity:1;transform:none;transition:opacity .5s ease,transform .5s ease}
+</style>
+</head>
+<body>
+
+<!-- Status bar -->
+<div class="t-top">
+  <span class="session" id="t-session">SESSION 00:00:00</span>
+  <span>TOOL · DRILL INTERCEPT CALC</span>
+  <span>VERSION · 1.0</span>
+  <span class="t-spacer"></span>
+  <span id="t-clock">10-MAY-2026 · 11:42 EDT</span>
+</div>
+
+<!-- Nav -->
+<div class="t-nav">
+  <a href="index.html" class="t-mark">
+    <div class="t-badge">Z</div>
+    <div class="t-mark-text">
+      <div class="t-mark-name">ZOVLYN</div>
+      <div class="t-mark-sub">RESEARCH</div>
+    </div>
+  </a>
+  <div class="t-nav-r">
+    <a href="index.html" class="home">ALL TOOLS</a>
+    <a href="lithium_screener.html">SCREENER</a>
+    <a href="lce_converter.html">LCE CONVERTER</a>
+    <a href="system.html">SYSTEM</a>
+  </div>
+</div>
+
+<!-- Cover -->
+<header class="cover reveal">
+  <div class="tags">
+    <span class="accent">// ZOVLYN/CALCULATOR</span><span class="sep">│</span>
+    <span>EXPLORATION · DRILLING</span><span class="sep">│</span>
+    <span>UPDATED 2026-05-10</span>
+  </div>
+  <h1><span class="accent">Drill</span> Intercept Calculator</h1>
+  <p class="sub">Compute Au-equivalent grade and gram-meters for any drill intercept, then rank it against world-class benchmarks. NI 43-101 / JORC equivalence formula. Editable prices and recoveries per metal. Commodity-agnostic.</p>
+  <div class="meta">
+    <span>INPUTS · <strong>2 + N metals</strong></span>
+    <span>OUTPUTS · <strong>5</strong></span>
+    <span>BASIS · <strong>NI 43-101 AuEq</strong></span>
+    <span>BENCHMARKS · <strong id="benchCount">…</strong></span>
+  </div>
+</header>
+
+<!-- Calculator -->
+<div class="calc">
+
+  <!-- Controls -->
+  <aside class="card controls reveal">
+    <div class="card-h">Inputs <span class="meta">geometry + metals</span></div>
+    <div class="card-b">
+
+      <div class="group">
+        <div class="group-h">Geometry</div>
+        <div class="row2">
+          <div>
+            <div class="lbl"><span class="lbl-name">From (m)</span></div>
+            <input id="fromM" class="t-input" type="number" step="0.1" value="0" inputmode="decimal">
+          </div>
+          <div>
+            <div class="lbl"><span class="lbl-name">To (m)</span></div>
+            <input id="toM" class="t-input" type="number" step="0.1" value="10" inputmode="decimal">
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <div class="lbl">
+            <span class="lbl-name">True width</span>
+            <span class="lbl-val" id="twPctVal">80%</span>
+          </div>
+          <input id="twPct" class="t-range" type="range" min="10" max="100" step="1" value="80">
+          <div class="range-cap"><span>10%</span><span>100% (parallel)</span></div>
+          <div class="kpi-eq" style="margin-top:6px">downhole <span id="dhLen" style="color:var(--fg-2)">10.00 m</span> · TW <span id="twM" style="color:var(--accent)">8.00 m</span></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-h">Metals · grade × price × recovery</div>
+        <div class="metals-h">
+          <span>Metal</span>
+          <span>Grade</span>
+          <span>Unit</span>
+          <span>Price</span>
+          <span>Rec %</span>
+          <span></span>
+        </div>
+        <div id="metalsBody"></div>
+        <button class="btn-add" id="addMetal">+ Add metal</button>
+      </div>
+
+      <div class="group">
+        <div class="group-h">Save intercept</div>
+        <input id="projName" class="t-input" type="text" placeholder="Project · Hole ID" style="margin-bottom:8px">
+        <textarea id="notes" class="t-textarea" placeholder="Notes (optional)"></textarea>
+        <button class="t-btn t-btn-p" id="saveBtn" style="margin-top:8px">💾 Save to local storage</button>
+      </div>
+
+      <div class="group">
+        <button class="t-btn t-btn-s" id="exFost" style="margin-bottom:6px">↻ Load Fosterville Swan example</button>
+        <button class="t-btn t-btn-s" id="clearBtn">↻ Clear all</button>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- Results -->
+  <section class="results reveal">
+
+    <!-- KPI strip -->
+    <div class="kpi-strip" id="kpis">
+      <div class="kpi hero">
+        <div class="kpi-l">Au-EQUIVALENT GRADE · <span id="auEqMetals" style="color:var(--fg-3)">— metals</span></div>
+        <div class="kpi-v hl" id="vAuEq">— g/t</div>
+        <div class="kpi-sub">across <span id="vMetalCount" class="accent">0</span> active metals · NI 43-101 weighted</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-l">True width</div>
+        <div class="kpi-v" id="vTrueW">— m</div>
+        <div class="kpi-eq">= L × TW%</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-l">Gram-meters</div>
+        <div class="kpi-v" id="vGm">—</div>
+        <div class="kpi-eq">= AuEq × TW</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-l">Rank vs benchmark</div>
+        <div class="kpi-v dim" id="vRank">—</div>
+        <div class="kpi-eq" id="vRankSub">enter intercept</div>
+      </div>
+    </div>
+
+    <!-- Per-metal contribution -->
+    <div class="card">
+      <div class="card-h">Per-metal contribution to AuEq <span class="meta">share of $/tonne</span></div>
+      <div class="card-b" style="padding:0;overflow-x:auto">
+        <table class="sens">
+          <thead>
+            <tr>
+              <th>Metal</th>
+              <th>Grade</th>
+              <th>$/t at recovery</th>
+              <th>AuEq contribution (g/t)</th>
+              <th>Share</th>
+            </tr>
+          </thead>
+          <tbody id="contribBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Benchmark scatter -->
+    <div class="card">
+      <div class="card-h">Benchmark scatter · world-class drill intercepts <span class="meta">log-log · iso-curves at 100/1k/5k/10k g·m</span></div>
+      <div class="card-b">
+        <div class="legend-pills">
+          <span class="legend-pill user">Your intercept</span>
+          <span class="legend-pill">Benchmark hole</span>
+          <span class="legend-pill iso">Iso-gram-meter curve</span>
+        </div>
+        <div class="chart-wrap-tall"><canvas id="benchChart"></canvas></div>
+        <div class="kpi-eq" style="margin-top:8px;color:var(--fg-2)">g·m = AuEq grade × true width · the universal cross-deposit ranking metric</div>
+      </div>
+    </div>
+
+    <!-- Saved intercepts -->
+    <div class="card">
+      <div class="card-h">Saved intercepts <span class="meta" id="savedMeta">localStorage · this browser</span></div>
+      <div class="card-b" style="padding:0;overflow-x:auto">
+        <table class="sens" id="savedTable">
+          <thead>
+            <tr>
+              <th>Project · Hole</th>
+              <th>Date</th>
+              <th>AuEq (g/t)</th>
+              <th>TW (m)</th>
+              <th>g·m</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="savedBody"></tbody>
+        </table>
+        <div id="savedEmpty" class="empty-state">No saved intercepts. Save your first one above — they persist in this browser only.</div>
+      </div>
+    </div>
+
+    <!-- Methodology -->
+    <div class="card">
+      <div class="card-h">Notes <span class="meta">methodology</span></div>
+      <div class="card-b fn">
+        <p><strong>1. AuEq formula.</strong> NI 43-101 / JORC standard: <em>AuEq = Σ(grade × price × recovery) / (Au_price × Au_recovery)</em>. Each metal row carries its own price and recovery — edit them to match your assumptions. Defaults: Au $2,400/oz @ 90%, Ag $28/oz @ 75%, Cu $4.20/lb @ 88%, Pb $0.95/lb @ 80%, Zn $1.30/lb @ 85%, Ni $8/lb @ 70%, Mo $20/lb @ 80%, Co $15/lb @ 65%, Sn $14/lb @ 72%, U₃O₈ $80/lb @ 90%.</p>
+        <p><strong>2. True width.</strong> The true-width slider is a multiplier on downhole length. If your hole is parallel to mineralisation set 100%; if you've already calculated it from hole-dip and structure-dip, enter the resulting %. No <code>cos α</code> calc here — that's a v2 add.</p>
+        <p><strong>3. Gram-meters (g·m).</strong> The universal cross-commodity ranking metric: <em>g·m = AuEq grade × true width</em>. A 100 g/t × 2 m epithermal hit and a 2 g/t × 100 m porphyry hit have identical g·m but completely different geological/economic stories — that's why the chart axes are grade and width, with iso-curves overlaid.</p>
+        <p><strong>4. Benchmark sourcing.</strong> 24 curated intercepts, mostly from public press releases and NI 43-101 reports. Holes marked <em>representative</em> use a typical best-hole intercept from the deposit rather than a specific verified hole — verify in the source filings before quoting. AuEq is recomputed at this tool's defaults; press-release AuEq may differ.</p>
+        <p><strong>5. Saved intercepts.</strong> Stored in your browser's localStorage under key <code>zovlyn_drill_intercepts</code>. Private to this browser; not synced. Clearing browser data or switching machines wipes the list. Export to JSON via devtools if you need a backup.</p>
+        <p><strong>6. Out of scope (v1).</strong> No raw-assay compositor (single intercept summary only), no NSR / smelter terms, no commodity-equivalent overlays besides Au, no true-width-from-angles calc. <em>Not investment advice.</em></p>
+      </div>
+    </div>
+
+  </section>
+</div>
+
+<div class="foot">
+  <div>ZOVLYN/CALCULATOR · DRILL-01 · v1.0 · NOT INVESTMENT ADVICE</div>
+  <div><a href="system.html">SYSTEM →</a> · <a href="index.html">← TOOLS</a></div>
+</div>
+
+<script>
+// ─── Clock + session ───
+(function(){
+  const clock=document.getElementById('t-clock'),session=document.getElementById('t-session');
+  const t0=Date.now(),mons=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function tick(){
+    const n=new Date();
+    clock.textContent=String(n.getDate()).padStart(2,'0')+'-'+mons[n.getMonth()]+'-'+n.getFullYear()+' · '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+' EDT';
+    const e=Math.floor((Date.now()-t0)/1000);
+    session.textContent='SESSION '+String(Math.floor(e/3600)).padStart(2,'0')+':'+String(Math.floor((e%3600)/60)).padStart(2,'0')+':'+String(e%60).padStart(2,'0');
+  }
+  tick();setInterval(tick,1000);
+})();
+
+// ─── Reveal ───
+(function(){
+  if(!('IntersectionObserver'in window)){document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));return;}
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.05});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+})();
+
+// ─── Chart.js defaults — system standard ───
+Chart.defaults.color='#8a8773';
+Chart.defaults.font.family="'JetBrains Mono', monospace";
+Chart.defaults.font.size=10.5;
+Chart.defaults.borderColor='rgba(58,61,51,0.5)';
+
+// ─── Metal defaults ─────────────────────────────────────────
+const DEFAULTS = {
+  Au:   {price:2400, priceUnit:'$/oz', recovery:90, gradeUnit:'g/t'},
+  Ag:   {price:28,   priceUnit:'$/oz', recovery:75, gradeUnit:'g/t'},
+  Cu:   {price:4.20, priceUnit:'$/lb', recovery:88, gradeUnit:'%'  },
+  Pb:   {price:0.95, priceUnit:'$/lb', recovery:80, gradeUnit:'%'  },
+  Zn:   {price:1.30, priceUnit:'$/lb', recovery:85, gradeUnit:'%'  },
+  Ni:   {price:8.00, priceUnit:'$/lb', recovery:70, gradeUnit:'%'  },
+  Mo:   {price:20.0, priceUnit:'$/lb', recovery:80, gradeUnit:'%'  },
+  Co:   {price:15.0, priceUnit:'$/lb', recovery:65, gradeUnit:'%'  },
+  Sn:   {price:14.0, priceUnit:'$/lb', recovery:72, gradeUnit:'%'  },
+  U3O8: {price:80.0, priceUnit:'$/lb', recovery:90, gradeUnit:'%'  },
+  custom:{price:0,   priceUnit:'$/lb', recovery:80, gradeUnit:'g/t'}
+};
+const SYM_LIST = ['Au','Ag','Cu','Pb','Zn','Ni','Mo','Co','Sn','U3O8','custom'];
+
+// ─── Inline benchmark fallback (file:// safe). Mirrors drill_benchmarks.json — keep in sync. ───
+const BENCHMARKS_FALLBACK = [
+  {id:"fosterville-swan-udh3167",project:"Fosterville · Swan Zone",operator:"Agnico Eagle",country:"Australia",year:2019,hole:"UDH3167",deposit_type:"Orogenic Au",true_width_m:7.4,auEq_gpt:976.0,gram_meters:7222,grades:[{sym:"Au",grade:976.0,unit:"g/t"}]},
+  {id:"fosterville-swan-udh3405",project:"Fosterville · Swan Zone",operator:"Agnico Eagle",country:"Australia",year:2019,hole:"UDH3405",deposit_type:"Orogenic Au",true_width_m:6.4,auEq_gpt:933.0,gram_meters:5971,grades:[{sym:"Au",grade:933.0,unit:"g/t"}]},
+  {id:"kiena-deep-a-2017",project:"Kiena · Deep A Zone",operator:"Wesdome",country:"Canada · QC",year:2017,hole:"VC17-1",deposit_type:"Orogenic Au",true_width_m:14.4,auEq_gpt:102.0,gram_meters:1469,grades:[{sym:"Au",grade:102.0,unit:"g/t"}]},
+  {id:"johnson-tract-jt19-082",project:"Johnson Tract",operator:"HighGold",country:"USA · AK",year:2019,hole:"JT19-082",deposit_type:"VMS Au",true_width_m:107.8,auEq_gpt:19.55,gram_meters:2107,grades:[{sym:"Au",grade:19.55,unit:"g/t"}]},
+  {id:"buritica-veta-sur-rep",project:"Buriticá · Veta Sur",operator:"Zijin",country:"Colombia",year:2017,hole:"BUSY364",deposit_type:"Epithermal Au",true_width_m:26.5,auEq_gpt:20.0,gram_meters:530,grades:[{sym:"Au",grade:20.0,unit:"g/t"}]},
+  {id:"contact-lake-cl26036",project:"Contact Lake",operator:"Stallion Discoveries",country:"Canada · SK",year:2026,hole:"CL26036",deposit_type:"Orogenic Au",true_width_m:51.83,auEq_gpt:15.11,gram_meters:783,grades:[{sym:"Au",grade:15.11,unit:"g/t"}]},
+  {id:"eagle-river-rep",project:"Eagle River",operator:"Wesdome",country:"Canada · ON",year:2018,hole:"rep.",deposit_type:"Orogenic Au",true_width_m:33.0,auEq_gpt:18.0,gram_meters:594,grades:[{sym:"Au",grade:18.0,unit:"g/t"}]},
+  {id:"obrien-radisson-2024-a",project:"O'Brien · Kewagama",operator:"Radisson",country:"Canada · QC",year:2024,hole:"OB-24-225",deposit_type:"Orogenic Au",true_width_m:3.7,auEq_gpt:89.36,gram_meters:331,grades:[{sym:"Au",grade:89.36,unit:"g/t"}]},
+  {id:"obrien-radisson-2024-b",project:"O'Brien · Kewagama",operator:"Radisson",country:"Canada · QC",year:2024,hole:"OB-24-227",deposit_type:"Orogenic Au",true_width_m:2.1,auEq_gpt:60.75,gram_meters:128,grades:[{sym:"Au",grade:60.75,unit:"g/t"}]},
+  {id:"goliath-surebet-2026-a",project:"Surebet · Golden Triangle",operator:"Goliath Resources",country:"Canada · BC",year:2026,hole:"GD-25",deposit_type:"Stacked vein",true_width_m:7.0,auEq_gpt:24.16,gram_meters:169,grades:[{sym:"Au",grade:24.16,unit:"g/t"}]},
+  {id:"goliath-surebet-2026-b",project:"Surebet · Golden Triangle",operator:"Goliath Resources",country:"Canada · BC",year:2026,hole:"GD-25",deposit_type:"Stacked vein",true_width_m:22.82,auEq_gpt:10.83,gram_meters:247,grades:[{sym:"Au",grade:10.83,unit:"g/t"}]},
+  {id:"emergent-west-santa-fe-2026",project:"West Santa Fe",operator:"Emergent Metals",country:"Mexico",year:2026,hole:"WSF-26-001",deposit_type:"Epithermal Au-Ag",true_width_m:36.6,auEq_gpt:3.11,gram_meters:114,grades:[{sym:"Au",grade:3.11,unit:"g/t"}]},
+  {id:"brucejack-vok-rep",project:"Brucejack · VOK",operator:"Newmont",country:"Canada · BC",year:2013,hole:"rep.",deposit_type:"Bonanza vein",true_width_m:6.0,auEq_gpt:41.0,gram_meters:246,grades:[{sym:"Au",grade:41.0,unit:"g/t"}]},
+  {id:"hemi-mallina-rep",project:"Hemi · Mallina",operator:"De Grey",country:"Australia",year:2021,hole:"rep.",deposit_type:"Intrusion-related Au",true_width_m:100.0,auEq_gpt:1.5,gram_meters:150,grades:[{sym:"Au",grade:1.5,unit:"g/t"}]},
+  {id:"detour-lake-rep",project:"Detour Lake",operator:"Agnico Eagle",country:"Canada · ON",year:2020,hole:"rep.",deposit_type:"Bulk Au",true_width_m:200.0,auEq_gpt:1.0,gram_meters:200,grades:[{sym:"Au",grade:1.0,unit:"g/t"}]},
+  {id:"sitka-rc-project-rep",project:"RC Project · Yukon",operator:"Sitka Gold",country:"Canada · YT",year:2024,hole:"rep.",deposit_type:"Intrusion-related Au",true_width_m:50.0,auEq_gpt:2.5,gram_meters:125,grades:[{sym:"Au",grade:2.5,unit:"g/t"}]},
+  {id:"sela-creek-2026-rep",project:"Sela Creek",operator:"Miata",country:"Suriname",year:2026,hole:"rep.",deposit_type:"Orogenic Au",true_width_m:20.0,auEq_gpt:5.0,gram_meters:100,grades:[{sym:"Au",grade:5.0,unit:"g/t"}]},
+  {id:"eskay-creek-109-rep",project:"Eskay Creek · 109 Zone",operator:"Skeena",country:"Canada · BC",year:1990,hole:"rep.",deposit_type:"VMS Au-Ag",true_width_m:27.0,auEq_gpt:72.36,gram_meters:1954,grades:[{sym:"Au",grade:50.0,unit:"g/t"},{sym:"Ag",grade:2300.0,unit:"g/t"}]},
+  {id:"palmer-cmr23-172",project:"Palmer Project",operator:"American Pacific",country:"USA · AK",year:2023,hole:"CMR23-172",deposit_type:"VMS Cu-Zn",true_width_m:43.8,auEq_gpt:8.78,gram_meters:385,grades:[{sym:"Cu",grade:6.54,unit:"%"},{sym:"Zn",grade:3.15,unit:"%"}]},
+  {id:"ksm-mitchell-rep",project:"KSM · Mitchell",operator:"Seabridge",country:"Canada · BC",year:2010,hole:"rep.",deposit_type:"Porphyry Cu-Au",true_width_m:350.0,auEq_gpt:1.07,gram_meters:374,grades:[{sym:"Au",grade:0.6,unit:"g/t"},{sym:"Cu",grade:0.4,unit:"%"}]},
+  {id:"oyu-tolgoi-hugo-dummett-rep",project:"Oyu Tolgoi · Hugo Dummett N",operator:"Rio Tinto",country:"Mongolia",year:2003,hole:"rep.",deposit_type:"Porphyry Cu-Au",true_width_m:200.0,auEq_gpt:2.46,gram_meters:492,grades:[{sym:"Cu",grade:1.5,unit:"%"},{sym:"Au",grade:0.7,unit:"g/t"}]},
+  {id:"cadia-east-rep",project:"Cadia East",operator:"Newmont",country:"Australia",year:2010,hole:"rep.",deposit_type:"Porphyry Cu-Au",true_width_m:180.0,auEq_gpt:0.78,gram_meters:140,grades:[{sym:"Au",grade:0.4,unit:"g/t"},{sym:"Cu",grade:0.32,unit:"%"}]},
+  {id:"nexgen-arrow-ar-15-44b",project:"Arrow · A2 Sub-Zone",operator:"NexGen",country:"Canada · SK",year:2015,hole:"AR-15-44b",deposit_type:"Unconformity U",true_width_m:56.5,auEq_gpt:262.9,gram_meters:14854,grades:[{sym:"U3O8",grade:11.5,unit:"%"}]},
+  {id:"fission-triple-r-r780e",project:"PLS · Triple R · R780E",operator:"Fission",country:"Canada · SK",year:2014,hole:"PLS14-129",deposit_type:"Unconformity U",true_width_m:12.6,auEq_gpt:270.4,gram_meters:3407,grades:[{sym:"U3O8",grade:11.83,unit:"%"}]}
+];
+
+let BENCHMARKS = BENCHMARKS_FALLBACK;
+const STORAGE_KEY = 'zovlyn_drill_intercepts';
+
+// ─── Element refs ───
+const el = {
+  fromM:   document.getElementById('fromM'),
+  toM:     document.getElementById('toM'),
+  twPct:   document.getElementById('twPct'),
+  twPctVal:document.getElementById('twPctVal'),
+  dhLen:   document.getElementById('dhLen'),
+  twM:     document.getElementById('twM'),
+  metalsBody: document.getElementById('metalsBody'),
+  addMetal: document.getElementById('addMetal'),
+  projName:document.getElementById('projName'),
+  notes:   document.getElementById('notes'),
+  saveBtn: document.getElementById('saveBtn'),
+  exFost:  document.getElementById('exFost'),
+  clearBtn:document.getElementById('clearBtn'),
+  vAuEq:   document.getElementById('vAuEq'),
+  vTrueW:  document.getElementById('vTrueW'),
+  vGm:     document.getElementById('vGm'),
+  vRank:   document.getElementById('vRank'),
+  vRankSub:document.getElementById('vRankSub'),
+  vMetalCount:document.getElementById('vMetalCount'),
+  contribBody: document.getElementById('contribBody'),
+  savedBody: document.getElementById('savedBody'),
+  savedEmpty: document.getElementById('savedEmpty'),
+  savedMeta: document.getElementById('savedMeta'),
+  benchCount: document.getElementById('benchCount'),
+};
+
+const fmt = (v,d=0) => isFinite(v) ? v.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}) : '—';
+const fmtSmart = v => v >= 100 ? fmt(v,0) : v >= 10 ? fmt(v,1) : fmt(v,2);
+
+// ─── Metal row builder ───────────────────────────────────────
+function buildMetalRow(spec, isFirst=false) {
+  const def = DEFAULTS[spec.sym] || DEFAULTS.custom;
+  const row = document.createElement('div');
+  row.className = 'metal-row';
+  row.innerHTML = `
+    <select class="m-input metal-sym">${SYM_LIST.map(s=>`<option value="${s}"${s===spec.sym?' selected':''}>${s==='U3O8'?'U₃O₈':s}</option>`).join('')}</select>
+    <input class="m-input metal-grade" type="number" step="0.01" inputmode="decimal" value="${spec.grade}">
+    <select class="m-input metal-unit">
+      <option value="g/t"${spec.unit==='g/t'?' selected':''}>g/t</option>
+      <option value="%"${spec.unit==='%'?' selected':''}>%</option>
+      <option value="oz/t"${spec.unit==='oz/t'?' selected':''}>oz/t</option>
+    </select>
+    <input class="m-input metal-price" type="number" step="0.01" inputmode="decimal" value="${spec.price}" title="${spec.priceUnit}">
+    <input class="m-input metal-rec" type="number" step="1" min="0" max="100" inputmode="decimal" value="${spec.recovery}">
+    <button class="metal-rm" title="Remove" ${isFirst?'disabled':''}>×</button>
+  `;
+  // priceUnit goes on data attr (no UI col for it — implicit by symbol)
+  row.dataset.priceUnit = spec.priceUnit;
+  // Symbol change: auto-fill defaults only if values still match the previous symbol's defaults
+  const symSel = row.querySelector('.metal-sym');
+  const gradeIn = row.querySelector('.metal-grade');
+  const unitSel = row.querySelector('.metal-unit');
+  const priceIn = row.querySelector('.metal-price');
+  const recIn   = row.querySelector('.metal-rec');
+  symSel.addEventListener('change', () => {
+    const newSym = symSel.value;
+    const oldSym = row.dataset.sym || spec.sym;
+    const oldDef = DEFAULTS[oldSym] || DEFAULTS.custom;
+    const newDef = DEFAULTS[newSym] || DEFAULTS.custom;
+    // Only overwrite if user hasn't customised the field
+    if (parseFloat(priceIn.value) === oldDef.price) priceIn.value = newDef.price;
+    if (parseFloat(recIn.value)   === oldDef.recovery) recIn.value   = newDef.recovery;
+    if (unitSel.value === oldDef.gradeUnit) unitSel.value = newDef.gradeUnit;
+    row.dataset.priceUnit = newDef.priceUnit;
+    row.dataset.sym = newSym;
+    priceIn.title = newDef.priceUnit;
+    recompute();
+  });
+  row.dataset.sym = spec.sym;
+  // Live recompute
+  [gradeIn, unitSel, priceIn, recIn].forEach(n => n.addEventListener('input', recompute));
+  // Remove
+  row.querySelector('.metal-rm').addEventListener('click', () => {
+    row.remove();
+    recompute();
+  });
+  return row;
+}
+
+function defaultMetalSeed() {
+  return [
+    {sym:'Au', grade:0, unit:'g/t', price:2400, priceUnit:'$/oz', recovery:90},
+    {sym:'Ag', grade:0, unit:'g/t', price:28,   priceUnit:'$/oz', recovery:75},
+    {sym:'Cu', grade:0, unit:'%',   price:4.20, priceUnit:'$/lb', recovery:88},
+    {sym:'Pb', grade:0, unit:'%',   price:0.95, priceUnit:'$/lb', recovery:80},
+    {sym:'Zn', grade:0, unit:'%',   price:1.30, priceUnit:'$/lb', recovery:85},
+  ];
+}
+
+function renderMetalsFrom(seed) {
+  el.metalsBody.innerHTML = '';
+  seed.forEach((s, i) => {
+    el.metalsBody.appendChild(buildMetalRow(s, i === 0));
+  });
+}
+
+el.addMetal.addEventListener('click', () => {
+  el.metalsBody.appendChild(buildMetalRow({sym:'custom', grade:0, unit:'g/t', price:0, priceUnit:'$/lb', recovery:80}, false));
+  recompute();
+});
+
+// ─── Read form state ─────────────────────────────────────────
+function readGeometry() {
+  const from = parseFloat(el.fromM.value) || 0;
+  const to   = parseFloat(el.toM.value) || 0;
+  const tw   = parseFloat(el.twPct.value) || 0;
+  const dh   = Math.max(0, to - from);
+  const trueW = dh * (tw / 100);
+  return {from, to, twPct:tw, dh, trueW};
+}
+function readMetals() {
+  const rows = [...el.metalsBody.querySelectorAll('.metal-row')];
+  return rows.map(r => ({
+    sym: r.querySelector('.metal-sym').value,
+    grade: parseFloat(r.querySelector('.metal-grade').value) || 0,
+    unit: r.querySelector('.metal-unit').value,
+    price: parseFloat(r.querySelector('.metal-price').value) || 0,
+    priceUnit: r.dataset.priceUnit || '$/lb',
+    recovery: parseFloat(r.querySelector('.metal-rec').value) || 0,
+  }));
+}
+
+// ─── AuEq math ───────────────────────────────────────────────
+function priceToGPerGram(price, unit) {
+  if (unit === '$/oz') return price / 31.1035;
+  if (unit === '$/lb') return price / 453.592;
+  return 0;
+}
+function gradeToGpt(grade, unit) {
+  if (unit === '%')    return grade * 10000;
+  if (unit === 'oz/t') return grade * 31.1035;
+  return grade;
+}
+function calcAuEq(rows) {
+  const norm = rows.map(r => ({
+    sym: r.sym,
+    grade_gpt: gradeToGpt(r.grade, r.unit),
+    pricePerGram: priceToGPerGram(r.price, r.priceUnit),
+    rec: (r.recovery || 0) / 100,
+  }));
+  const au = norm.find(r => r.sym === 'Au');
+  const auDenom = au ? (au.pricePerGram * au.rec) : 0;
+  if (!auDenom) return {auEq:0, contributions:[], auDenom:0};
+  const contribs = norm.map(r => {
+    const rev = r.grade_gpt * r.pricePerGram * r.rec;   // $/tonne
+    return {sym:r.sym, contrib_gpt: rev / auDenom, rev_per_t: rev, grade_gpt: r.grade_gpt};
+  });
+  const auEq = contribs.reduce((s,c) => s + c.contrib_gpt, 0);
+  return {auEq, contributions: contribs.map(c=>({...c, share: auEq ? c.contrib_gpt/auEq : 0})), auDenom};
+}
+
+// ─── Render: contributions table ─────────────────────────────
+function renderContribs(rows, contribs) {
+  if (!contribs.length || contribs.every(c => !c.rev_per_t)) {
+    el.contribBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--fg-3);padding:18px">Enter at least one non-zero metal grade with valid price and recovery.</td></tr>';
+    return;
+  }
+  let html = '';
+  for (let i=0; i<rows.length; i++) {
+    const r = rows[i], c = contribs[i];
+    if (!c || !r.grade) continue;
+    const sym = r.sym === 'U3O8' ? 'U₃O₈' : r.sym;
+    const barW = Math.max(1, Math.round(c.share * 80));
+    html += `<tr>
+      <td>${sym}</td>
+      <td>${fmtSmart(r.grade)} ${r.unit}</td>
+      <td>$${fmt(c.rev_per_t,2)}</td>
+      <td>${fmtSmart(c.contrib_gpt)}</td>
+      <td>${(c.share*100).toFixed(1)}% <span class="share-bar" style="width:${barW}px"></span></td>
+    </tr>`;
+  }
+  if (!html) html = '<tr><td colspan="5" style="text-align:center;color:var(--fg-3);padding:18px">No active metals (all grades = 0).</td></tr>';
+  el.contribBody.innerHTML = html;
+}
+
+// ─── Chart: benchmark scatter ────────────────────────────────
+const isoLevels = [
+  {gm:100,    label:'100 g·m'},
+  {gm:1000,   label:'1,000 g·m'},
+  {gm:5000,   label:'5,000 g·m'},
+  {gm:10000,  label:'10,000 g·m'},
+];
+const X_MIN = 1, X_MAX = 500, Y_MIN = 0.3, Y_MAX = 3000;
+
+function isoCurveData(gm) {
+  // Generate (x,y) pairs along the curve y = gm/x within the chart bounds
+  const pts = [];
+  const N = 60;
+  for (let i = 0; i <= N; i++) {
+    const lx = Math.log10(X_MIN) + (Math.log10(X_MAX) - Math.log10(X_MIN)) * (i/N);
+    const x = Math.pow(10, lx);
+    const y = gm / x;
+    if (y < Y_MIN * 0.8 || y > Y_MAX * 1.2) continue;
+    pts.push({x, y});
+  }
+  return pts;
+}
+
+const isoLabelsPlugin = {
+  id: 'isoLabels',
+  afterDatasetsDraw(chart) {
+    const {ctx, scales:{x,y}, chartArea} = chart;
+    if (!chartArea) return;
+    ctx.save();
+    ctx.font = "10px 'JetBrains Mono', monospace";
+    ctx.fillStyle = 'rgba(138,135,115,0.85)';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+    isoLevels.forEach(({gm, label}) => {
+      // Position label where iso-curve crosses the right edge of the plot
+      const xVal = x.max;
+      const yVal = gm / xVal;
+      if (yVal < y.min || yVal > y.max) return;
+      const px = x.getPixelForValue(xVal);
+      const py = y.getPixelForValue(yVal);
+      ctx.fillText(label, px - 6, py - 2);
+    });
+    ctx.restore();
+  }
+};
+
+const benchCanvas = document.getElementById('benchChart');
+const benchChart = new Chart(benchCanvas, {
+  type: 'scatter',
+  data: {datasets: []},
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    parsing: false,
+    plugins: {
+      legend: {display: false},
+      tooltip: {
+        backgroundColor:'#0c0d0a', titleColor:'#d8d4c2', bodyColor:'#d8d4c2',
+        borderColor:'#2a2c24', borderWidth:1, padding:10,
+        titleFont:{family:"'JetBrains Mono', monospace",size:11,weight:'600'},
+        bodyFont:{family:"'JetBrains Mono', monospace",size:11},
+        callbacks: {
+          title: ctx => {
+            const p = ctx[0].raw;
+            if (!p || !p.meta) return '';
+            const m = p.meta;
+            return `${m.project} · ${m.hole} · ${m.year}`;
+          },
+          label: ctx => {
+            const p = ctx.raw;
+            if (!p || !p.meta) return '';
+            const m = p.meta;
+            const lines = [`AuEq ${fmtSmart(m.auEq_gpt)} g/t × ${fmtSmart(m.true_width_m)} m = ${fmt(m.gram_meters,0)} g·m`];
+            if (m.grades && m.grades.length > 1) {
+              lines.push('—');
+              m.grades.forEach(g => lines.push(`  ${g.sym==='U3O8'?'U₃O₈':g.sym} ${fmtSmart(g.grade)} ${g.unit}`));
+            }
+            if (m.deposit_type) lines.push(`(${m.deposit_type})`);
+            return lines;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        type: 'logarithmic', min: X_MIN, max: X_MAX,
+        title: {display:true, text:'True width (m, log)', font:{family:"'JetBrains Mono', monospace",size:10,weight:'600'}, color:'#5d5b4d'},
+        grid: {color:'rgba(58,61,51,0.3)'},
+        ticks: {
+          callback: v => {
+            const allowed = [1,3,10,30,100,300];
+            return allowed.includes(v) ? v : '';
+          },
+          font: {family:"'JetBrains Mono', monospace",size:10}
+        }
+      },
+      y: {
+        type: 'logarithmic', min: Y_MIN, max: Y_MAX,
+        title: {display:true, text:'AuEq grade (g/t, log)', font:{family:"'JetBrains Mono', monospace",size:10,weight:'600'}, color:'#5d5b4d'},
+        grid: {color:'rgba(58,61,51,0.3)'},
+        ticks: {
+          callback: v => {
+            const allowed = [0.3,1,3,10,30,100,300,1000];
+            return allowed.includes(v) ? v : '';
+          },
+          font: {family:"'JetBrains Mono', monospace",size:10}
+        }
+      }
+    }
+  },
+  plugins: [isoLabelsPlugin]
+});
+
+function rebuildChartDatasets() {
+  const datasets = [];
+  // Iso-curves first (drawn behind)
+  isoLevels.forEach(({gm}) => {
+    datasets.push({
+      type: 'line',
+      data: isoCurveData(gm),
+      borderColor: 'rgba(58,61,51,0.7)',
+      borderDash: [3,4],
+      borderWidth: 1,
+      fill: false,
+      pointRadius: 0,
+      pointHoverRadius: 0,
+      tension: 0,
+      order: 10,
+    });
+  });
+  // Benchmarks
+  datasets.push({
+    type: 'scatter',
+    label: 'Benchmarks',
+    data: BENCHMARKS.map(b => ({x: b.true_width_m, y: b.auEq_gpt, meta: b})),
+    backgroundColor: 'rgba(106,207,224,0.85)',
+    borderColor: '#6acfe0',
+    borderWidth: 1,
+    pointRadius: 5,
+    pointHoverRadius: 8,
+    order: 5,
+  });
+  // User point (initially empty)
+  datasets.push({
+    type: 'scatter',
+    label: 'You',
+    data: [],
+    backgroundColor: '#5dd3a8',
+    borderColor: '#5dd3a8',
+    pointStyle: 'star',
+    pointRadius: 14,
+    pointHoverRadius: 16,
+    pointBorderWidth: 2,
+    order: 1,
+  });
+  benchChart.data.datasets = datasets;
+  benchChart.update('none');
+}
+
+function setUserPoint(trueW, auEq) {
+  const last = benchChart.data.datasets[benchChart.data.datasets.length - 1];
+  if (trueW > 0 && auEq > 0) {
+    last.data = [{x: Math.max(X_MIN, Math.min(X_MAX*0.99, trueW)), y: Math.max(Y_MIN, Math.min(Y_MAX*0.99, auEq)), meta: {project:'Your intercept', hole:'—', year:'—', auEq_gpt:auEq, true_width_m:trueW, gram_meters:auEq*trueW}}];
+  } else {
+    last.data = [];
+  }
+  benchChart.update('none');
+}
+
+// ─── Saved intercepts (localStorage) ─────────────────────────
+function loadSaved() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+function persistSaved(arr) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+}
+function renderSaved() {
+  const arr = loadSaved();
+  if (!arr.length) {
+    el.savedBody.innerHTML = '';
+    el.savedEmpty.style.display = '';
+    el.savedMeta.textContent = 'localStorage · this browser · 0 saved';
+    return;
+  }
+  el.savedEmpty.style.display = 'none';
+  el.savedMeta.textContent = `localStorage · this browser · ${arr.length} saved`;
+  el.savedBody.innerHTML = arr.map(r => `
+    <tr data-id="${r.id}">
+      <td>${escapeHtml(r.projName || '(unnamed)')}</td>
+      <td style="color:var(--fg-3)">${(r.savedAt||'').slice(0,10)}</td>
+      <td>${fmtSmart(r.auEq||0)}</td>
+      <td>${fmtSmart(r.trueW||0)}</td>
+      <td><strong style="color:var(--accent)">${fmt(r.gm||0,0)}</strong></td>
+      <td><div class="bench-actions">
+        <button class="bench-act-btn load" data-id="${r.id}">Load</button>
+        <button class="bench-act-btn del" data-id="${r.id}">×</button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+el.savedBody.addEventListener('click', e => {
+  const btn = e.target.closest('.bench-act-btn');
+  if (!btn) return;
+  const id = btn.dataset.id;
+  if (btn.classList.contains('load')) loadIntercept(id);
+  else if (btn.classList.contains('del')) deleteIntercept(id);
+});
+
+function saveIntercept() {
+  const g = readGeometry();
+  const metals = readMetals();
+  const {auEq} = calcAuEq(metals);
+  const projName = (el.projName.value || '').trim() || 'Unnamed · ' + new Date().toISOString().slice(0,16).replace('T',' ');
+  const rec = {
+    id: (crypto.randomUUID ? crypto.randomUUID() : 'i'+Math.random().toString(36).slice(2)),
+    savedAt: new Date().toISOString(),
+    projName,
+    notes: el.notes.value || '',
+    from: g.from, to: g.to, twPct: g.twPct,
+    metals,
+    auEq, trueW: g.trueW, gm: auEq * g.trueW,
+  };
+  const arr = loadSaved();
+  arr.unshift(rec);
+  persistSaved(arr);
+  renderSaved();
+  el.saveBtn.textContent = '✓ SAVED';
+  setTimeout(() => el.saveBtn.textContent = '💾 Save to local storage', 1100);
+}
+el.saveBtn.addEventListener('click', saveIntercept);
+
+function loadIntercept(id) {
+  const rec = loadSaved().find(r => r.id === id);
+  if (!rec) return;
+  el.fromM.value = rec.from;
+  el.toM.value = rec.to;
+  el.twPct.value = rec.twPct;
+  el.projName.value = rec.projName || '';
+  el.notes.value = rec.notes || '';
+  renderMetalsFrom(rec.metals && rec.metals.length ? rec.metals : defaultMetalSeed());
+  recompute();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function deleteIntercept(id) {
+  const rec = loadSaved().find(r => r.id === id);
+  if (!rec) return;
+  if (!window.confirm(`Delete '${rec.projName}'?`)) return;
+  persistSaved(loadSaved().filter(r => r.id !== id));
+  renderSaved();
+}
+
+// ─── Recompute on every change ───────────────────────────────
+let recomputeTimer = null;
+function recompute() {
+  // Debounce slightly so range slider drags don't thrash the chart
+  if (recomputeTimer) cancelAnimationFrame(recomputeTimer);
+  recomputeTimer = requestAnimationFrame(() => recomputeNow());
+}
+function recomputeNow() {
+  const g = readGeometry();
+  const metals = readMetals();
+  const {auEq, contributions} = calcAuEq(metals);
+
+  // Geometry display
+  el.twPctVal.textContent = g.twPct + '%';
+  el.dhLen.textContent = fmtSmart(g.dh) + ' m';
+  el.twM.textContent = fmtSmart(g.trueW) + ' m';
+
+  // Update row dim/active styling based on grade > 0
+  [...el.metalsBody.querySelectorAll('.metal-row')].forEach((r, i) => {
+    const grade = parseFloat(r.querySelector('.metal-grade').value) || 0;
+    r.classList.toggle('dim', grade <= 0);
+  });
+
+  // KPIs
+  el.vAuEq.textContent = auEq > 0 ? fmtSmart(auEq) + ' g/t' : '— g/t';
+  el.vTrueW.textContent = g.trueW > 0 ? fmtSmart(g.trueW) + ' m' : '— m';
+  const gm = auEq * g.trueW;
+  el.vGm.textContent = gm > 0 ? fmt(gm, 0) : '—';
+  const activeMetals = metals.filter(m => m.grade > 0);
+  el.vMetalCount.textContent = activeMetals.length;
+  document.getElementById('auEqMetals').textContent = activeMetals.length === 1
+    ? activeMetals[0].sym + ' only'
+    : activeMetals.length + ' metals';
+
+  // Rank
+  if (gm > 0) {
+    const sorted = BENCHMARKS.slice().sort((a,b) => b.gram_meters - a.gram_meters);
+    const rank = 1 + sorted.filter(b => b.gram_meters > gm).length;
+    const total = sorted.length;
+    el.vRank.textContent = '#' + rank + ' / ' + total;
+    const pct = rank / total;
+    el.vRank.classList.remove('hl','amber','dim');
+    if (pct <= 0.25)      { el.vRank.classList.add('hl');    el.vRankSub.textContent = 'top quartile'; }
+    else if (pct <= 0.5)  { el.vRank.classList.add('amber'); el.vRankSub.textContent = 'top half'; }
+    else                  { el.vRank.classList.add('dim');   el.vRankSub.textContent = 'lower half'; }
+  } else {
+    el.vRank.textContent = '—';
+    el.vRank.classList.remove('hl','amber'); el.vRank.classList.add('dim');
+    el.vRankSub.textContent = 'enter intercept';
+  }
+
+  renderContribs(metals, contributions);
+  setUserPoint(g.trueW, auEq);
+}
+
+// ─── Geometry bindings ───────────────────────────────────────
+el.fromM.addEventListener('input', recompute);
+el.toM.addEventListener('input', recompute);
+el.twPct.addEventListener('input', recompute);
+
+// ─── Examples / clear ────────────────────────────────────────
+el.exFost.addEventListener('click', () => {
+  el.fromM.value = 1141.4;
+  el.toM.value = 1148.8;
+  el.twPct.value = 100;
+  el.projName.value = 'Fosterville Swan · UDH3167';
+  el.notes.value = 'Kirkland Lake Gold news, Aug 2019. One of the all-time best Au intercepts.';
+  renderMetalsFrom([
+    {sym:'Au', grade:976, unit:'g/t', price:2400, priceUnit:'$/oz', recovery:90},
+    {sym:'Ag', grade:0,   unit:'g/t', price:28,   priceUnit:'$/oz', recovery:75},
+    {sym:'Cu', grade:0,   unit:'%',   price:4.20, priceUnit:'$/lb', recovery:88},
+    {sym:'Pb', grade:0,   unit:'%',   price:0.95, priceUnit:'$/lb', recovery:80},
+    {sym:'Zn', grade:0,   unit:'%',   price:1.30, priceUnit:'$/lb', recovery:85},
+  ]);
+  recompute();
+});
+el.clearBtn.addEventListener('click', () => {
+  el.fromM.value = 0;
+  el.toM.value = 10;
+  el.twPct.value = 80;
+  el.projName.value = '';
+  el.notes.value = '';
+  renderMetalsFrom(defaultMetalSeed());
+  recompute();
+});
+
+// ─── Init ────────────────────────────────────────────────────
+async function init() {
+  // Try to fetch the canonical JSON; fall back to inline if blocked (e.g. file://).
+  try {
+    const r = await fetch('drill_benchmarks.json', {cache:'no-store'});
+    if (r.ok) {
+      const j = await r.json();
+      if (Array.isArray(j) && j.length) BENCHMARKS = j;
+    }
+  } catch (e) { /* keep fallback */ }
+  el.benchCount.textContent = BENCHMARKS.length + ' holes';
+  rebuildChartDatasets();
+  renderMetalsFrom(defaultMetalSeed());
+  renderSaved();
+  recompute();
+}
+init();
+</script>
+</body>
+</html>
