@@ -119,11 +119,16 @@ input[type=range].t-range{width:100%;accent-color:var(--accent);height:18px}
 .chart-wrap{height:300px;position:relative}
 .chart-wrap-tall{height:440px;position:relative}
 @media (max-width:720px){.chart-wrap-tall{height:340px}}
-.legend-pills{display:flex;gap:8px;flex-wrap:wrap;padding:0 0 10px}
-.legend-pill{font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;color:var(--fg-2);display:inline-flex;align-items:center;gap:6px}
+.legend-pills{display:flex;gap:14px;flex-wrap:wrap;padding:0 0 10px;align-items:center}
+.legend-pill{font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;color:var(--fg-2);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .legend-pill::before{content:'';width:10px;height:10px;border-radius:50%;background:var(--cyan)}
-.legend-pill.user::before{background:var(--accent);width:12px;height:12px;border-radius:50%}
+.legend-pill.au::before{background:var(--amber)}
+.legend-pill.cu::before{background:var(--red)}
+.legend-pill.u::before{background:var(--green)}
+.legend-pill.poly::before{background:var(--cyan)}
+.legend-pill.user::before{background:var(--accent);width:14px;height:14px;border-radius:50%;box-shadow:0 0 0 2px var(--accent-soft)}
 .legend-pill.iso::before{background:transparent;border-top:1px dashed var(--fg-3);width:14px;height:0;border-radius:0}
+.legend-sep{color:var(--line-2);font-size:11px}
 
 /* ─── Tables ─── */
 table.sens{width:100%;border-collapse:collapse;font-size:12px;font-feature-settings:'tnum'}
@@ -312,7 +317,12 @@ table.sens tbody tr.active td{background:var(--accent-dim);color:var(--fg)}
       <div class="card-b">
         <div class="legend-pills">
           <span class="legend-pill user">Your intercept</span>
-          <span class="legend-pill">Benchmark hole</span>
+          <span class="legend-sep">│</span>
+          <span class="legend-pill au">Au</span>
+          <span class="legend-pill cu">Cu</span>
+          <span class="legend-pill u">U₃O₈</span>
+          <span class="legend-pill poly">Polymetallic / other</span>
+          <span class="legend-sep">│</span>
           <span class="legend-pill iso">Iso-gram-meter curve</span>
         </div>
         <div class="chart-wrap-tall"><canvas id="benchChart"></canvas></div>
@@ -348,7 +358,8 @@ table.sens tbody tr.active td{background:var(--accent-dim);color:var(--fg)}
         <p><strong>1. AuEq formula.</strong> NI 43-101 / JORC standard: <em>AuEq = Σ(grade × price × recovery) / (Au_price × Au_recovery)</em>. Each metal row carries its own price and recovery — edit them to match your assumptions. Defaults: Au $2,400/oz @ 90%, Ag $28/oz @ 75%, Cu $4.20/lb @ 88%, Pb $0.95/lb @ 80%, Zn $1.30/lb @ 85%, Ni $8/lb @ 70%, Mo $20/lb @ 80%, Co $15/lb @ 65%, Sn $14/lb @ 72%, U₃O₈ $80/lb @ 90%.</p>
         <p><strong>2. True width.</strong> The true-width slider is a multiplier on downhole length. If your hole is parallel to mineralisation set 100%; if you've already calculated it from hole-dip and structure-dip, enter the resulting %. No <code>cos α</code> calc here — that's a v2 add.</p>
         <p><strong>3. Gram-meters (g·m).</strong> The universal cross-commodity ranking metric: <em>g·m = AuEq grade × true width</em>. A 100 g/t × 2 m epithermal hit and a 2 g/t × 100 m porphyry hit have identical g·m but completely different geological/economic stories — that's why the chart axes are grade and width, with iso-curves overlaid.</p>
-        <p><strong>4. Benchmark sourcing.</strong> 24 curated intercepts, mostly from public press releases and NI 43-101 reports. Holes marked <em>representative</em> use a typical best-hole intercept from the deposit rather than a specific verified hole — verify in the source filings before quoting. AuEq is recomputed at this tool's defaults; press-release AuEq may differ.</p>
+        <p><strong>4. Benchmark sourcing.</strong> 46 curated intercepts spanning Au (epithermal, orogenic, intrusion-related, Carlin), Cu (porphyry, IOCG), U (unconformity), and polymetallic (VMS, Ag-Pb-Zn, Ni-Cu, Cu-Au). Mostly from public press releases and NI 43-101 reports. Holes marked <em>representative</em> use a typical best-hole intercept from the deposit rather than a specific verified hole — verify in the source filings before quoting. AuEq is recomputed at this tool's defaults; press-release AuEq may differ.</p>
+        <p><strong>4a. Commodity coloring.</strong> Dots are coloured by the metal that contributes the most to AuEq at v1 default prices: <span style="color:#e8b658">Au</span>, <span style="color:#ff5f56">Cu</span>, <span style="color:#5dd380">U₃O₈</span>, or <span style="color:#6acfe0">Polymetallic</span> (no single metal &gt; 70% of AuEq). Change a metal's price or recovery in the form and the user star moves; the benchmark colours stay fixed at the tool's defaults so the reference frame is stable.</p>
         <p><strong>5. Saved intercepts.</strong> Stored in your browser's localStorage under key <code>zovlyn_drill_intercepts</code>. Private to this browser; not synced. Clearing browser data or switching machines wipes the list. Export to JSON via devtools if you need a backup.</p>
         <p><strong>6. Out of scope (v1).</strong> No raw-assay compositor (single intercept summary only), no NSR / smelter terms, no commodity-equivalent overlays besides Au, no true-width-from-angles calc. <em>Not investment advice.</em></p>
       </div>
@@ -405,30 +416,18 @@ const DEFAULTS = {
 };
 const SYM_LIST = ['Au','Ag','Cu','Pb','Zn','Ni','Mo','Co','Sn','U3O8','custom'];
 
-// ─── Inline benchmark fallback (file:// safe). Mirrors drill_benchmarks.json — keep in sync. ───
+// ─── Inline benchmark fallback (file:// safe; subset of drill_benchmarks.json — full set fetched at init). ───
 const BENCHMARKS_FALLBACK = [
   {id:"fosterville-swan-udh3167",project:"Fosterville · Swan Zone",operator:"Agnico Eagle",country:"Australia",year:2019,hole:"UDH3167",deposit_type:"Orogenic Au",true_width_m:7.4,auEq_gpt:976.0,gram_meters:7222,grades:[{sym:"Au",grade:976.0,unit:"g/t"}]},
-  {id:"fosterville-swan-udh3405",project:"Fosterville · Swan Zone",operator:"Agnico Eagle",country:"Australia",year:2019,hole:"UDH3405",deposit_type:"Orogenic Au",true_width_m:6.4,auEq_gpt:933.0,gram_meters:5971,grades:[{sym:"Au",grade:933.0,unit:"g/t"}]},
-  {id:"kiena-deep-a-2017",project:"Kiena · Deep A Zone",operator:"Wesdome",country:"Canada · QC",year:2017,hole:"VC17-1",deposit_type:"Orogenic Au",true_width_m:14.4,auEq_gpt:102.0,gram_meters:1469,grades:[{sym:"Au",grade:102.0,unit:"g/t"}]},
   {id:"johnson-tract-jt19-082",project:"Johnson Tract",operator:"HighGold",country:"USA · AK",year:2019,hole:"JT19-082",deposit_type:"VMS Au",true_width_m:107.8,auEq_gpt:19.55,gram_meters:2107,grades:[{sym:"Au",grade:19.55,unit:"g/t"}]},
-  {id:"buritica-veta-sur-rep",project:"Buriticá · Veta Sur",operator:"Zijin",country:"Colombia",year:2017,hole:"BUSY364",deposit_type:"Epithermal Au",true_width_m:26.5,auEq_gpt:20.0,gram_meters:530,grades:[{sym:"Au",grade:20.0,unit:"g/t"}]},
-  {id:"contact-lake-cl26036",project:"Contact Lake",operator:"Stallion Discoveries",country:"Canada · SK",year:2026,hole:"CL26036",deposit_type:"Orogenic Au",true_width_m:51.83,auEq_gpt:15.11,gram_meters:783,grades:[{sym:"Au",grade:15.11,unit:"g/t"}]},
-  {id:"eagle-river-rep",project:"Eagle River",operator:"Wesdome",country:"Canada · ON",year:2018,hole:"rep.",deposit_type:"Orogenic Au",true_width_m:33.0,auEq_gpt:18.0,gram_meters:594,grades:[{sym:"Au",grade:18.0,unit:"g/t"}]},
-  {id:"obrien-radisson-2024-a",project:"O'Brien · Kewagama",operator:"Radisson",country:"Canada · QC",year:2024,hole:"OB-24-225",deposit_type:"Orogenic Au",true_width_m:3.7,auEq_gpt:89.36,gram_meters:331,grades:[{sym:"Au",grade:89.36,unit:"g/t"}]},
-  {id:"obrien-radisson-2024-b",project:"O'Brien · Kewagama",operator:"Radisson",country:"Canada · QC",year:2024,hole:"OB-24-227",deposit_type:"Orogenic Au",true_width_m:2.1,auEq_gpt:60.75,gram_meters:128,grades:[{sym:"Au",grade:60.75,unit:"g/t"}]},
-  {id:"goliath-surebet-2026-a",project:"Surebet · Golden Triangle",operator:"Goliath Resources",country:"Canada · BC",year:2026,hole:"GD-25",deposit_type:"Stacked vein",true_width_m:7.0,auEq_gpt:24.16,gram_meters:169,grades:[{sym:"Au",grade:24.16,unit:"g/t"}]},
-  {id:"goliath-surebet-2026-b",project:"Surebet · Golden Triangle",operator:"Goliath Resources",country:"Canada · BC",year:2026,hole:"GD-25",deposit_type:"Stacked vein",true_width_m:22.82,auEq_gpt:10.83,gram_meters:247,grades:[{sym:"Au",grade:10.83,unit:"g/t"}]},
-  {id:"emergent-west-santa-fe-2026",project:"West Santa Fe",operator:"Emergent Metals",country:"Mexico",year:2026,hole:"WSF-26-001",deposit_type:"Epithermal Au-Ag",true_width_m:36.6,auEq_gpt:3.11,gram_meters:114,grades:[{sym:"Au",grade:3.11,unit:"g/t"}]},
-  {id:"brucejack-vok-rep",project:"Brucejack · VOK",operator:"Newmont",country:"Canada · BC",year:2013,hole:"rep.",deposit_type:"Bonanza vein",true_width_m:6.0,auEq_gpt:41.0,gram_meters:246,grades:[{sym:"Au",grade:41.0,unit:"g/t"}]},
-  {id:"hemi-mallina-rep",project:"Hemi · Mallina",operator:"De Grey",country:"Australia",year:2021,hole:"rep.",deposit_type:"Intrusion-related Au",true_width_m:100.0,auEq_gpt:1.5,gram_meters:150,grades:[{sym:"Au",grade:1.5,unit:"g/t"}]},
+  {id:"contact-lake-cl26036",project:"Contact Lake",operator:"Stallion",country:"Canada · SK",year:2026,hole:"CL26036",deposit_type:"Orogenic Au",true_width_m:51.83,auEq_gpt:15.11,gram_meters:783,grades:[{sym:"Au",grade:15.11,unit:"g/t"}]},
   {id:"detour-lake-rep",project:"Detour Lake",operator:"Agnico Eagle",country:"Canada · ON",year:2020,hole:"rep.",deposit_type:"Bulk Au",true_width_m:200.0,auEq_gpt:1.0,gram_meters:200,grades:[{sym:"Au",grade:1.0,unit:"g/t"}]},
-  {id:"sitka-rc-project-rep",project:"RC Project · Yukon",operator:"Sitka Gold",country:"Canada · YT",year:2024,hole:"rep.",deposit_type:"Intrusion-related Au",true_width_m:50.0,auEq_gpt:2.5,gram_meters:125,grades:[{sym:"Au",grade:2.5,unit:"g/t"}]},
-  {id:"sela-creek-2026-rep",project:"Sela Creek",operator:"Miata",country:"Suriname",year:2026,hole:"rep.",deposit_type:"Orogenic Au",true_width_m:20.0,auEq_gpt:5.0,gram_meters:100,grades:[{sym:"Au",grade:5.0,unit:"g/t"}]},
+  {id:"hemi-mallina-rep",project:"Hemi · Mallina",operator:"De Grey",country:"Australia",year:2021,hole:"rep.",deposit_type:"Intrusion-related Au",true_width_m:100.0,auEq_gpt:1.5,gram_meters:150,grades:[{sym:"Au",grade:1.5,unit:"g/t"}]},
   {id:"eskay-creek-109-rep",project:"Eskay Creek · 109 Zone",operator:"Skeena",country:"Canada · BC",year:1990,hole:"rep.",deposit_type:"VMS Au-Ag",true_width_m:27.0,auEq_gpt:72.36,gram_meters:1954,grades:[{sym:"Au",grade:50.0,unit:"g/t"},{sym:"Ag",grade:2300.0,unit:"g/t"}]},
   {id:"palmer-cmr23-172",project:"Palmer Project",operator:"American Pacific",country:"USA · AK",year:2023,hole:"CMR23-172",deposit_type:"VMS Cu-Zn",true_width_m:43.8,auEq_gpt:8.78,gram_meters:385,grades:[{sym:"Cu",grade:6.54,unit:"%"},{sym:"Zn",grade:3.15,unit:"%"}]},
   {id:"ksm-mitchell-rep",project:"KSM · Mitchell",operator:"Seabridge",country:"Canada · BC",year:2010,hole:"rep.",deposit_type:"Porphyry Cu-Au",true_width_m:350.0,auEq_gpt:1.07,gram_meters:374,grades:[{sym:"Au",grade:0.6,unit:"g/t"},{sym:"Cu",grade:0.4,unit:"%"}]},
   {id:"oyu-tolgoi-hugo-dummett-rep",project:"Oyu Tolgoi · Hugo Dummett N",operator:"Rio Tinto",country:"Mongolia",year:2003,hole:"rep.",deposit_type:"Porphyry Cu-Au",true_width_m:200.0,auEq_gpt:2.46,gram_meters:492,grades:[{sym:"Cu",grade:1.5,unit:"%"},{sym:"Au",grade:0.7,unit:"g/t"}]},
-  {id:"cadia-east-rep",project:"Cadia East",operator:"Newmont",country:"Australia",year:2010,hole:"rep.",deposit_type:"Porphyry Cu-Au",true_width_m:180.0,auEq_gpt:0.78,gram_meters:140,grades:[{sym:"Au",grade:0.4,unit:"g/t"},{sym:"Cu",grade:0.32,unit:"%"}]},
+  {id:"resolution-copper-rep",project:"Resolution Copper",operator:"Rio Tinto / BHP",country:"USA · AZ",year:2010,hole:"rep.",deposit_type:"Porphyry Cu",true_width_m:200.0,auEq_gpt:1.76,gram_meters:352,grades:[{sym:"Cu",grade:1.5,unit:"%"}]},
   {id:"nexgen-arrow-ar-15-44b",project:"Arrow · A2 Sub-Zone",operator:"NexGen",country:"Canada · SK",year:2015,hole:"AR-15-44b",deposit_type:"Unconformity U",true_width_m:56.5,auEq_gpt:262.9,gram_meters:14854,grades:[{sym:"U3O8",grade:11.5,unit:"%"}]},
   {id:"fission-triple-r-r780e",project:"PLS · Triple R · R780E",operator:"Fission",country:"Canada · SK",year:2014,hole:"PLS14-129",deposit_type:"Unconformity U",true_width_m:12.6,auEq_gpt:270.4,gram_meters:3407,grades:[{sym:"U3O8",grade:11.83,unit:"%"}]}
 ];
@@ -673,6 +672,7 @@ const benchChart = new Chart(benchCanvas, {
         borderColor:'#2a2c24', borderWidth:1, padding:10,
         titleFont:{family:"'JetBrains Mono', monospace",size:11,weight:'600'},
         bodyFont:{family:"'JetBrains Mono', monospace",size:11},
+        filter: ctx => ctx.dataset.type === 'scatter' && ctx.raw && ctx.raw.meta,
         callbacks: {
           title: ctx => {
             const p = ctx[0].raw;
@@ -689,7 +689,10 @@ const benchChart = new Chart(benchCanvas, {
               lines.push('—');
               m.grades.forEach(g => lines.push(`  ${g.sym==='U3O8'?'U₃O₈':g.sym} ${fmtSmart(g.grade)} ${g.unit}`));
             }
-            if (m.deposit_type) lines.push(`(${m.deposit_type})`);
+            const tail = [];
+            if (m.deposit_type) tail.push(m.deposit_type);
+            if (m.country) tail.push(m.country);
+            if (tail.length) lines.push(`(${tail.join(' · ')})`);
             return lines;
           }
         }
@@ -725,6 +728,45 @@ const benchChart = new Chart(benchCanvas, {
   plugins: [isoLabelsPlugin]
 });
 
+// ─── Commodity classification ────────────────────────────────
+// Pick the dominant metal by AuEq contribution (at v1 default factors).
+// If the top metal contributes < 70% of total AuEq, classify as Polymetallic.
+const _CAT_FACTORS = {Cu:1.1737, Pb:0.2412, Zn:0.3508, Ni:1.7775, Mo:0, Co:0, Sn:0, U3O8:22.86};
+function commodityCategory(rec) {
+  const grades = rec.grades || [];
+  if (!grades.length) return 'Poly';
+  const contribs = grades.map(g => {
+    let proxy = 0;
+    if (g.sym === 'Au') {
+      proxy = g.unit === 'oz/t' ? g.grade * 31.1035 : g.grade;
+    } else if (g.sym === 'Ag') {
+      const gpt = g.unit === 'oz/t' ? g.grade * 31.1035 : g.grade;
+      proxy = gpt * 0.00972;
+    } else {
+      const pct = g.unit === '%' ? g.grade : g.unit === 'g/t' ? g.grade / 10000 : 0;
+      proxy = pct * (_CAT_FACTORS[g.sym] || 0);
+    }
+    return {sym: g.sym, contrib: proxy};
+  });
+  const total = contribs.reduce((s,c) => s + c.contrib, 0);
+  if (!total) return 'Poly';
+  contribs.sort((a,b) => b.contrib - a.contrib);
+  const top = contribs[0];
+  if (top.contrib / total < 0.7) return 'Poly';
+  if (top.sym === 'Au')   return 'Au';
+  if (top.sym === 'Cu')   return 'Cu';
+  if (top.sym === 'U3O8') return 'U';
+  return 'Poly';
+}
+
+const COMMODITY_COLORS = {
+  Au:   {fill:'rgba(232,182,88,0.85)',  border:'#e8b658', label:'Au'},
+  Cu:   {fill:'rgba(255,95,86,0.85)',   border:'#ff5f56', label:'Cu'},
+  U:    {fill:'rgba(93,211,128,0.85)',  border:'#5dd380', label:'U₃O₈'},
+  Poly: {fill:'rgba(106,207,224,0.85)', border:'#6acfe0', label:'Polymetallic'},
+};
+const CATEGORY_ORDER = ['Au','Cu','U','Poly'];
+
 function rebuildChartDatasets() {
   const datasets = [];
   // Iso-curves first (drawn behind)
@@ -742,19 +784,28 @@ function rebuildChartDatasets() {
       order: 10,
     });
   });
-  // Benchmarks
-  datasets.push({
-    type: 'scatter',
-    label: 'Benchmarks',
-    data: BENCHMARKS.map(b => ({x: b.true_width_m, y: b.auEq_gpt, meta: b})),
-    backgroundColor: 'rgba(106,207,224,0.85)',
-    borderColor: '#6acfe0',
-    borderWidth: 1,
-    pointRadius: 5,
-    pointHoverRadius: 8,
-    order: 5,
+  // Benchmarks split by commodity category
+  const grouped = {Au:[], Cu:[], U:[], Poly:[]};
+  BENCHMARKS.forEach(b => {
+    const cat = commodityCategory(b);
+    grouped[cat].push({x: b.true_width_m, y: b.auEq_gpt, meta: {...b, category: cat}});
   });
-  // User point (initially empty)
+  CATEGORY_ORDER.forEach(cat => {
+    if (!grouped[cat].length) return;
+    const c = COMMODITY_COLORS[cat];
+    datasets.push({
+      type: 'scatter',
+      label: c.label,
+      data: grouped[cat],
+      backgroundColor: c.fill,
+      borderColor: c.border,
+      borderWidth: 1,
+      pointRadius: 5,
+      pointHoverRadius: 8,
+      order: 5,
+    });
+  });
+  // User point (always last → drawn on top)
   datasets.push({
     type: 'scatter',
     label: 'You',
