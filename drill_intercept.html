@@ -125,8 +125,9 @@ input[type=range].t-range{width:100%;accent-color:var(--accent);height:18px}
 .legend-pill.au::before{background:var(--amber)}
 .legend-pill.cu::before{background:var(--red)}
 .legend-pill.u::before{background:var(--green)}
+.legend-pill.li::before{background:var(--fg-2)}
 .legend-pill.poly::before{background:var(--cyan)}
-.legend-pill.user::before{background:var(--accent);width:14px;height:14px;border-radius:50%;box-shadow:0 0 0 2px var(--accent-soft)}
+.legend-pill.user::before{background:var(--accent);width:11px;height:11px;border-radius:1px;border:1.5px solid var(--bg);transform:rotate(45deg);box-shadow:0 0 0 3px rgba(93,211,168,0.22)}
 .legend-pill.iso::before{background:transparent;border-top:1px dashed var(--fg-3);width:14px;height:0;border-radius:0}
 .legend-sep{color:var(--line-2);font-size:11px}
 
@@ -321,6 +322,7 @@ table.sens tbody tr.active td{background:var(--accent-dim);color:var(--fg)}
           <span class="legend-pill au">Au</span>
           <span class="legend-pill cu">Cu</span>
           <span class="legend-pill u">U₃O₈</span>
+          <span class="legend-pill li">Li₂O</span>
           <span class="legend-pill poly">Polymetallic / other</span>
           <span class="legend-sep">│</span>
           <span class="legend-pill iso">Iso-gram-meter curve</span>
@@ -359,7 +361,8 @@ table.sens tbody tr.active td{background:var(--accent-dim);color:var(--fg)}
         <p><strong>2. True width.</strong> The true-width slider is a multiplier on downhole length. If your hole is parallel to mineralisation set 100%; if you've already calculated it from hole-dip and structure-dip, enter the resulting %. No <code>cos α</code> calc here — that's a v2 add.</p>
         <p><strong>3. Gram-meters (g·m).</strong> The universal cross-commodity ranking metric: <em>g·m = AuEq grade × true width</em>. A 100 g/t × 2 m epithermal hit and a 2 g/t × 100 m porphyry hit have identical g·m but completely different geological/economic stories — that's why the chart axes are grade and width, with iso-curves overlaid.</p>
         <p><strong>4. Benchmark sourcing.</strong> 46 curated intercepts spanning Au (epithermal, orogenic, intrusion-related, Carlin), Cu (porphyry, IOCG), U (unconformity), and polymetallic (VMS, Ag-Pb-Zn, Ni-Cu, Cu-Au). Mostly from public press releases and NI 43-101 reports. Holes marked <em>representative</em> use a typical best-hole intercept from the deposit rather than a specific verified hole — verify in the source filings before quoting. AuEq is recomputed at this tool's defaults; press-release AuEq may differ.</p>
-        <p><strong>4a. Commodity coloring.</strong> Dots are coloured by the metal that contributes the most to AuEq at v1 default prices: <span style="color:#e8b658">Au</span>, <span style="color:#ff5f56">Cu</span>, <span style="color:#5dd380">U₃O₈</span>, or <span style="color:#6acfe0">Polymetallic</span> (no single metal &gt; 70% of AuEq). Change a metal's price or recovery in the form and the user star moves; the benchmark colours stay fixed at the tool's defaults so the reference frame is stable.</p>
+        <p><strong>4a. Commodity coloring.</strong> Dots are coloured by the metal that contributes the most to AuEq at v1 default prices: <span style="color:#e8b658">Au</span>, <span style="color:#ff5f56">Cu</span>, <span style="color:#5dd380">U₃O₈</span>, <span style="color:#8a8773">Li₂O</span>, or <span style="color:#6acfe0">Polymetallic</span> (no single metal &gt; 70% of AuEq). Your intercept always shows as a <span style="color:#5dd3a8">green diamond</span> with a soft halo. Change a metal's price or recovery in the form and the user marker moves; benchmark colours stay fixed at the tool's defaults so the reference frame is stable.</p>
+        <p><strong>4b. Lithium reference price.</strong> Li₂O default is $14.50/lb @ 75% recovery — equivalent to ≈$13,000/t LCE on a contained-Li₂O basis (LCE/2.473 conversion). Edit the price to match your assumption; spot LCE prices range $9–25k/t depending on cycle. The reference unit is Li₂O%; for brine projects reporting Li ppm, use the "custom" row or convert via Li × 2.153 = Li₂O.</p>
         <p><strong>5. Saved intercepts.</strong> Stored in your browser's localStorage under key <code>zovlyn_drill_intercepts</code>. Private to this browser; not synced. Clearing browser data or switching machines wipes the list. Export to JSON via devtools if you need a backup.</p>
         <p><strong>6. Out of scope (v1).</strong> No raw-assay compositor (single intercept summary only), no NSR / smelter terms, no commodity-equivalent overlays besides Au, no true-width-from-angles calc. <em>Not investment advice.</em></p>
       </div>
@@ -411,10 +414,18 @@ const DEFAULTS = {
   Mo:   {price:20.0, priceUnit:'$/lb', recovery:80, gradeUnit:'%'  },
   Co:   {price:15.0, priceUnit:'$/lb', recovery:65, gradeUnit:'%'  },
   Sn:   {price:14.0, priceUnit:'$/lb', recovery:72, gradeUnit:'%'  },
+  Li2O: {price:14.50,priceUnit:'$/lb', recovery:75, gradeUnit:'%'  },
   U3O8: {price:80.0, priceUnit:'$/lb', recovery:90, gradeUnit:'%'  },
   custom:{price:0,   priceUnit:'$/lb', recovery:80, gradeUnit:'g/t'}
 };
-const SYM_LIST = ['Au','Ag','Cu','Pb','Zn','Ni','Mo','Co','Sn','U3O8','custom'];
+const SYM_LIST = ['Au','Ag','Cu','Pb','Zn','Ni','Mo','Co','Sn','Li2O','U3O8','custom'];
+
+// Display name with Unicode subscripts where applicable
+function symLabel(sym){
+  if (sym === 'U3O8') return 'U₃O₈';
+  if (sym === 'Li2O') return 'Li₂O';
+  return sym;
+}
 
 // ─── Inline benchmark fallback (file:// safe; subset of drill_benchmarks.json — full set fetched at init). ───
 const BENCHMARKS_FALLBACK = [
@@ -472,7 +483,7 @@ function buildMetalRow(spec, isFirst=false) {
   const row = document.createElement('div');
   row.className = 'metal-row';
   row.innerHTML = `
-    <select class="m-input metal-sym">${SYM_LIST.map(s=>`<option value="${s}"${s===spec.sym?' selected':''}>${s==='U3O8'?'U₃O₈':s}</option>`).join('')}</select>
+    <select class="m-input metal-sym">${SYM_LIST.map(s=>`<option value="${s}"${s===spec.sym?' selected':''}>${symLabel(s)}</option>`).join('')}</select>
     <input class="m-input metal-grade" type="number" step="0.01" inputmode="decimal" value="${spec.grade}">
     <select class="m-input metal-unit">
       <option value="g/t"${spec.unit==='g/t'?' selected':''}>g/t</option>
@@ -598,7 +609,7 @@ function renderContribs(rows, contribs) {
   for (let i=0; i<rows.length; i++) {
     const r = rows[i], c = contribs[i];
     if (!c || !r.grade) continue;
-    const sym = r.sym === 'U3O8' ? 'U₃O₈' : r.sym;
+    const sym = symLabel(r.sym);
     const barW = Math.max(1, Math.round(c.share * 80));
     html += `<tr>
       <td>${sym}</td>
@@ -672,7 +683,7 @@ const benchChart = new Chart(benchCanvas, {
         borderColor:'#2a2c24', borderWidth:1, padding:10,
         titleFont:{family:"'JetBrains Mono', monospace",size:11,weight:'600'},
         bodyFont:{family:"'JetBrains Mono', monospace",size:11},
-        filter: ctx => ctx.dataset.type === 'scatter' && ctx.raw && ctx.raw.meta,
+        filter: ctx => ctx.dataset.type === 'scatter' && ctx.dataset.label !== 'You · halo' && ctx.raw && ctx.raw.meta,
         callbacks: {
           title: ctx => {
             const p = ctx[0].raw;
@@ -687,7 +698,7 @@ const benchChart = new Chart(benchCanvas, {
             const lines = [`AuEq ${fmtSmart(m.auEq_gpt)} g/t × ${fmtSmart(m.true_width_m)} m = ${fmt(m.gram_meters,0)} g·m`];
             if (m.grades && m.grades.length > 1) {
               lines.push('—');
-              m.grades.forEach(g => lines.push(`  ${g.sym==='U3O8'?'U₃O₈':g.sym} ${fmtSmart(g.grade)} ${g.unit}`));
+              m.grades.forEach(g => lines.push(`  ${symLabel(g.sym)} ${fmtSmart(g.grade)} ${g.unit}`));
             }
             const tail = [];
             if (m.deposit_type) tail.push(m.deposit_type);
@@ -731,7 +742,7 @@ const benchChart = new Chart(benchCanvas, {
 // ─── Commodity classification ────────────────────────────────
 // Pick the dominant metal by AuEq contribution (at v1 default factors).
 // If the top metal contributes < 70% of total AuEq, classify as Polymetallic.
-const _CAT_FACTORS = {Cu:1.1737, Pb:0.2412, Zn:0.3508, Ni:1.7775, Mo:0, Co:0, Sn:0, U3O8:22.86};
+const _CAT_FACTORS = {Cu:1.1737, Pb:0.2412, Zn:0.3508, Ni:1.7775, Mo:0, Co:0, Sn:0, Li2O:3.453, U3O8:22.86};
 function commodityCategory(rec) {
   const grades = rec.grades || [];
   if (!grades.length) return 'Poly';
@@ -756,6 +767,7 @@ function commodityCategory(rec) {
   if (top.sym === 'Au')   return 'Au';
   if (top.sym === 'Cu')   return 'Cu';
   if (top.sym === 'U3O8') return 'U';
+  if (top.sym === 'Li2O') return 'Li';
   return 'Poly';
 }
 
@@ -763,9 +775,10 @@ const COMMODITY_COLORS = {
   Au:   {fill:'rgba(232,182,88,0.85)',  border:'#e8b658', label:'Au'},
   Cu:   {fill:'rgba(255,95,86,0.85)',   border:'#ff5f56', label:'Cu'},
   U:    {fill:'rgba(93,211,128,0.85)',  border:'#5dd380', label:'U₃O₈'},
+  Li:   {fill:'rgba(138,135,115,0.85)', border:'#8a8773', label:'Li₂O'},
   Poly: {fill:'rgba(106,207,224,0.85)', border:'#6acfe0', label:'Polymetallic'},
 };
-const CATEGORY_ORDER = ['Au','Cu','U','Poly'];
+const CATEGORY_ORDER = ['Au','Cu','U','Li','Poly'];
 
 function rebuildChartDatasets() {
   const datasets = [];
@@ -785,7 +798,7 @@ function rebuildChartDatasets() {
     });
   });
   // Benchmarks split by commodity category
-  const grouped = {Au:[], Cu:[], U:[], Poly:[]};
+  const grouped = {Au:[], Cu:[], U:[], Li:[], Poly:[]};
   BENCHMARKS.forEach(b => {
     const cat = commodityCategory(b);
     grouped[cat].push({x: b.true_width_m, y: b.auEq_gpt, meta: {...b, category: cat}});
@@ -805,17 +818,29 @@ function rebuildChartDatasets() {
       order: 5,
     });
   });
-  // User point (always last → drawn on top)
+  // User point — soft halo behind, sharp diamond on top (always last → drawn on top)
+  datasets.push({
+    type: 'scatter',
+    label: 'You · halo',
+    data: [],
+    backgroundColor: 'rgba(93,211,168,0.18)',
+    borderColor: 'rgba(93,211,168,0.55)',
+    borderWidth: 1.5,
+    pointStyle: 'circle',
+    pointRadius: 24,
+    pointHoverRadius: 26,
+    order: 2,
+  });
   datasets.push({
     type: 'scatter',
     label: 'You',
     data: [],
     backgroundColor: '#5dd3a8',
-    borderColor: '#5dd3a8',
-    pointStyle: 'star',
-    pointRadius: 14,
-    pointHoverRadius: 16,
-    pointBorderWidth: 2,
+    borderColor: '#0c0d0a',
+    borderWidth: 2,
+    pointStyle: 'rectRot',
+    pointRadius: 11,
+    pointHoverRadius: 13,
     order: 1,
   });
   benchChart.data.datasets = datasets;
@@ -823,11 +848,18 @@ function rebuildChartDatasets() {
 }
 
 function setUserPoint(trueW, auEq) {
-  const last = benchChart.data.datasets[benchChart.data.datasets.length - 1];
+  const ds = benchChart.data.datasets;
+  const main = ds[ds.length - 1];
+  const halo = ds[ds.length - 2];
   if (trueW > 0 && auEq > 0) {
-    last.data = [{x: Math.max(X_MIN, Math.min(X_MAX*0.99, trueW)), y: Math.max(Y_MIN, Math.min(Y_MAX*0.99, auEq)), meta: {project:'Your intercept', hole:'—', year:'—', auEq_gpt:auEq, true_width_m:trueW, gram_meters:auEq*trueW}}];
+    const x = Math.max(X_MIN, Math.min(X_MAX*0.99, trueW));
+    const y = Math.max(Y_MIN, Math.min(Y_MAX*0.99, auEq));
+    const pt = {x, y, meta: {project:'Your intercept', hole:'—', year:'—', auEq_gpt:auEq, true_width_m:trueW, gram_meters:auEq*trueW}};
+    main.data = [pt];
+    halo.data = [{x, y}];
   } else {
-    last.data = [];
+    main.data = [];
+    halo.data = [];
   }
   benchChart.update('none');
 }
