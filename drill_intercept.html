@@ -168,6 +168,25 @@ input[type=range].t-range{width:100%;accent-color:var(--accent);height:18px}
 .legend-pill.iso::before{background:transparent;border-top:1px dashed var(--fg-3);width:14px;height:0;border-radius:0}
 .legend-pill.off{opacity:0.35}
 .legend-pill.off::before{background:transparent;border:1px solid var(--fg-3)}
+.legend-pill.commodity-toggle{cursor:pointer;background:transparent;border:none;padding:0;font-family:var(--mono);transition:opacity .15s}
+.legend-pill.commodity-toggle:hover{opacity:0.75}
+
+.filter-bar{display:grid;grid-template-columns:1.4fr 2fr auto;gap:14px;align-items:center;padding:10px 0 14px;border-top:1px dashed var(--line-2);margin-top:6px}
+@media (max-width:720px){.filter-bar{grid-template-columns:1fr;gap:8px}}
+.filter-cell{display:flex;align-items:center;gap:10px;min-width:0}
+.filter-l{font-size:9.5px;color:var(--fg-3);text-transform:uppercase;letter-spacing:0.12em;font-weight:600;white-space:nowrap}
+.filter-v{font-size:11px;color:var(--accent);font-feature-settings:'tnum';font-weight:600;min-width:48px;text-align:right}
+.filter-input{font-size:11.5px;padding:7px 10px;font-weight:500}
+.filter-reset{padding:7px 14px;font-size:10px}
+.filter-bar input[type=range]{flex:1;min-width:0}
+
+table.sens th.sortable{cursor:pointer;user-select:none;position:relative;padding-right:18px}
+table.sens th.sortable:hover{color:var(--accent)}
+table.sens th.sort-asc::after{content:' ▲';color:var(--accent);font-size:8px;position:absolute;right:6px;top:50%;transform:translateY(-50%)}
+table.sens th.sort-desc::after{content:' ▼';color:var(--accent);font-size:8px;position:absolute;right:6px;top:50%;transform:translateY(-50%)}
+table.sens tbody tr.proj-row{cursor:pointer}
+table.sens tbody tr.proj-row.matched td{background:var(--accent-dim);color:var(--fg)}
+table.sens tbody tr.proj-row.matched td:first-child{color:var(--accent);font-weight:700}
 .legend-sep{color:var(--line-2);font-size:11px}
 .legend-pill-dep{font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .legend-pill-dep::before{content:'';width:10px;height:10px;border-radius:50%;background:currentColor}
@@ -386,14 +405,27 @@ table.sens tbody tr.proj-divider td{background:var(--bg-3);padding:5px 14px;text
           <span class="legend-pill user static">Your saved intercepts</span>
           <span class="legend-pill match static" id="matchPill" style="display:none">Matched project</span>
           <span class="legend-sep">│</span>
-          <span class="legend-pill au static">Au</span>
-          <span class="legend-pill cu static">Cu</span>
-          <span class="legend-pill li static">Li</span>
-          <span class="legend-pill ni static">Ni</span>
-          <span class="legend-pill u static">U</span>
-          <span class="legend-pill zn static">Zn</span>
-          <span class="legend-pill other static">Other</span>
+          <button type="button" class="legend-pill on au commodity-toggle" data-c="Au">Au</button>
+          <button type="button" class="legend-pill on cu commodity-toggle" data-c="Cu">Cu</button>
+          <button type="button" class="legend-pill on li commodity-toggle" data-c="Li">Li</button>
+          <button type="button" class="legend-pill on ni commodity-toggle" data-c="Ni">Ni</button>
+          <button type="button" class="legend-pill on u commodity-toggle"  data-c="U">U</button>
+          <button type="button" class="legend-pill on zn commodity-toggle" data-c="Zn">Zn</button>
+          <button type="button" class="legend-pill on other commodity-toggle" data-c="Other">Other</button>
           <button class="legend-toggle on" id="overlayToggle">KDE contours</button>
+        </div>
+        <div class="filter-bar">
+          <div class="filter-cell">
+            <span class="filter-l">Min g·m</span>
+            <input type="range" id="minGmSlider" class="t-range" min="0" max="2000" step="10" value="0">
+            <span class="filter-v" id="minGmVal">0</span>
+          </div>
+          <div class="filter-cell">
+            <span class="filter-l">Project search</span>
+            <input id="projSearch" class="t-input filter-input" type="text" list="universeProjects" placeholder="Type a universe project (autocompletes)">
+            <datalist id="universeProjects"></datalist>
+          </div>
+          <button class="t-btn t-btn-s filter-reset" id="filterReset">Reset</button>
         </div>
         <div class="chart-wrap-tall"><canvas id="profileChart"></canvas></div>
         <div class="kpi-eq" style="margin-top:8px;color:var(--fg-2)" id="profileSub">Loading drill universe…</div>
@@ -404,6 +436,28 @@ table.sens tbody tr.proj-divider td{background:var(--bg-3);padding:5px 14px;text
           <div class="stage-cell" data-stage="pfs"><span class="l">PFS</span><span class="v">30–80 &gt;100</span></div>
           <div class="stage-cell" data-stage="fs"><span class="l">FS / mine</span><span class="v">80+ &gt;100</span></div>
         </div>
+      </div>
+    </div>
+
+    <!-- Top projects table -->
+    <div class="card">
+      <div class="card-h">Top projects in universe <span class="meta" id="projTableMeta">sortable · click row to highlight</span></div>
+      <div class="card-b" style="padding:0;overflow-x:auto">
+        <table class="sens" id="projTable">
+          <thead>
+            <tr>
+              <th data-sort="name"     class="sortable">Project</th>
+              <th data-sort="primary"  class="sortable">Commodity</th>
+              <th data-sort="n"        class="sortable sort-desc">n int</th>
+              <th data-sort="best"     class="sortable">Best g·m</th>
+              <th data-sort="median"   class="sortable">Median g·m</th>
+              <th data-sort="above100" class="sortable">&gt;100</th>
+              <th data-sort="above1k"  class="sortable">&gt;1k</th>
+              <th data-sort="loc"      class="sortable">Location</th>
+            </tr>
+          </thead>
+          <tbody id="projTableBody"></tbody>
+        </table>
       </div>
     </div>
 
@@ -435,7 +489,7 @@ table.sens tbody tr.proj-divider td{background:var(--bg-3);padding:5px 14px;text
         <p><strong>1. AuEq formula.</strong> NI 43-101 / JORC standard: <em>AuEq = Σ(grade × price × recovery) / (Au_price × Au_recovery)</em>. Each metal row carries its own price and recovery — edit them to match your assumptions. Defaults: Au $2,400/oz @ 90%, Ag $28/oz @ 75%, Cu $4.20/lb @ 88%, Pb $0.95/lb @ 80%, Zn $1.30/lb @ 85%, Ni $8/lb @ 70%, Mo $20/lb @ 80%, Co $15/lb @ 65%, Sn $14/lb @ 72%, Li₂O $14.50/lb @ 75%, U₃O₈ $80/lb @ 90%.</p>
         <p><strong>2. Multi-intercept holes.</strong> A drill hole can have several mineralised zones at different depths. Add as many intercepts as your assays show — each gets its own AuEq, true width, and gram-meters. The hole's "Total g·m" is the sum across intercepts; "Best g·m" is the largest single intercept. Save the whole hole as one record; the saved-holes table shows hole-level rollups.</p>
         <p><strong>3. Gram-meters and ranking.</strong> The universal cross-commodity ranking metric: <em>g·m = AuEq grade × true width</em>. Rank tile compares your <em>active</em> intercept against the 46-hole benchmark set. The benchmark scatter's iso-curves let you see the grade-vs-width trade-off explicitly.</p>
-        <p><strong>4. Project scatter — drilling universe.</strong> Same log-log axes as the benchmark chart (true width × AuEq grade). Background cloud is 4,188 real drill intercepts across 1,180 projects, coloured by commodity group (Au / Cu / Li / Ni / U / Zn / Other). True width is assumed equal to downhole length — the source spreadsheet has no TW indicator, so all g·m figures are upper bounds. Toggle <em>KDE contours</em> to overlay per-commodity Gaussian kernel-density envelopes (50% solid fill = inner half of mass; 80% dashed = outer 80%). Computed via <code>scipy.stats.gaussian_kde</code> on log10(width) × log10(AuEq grade). Type a Project name in the inputs — if it matches a project in the universe, those intercepts are highlighted as green halos. Your saved intercepts plot on top as bright green diamonds. Stage indicator below tracks # holes &gt; 100 g·m:</p>
+        <p><strong>4. Project scatter — drilling universe + filters.</strong> Same log-log axes as the benchmark chart (true width × AuEq grade). Background cloud is 4,188 real drill intercepts across 1,180 projects, coloured by commodity group (Au / Cu / Li / Ni / U / Zn / Other). True width is assumed equal to downhole length — the source spreadsheet has no TW indicator, so all g·m figures are upper bounds. <strong>Filters:</strong> click a commodity pill to toggle that group on/off (also hides its KDE envelope and removes its projects from the summary table); drag the <em>Min g·m</em> slider to suppress low-significance intercepts; type into <em>Project search</em> for autocomplete from the universe. Matched-project halos always show, regardless of filter state. Toggle <em>KDE contours</em> to overlay per-commodity Gaussian kernel-density envelopes (50% solid fill = inner half of mass; 80% dashed = outer 80%) computed via <code>scipy.stats.gaussian_kde</code> on log10(width) × log10(AuEq grade). Stage indicator below tracks # holes &gt; 100 g·m for your saved holes. The summary table below the chart ranks all universe projects on n intercepts / best g·m / median g·m / # &gt;100 g·m / # &gt;1k g·m — click a row to highlight that project on the scatter.</p>
         <table>
           <thead><tr><th>Stage</th><th># total holes</th><th># &gt;100 g·m</th><th># &gt;1,000 g·m</th></tr></thead>
           <tbody>
@@ -1086,10 +1140,63 @@ const projectChart = new Chart(document.getElementById('profileChart'), {
 });
 
 let contoursOn = true;
+const enabledCommodities = new Set(COMMODITY_LIST);
+let minGm = 0;
+let projectStats = [];   // computed once on init
+let tableSort = {col:'n', dir:'desc'};
+
 el.overlayToggle.addEventListener('click', () => {
   contoursOn = !contoursOn;
   el.overlayToggle.classList.toggle('on', contoursOn);
   renderProfile();
+});
+
+// Commodity-pill toggle handlers (delegated)
+document.querySelectorAll('.commodity-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const c = btn.dataset.c;
+    if (enabledCommodities.has(c)) { enabledCommodities.delete(c); btn.classList.remove('on'); btn.classList.add('off'); }
+    else { enabledCommodities.add(c); btn.classList.add('on'); btn.classList.remove('off'); }
+    renderProfile();
+    renderProjectTable();
+  });
+});
+
+// Min g·m slider
+const minGmSlider = document.getElementById('minGmSlider');
+const minGmVal = document.getElementById('minGmVal');
+minGmSlider.addEventListener('input', () => {
+  minGm = parseFloat(minGmSlider.value) || 0;
+  minGmVal.textContent = minGm > 0 ? minGm.toLocaleString() + ' g·m' : '0';
+  renderProfile();
+});
+
+// Project search field — pipes into the hole-header project name
+const projSearch = document.getElementById('projSearch');
+projSearch.addEventListener('input', () => {
+  el.projName.value = projSearch.value;
+  renderProfile();
+  renderProjectTable();
+});
+projSearch.addEventListener('change', () => {
+  el.projName.value = projSearch.value;
+  renderProfile();
+  renderProjectTable();
+});
+
+// Filter reset
+document.getElementById('filterReset').addEventListener('click', () => {
+  COMMODITY_LIST.forEach(c => enabledCommodities.add(c));
+  document.querySelectorAll('.commodity-toggle').forEach(b => { b.classList.add('on'); b.classList.remove('off'); });
+  minGm = 0;
+  minGmSlider.value = 0;
+  minGmVal.textContent = '0';
+  contoursOn = true;
+  el.overlayToggle.classList.add('on');
+  projSearch.value = '';
+  el.projName.value = '';
+  renderProfile();
+  renderProjectTable();
 });
 
 function clampPt(x, y) {
@@ -1116,10 +1223,10 @@ function renderProfile() {
     });
   });
 
-  // KDE contours per commodity (toggleable). 80% drawn first (dashed outer envelope),
-  // 50% second (filled inner core). Iso-curves are below; cloud + dots above.
+  // KDE contours per commodity (filtered by enabled commodities + global toggle).
   if (contoursOn && UNIVERSE.kde_contours) {
     COMMODITY_LIST.forEach(c => {
+      if (!enabledCommodities.has(c)) return;
       const info = UNIVERSE.kde_contours[c];
       if (!info) return;
       const pal = COMMODITY_PALETTE[c];
@@ -1144,19 +1251,28 @@ function renderProfile() {
   }
 
   // Background cloud — split universe into matched / unmatched, group unmatched by commodity.
+  // Honor commodity toggle + min g·m filter. Matched halos always show (explicit search).
   const matched = [];
   const unmatchedByC = {};
   COMMODITY_LIST.forEach(c => unmatchedByC[c] = []);
+  let cloudShown = 0, cloudTotal = 0;
   (UNIVERSE.intercepts || []).forEach(([p, c, w, g]) => {
     if (!isFinite(w) || !isFinite(g) || w <= 0 || g <= 0) return;
+    cloudTotal++;
+    const gm = w * g;
+    const isMatched = projNameLc && p && p.toLowerCase() === projNameLc;
+    const key = COMMODITY_LIST.includes(c) ? c : 'Other';
     const pt = clampPt(w, g);
-    pt.meta = {project:p || '(no project)', commodity:c, width:w, grade:g, gm:w*g, is_universe:true};
-    if (projNameLc && p && p.toLowerCase() === projNameLc) {
+    pt.meta = {project:p || '(no project)', commodity:c, width:w, grade:g, gm, is_universe:true};
+    if (isMatched) {
       matched.push(pt);
-    } else {
-      const key = COMMODITY_LIST.includes(c) ? c : 'Other';
-      unmatchedByC[key].push(pt);
+      cloudShown++;
+      return;
     }
+    if (!enabledCommodities.has(key)) return;
+    if (gm < minGm) return;
+    cloudShown++;
+    unmatchedByC[key].push(pt);
   });
   COMMODITY_LIST.forEach(c => {
     if (!unmatchedByC[c].length) return;
@@ -1195,20 +1311,29 @@ function renderProfile() {
   // Header sub + stage indicator
   const total = projHoles.length;
   const universeN = (UNIVERSE.intercepts || []).length;
+  const filterTail = (() => {
+    const parts = [];
+    if (minGm > 0) parts.push(`g·m ≥ ${minGm}`);
+    if (enabledCommodities.size < COMMODITY_LIST.length) parts.push(`${enabledCommodities.size}/${COMMODITY_LIST.length} commodities`);
+    return parts.length ? ` · filter: ${parts.join(', ')}` : '';
+  })();
   if (!projName) {
     el.profileMeta.textContent = universeN
-      ? `universe · ${universeN.toLocaleString()} intercepts · ${(UNIVERSE.projects||[]).length.toLocaleString()} projects`
+      ? `universe · ${cloudShown.toLocaleString()}/${universeN.toLocaleString()} shown · ${(UNIVERSE.projects||[]).length.toLocaleString()} projects${filterTail}`
       : 'universe loading…';
-    el.profileSub.textContent = `Background cloud is the full intercept universe (${universeN.toLocaleString()} dots, coloured by commodity). KDE contours outline where each commodity's mineralisation typically lives — solid fill = inner 50% of mass, dashed = 80%. Type a Project name in inputs to highlight matching intercepts.`;
+    el.profileSub.textContent = `Background cloud = real intercepts coloured by commodity. KDE contours = inner 50% (solid fill) and outer 80% (dashed) probability mass on log10 axes. Click a commodity pill to toggle, drag the slider to filter low-significance intercepts, or type a project name to highlight matches.`;
   } else {
     const above100 = projHoles.filter(h => (h.hole_gm||0) > 100).length;
     const above1k  = projHoles.filter(h => (h.hole_gm||0) > 1000).length;
-    el.profileMeta.textContent = `"${projName}" · saved ${total} · matched ${matched.length} in universe · ${above100} >100 g·m · ${above1k} >1k g·m`;
+    el.profileMeta.textContent = `"${projName}" · saved ${total} · matched ${matched.length} in universe · ${above100} >100 g·m · ${above1k} >1k g·m${filterTail}`;
     el.profileSub.textContent = matched.length
-      ? `Found ${matched.length} matching intercepts in the universe — green halos. Your saved holes (sharp diamonds) plot on top.`
-      : `No "${projName}" matches in the universe (${universeN.toLocaleString()} intercepts loaded). Your saved holes plot as green diamonds on top.`;
+      ? `Found ${matched.length} matching intercepts in the universe — green halos (always shown, ignore commodity / g·m filters). Your saved holes plot on top as bright diamonds.`
+      : `No "${projName}" matches in the universe (${universeN.toLocaleString()} loaded). Your saved holes plot as green diamonds on top.`;
   }
   if (el.matchPill) el.matchPill.style.display = matched.length ? 'inline-flex' : 'none';
+
+  // Re-render table to track matched-row highlight
+  renderProjectTable();
 
   // Stage indicator
   const above100Stage = projHoles.filter(h => (h.hole_gm||0) > 100).length;
@@ -1220,6 +1345,114 @@ function renderProfile() {
   else if (above100Stage >= 1)  stage = 'discovery';
   [...el.stageRow.children].forEach(c => c.classList.toggle('on', c.dataset.stage === stage));
 }
+
+// ─── Project stats + summary table ─────────────────────────
+function buildProjectStats() {
+  const byProj = new Map();
+  const projLocations = new Map(); // proj -> Map(location -> count) for top-location lookup
+  // Walk universe intercepts; xlsx had a Location column but we didn't ship it in
+  // the compact array — accept that for now and recover later if needed.
+  (UNIVERSE.intercepts || []).forEach(([p, c, w, g]) => {
+    if (!p) return;
+    if (!isFinite(w) || !isFinite(g) || w <= 0 || g <= 0) return;
+    if (!byProj.has(p)) byProj.set(p, []);
+    byProj.get(p).push({c, w, g, gm: w*g});
+  });
+  const out = [];
+  byProj.forEach((rows, name) => {
+    const gms = rows.map(r => r.gm).sort((a,b) => a - b);
+    const median = gms.length % 2 ? gms[(gms.length-1)/2] : (gms[gms.length/2 - 1] + gms[gms.length/2]) / 2;
+    const best = gms[gms.length - 1];
+    const above100 = gms.filter(g => g > 100).length;
+    const above1k  = gms.filter(g => g > 1000).length;
+    const cmix = {};
+    rows.forEach(r => { const k = COMMODITY_LIST.includes(r.c) ? r.c : 'Other'; cmix[k] = (cmix[k]||0)+1; });
+    const primary = Object.entries(cmix).sort((a,b) => b[1] - a[1])[0][0];
+    out.push({name, n: rows.length, best, median, above100, above1k, primary, loc: ''});
+  });
+  return out;
+}
+
+function populateProjectDatalist() {
+  const dl = document.getElementById('universeProjects');
+  if (!dl) return;
+  // Sorted alphabetically; native datalist filters substrings as you type
+  const names = projectStats.map(p => p.name).sort((a,b) => a.localeCompare(b));
+  dl.innerHTML = names.map(n => `<option value="${escapeHtml(n)}"></option>`).join('');
+}
+
+function sortProjectStats(arr) {
+  const {col, dir} = tableSort;
+  const sign = dir === 'asc' ? 1 : -1;
+  const get = p => col === 'name' || col === 'primary' || col === 'loc' ? (p[col] || '') : (p[col] || 0);
+  return arr.slice().sort((a, b) => {
+    const va = get(a), vb = get(b);
+    if (typeof va === 'string') return sign * va.localeCompare(vb);
+    return sign * (va - vb);
+  });
+}
+
+function renderProjectTable() {
+  const body = document.getElementById('projTableBody');
+  const meta = document.getElementById('projTableMeta');
+  if (!body) return;
+  // Filter by enabled commodities (show projects whose primary is enabled)
+  const filtered = projectStats.filter(p => enabledCommodities.has(p.primary));
+  const sorted = sortProjectStats(filtered);
+  const top = sorted.slice(0, 50);
+  const projNameLc = ((el.projName.value || '').trim()).toLowerCase();
+
+  body.innerHTML = top.map(p => {
+    const matchedClass = projNameLc && p.name.toLowerCase() === projNameLc ? ' matched' : '';
+    const palBorder = (COMMODITY_PALETTE[p.primary] || COMMODITY_PALETTE.Other).border;
+    return `<tr class="proj-row${matchedClass}" data-name="${escapeHtml(p.name)}">
+      <td>${escapeHtml(p.name)}</td>
+      <td><span style="color:${palBorder};font-weight:600">${p.primary}</span></td>
+      <td>${p.n}</td>
+      <td><strong style="color:var(--accent)">${fmt(p.best, 0)}</strong></td>
+      <td>${fmt(p.median, 0)}</td>
+      <td>${p.above100}</td>
+      <td>${p.above1k}</td>
+      <td style="color:var(--fg-3)">—</td>
+    </tr>`;
+  }).join('');
+
+  meta.textContent = `${filtered.length} projects · showing top ${top.length} by ${tableSort.col} ${tableSort.dir === 'asc' ? '↑' : '↓'}`;
+
+  // Update sort indicators on headers
+  document.querySelectorAll('#projTable th.sortable').forEach(th => {
+    th.classList.remove('sort-asc','sort-desc');
+    if (th.dataset.sort === tableSort.col) th.classList.add(tableSort.dir === 'asc' ? 'sort-asc' : 'sort-desc');
+  });
+}
+
+// Sortable headers (delegated, attached once on init)
+function wireProjectTableHeaders() {
+  document.querySelectorAll('#projTable th.sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.sort;
+      if (tableSort.col === col) {
+        tableSort.dir = tableSort.dir === 'asc' ? 'desc' : 'asc';
+      } else {
+        tableSort.col = col;
+        // numeric columns default to descending; text columns to ascending
+        tableSort.dir = ['n','best','median','above100','above1k'].includes(col) ? 'desc' : 'asc';
+      }
+      renderProjectTable();
+    });
+  });
+}
+
+// Click a project row → drop into project name field, trigger highlight everywhere
+document.getElementById('projTableBody').addEventListener('click', e => {
+  const row = e.target.closest('tr.proj-row');
+  if (!row) return;
+  const name = row.dataset.name;
+  el.projName.value = name;
+  document.getElementById('projSearch').value = name;
+  renderProfile();
+  renderProjectTable();
+});
 
 // ─── Saved holes (localStorage) ─────────────────────────────
 function loadSaved() {
@@ -1526,6 +1759,10 @@ async function init() {
     ? `${uN.toLocaleString()} intercepts / ${(UNIVERSE.projects||[]).length.toLocaleString()} projects`
     : '—';
   rebuildChartDatasets();
+  // Build summary stats from universe (cheap; runs once)
+  projectStats = buildProjectStats();
+  populateProjectDatalist();
+  wireProjectTableHeaders();
   // Seed first intercept
   el.interceptStack.appendChild(buildInterceptCard({active:true}));
   renderSaved();
