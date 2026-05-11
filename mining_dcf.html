@@ -33,8 +33,29 @@ body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',syste
 
 /* ── Header ── */
 #hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;gap:18px;flex-shrink:0;flex-wrap:wrap;}
-#project-name{background:transparent;border:none;color:var(--text);font-size:16px;font-weight:700;width:260px;padding:2px 4px;border-radius:3px;}
+.hdr-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.hdr-btn{background:var(--bg-3);border:1px solid var(--line-2);color:var(--fg);
+  padding:6px 12px;border-radius:var(--r);cursor:pointer;font-size:10.5px;font-weight:700;
+  font-family:var(--font-mono);letter-spacing:.05em;text-transform:uppercase;
+  transition:all .12s;white-space:nowrap;}
+.hdr-btn:hover{border-color:var(--accent);color:var(--accent);}
+.hdr-btn:active{background:var(--line);}
+.hdr-id{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.hdr-id-line{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-2);}
+.ds-ticker{color:var(--accent);font-weight:800;}
+.ds-sep{color:var(--fg-3);}
+.ds-company{color:var(--fg);font-weight:700;}
+#project-name{background:transparent;border:none;color:var(--text);font-size:15px;font-weight:700;width:320px;max-width:60vw;padding:1px 4px;border-radius:3px;}
 #project-name:focus{outline:1px solid var(--accent);background:var(--card);}
+
+/* ── Deal-context strip (situation header) ── */
+#deal-strip{background:var(--bg-2);border-bottom:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(7,1fr);gap:0;padding:0;flex-shrink:0;}
+.ds-cell{padding:8px 14px;border-right:1px solid var(--line);text-align:left;min-width:0;}
+.ds-cell:last-child{border-right:none;}
+.ds-v{font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--fg);line-height:1.1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ds-l{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-2);margin-top:3px;}
 .kpi-bar{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap;}
 .kpi{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 12px;text-align:right;min-width:100px;}
 .kpi-val{font-size:18px;font-weight:700;font-family:var(--font-mono);line-height:1.1;}
@@ -452,6 +473,163 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
 .cat-uplift{font-size:11px;font-weight:700;font-family:var(--font-mono);margin-top:4px;color:var(--green);}
 .cat-desc{font-size:9px;color:var(--fg-2);line-height:1.3;margin-top:4px;min-height:26px;}
 
+/* ── Risk Register ── */
+.risk-wrap{overflow-x:auto;}
+.risk-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:11px;}
+.risk-table thead th{background:var(--bg-3);color:var(--fg-2);font-size:9px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.07em;padding:8px 12px;text-align:left;
+  border-bottom:1px solid var(--line-2);white-space:nowrap;}
+.risk-table thead th.num{text-align:right;}
+.risk-table tbody td{padding:8px 12px;border-bottom:1px solid rgba(58,61,51,.4);color:var(--fg);
+  vertical-align:top;}
+.risk-table tbody td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.risk-table tbody tr:hover td{background:rgba(93,211,168,.04);}
+.risk-table tbody tr:last-child td{border-bottom:none;}
+.risk-name{font-weight:700;color:var(--fg);}
+.risk-cat{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-2);}
+.risk-mitig{font-size:10px;color:var(--fg-2);line-height:1.5;white-space:normal;max-width:380px;}
+.risk-dots{font-family:var(--font-mono);letter-spacing:1px;color:var(--fg-3);}
+.risk-dots .on{color:var(--fg);}
+.risk-score{font-weight:800;padding:2px 8px;border-radius:3px;display:inline-block;}
+.risk-score.lo{background:rgba(93,211,128,.15);color:var(--green);}
+.risk-score.mid{background:rgba(232,182,88,.15);color:var(--amber);}
+.risk-score.hi{background:rgba(255,95,86,.15);color:var(--red);}
+.risk-status{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+  padding:2px 8px;border-radius:3px;display:inline-block;white-space:nowrap;}
+.risk-status.open{background:rgba(255,95,86,.18);color:var(--red);}
+.risk-status.watch{background:rgba(232,182,88,.18);color:var(--amber);}
+.risk-status.mitig{background:rgba(93,211,128,.18);color:var(--green);}
+
+/* ── Offer-Price Builder ── */
+.offer-grid{display:grid;grid-template-columns:1fr 2fr;gap:18px;}
+.offer-inputs .fr{margin-bottom:5px;}
+.offer-inputs .fr label{font-size:11px;color:var(--fg);}
+.offer-inputs .fr input{width:80px;}
+.offer-output{display:flex;flex-direction:column;gap:0;}
+.offer-pill-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.offer-pill{background:var(--bg-3);border:1px solid var(--line);border-radius:var(--r);padding:9px 12px;}
+.op-l{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-2);}
+.op-v{font-family:var(--font-mono);font-size:18px;font-weight:800;color:var(--fg);line-height:1.1;margin-top:3px;}
+.offer-su{display:flex;flex-direction:column;gap:4px;}
+.offer-su-row{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;}
+.offer-su-lbl{flex:0 0 90px;color:var(--fg-2);font-size:10px;text-transform:uppercase;letter-spacing:.05em;}
+.offer-su-track{flex:1;height:14px;background:var(--bg-3);border-radius:3px;overflow:hidden;}
+.offer-su-fill{height:100%;display:flex;align-items:center;padding:0 6px;font-size:9px;font-weight:700;color:var(--bg);}
+.offer-su-cash{background:var(--green);}
+.offer-su-scrip{background:var(--cyan);}
+.offer-su-debt{background:var(--amber);}
+.offer-su-val{flex:0 0 80px;text-align:right;color:var(--fg);font-weight:700;}
+.offer-irr-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:11px;}
+.offer-irr-table thead th{background:var(--bg-3);color:var(--fg-2);font-size:9px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;padding:6px 10px;text-align:right;
+  border-bottom:1px solid var(--line-2);}
+.offer-irr-table thead th:first-child{text-align:left;}
+.offer-irr-table tbody td{padding:6px 10px;text-align:right;border-bottom:1px solid rgba(58,61,51,.4);
+  color:var(--fg);}
+.offer-irr-table tbody td:first-child{text-align:left;color:var(--fg-2);}
+.offer-irr-table tbody tr:last-child td{border-bottom:none;}
+.offer-irr-table .irr-bad{color:var(--red);}
+.offer-irr-table .irr-mid{color:var(--amber);}
+.offer-irr-table .irr-good{color:var(--green);font-weight:800;}
+
+/* ── Precedent Transactions ── */
+.prec-wrap{overflow-x:auto;}
+.prec-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:11px;}
+.prec-table thead th{background:var(--bg-3);color:var(--fg-2);font-size:9px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.07em;padding:8px 12px;text-align:left;
+  border-bottom:1px solid var(--line-2);cursor:pointer;user-select:none;white-space:nowrap;}
+.prec-table thead th.num{text-align:right;}
+.prec-table thead th:hover{color:var(--accent);}
+.prec-table thead th.sort-asc::after{content:' ▲';color:var(--accent);font-size:8px;}
+.prec-table thead th.sort-desc::after{content:' ▼';color:var(--accent);font-size:8px;}
+.prec-table tbody td{padding:7px 12px;border-bottom:1px solid rgba(58,61,51,.4);color:var(--fg);
+  white-space:nowrap;}
+.prec-table tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
+.prec-table tbody tr:hover td{background:rgba(93,211,168,.04);}
+.prec-table tbody tr:last-child td{border-bottom:none;}
+.prec-stage{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  padding:2px 6px;border-radius:3px;background:var(--bg-3);color:var(--fg-2);}
+.prec-stage.s-prod{background:rgba(93,211,128,.18);color:var(--green);}
+.prec-stage.s-fs  {background:rgba(106,207,224,.18);color:var(--cyan);}
+.prec-stage.s-pfs {background:rgba(232,182,88,.18);color:var(--amber);}
+.prec-stage.s-pea {background:rgba(232,182,88,.12);color:var(--amber);}
+.prec-stage.s-mre {background:var(--accent-dim);color:var(--accent);}
+
+/* ── Football Field ── */
+.ff-axis-row{display:flex;align-items:center;gap:10px;padding:0 0 8px;border-bottom:1px solid var(--line);margin-bottom:6px;}
+.ff-axis{flex:1;position:relative;height:18px;font-family:var(--font-mono);font-size:9px;color:var(--fg-2);}
+.ff-axis::before{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--line-2);}
+.ff-tick{position:absolute;bottom:0;transform:translateX(-50%);padding-bottom:2px;}
+.ff-tick::after{content:'';position:absolute;left:50%;bottom:-3px;width:1px;height:4px;background:var(--line-2);transform:translateX(-50%);}
+.ff-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(58,61,51,.3);}
+.ff-row:last-child{border-bottom:none;}
+.ff-row-lbl{flex:0 0 130px;min-width:130px;font-size:10px;font-family:var(--font-mono);color:var(--fg);font-weight:700;line-height:1.3;}
+.ff-row-lbl small{display:block;color:var(--fg-3);font-weight:400;font-size:9px;}
+.ff-track{flex:1;position:relative;height:22px;background:transparent;}
+.ff-bar{position:absolute;top:50%;transform:translateY(-50%);height:14px;border-radius:3px;
+  display:flex;align-items:center;padding:0 6px;font-family:var(--font-mono);font-size:9px;
+  color:var(--bg);font-weight:700;white-space:nowrap;overflow:visible;}
+.ff-bar.dcf{background:var(--accent);}
+.ff-bar.comps{background:var(--cyan);}
+.ff-bar.prec{background:var(--amber);}
+.ff-bar.trade{background:var(--fg-2);}
+.ff-bar-edge{position:absolute;top:50%;transform:translate(-50%,-50%);font-family:var(--font-mono);
+  font-size:9px;color:var(--fg-2);white-space:nowrap;}
+.ff-bar-edge.lo{padding-right:4px;}
+.ff-bar-edge.hi{padding-left:4px;}
+.ff-marker{position:absolute;top:0;bottom:0;width:1px;background:var(--accent);z-index:5;}
+.ff-marker::before{content:attr(data-label);position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+  font-family:var(--font-mono);font-size:9px;font-weight:700;color:var(--accent);white-space:nowrap;
+  background:var(--bg-2);padding:0 4px;}
+.ff-marker.offer{background:var(--amber);border-left:1px dashed var(--amber);background:transparent;
+  border-image:linear-gradient(to bottom, var(--amber) 33%, transparent 33%) 1;}
+.ff-marker.offer::before{color:var(--amber);}
+.ff-legend{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;padding-top:8px;
+  border-top:1px solid var(--line);font-size:10px;color:var(--fg-2);font-family:var(--font-mono);}
+.ff-legend span{display:inline-flex;align-items:center;gap:5px;}
+.ff-swatch{display:inline-block;width:10px;height:10px;border-radius:2px;}
+
+/* ── NAV Bridge waterfall ── */
+.nav-bridge{display:flex;align-items:stretch;gap:6px;flex-wrap:wrap;}
+.nb-step{background:var(--bg-3);border:1px solid var(--line);border-radius:var(--r);
+  padding:10px 14px;min-width:130px;flex:1 1 130px;display:flex;flex-direction:column;gap:2px;}
+.nb-step.nb-source{border-left:3px solid var(--cyan);}
+.nb-step.nb-headline{border-color:var(--accent);background:var(--accent-dim);}
+.nb-step.nb-result{border-color:var(--accent);background:var(--accent-dim);border-left:3px solid var(--accent);}
+.nb-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-2);}
+.nb-v{font-family:var(--font-mono);font-size:18px;font-weight:800;color:var(--fg);line-height:1.1;margin-top:3px;}
+.nb-step.nb-headline .nb-v, .nb-step.nb-result .nb-v{color:var(--accent);}
+.nb-sub{font-size:9px;color:var(--fg-3);font-family:var(--font-mono);margin-top:2px;}
+.nb-op{display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);
+  font-size:18px;font-weight:700;color:var(--fg-3);min-width:18px;flex-shrink:0;}
+.nb-note{margin-top:10px;font-size:10px;color:var(--fg-2);font-family:var(--font-mono);line-height:1.5;}
+
+/* ── WACC Builder ── */
+.wacc-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.wacc-inputs .fr{margin-bottom:5px;}
+.wacc-inputs .fr label{font-size:11px;color:var(--fg);}
+.wacc-inputs .fr input{width:80px;}
+.wacc-output{display:flex;flex-direction:column;gap:8px;}
+.wacc-out-card{background:var(--bg-3);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;}
+.wacc-out-card.wacc-headline{border-color:var(--accent);background:var(--accent-dim);}
+.wacc-out-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-2);}
+.wacc-out-val{font-family:var(--font-mono);font-size:22px;font-weight:800;color:var(--fg);line-height:1.1;margin-top:3px;}
+.wacc-out-sub{font-size:9px;color:var(--fg-3);font-family:var(--font-mono);margin-top:2px;}
+.wacc-apply-btn{background:var(--accent);color:var(--bg);border:none;padding:7px 14px;border-radius:var(--r);
+  font-family:var(--font-mono);font-size:11px;font-weight:800;cursor:pointer;letter-spacing:.05em;
+  text-transform:uppercase;transition:opacity .15s;}
+.wacc-apply-btn:hover{opacity:.85;}
+
+/* ── As-of footer ── */
+#as-of-footer{margin:18px -14px -60px;padding:8px 16px 10px;background:var(--bg-2);
+  border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px 12px;
+  align-items:baseline;font-family:var(--font-mono);font-size:10px;color:var(--fg-2);}
+.aof-cell{display:inline-flex;gap:6px;align-items:baseline;}
+.aof-l{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-3);}
+.aof-v{color:var(--fg);font-weight:600;}
+.aof-sep{color:var(--fg-3);}
+.aof-disc{margin-left:auto;color:var(--fg-3);font-size:9px;font-style:italic;}
+
 /* ── Chart safety net: every Chart.js canvas fills its parent wrapper ── */
 .chart-wrap canvas, .mc-hist-wrap canvas, .mc-tornado-wrap canvas,
 .fnd-chart-wrap canvas, .peer-chart-wrap canvas,
@@ -478,6 +656,13 @@ body.drawer-open #sidebar-backdrop{display:block;}
   #hdr > div:first-of-type{flex:1;min-width:0;}
   #project-name{width:100%;font-size:14px;}
   #save-btn{padding:6px 10px;font-size:10px;}
+
+  /* Deal strip: wrap to compact grid */
+  #deal-strip{grid-template-columns:repeat(3,1fr);}
+  .ds-cell{padding:6px 10px;border-bottom:1px solid var(--line);}
+  .ds-cell:nth-child(3n){border-right:none;}
+  .ds-cell:nth-last-child(-n+1){border-bottom:none;}
+  .ds-v{font-size:12px;}
 
   /* KPI tiles: wrap two-up, full width row */
   .kpi-bar{margin-left:0;width:100%;display:grid;grid-template-columns:repeat(2,1fr);gap:6px;}
@@ -511,6 +696,35 @@ body.drawer-open #sidebar-backdrop{display:block;}
   .mc-percentiles{grid-template-columns:repeat(2,1fr);gap:6px;}
   .mc-var{grid-template-columns:1fr 1fr 1fr 1fr;font-size:10px;gap:4px;}
   .mc-var-name{grid-column:1 / -1;margin-bottom:2px;}
+
+  /* WACC builder stacks */
+  .wacc-grid{grid-template-columns:1fr;gap:12px;}
+
+  /* Football field: collapse label column */
+  .ff-row-lbl{flex:0 0 95px;min-width:95px;font-size:9.5px;}
+  .ff-axis{font-size:8.5px;}
+  .ff-bar{font-size:8.5px;padding:0 4px;}
+  .ff-bar-edge{font-size:8.5px;}
+
+  /* Precedents: shrink padding + drop secondary cols on phone */
+  .prec-table{font-size:10px;}
+  .prec-table thead th, .prec-table tbody td{padding:6px 8px;}
+
+  /* Offer builder stacks */
+  .offer-grid{grid-template-columns:1fr;gap:14px;}
+  .offer-pill-row{grid-template-columns:repeat(2,1fr);}
+  .op-v{font-size:15px;}
+
+  /* Risk register: tighter, mitigation can wrap */
+  .risk-table{font-size:10px;}
+  .risk-table thead th, .risk-table tbody td{padding:6px 8px;}
+  .risk-mitig{font-size:9.5px;max-width:260px;}
+
+  /* NAV bridge wraps to two-up rows on phone */
+  .nav-bridge{gap:4px;}
+  .nb-step{min-width:0;flex:1 1 calc(50% - 4px);padding:8px 10px;}
+  .nb-v{font-size:15px;}
+  .nb-op{flex:0 0 100%;height:0;visibility:hidden;}
 
   /* Funding cascade: stages and KPI summary stack/wrap on phone */
   .fnd-stage-grid{grid-template-columns:1fr;gap:0;}
@@ -556,12 +770,140 @@ body.drawer-open #sidebar-backdrop{display:block;}
 
   /* Home link smaller */
   body > a[href="index.html"]{font-size:9px;}
+
+  /* As-of footer collapses */
+  #as-of-footer{margin:14px -10px -80px;padding:8px 12px 12px;font-size:9.5px;}
+  .aof-disc{margin-left:0;width:100%;margin-top:4px;}
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   PRINT — IC one-pager (Cmd-P → PDF). Inverts to light theme for paper.
+   ══════════════════════════════════════════════════════════════════════ */
+@media print{
+  @page { size: A4 portrait; margin: 12mm; }
+  html, body{background:#fff;color:#111;height:auto;overflow:visible;font-size:9.5pt;}
+
+  /* Re-color tokens for print */
+  :root{
+    --bg:#ffffff;--bg-2:#f7f7f4;--bg-3:#f0efe8;
+    --line:#cfcdc1;--line-2:#a8a594;
+    --fg:#1a1a1a;--fg-2:#555;--fg-3:#888;
+    --accent-dim:rgba(93,211,168,0.12);
+  }
+
+  /* Hide chrome */
+  body > a[href="index.html"], #menu-btn, #sidebar-backdrop, #sidebar,
+  .hdr-actions, #sec-nav,
+  #as-of-footer{display:none !important;}
+
+  /* Hide deep-interactive sections we can't fit on a one-pager */
+  #sec-mc, #sec-stress, #sec-funding, #sec-peers,
+  .pf-wrap, .pf-bottom,
+  .table-wrap{display:none !important;}
+
+  /* Re-stack workspace; main fills page */
+  #workspace{display:block;}
+  #main{padding:0;overflow:visible;}
+
+  /* Header inverts; hairline border */
+  #hdr{background:#fff;border-bottom:1.5pt solid #111;padding:6pt 0;}
+  .hdr-id-line{color:#444;}
+  .ds-ticker{color:#1a8a64;}
+  #project-name{color:#111;font-size:13pt;width:auto;max-width:none;}
+
+  /* KPI bar prints as 6-up, no shadows */
+  .kpi-bar{margin-left:auto;display:grid;grid-template-columns:repeat(6,1fr);gap:4pt;width:auto;}
+  .kpi{background:#fff;border:0.5pt solid #aaa;padding:5pt 8pt;min-width:0;}
+  .kpi-val{color:#1a1a1a !important;font-size:11pt;}
+  .kpi-lbl, .kpi-sub{color:#555 !important;}
+
+  /* Deal strip prints inline 7-up */
+  #deal-strip{background:#f7f7f4;border-bottom:0.5pt solid #aaa;
+    grid-template-columns:repeat(7,1fr);}
+  .ds-cell{padding:4pt 6pt;border-color:#ccc;}
+  .ds-v{color:#111;font-size:9.5pt;}
+  .ds-l{color:#666;}
+
+  /* Section blocks — light, hairline border */
+  .sec-block{background:#fff;border:0.5pt solid #aaa;page-break-inside:avoid;margin-bottom:8pt;}
+  .sec-block-hdr{background:#f0efe8;padding:5pt 8pt;}
+  .sec-block-title{color:#111;font-size:9pt;}
+  .sec-block-sub{color:#666;font-size:8pt;}
+  .sec-block-body{padding:6pt 8pt;}
+
+  /* Football field — keep, but compact */
+  .ff-row-lbl{color:#1a1a1a;}
+  .ff-axis{color:#555;}
+  .ff-axis::before{background:#aaa;}
+  .ff-tick::after{background:#aaa;}
+  .ff-row{border-bottom:0.5pt solid #ddd;}
+  .ff-bar.dcf{background:#5dd3a8;}
+  .ff-bar.comps{background:#6acfe0;}
+  .ff-bar.prec{background:#e8b658;}
+  .ff-bar.trade{background:#888;}
+  .ff-bar-edge{color:#444;}
+  .ff-marker{background:#111;}
+  .ff-marker::before{background:#fff;color:#111;border:0.5pt solid #111;padding:1pt 3pt;}
+
+  /* NAV bridge — invert backgrounds */
+  .nb-step{background:#f7f7f4;border-color:#ccc;color:#111;}
+  .nb-step.nb-headline, .nb-step.nb-result{background:rgba(93,211,168,.12);border-color:#1a8a64;}
+  .nb-step.nb-headline .nb-v, .nb-step.nb-result .nb-v{color:#1a8a64;}
+  .nb-lbl{color:#666;}
+  .nb-sub{color:#888;}
+  .nb-op{color:#888;}
+
+  /* Charts (the two base-case ones in Overview) */
+  .chart-card{background:#fff;border:0.5pt solid #aaa;break-inside:avoid;}
+  .chart-wrap{height:160pt;}
+  .card-title{color:#111;}
+
+  /* Cost pills */
+  .cost-pills .pill{background:#f7f7f4;border-color:#ccc;color:#111;}
+  .pill-val{color:#111;}
+  .pill-lbl{color:#666;}
+
+  /* Scenario cards (bear/base/bull) */
+  .scn-card{background:#fff;}
+  .scn-kpi-item{background:#f7f7f4;}
+
+  /* Risk register prints in full */
+  .risk-table{font-size:8.5pt;}
+  .risk-table thead th{background:#f0efe8;color:#444;}
+  .risk-table tbody td{color:#111;}
+  .risk-mitig{color:#555;}
+  .risk-dots{color:#bbb;}
+  .risk-dots .on{color:#1a1a1a;}
+
+  /* Section anchor divs are zero-height — fine */
+  /* Force a page break before the risk register so it gets clean placement */
+  #sec-thesis{page-break-before:always;}
+
+  /* Hide the Auto Thesis content (interactive) but keep risk register at top of Thesis */
+  #sec-thesis ~ .sec-block:not(:first-of-type){display:none !important;}
+
+  /* Hide the WACC builder INPUTS but keep the headline computed value */
+  .wacc-inputs{display:none !important;}
+  .wacc-grid{grid-template-columns:1fr;}
+
+  /* Disclaimer banner at very bottom */
+  body::after{
+    content:'Not investment advice. Indicative model — verify before use. Generated from mining_dcf.html.';
+    display:block;font-family:'JetBrains Mono', monospace;font-size:7.5pt;color:#888;
+    text-align:center;margin-top:12pt;padding-top:6pt;border-top:0.5pt solid #ccc;
+  }
+
+  /* Avoid orphaning headers */
+  .sec-block-hdr{page-break-after:avoid;}
 }
 
 @media (max-width: 480px){
   .kpi-bar{grid-template-columns:1fr;}
   .mv-out-grid{grid-template-columns:1fr;}
   .mc-percentiles{grid-template-columns:1fr 1fr;}
+  #deal-strip{grid-template-columns:repeat(2,1fr);}
+  .ds-cell:nth-child(3n){border-right:1px solid var(--line);}
+  .ds-cell:nth-child(2n){border-right:none;}
 }
 </style>
 </head>
@@ -573,30 +915,39 @@ body.drawer-open #sidebar-backdrop{display:block;}
 <!-- HEADER -->
 <div id="hdr">
   <button id="menu-btn" aria-label="Open inputs" onclick="document.body.classList.toggle('drawer-open')">≡</button>
-  <div>
+  <div class="hdr-id">
+    <div class="hdr-id-line">
+      <span id="ds-ticker" class="ds-ticker">QTWO.V</span>
+      <span class="ds-sep">·</span>
+      <span id="ds-company" class="ds-company">Q2 Metals</span>
+    </div>
     <input id="project-name" type="text" value="Unnamed Spodumene Project">
-    <div style="font-size:10px;color:var(--muted);margin-top:2px;font-family:var(--font-mono)">Hard Rock Lithium Mine · DCF Model · Q1 2026</div>
   </div>
-  <button onclick="saveModel()" id="save-btn" style="
-    background:var(--card2);border:1px solid var(--border2);color:var(--fg);
-    padding:6px 14px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;
-    font-family:var(--font-mono);letter-spacing:.05em;transition:all .15s;white-space:nowrap;
-    display:flex;align-items:center;gap:6px;flex-shrink:0;">
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2 1h7l2 2v9H2V1z" stroke="var(--fg)" stroke-width="1" fill="none"></path>
-      <rect x="4" y="1" width="4" height="3" fill="var(--fg)" rx="0.5"></rect>
-      <rect x="3" y="7" width="7" height="4" fill="none" stroke="var(--fg)" stroke-width="1" rx="0.5"></rect>
-    </svg>
-    Save HTML
-  </button>
+  <div class="hdr-actions">
+    <button onclick="saveModel()" id="save-btn" class="hdr-btn">Save HTML</button>
+    <button onclick="shareLink()" id="share-btn" class="hdr-btn">Share Link</button>
+    <button onclick="exportCSV()" id="csv-btn"  class="hdr-btn">Export CSV</button>
+    <button onclick="printOnePager()" id="print-btn" class="hdr-btn">Print / PDF</button>
+  </div>
   <div class="kpi-bar">
-    <div class="kpi"><div class="kpi-val" id="k-npv" style="color: var(--green);">$0.64B</div><div class="kpi-lbl">NPV post-tax @WACC</div><div class="kpi-sub" id="k-npv2" style="color:var(--muted)">WACC: 10.0%</div></div>
-    <div class="kpi"><div class="kpi-val" id="k-npv8" style="color:var(--cyan)">$0.88B</div><div class="kpi-lbl">NPV post-tax @8%</div><div class="kpi-sub" id="k-npv8b" style="color:var(--muted)">discount rate: 8%</div></div>
-    <div class="kpi"><div class="kpi-val" id="k-irr" style="color:var(--teal)">21.5%</div><div class="kpi-lbl">IRR (post-tax)</div><div class="kpi-sub" style="color:var(--muted)" id="k-irr2">Target: 15%</div></div>
-    <div class="kpi"><div class="kpi-val" id="k-pb" style="color:var(--blue)">7.4 yrs</div><div class="kpi-lbl">Payback</div><div class="kpi-sub" style="color:var(--muted)" id="k-pb2">from first constr.</div></div>
-    <div class="kpi"><div class="kpi-val" id="k-ind" style="color:var(--accent)">$726</div><div class="kpi-lbl">Inducement</div><div class="kpi-sub" style="color:var(--muted)" id="k-ind2">min. SC6 $/t</div></div>
-    <div class="kpi"><div class="kpi-val" id="k-peak" style="color:var(--orange)">$800M</div><div class="kpi-lbl">Peak funding</div><div class="kpi-sub" style="color:var(--muted)">$M required</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-npv" style="color:var(--accent);">—</div><div class="kpi-lbl">NPV post-tax @ WACC</div><div class="kpi-sub" id="k-npv2">@ 8%: —</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-npv-share">—</div><div class="kpi-lbl">NPV / share FD</div><div class="kpi-sub" id="k-npv-share-sub">vs spot: —</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-irr">—</div><div class="kpi-lbl">IRR post-tax</div><div class="kpi-sub" id="k-irr2">Payback: —</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-aisc">—</div><div class="kpi-lbl">AISC ($/t SC6)</div><div class="kpi-sub" id="k-aisc-sub">Peak fund: —</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-evlce">—</div><div class="kpi-lbl">EV / t LCE implied</div><div class="kpi-sub" id="k-evlce-sub">at current MCAP</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-pnav">—</div><div class="kpi-lbl">P / NAV</div><div class="kpi-sub" id="k-pnav-sub">Inducement: —</div></div>
   </div>
+</div>
+
+<!-- SITUATION STRIP (deal context) -->
+<div id="deal-strip">
+  <div class="ds-cell"><div class="ds-v" id="ds-mcap">$395M</div><div class="ds-l">MCAP USD</div></div>
+  <div class="ds-cell"><div class="ds-v" id="ds-ev">$370M</div><div class="ds-l">EV USD</div></div>
+  <div class="ds-cell"><div class="ds-v" id="ds-cash">$25M</div><div class="ds-l">Cash USD</div></div>
+  <div class="ds-cell"><div class="ds-v" id="ds-shares">196M</div><div class="ds-l">Shares FD</div></div>
+  <div class="ds-cell"><div class="ds-v" id="ds-price">C$2.80</div><div class="ds-l">Last close</div></div>
+  <div class="ds-cell"><div class="ds-v" id="ds-asof">2026-04-22</div><div class="ds-l">As of</div></div>
+  <div class="ds-cell"><div class="ds-v" id="ds-stage">Maiden MRE</div><div class="ds-l">Stage</div></div>
 </div>
 
 <!-- WORKSPACE -->
@@ -617,6 +968,18 @@ body.drawer-open #sidebar-backdrop{display:block;}
         color:var(--fg);border-radius:var(--r);font-family:var(--font-mono);font-size:11px;
         font-weight:700;cursor:pointer;letter-spacing:.03em;">
         <option value="qtwo">QTWO.V — Cisco (Quebec)</option>
+        <optgroup label="Operating mines">
+          <option value="greenbushes">Greenbushes — Talison JV (WA) · since 1980s</option>
+          <option value="pilgangoora">PLS.AX — Pilgangoora (WA) · P1000 since 2025</option>
+          <option value="wodgina">MIN.AX — Wodgina MARBL JV (WA) · 3 trains</option>
+          <option value="sigma">SGML — Grota do Cirilo (BR) · P1 since 2023, P2/P3 expansion</option>
+          <option value="kathleenvalley">LTR.AX — Kathleen Valley (WA) · since 2024</option>
+        </optgroup>
+        <optgroup label="Development with published studies">
+          <option value="pmet">PMET.V — Shaakichiuwaanaan (QC) · FS Oct 2025</option>
+          <option value="arcadiumjb">Arcadium / Rio — James Bay (QC) · FS 2024 (paused)</option>
+          <option value="manono">AVZ.AX — Manono (DRC) · DFS 2020 (license dispute)</option>
+        </optgroup>
         <option value="blank">— Blank template</option>
       </select>
       <div id="project-notes" style="font-size:9px;color:var(--fg-2);margin-top:6px;line-height:1.5;font-family:var(--font-mono);">
@@ -668,7 +1031,7 @@ body.drawer-open #sidebar-backdrop{display:block;}
         <button class="pr" onclick="setPrice(2000,'Bull $2,000')">Bull</button>
         <button class="pr" onclick="setPrice(3500,'Super $3,500')">Super</button>
       </div>
-      <div class="fr"><label>SC6 spodumene price</label><input type="number" id="sc6Price" value="1400" min="100" max="8000" step="50"><span class="unit">$/t</span></div>
+      <div class="fr"><label>SC6 spodumene price</label><input type="number" id="sc6Price" value="1400" min="100" max="8000" step="50"><span class="unit">US$/t</span></div>
       <div class="fr"><label>Real price escalator</label><input type="number" id="priceEsc" value="0" min="-5" max="10" step="0.5"><span class="unit">%/yr</span></div>
       <hr class="divider">
       <div class="fr-note" style="color:var(--fg-2)">LCE equiv price shown in outputs.<br>1 t SC6 → 0.148 t LCE</div>
@@ -681,11 +1044,11 @@ body.drawer-open #sidebar-backdrop{display:block;}
       <span class="sec-title">Operating Costs</span><span class="chev">▶</span>
     </div>
     <div class="sec-body open">
-      <div class="fr"><label>Open pit mining</label><input type="number" id="miningCost" value="5.50" min="1" max="30" step="0.5"><span class="unit">$/t ore</span></div>
-      <div class="fr"><label>Crushing &amp; flotation</label><input type="number" id="procCost" value="24.00" min="5" max="80" step="1"><span class="unit">$/t ore</span></div>
-      <div class="fr"><label>G&amp;A (fixed)</label><input type="number" id="gaFixed" value="15" min="2" max="80" step="1"><span class="unit">$M/yr</span></div>
+      <div class="fr"><label>Open pit mining</label><input type="number" id="miningCost" value="5.50" min="1" max="30" step="0.5"><span class="unit">US$/t ore</span></div>
+      <div class="fr"><label>Crushing &amp; flotation</label><input type="number" id="procCost" value="24.00" min="5" max="80" step="1"><span class="unit">US$/t ore</span></div>
+      <div class="fr"><label>G&amp;A (fixed)</label><input type="number" id="gaFixed" value="15" min="2" max="80" step="1"><span class="unit">US$M/yr</span></div>
       <div class="fr"><label>State royalty</label><input type="number" id="royalty" value="3.0" min="0" max="10" step="0.5"><span class="unit">% rev</span></div>
-      <div class="fr"><label>Port, freight &amp; selling</label><input type="number" id="freight" value="75" min="20" max="250" step="5"><span class="unit">$/t SC6</span></div>
+      <div class="fr"><label>Port, freight &amp; selling</label><input type="number" id="freight" value="75" min="20" max="250" step="5"><span class="unit">US$/t SC6</span></div>
       <hr class="divider">
       <div class="fr"><label>OPEX escalator</label><input type="number" id="opexEsc" value="2.0" min="-2" max="8" step="0.5"><span class="unit">%/yr</span></div>
     </div>
@@ -697,12 +1060,12 @@ body.drawer-open #sidebar-backdrop{display:block;}
       <span class="sec-title">Capital Structure</span><span class="chev">▶</span>
     </div>
     <div class="sec-body open">
-      <div class="fr"><label>Initial CAPEX</label><input type="number" id="initCapex" value="800" min="50" max="10000" step="25"><span class="unit">$M</span></div>
+      <div class="fr"><label>Initial CAPEX</label><input type="number" id="initCapex" value="800" min="50" max="10000" step="25"><span class="unit">US$M</span></div>
       <div class="fr"><label>CAPEX: year 1 of constr.</label><input type="number" id="capex1" value="25" min="5" max="80"><span class="unit">%</span></div>
       <div class="fr"><label>CAPEX: year 2 of constr.</label><input type="number" id="capex2" value="75" min="5" max="80"><span class="unit">%</span></div>
-      <div class="fr"><label>Sustaining CAPEX</label><input type="number" id="sustCapex" value="28" min="5" max="200" step="2"><span class="unit">$/t SC6</span></div>
+      <div class="fr"><label>Sustaining CAPEX</label><input type="number" id="sustCapex" value="28" min="5" max="200" step="2"><span class="unit">US$/t SC6</span></div>
       <div class="fr"><label>Working capital (% rev)</label><input type="number" id="wc" value="5" min="0" max="20" step="1"><span class="unit">%</span></div>
-      <div class="fr"><label>Salvage / closure cost</label><input type="number" id="salvage" value="-30" min="-200" max="100" step="5"><span class="unit">$M</span></div>
+      <div class="fr"><label>Salvage / closure cost</label><input type="number" id="salvage" value="-30" min="-200" max="100" step="5"><span class="unit">US$M</span></div>
     </div>
   </div>
 
@@ -731,12 +1094,12 @@ body.drawer-open #sidebar-backdrop{display:block;}
     <button class="snav active" data-target="sec-overview">Overview</button>
     <button class="snav" data-target="sec-sched">Schedule</button>
     <button class="snav" data-target="sec-sens">Sensitivity</button>
-    <button class="snav" data-target="sec-mc">Monte Carlo</button>
-    <button class="snav" data-target="sec-val">Valuation</button>
     <button class="snav" data-target="sec-scenario">Scenarios</button>
-    <button class="snav" data-target="sec-funding">Funding</button>
-    <button class="snav" data-target="sec-peers">Peers</button>
+    <button class="snav" data-target="sec-mc">Monte Carlo</button>
     <button class="snav" data-target="sec-stress">Stress</button>
+    <button class="snav" data-target="sec-val">Valuation</button>
+    <button class="snav" data-target="sec-peers">Peers</button>
+    <button class="snav" data-target="sec-funding">Funding</button>
     <button class="snav" data-target="sec-thesis">Thesis</button>
   </div>
 
@@ -762,7 +1125,7 @@ body.drawer-open #sidebar-backdrop{display:block;}
         <div class="pf-formula"><b>30k t</b> ÷ <b>6.0%</b><br>= 504kt at 6.0% Li₂O</div></div><div class="pf-arrow"><div class="pf-op">× 0.1484<br>t LCE/t SC6</div><div class="pf-arrow-line"></div></div><div class="pf-step "><div class="pf-label">LCE Equivalent</div>
         <div class="pf-num">74.8</div>
         <div class="pf-unit">kt LCE/yr</div>
-        <div class="pf-formula"><b>504kt SC6</b> × <b>0.1484</b><br>(Li₂O → Li₂CO₃ MW ratio)</div></div><div class="pf-arrow"><div class="pf-op">× $900<br>per t SC6</div><div class="pf-arrow-line"></div></div><div class="pf-step out"><div class="pf-label">Annual Revenue</div>
+        <div class="pf-formula"><b>504kt SC6</b> × <b>0.1484</b><br>(t LCE / t SC6 = 6% × 2.473)</div></div><div class="pf-arrow"><div class="pf-op">× $900<br>per t SC6</div><div class="pf-arrow-line"></div></div><div class="pf-step out"><div class="pf-label">Annual Revenue</div>
         <div class="pf-num">$453.6M</div>
         <div class="pf-unit">at nameplate</div>
         <div class="pf-formula"><b>504kt</b> × <b>$900/t</b><br>= $454M gross</div></div></div>
@@ -829,7 +1192,6 @@ body.drawer-open #sidebar-backdrop{display:block;}
 
   <!-- Annual Table -->
   <div id="sec-sched" style="scroll-margin-top:60px;"></div>
-  <div id="sec-sched"></div>
   <div class="table-card">
     <div class="card-title" style="padding:10px 14px;border-bottom:1px solid var(--border);">
       <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);">
@@ -843,12 +1205,12 @@ body.drawer-open #sidebar-backdrop{display:block;}
         <thead>
           <tr>
             <th rowspan="2" style="text-align:left;min-width:100px;">Year</th>
-            <th colspan="4" class="group" style="color:var(--purple);border-bottom:1px solid var(--border);">— Production (editable) —</th>
-            <th colspan="2" class="group" style="color:var(--teal);border-bottom:1px solid var(--border);">— Revenue —</th>
+            <th colspan="4" class="group" style="color:var(--accent);border-bottom:1px solid var(--border);">— Production (editable) —</th>
+            <th colspan="2" class="group" style="color:var(--cyan);border-bottom:1px solid var(--border);">— Revenue —</th>
             <th colspan="5" class="group" style="color:var(--red);border-bottom:1px solid var(--border);">— Operating Costs ($M) —</th>
-            <th colspan="2" class="group" style="color:var(--orange);border-bottom:1px solid var(--border);">— Capital —</th>
-            <th colspan="4" class="group" style="color:var(--blue);border-bottom:1px solid var(--border);">— P&amp;L —</th>
-            <th colspan="3" class="group" style="color:var(--green);border-bottom:1px solid var(--border);">— Cash Flow —</th>
+            <th colspan="2" class="group" style="color:var(--amber);border-bottom:1px solid var(--border);">— Capital —</th>
+            <th colspan="5" class="group" style="color:var(--fg);border-bottom:1px solid var(--border);">— P&amp;L —</th>
+            <th colspan="4" class="group" style="color:var(--green);border-bottom:1px solid var(--border);">— Cash Flow —</th>
           </tr>
           <tr>
             <th title="Editable: ore throughput">Thru (Mt)</th>
@@ -868,7 +1230,9 @@ body.drawer-open #sidebar-backdrop{display:block;}
             <th>D&amp;A</th>
             <th>EBIT</th>
             <th>Tax</th>
+            <th title="Working capital change ($M)">&#916;WC</th>
             <th>FCF $M</th>
+            <th title="Discounted FCF for this year @ WACC">DCF</th>
             <th>Cum FCF</th>
             <th>Cum NPV</th>
           </tr>
@@ -892,6 +1256,63 @@ body.drawer-open #sidebar-backdrop{display:block;}
   </div>
 
   <!-- Monte Carlo -->
+  <div id="sec-scenario"></div>
+  <div class="sec-block">
+    <div class="sec-block-hdr">
+      <span class="sec-block-title">Scenario Lock-In — Bear / Base / Bull Comparison</span>
+      <span class="sec-block-sub">Snapshot current model state · Compare three cases side-by-side with deltas</span>
+    </div>
+    <div class="sec-block-body">
+      <div style="font-size:10px;color:var(--fg-2);margin-bottom:10px;line-height:1.5;">
+        <b style="color:var(--fg)">Workflow:</b> adjust sidebar inputs (price, CAPEX, recovery…) → click <b style="color:var(--cyan)">Snap Current</b> under a slot to lock it in. Slots persist in-memory; click <b>Save HTML</b> in the header to export a version with scenarios baked in.
+      </div>
+      <div class="scn-grid" id="scn-grid">
+        <div class="scn-card bear empty" id="scn-bear">
+          <div class="scn-header">
+            <span class="scn-badge bear">▼ Bear case</span>
+            <div class="scn-actions">
+              <button class="scn-btn cap" onclick="scnCapture('bear')">Snap Current</button>
+              <button class="scn-btn" onclick="scnLoad('bear')">Load</button>
+              <button class="scn-btn" onclick="scnClear('bear')">Clear</button>
+            </div>
+          </div>
+          <div class="scn-empty-msg">Set sidebar to bear case<br>then click <b style="color:var(--cyan)">Snap Current</b></div>
+        </div>
+        <div class="scn-card base empty" id="scn-base">
+          <div class="scn-header">
+            <span class="scn-badge base">● Base case</span>
+            <div class="scn-actions">
+              <button class="scn-btn cap" onclick="scnCapture('base')">Snap Current</button>
+              <button class="scn-btn" onclick="scnLoad('base')">Load</button>
+              <button class="scn-btn" onclick="scnClear('base')">Clear</button>
+            </div>
+          </div>
+          <div class="scn-empty-msg">Snap base case here</div>
+        </div>
+        <div class="scn-card bull empty" id="scn-bull">
+          <div class="scn-header">
+            <span class="scn-badge bull">▲ Bull case</span>
+            <div class="scn-actions">
+              <button class="scn-btn cap" onclick="scnCapture('bull')">Snap Current</button>
+              <button class="scn-btn" onclick="scnLoad('bull')">Load</button>
+              <button class="scn-btn" onclick="scnClear('bull')">Clear</button>
+            </div>
+          </div>
+          <div class="scn-empty-msg">Snap bull case here</div>
+        </div>
+      </div>
+      <div id="scn-delta-wrap" style="display:none;margin-top:12px;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">Scenario deltas vs Base</div>
+        <div id="scn-delta-body"></div>
+      </div>
+      <!-- Hidden JSON store so that Save HTML persists scenarios -->
+      <textarea id="scn-store" style="display:none;"></textarea>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- DILUTION & FUNDING CASCADE                                            -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
   <div id="sec-mc"></div>
   <div class="table-card">
     <div class="card-title" style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
@@ -1094,7 +1515,170 @@ body.drawer-open #sidebar-backdrop{display:block;}
     </div>
   </div>
   <!-- Market Valuation -->
+  <div id="sec-stress"></div>
+  <div class="sec-block">
+    <div class="sec-block-hdr">
+      <span class="sec-block-title">Probabilistic Schedule &amp; Cycle Stress — Can It Survive?</span>
+      <span class="sec-block-sub">CPPP confidence cone · Historical lithium price replay</span>
+    </div>
+    <div class="sec-block-body">
+      <div style="font-size:10px;color:var(--fg-2);margin-bottom:12px;line-height:1.5;">
+        <b style="color:var(--fg)">Two lenses on project resilience.</b> <b style="color:var(--teal)">Left:</b> a CPPP-style fan chart showing cumulative NPV uncertainty <i>through time</i> — it's one thing to know NPV P50 at year 20, another to know when the bands cross zero. <b style="color:var(--accent)">Right:</b> replay real lithium price cycles through your mine to test survival.
+      </div>
+      <div class="stoch-grid">
+        <div class="stoch-left">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap;">
+            <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);">Cumulative NPV — probabilistic schedule</span>
+            <button id="stoch-run-btn" class="stoch-btn" onclick="runStochasticFan()">▶ Run CPPP Schedule (2,000 iter)</button>
+          </div>
+          <div id="stoch-fan-container">
+            <div class="stoch-msg" id="stoch-msg">Uses your Monte Carlo input ranges (price, grade, recovery, CAPEX, mining, processing)<br>to show how cumulative NPV uncertainty evolves year-by-year through mine life.</div>
+          </div>
+        </div>
+        <div class="stoch-right">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:10px;">Historical cycle replay</div>
+          <div class="cycle-presets" id="cycle-presets"></div>
+          <div id="cycle-result" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+            <div style="font-size:9px;color:var(--fg-2);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Project outcome under replayed prices</div>
+            <div class="cycle-kpi" id="cycle-kpi"></div>
+            <div id="cycle-commentary" style="font-size:10px;color:var(--fg);margin-top:8px;line-height:1.5;padding:8px 10px;background:rgba(26,28,22,.4);border-radius:5px;border-left:2px solid var(--accent);"></div>
+          </div>
+        </div>
+      </div>
+      <!-- DSCR / Debt-Covenant Timeline -->
+      <div class="dscr-wrap" style="margin-top:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:10px;">
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);">Debt-Service Coverage Ratio — covenant stress through ramp</span>
+          <span style="font-size:9px;color:var(--fg-2);font-family:var(--font-mono)">DSCR = Cash Flow Available ÷ Debt Service · Covenant typically 1.3×–1.5×</span>
+        </div>
+        <div class="dscr-controls">
+          <div class="dscr-ctrl"><label>Debt drawn ($M)</label><input type="number" id="dscr-debt" value="900" step="50" min="0"></div>
+          <div class="dscr-ctrl"><label>Interest rate (%)</label><input type="number" id="dscr-rate" value="8.5" step="0.25" min="0"></div>
+          <div class="dscr-ctrl"><label>Tenor (yrs)</label><input type="number" id="dscr-tenor" value="8" step="1" min="1"></div>
+          <div class="dscr-ctrl"><label>Grace (yrs)</label><input type="number" id="dscr-grace" value="2" step="1" min="0"></div>
+          <div class="dscr-ctrl"><label>DSCR covenant</label><input type="number" id="dscr-cov" value="1.3" step="0.05" min="1"></div>
+          <button class="scn-btn cap" onclick="renderDSCR()">Recalculate</button>
+        </div>
+        <div class="dscr-chart-wrap"><canvas id="dscr-chart"></canvas></div>
+        <div class="dscr-kpi" id="dscr-kpi"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- AUTO INVESTMENT THESIS                                                -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
   <div id="sec-val"></div>
+
+  <!-- ═══ WACC BUILDER ═══════════════════════════════════════════════════ -->
+  <div class="sec-block" style="margin-bottom:14px;">
+    <div class="sec-block-hdr">
+      <span class="sec-block-title">WACC Build — what's behind the discount rate</span>
+      <span class="sec-block-sub">Component build → applied to Discount rate (sidebar)</span>
+    </div>
+    <div class="sec-block-body wacc-grid">
+      <div class="wacc-inputs">
+        <div class="fnd-mini-hdr">Cost of Equity (CAPM)</div>
+        <div class="fr"><label>Risk-free rate (10Y)</label><input type="number" id="wacc-rf"     value="4.0"  step="0.1" min="0" max="15" oninput="updateWACC()"><span class="unit">%</span></div>
+        <div class="fr"><label>Equity risk premium</label><input type="number" id="wacc-erp"    value="5.5"  step="0.1" min="0" max="12" oninput="updateWACC()"><span class="unit">%</span></div>
+        <div class="fr"><label>Levered beta</label><input type="number" id="wacc-beta"   value="1.6"  step="0.05" min="0.5" max="3" oninput="updateWACC()"><span class="unit">×</span></div>
+        <div class="fr"><label>Country risk premium</label><input type="number" id="wacc-crp"    value="0.0"  step="0.25" min="0" max="10" oninput="updateWACC()"><span class="unit">%</span></div>
+        <div class="fr"><label>Size premium (junior)</label><input type="number" id="wacc-size"   value="4.0"  step="0.25" min="0" max="8"  oninput="updateWACC()"><span class="unit">%</span></div>
+
+        <div class="fnd-mini-hdr" style="margin-top:14px;">Cost of Debt &amp; Capital Structure</div>
+        <div class="fr"><label>Pre-tax cost of debt</label><input type="number" id="wacc-kd"     value="8.0"  step="0.25" min="0" max="20" oninput="updateWACC()"><span class="unit">%</span></div>
+        <div class="fr"><label>Target debt weight</label><input type="number" id="wacc-debtw"  value="0"    step="5"   min="0" max="80" oninput="updateWACC()"><span class="unit">%</span></div>
+        <div class="fr-note" style="margin-top:8px;">Tax rate uses Financial &amp; Tax sidebar input. Junior pre-FID typically 0% debt; PF lenders 40–60% at FID.</div>
+      </div>
+
+      <div class="wacc-output">
+        <div class="wacc-out-card">
+          <div class="wacc-out-lbl">Cost of Equity (Ke)</div>
+          <div class="wacc-out-val" id="wacc-ke">—</div>
+          <div class="wacc-out-sub" id="wacc-ke-sub">Rf + β·ERP + CRP + Size</div>
+        </div>
+        <div class="wacc-out-card">
+          <div class="wacc-out-lbl">Cost of Debt post-tax (Kd)</div>
+          <div class="wacc-out-val" id="wacc-kd-post">—</div>
+          <div class="wacc-out-sub" id="wacc-kd-sub">Pre-tax × (1 − tax)</div>
+        </div>
+        <div class="wacc-out-card wacc-headline">
+          <div class="wacc-out-lbl">Computed WACC</div>
+          <div class="wacc-out-val" id="wacc-result" style="color:var(--accent);">—</div>
+          <div class="wacc-out-sub" id="wacc-result-sub">E/V·Ke + D/V·Kd(post)</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;">
+          <button class="wacc-apply-btn" onclick="applyWACC()">Apply to discount rate</button>
+          <div style="font-size:10px;color:var(--fg-2);font-family:var(--font-mono);">
+            Currently using: <span id="wacc-active" style="color:var(--fg);font-weight:700;">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ FOOTBALL FIELD ═════════════════════════════════════════════════ -->
+  <div class="sec-block" style="margin-bottom:14px;">
+    <div class="sec-block-hdr">
+      <span class="sec-block-title">Football Field — Valuation Triangulation</span>
+      <span class="sec-block-sub">Range across methodologies · vertical line = current MCAP</span>
+    </div>
+    <div class="sec-block-body">
+      <div id="ff-axis-row" class="ff-axis-row">
+        <div class="ff-row-lbl">&nbsp;</div>
+        <div class="ff-axis" id="ff-axis"></div>
+      </div>
+      <div id="ff-rows"></div>
+      <div class="ff-legend">
+        <span><span class="ff-swatch" style="background:var(--accent);"></span> DCF range</span>
+        <span><span class="ff-swatch" style="background:var(--cyan);"></span> Comps</span>
+        <span><span class="ff-swatch" style="background:var(--amber);"></span> Precedents</span>
+        <span><span class="ff-swatch" style="background:var(--fg-2);"></span> 52-week range</span>
+        <span style="margin-left:auto;font-family:var(--font-mono);font-size:9px;color:var(--fg-3);">Solid line = current MCAP · Dashed line = hypothetical offer (set below)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ OFFER-PRICE BUILDER + ACQUIRER RETURNS ════════════════════════ -->
+  <div class="sec-block" style="margin-bottom:14px;">
+    <div class="sec-block-hdr">
+      <span class="sec-block-title">Offer-Price Builder &amp; Acquirer Returns</span>
+      <span class="sec-block-sub">Set hypothetical offer · premium auto-calc · IRR to acquirer at exit multiples</span>
+    </div>
+    <div class="sec-block-body offer-grid">
+      <div class="offer-inputs">
+        <div class="fnd-mini-hdr">Offer</div>
+        <div class="fr"><label>Offer price (C$/share)</label><input type="number" id="offer-price" value="4.50" step="0.05" min="0.10" oninput="updateOffer()"><span class="unit">C$</span></div>
+        <div class="fr"><label>Hold period</label><input type="number" id="offer-hold" value="5" step="1" min="1" max="15" oninput="updateOffer()"><span class="unit">yrs</span></div>
+        <div class="fr"><label>Acquirer WACC</label><input type="number" id="offer-wacc" value="9" step="0.5" min="4" max="20" oninput="updateOffer()"><span class="unit">%</span></div>
+
+        <div class="fnd-mini-hdr" style="margin-top:14px;">Sources mix (%)</div>
+        <div class="fr"><label>Cash</label><input type="number" id="offer-cash-pct" value="60" step="5" min="0" max="100" oninput="updateOffer()"><span class="unit">%</span></div>
+        <div class="fr"><label>Scrip (acquirer stock)</label><input type="number" id="offer-scrip-pct" value="30" step="5" min="0" max="100" oninput="updateOffer()"><span class="unit">%</span></div>
+        <div class="fr"><label>Debt (new issue)</label><input type="number" id="offer-debt-pct" value="10" step="5" min="0" max="100" oninput="updateOffer()"><span class="unit">%</span></div>
+        <div class="fr-note" id="offer-mix-warn" style="margin-top:6px;"></div>
+      </div>
+
+      <div class="offer-output">
+        <div class="offer-pill-row">
+          <div class="offer-pill"><div class="op-l">Implied EV</div><div class="op-v" id="offer-ev">—</div></div>
+          <div class="offer-pill"><div class="op-l">Premium vs spot</div><div class="op-v" id="offer-prem-spot">—</div></div>
+          <div class="offer-pill"><div class="op-l">Premium vs 52w high</div><div class="op-v" id="offer-prem-hi">—</div></div>
+          <div class="offer-pill"><div class="op-l">P / NAV implied</div><div class="op-v" id="offer-pnav">—</div></div>
+        </div>
+
+        <div class="fnd-mini-hdr" style="margin-top:14px;">Sources &amp; Uses (US$M)</div>
+        <div class="offer-su" id="offer-su"></div>
+
+        <div class="fnd-mini-hdr" style="margin-top:14px;">IRR to Acquirer — exit multiple × hold period</div>
+        <table class="offer-irr-table" id="offer-irr-table">
+          <thead><tr><th>Hold (yrs)</th><th>Exit @ 1.0× NAV</th><th>Exit @ 1.2× NAV</th><th>Exit @ 1.5× NAV</th></tr></thead>
+          <tbody id="offer-irr-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <div class="table-card">
     <div style="padding:10px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:rgba(26,28,22,.4);">
       <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--fg);">Market Valuation — Where Is The Company Now &amp; What Could It Be Worth?</span>
@@ -1105,7 +1689,7 @@ body.drawer-open #sidebar-backdrop{display:block;}
     <div style="padding:8px 18px;border-bottom:1px solid var(--border);display:flex;gap:18px;flex-wrap:wrap;align-items:center;background:rgba(26,28,22,.3);">
       <div class="mv-input-group"><label>LCE resource (Mt)</label><input type="number" id="mv-lce" value="9.9" step="0.1" min="0.1" oninput="updateMV()"></div>
       <div class="mv-input-group"><label>Shares (M)</label><input type="number" id="mv-shares" value="196" step="5" min="50" oninput="updateMV()"></div>
-      <div class="mv-input-group"><label>CAD→USD FX (1 CAD in USD)</label><input type="number" id="mv-fx" value="0.72" step="0.01" min="0.55" max="1.0" oninput="updateMV()"></div>
+      <div class="mv-input-group"><label>FX — 1 CAD in US$ (e.g. 0.72)</label><input type="number" id="mv-fx" value="0.72" step="0.01" min="0.55" max="1.0" oninput="updateMV()"></div>
       <div class="mv-input-group"><label>Current price (C$/sh)</label><input type="number" id="mv-curr-price" value="2.80" step="0.05" min="0.01" oninput="updateMV()"></div>
       <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
         <span style="font-size:9px;color:var(--fg-2);font-family:var(--font-mono)">Acquisition stage:</span>
@@ -1202,64 +1786,128 @@ body.drawer-open #sidebar-backdrop{display:block;}
   <!-- ═══════════════════════════════════════════════════════════════════ -->
   <!-- SCENARIO LOCK-IN — Bear / Base / Bull comparison                     -->
   <!-- ═══════════════════════════════════════════════════════════════════ -->
-  <div id="sec-scenario"></div>
+  <div id="sec-peers"></div>
+
+  <!-- ═══ PRECEDENT TRANSACTIONS ═══════════════════════════════════════════ -->
+  <div class="sec-block" style="margin-bottom:14px;">
+    <div class="sec-block-hdr">
+      <span class="sec-block-title">Precedent Transactions — Hard-Rock Lithium M&amp;A</span>
+      <span class="sec-block-sub">Reference set · click column to sort</span>
+    </div>
+    <div class="sec-block-body" style="padding:0;">
+      <div class="prec-wrap">
+        <table class="prec-table" id="prec-table">
+          <thead>
+            <tr>
+              <th data-sort="date">Date</th>
+              <th data-sort="deal">Deal</th>
+              <th data-sort="stage">Stage</th>
+              <th data-sort="ev"   class="num">EV (US$M)</th>
+              <th data-sort="lce"  class="num">Resource (Mt LCE)</th>
+              <th data-sort="evtLCE" class="num">$ / t LCE</th>
+              <th data-sort="premium" class="num">Premium</th>
+              <th data-sort="structure">Structure</th>
+            </tr>
+          </thead>
+          <tbody id="prec-body"></tbody>
+        </table>
+      </div>
+      <div style="padding:8px 16px;border-top:1px solid var(--line);font-size:9px;color:var(--fg-3);font-family:var(--font-mono);">
+        Indicative reference set assembled from public disclosure. Verify against transaction circulars before quoting. EV/t LCE bridges to the Football Field "Precedents" range above.
+      </div>
+    </div>
+  </div>
+
   <div class="sec-block">
     <div class="sec-block-hdr">
-      <span class="sec-block-title">Scenario Lock-In — Bear / Base / Bull Comparison</span>
-      <span class="sec-block-sub">Snapshot current model state · Compare three cases side-by-side with deltas</span>
+      <span class="sec-block-title">Peer Benchmarking — Global Hard-Rock Lithium</span>
+      <span class="sec-block-sub">Cost curve · Capital efficiency · Scale vs grade</span>
     </div>
     <div class="sec-block-body">
-      <div style="font-size:10px;color:var(--fg-2);margin-bottom:10px;line-height:1.5;">
-        <b style="color:var(--fg)">Workflow:</b> adjust sidebar inputs (price, CAPEX, recovery…) → click <b style="color:var(--cyan)">Snap Current</b> under a slot to lock it in. Slots persist in-memory; click <b>Save HTML</b> in the header to export a version with scenarios baked in.
+      <div style="font-size:10px;color:var(--fg-2);margin-bottom:12px;line-height:1.5;">
+        <b style="color:var(--fg)">Reference data</b> drawn from published FS/PFS/PEA where available (PMET Oct 2025 FS, PLS Pilgangoora, LTR Kathleen Valley, SGML Grota do Cirilo Phases 1–3, Greenbushes, Wodgina, MinRes Mt Marion). Your project auto-populates from the DCF model and is highlighted <b style="color:var(--accent)">gold</b>. Edit any cell to override.
       </div>
-      <div class="scn-grid" id="scn-grid">
-        <div class="scn-card bear empty" id="scn-bear">
-          <div class="scn-header">
-            <span class="scn-badge bear">▼ Bear case</span>
-            <div class="scn-actions">
-              <button class="scn-btn cap" onclick="scnCapture('bear')">Snap Current</button>
-              <button class="scn-btn" onclick="scnLoad('bear')">Load</button>
-              <button class="scn-btn" onclick="scnClear('bear')">Clear</button>
-            </div>
-          </div>
-          <div class="scn-empty-msg">Set sidebar to bear case<br>then click <b style="color:var(--cyan)">Snap Current</b></div>
+      <!-- Peer rank summary pills -->
+      <div class="pr-pills" id="peer-rank-pills"></div>
+      <div class="peer-grid">
+        <div class="peer-card">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">AISC Cost Curve (US$/t SC6 equiv)</div>
+          <div class="peer-chart-wrap"><canvas id="peer-aisc-chart"></canvas></div>
         </div>
-        <div class="scn-card base empty" id="scn-base">
-          <div class="scn-header">
-            <span class="scn-badge base">● Base case</span>
-            <div class="scn-actions">
-              <button class="scn-btn cap" onclick="scnCapture('base')">Snap Current</button>
-              <button class="scn-btn" onclick="scnLoad('base')">Load</button>
-              <button class="scn-btn" onclick="scnClear('base')">Clear</button>
-            </div>
-          </div>
-          <div class="scn-empty-msg">Snap base case here</div>
+        <div class="peer-card">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">Capital Intensity — CAPEX ($M) vs SC6 Production (ktpa)</div>
+          <div class="peer-chart-wrap"><canvas id="peer-capex-chart"></canvas></div>
         </div>
-        <div class="scn-card bull empty" id="scn-bull">
-          <div class="scn-header">
-            <span class="scn-badge bull">▲ Bull case</span>
-            <div class="scn-actions">
-              <button class="scn-btn cap" onclick="scnCapture('bull')">Snap Current</button>
-              <button class="scn-btn" onclick="scnLoad('bull')">Load</button>
-              <button class="scn-btn" onclick="scnClear('bull')">Clear</button>
-            </div>
+        <div class="peer-card peer-full">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">Grade × Resource Size — the Tier-1 map (bubble size = ktpa SC6)</div>
+          <div class="peer-chart-wrap peer-chart-tall"><canvas id="peer-grade-chart"></canvas></div>
+        </div>
+        <div class="peer-card peer-full">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+            <span>Peer detail table — click a cell to edit</span>
+            <button class="reset-btn" onclick="peerReset()">Reset peer defaults</button>
           </div>
-          <div class="scn-empty-msg">Snap bull case here</div>
+          <div style="overflow-x:auto;max-height:400px;">
+            <table class="peer-table" id="peer-table"></table>
+          </div>
         </div>
       </div>
-      <div id="scn-delta-wrap" style="display:none;margin-top:12px;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">Scenario deltas vs Base</div>
-        <div id="scn-delta-body"></div>
-      </div>
-      <!-- Hidden JSON store so that Save HTML persists scenarios -->
-      <textarea id="scn-store" style="display:none;"></textarea>
     </div>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════════════ -->
-  <!-- DILUTION & FUNDING CASCADE                                            -->
+  <!-- CPPP STOCHASTIC FAN + CYCLE STRESS TEST                               -->
   <!-- ═══════════════════════════════════════════════════════════════════ -->
   <div id="sec-funding"></div>
+
+  <!-- ═══ NAV BRIDGE — Project NPV → NAV → NAV / share ═══════════════════ -->
+  <div class="sec-block" style="margin-bottom:14px;">
+    <div class="sec-block-hdr">
+      <span class="sec-block-title">NAV Bridge — From Project NPV to NAV per Share</span>
+      <span class="sec-block-sub">Live · post-tax @ WACC · current cap structure</span>
+    </div>
+    <div class="sec-block-body">
+      <div class="nav-bridge">
+        <div class="nb-step nb-source">
+          <div class="nb-lbl">Project NPV</div>
+          <div class="nb-v" id="nb-npv">—</div>
+          <div class="nb-sub">post-tax @ WACC, US$M</div>
+        </div>
+        <div class="nb-op">+</div>
+        <div class="nb-step">
+          <div class="nb-lbl">Cash</div>
+          <div class="nb-v" id="nb-cash">—</div>
+          <div class="nb-sub">on balance sheet</div>
+        </div>
+        <div class="nb-op">−</div>
+        <div class="nb-step">
+          <div class="nb-lbl">Debt</div>
+          <div class="nb-v" id="nb-debt">—</div>
+          <div class="nb-sub">total debt</div>
+        </div>
+        <div class="nb-op">=</div>
+        <div class="nb-step nb-headline">
+          <div class="nb-lbl">Equity NAV</div>
+          <div class="nb-v" id="nb-equity">—</div>
+          <div class="nb-sub">attributable to shareholders</div>
+        </div>
+        <div class="nb-op">÷</div>
+        <div class="nb-step">
+          <div class="nb-lbl">Shares FD</div>
+          <div class="nb-v" id="nb-shares">—</div>
+          <div class="nb-sub">basic + warrants + options</div>
+        </div>
+        <div class="nb-op">=</div>
+        <div class="nb-step nb-result">
+          <div class="nb-lbl">NAV / share</div>
+          <div class="nb-v" id="nb-nav-share">—</div>
+          <div class="nb-sub" id="nb-nav-share-sub">in CAD · vs spot —</div>
+        </div>
+      </div>
+      <div class="nb-note" id="nb-note"></div>
+    </div>
+  </div>
+
   <div class="sec-block">
     <div class="sec-block-hdr">
       <span class="sec-block-title">Dilution &amp; Funding Cascade — The Junior's Journey to FID</span>
@@ -1319,101 +1967,34 @@ body.drawer-open #sidebar-backdrop{display:block;}
   <!-- ═══════════════════════════════════════════════════════════════════ -->
   <!-- PEER BENCHMARKING                                                     -->
   <!-- ═══════════════════════════════════════════════════════════════════ -->
-  <div id="sec-peers"></div>
-  <div class="sec-block">
-    <div class="sec-block-hdr">
-      <span class="sec-block-title">Peer Benchmarking — Global Hard-Rock Lithium</span>
-      <span class="sec-block-sub">Cost curve · Capital efficiency · Scale vs grade</span>
-    </div>
-    <div class="sec-block-body">
-      <div style="font-size:10px;color:var(--fg-2);margin-bottom:12px;line-height:1.5;">
-        <b style="color:var(--fg)">Reference data</b> drawn from published FS/PFS/PEA where available (PMET Oct 2025 FS, PLS Pilgangoora, LTR Kathleen Valley, SGML Grota do Cirilo Phases 1–3, Greenbushes, Wodgina, MinRes Mt Marion). Your project auto-populates from the DCF model and is highlighted <b style="color:var(--accent)">gold</b>. Edit any cell to override.
-      </div>
-      <!-- Peer rank summary pills -->
-      <div class="pr-pills" id="peer-rank-pills"></div>
-      <div class="peer-grid">
-        <div class="peer-card">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">AISC Cost Curve (US$/t SC6 equiv)</div>
-          <div class="peer-chart-wrap"><canvas id="peer-aisc-chart"></canvas></div>
-        </div>
-        <div class="peer-card">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">Capital Intensity — CAPEX ($M) vs SC6 Production (ktpa)</div>
-          <div class="peer-chart-wrap"><canvas id="peer-capex-chart"></canvas></div>
-        </div>
-        <div class="peer-card peer-full">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;">Grade × Resource Size — the Tier-1 map (bubble size = ktpa SC6)</div>
-          <div class="peer-chart-wrap peer-chart-tall"><canvas id="peer-grade-chart"></canvas></div>
-        </div>
-        <div class="peer-card peer-full">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-            <span>Peer detail table — click a cell to edit</span>
-            <button class="reset-btn" onclick="peerReset()">Reset peer defaults</button>
-          </div>
-          <div style="overflow-x:auto;max-height:400px;">
-            <table class="peer-table" id="peer-table"></table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════════════ -->
-  <!-- CPPP STOCHASTIC FAN + CYCLE STRESS TEST                               -->
-  <!-- ═══════════════════════════════════════════════════════════════════ -->
-  <div id="sec-stress"></div>
-  <div class="sec-block">
-    <div class="sec-block-hdr">
-      <span class="sec-block-title">Probabilistic Schedule &amp; Cycle Stress — Can It Survive?</span>
-      <span class="sec-block-sub">CPPP confidence cone · Historical lithium price replay</span>
-    </div>
-    <div class="sec-block-body">
-      <div style="font-size:10px;color:var(--fg-2);margin-bottom:12px;line-height:1.5;">
-        <b style="color:var(--fg)">Two lenses on project resilience.</b> <b style="color:var(--teal)">Left:</b> a CPPP-style fan chart showing cumulative NPV uncertainty <i>through time</i> — it's one thing to know NPV P50 at year 20, another to know when the bands cross zero. <b style="color:var(--accent)">Right:</b> replay real lithium price cycles through your mine to test survival.
-      </div>
-      <div class="stoch-grid">
-        <div class="stoch-left">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap;">
-            <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);">Cumulative NPV — probabilistic schedule</span>
-            <button id="stoch-run-btn" class="stoch-btn" onclick="runStochasticFan()">▶ Run CPPP Schedule (2,000 iter)</button>
-          </div>
-          <div id="stoch-fan-container">
-            <div class="stoch-msg" id="stoch-msg">Uses your Monte Carlo input ranges (price, grade, recovery, CAPEX, mining, processing)<br>to show how cumulative NPV uncertainty evolves year-by-year through mine life.</div>
-          </div>
-        </div>
-        <div class="stoch-right">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);margin-bottom:10px;">Historical cycle replay</div>
-          <div class="cycle-presets" id="cycle-presets"></div>
-          <div id="cycle-result" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
-            <div style="font-size:9px;color:var(--fg-2);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Project outcome under replayed prices</div>
-            <div class="cycle-kpi" id="cycle-kpi"></div>
-            <div id="cycle-commentary" style="font-size:10px;color:var(--fg);margin-top:8px;line-height:1.5;padding:8px 10px;background:rgba(26,28,22,.4);border-radius:5px;border-left:2px solid var(--accent);"></div>
-          </div>
-        </div>
-      </div>
-      <!-- DSCR / Debt-Covenant Timeline -->
-      <div class="dscr-wrap" style="margin-top:14px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:10px;">
-          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);">Debt-Service Coverage Ratio — covenant stress through ramp</span>
-          <span style="font-size:9px;color:var(--fg-2);font-family:var(--font-mono)">DSCR = Cash Flow Available ÷ Debt Service · Covenant typically 1.3×–1.5×</span>
-        </div>
-        <div class="dscr-controls">
-          <div class="dscr-ctrl"><label>Debt drawn ($M)</label><input type="number" id="dscr-debt" value="900" step="50" min="0"></div>
-          <div class="dscr-ctrl"><label>Interest rate (%)</label><input type="number" id="dscr-rate" value="8.5" step="0.25" min="0"></div>
-          <div class="dscr-ctrl"><label>Tenor (yrs)</label><input type="number" id="dscr-tenor" value="8" step="1" min="1"></div>
-          <div class="dscr-ctrl"><label>Grace (yrs)</label><input type="number" id="dscr-grace" value="2" step="1" min="0"></div>
-          <div class="dscr-ctrl"><label>DSCR covenant</label><input type="number" id="dscr-cov" value="1.3" step="0.05" min="1"></div>
-          <button class="scn-btn cap" onclick="renderDSCR()">Recalculate</button>
-        </div>
-        <div class="dscr-chart-wrap"><canvas id="dscr-chart"></canvas></div>
-        <div class="dscr-kpi" id="dscr-kpi"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════════════ -->
-  <!-- AUTO INVESTMENT THESIS                                                -->
-  <!-- ═══════════════════════════════════════════════════════════════════ -->
   <div id="sec-thesis"></div>
+
+  <!-- ═══ RISK REGISTER ═══════════════════════════════════════════════════ -->
+  <div class="sec-block" style="margin-bottom:14px;">
+    <div class="sec-block-hdr">
+      <span class="sec-block-title">Risk Register — Likelihood × Impact</span>
+      <span class="sec-block-sub">Score = L × I · 1–6 low · 7–12 watch · 13–25 open</span>
+    </div>
+    <div class="sec-block-body" style="padding:0;">
+      <div class="risk-wrap">
+        <table class="risk-table" id="risk-table">
+          <thead>
+            <tr>
+              <th>Risk</th>
+              <th>Category</th>
+              <th class="num">L</th>
+              <th class="num">I</th>
+              <th class="num">Score</th>
+              <th>Mitigation</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="risk-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <div class="sec-block">
     <div class="sec-block-hdr">
       <span class="sec-block-title">Auto Investment Thesis — Synthesised From The Model</span>
@@ -1445,6 +2026,18 @@ body.drawer-open #sidebar-backdrop{display:block;}
     </div>
   </div>
 
+  <!-- As-of footer (data freshness + disclaimer) -->
+  <div id="as-of-footer">
+    <span class="aof-cell"><span class="aof-l">Spot SC6</span><span class="aof-v" id="aof-spot">$1,400/t</span></span>
+    <span class="aof-sep">·</span>
+    <span class="aof-cell"><span class="aof-l">FX</span><span class="aof-v" id="aof-fx">USD/CAD 1.39 · 1 CAD = US$0.72</span></span>
+    <span class="aof-sep">·</span>
+    <span class="aof-cell"><span class="aof-l">Last close</span><span class="aof-v" id="aof-close">C$2.80 (2026-04-22)</span></span>
+    <span class="aof-sep">·</span>
+    <span class="aof-cell"><span class="aof-l">Model rev</span><span class="aof-v" id="aof-rev">—</span></span>
+    <span class="aof-disc">All $ values in USD unless prefixed C$. Not investment advice — verify before use.</span>
+  </div>
+
 </div><!-- /main -->
 </div><!-- /workspace -->
 
@@ -1460,6 +2053,8 @@ if (window.Chart) {
   Chart.defaults.borderColor = 'rgba(58,61,51,0.5)';           // --line-2
   Chart.defaults.plugins.legend.labels.color = '#d8d4c2';      // --fg
 }
+const MODEL_VERSION = '2026-05-09 · v0.6 (rebuild-basis capex)';
+
 // Brand semantic colours for chart datasets — single source of truth
 const BRAND = {
   accent:  '#5dd3a8',   accentDim: 'rgba(93,211,168,0.18)',
@@ -1472,6 +2067,15 @@ const BRAND = {
   bg:      '#0c0d0a',   bg2:       '#131410', bg3: '#1a1c16'
 };
 
+// Currency display helper — reads the active project's listing currency.
+// fxCadUsd field semantically holds USD-per-1-unit-of-listing-currency
+// (so the multiplier `usd = local × fx` works for any currency).
+const CURRENCY_SYMBOLS = { CAD:'C$', USD:'$', AUD:'A$', BRL:'R$', GBP:'£', EUR:'€' };
+function localSym(){
+  const c = (_activeProject && _activeProject.identity && _activeProject.identity.marketCurrency) || 'CAD';
+  return CURRENCY_SYMBOLS[c] || (c + '$');
+}
+
 // ══════════════════════════════════════════════════════════════════════
 // PROJECT PROFILES — per-asset defaults. Reference data (peers, precedents,
 // price decks, tax regimes) will live in COMMODITIES / REGIMES in Phase 2.
@@ -1482,9 +2086,16 @@ const PROJECTS = {
     identity: {
       name: 'Cisco Lithium Project — Eeyou Istchee, Quebec',
       ticker: 'QTWO.V', company: 'Q2 Metals',
-      jurisdiction: 'qc-canada', commodity: 'sc6', stage: 'mre'
+      jurisdiction: 'qc-canada', commodity: 'sc6', stage: 'mre',
+      marketCurrency: 'CAD'
     },
-    market: { lce_mt: 9.9, sharesFD: 196, lastClose: 2.80, fxCadUsd: 0.72 },
+    // fxCadUsd = USD per 1 CAD (multiplier: usd = cad × fxCadUsd).
+    // 0.72 → 1 CAD = US$0.72 → USD/CAD ≈ 1.39. Lower = CAD weaker.
+    market: { lce_mt: 9.9, sharesFD: 196, lastClose: 2.80, fxCadUsd: 0.72,
+              cashUsd: 25, debtUsd: 0, asOf: '2026-04-22',
+              priceLow52w: 1.18, priceHigh52w: 3.45,
+              compsLowEvtLCE: 25, compsHighEvtLCE: 90,
+              precLowEvtLCE: 100, precHighEvtLCE: 320 },
     inputs: {
       mineLife: 30, constrYears: 2, rampYears: 3,
       ramp1: 55, ramp2: 80, tailYears: 3, tailPct: 65,
@@ -1508,8 +2119,13 @@ const PROJECTS = {
   },
   blank: {
     identity: { name: 'New Project', ticker: '—', company: '—',
-                jurisdiction: '—', commodity: 'sc6', stage: 'mre' },
-    market: { lce_mt: 0, sharesFD: 100, lastClose: 0, fxCadUsd: 0.72 },
+                jurisdiction: '—', commodity: 'sc6', stage: 'mre',
+                marketCurrency: 'CAD' },
+    market: { lce_mt: 0, sharesFD: 100, lastClose: 0, fxCadUsd: 0.72,
+              cashUsd: 0, debtUsd: 0, asOf: '',
+              priceLow52w: 0, priceHigh52w: 0,
+              compsLowEvtLCE: 0, compsHighEvtLCE: 0,
+              precLowEvtLCE: 0, precHighEvtLCE: 0 },
     inputs: {
       mineLife: 20, constrYears: 2, rampYears: 2,
       ramp1: 60, ramp2: 90, tailYears: 0, tailPct: 80,
@@ -1530,11 +2146,199 @@ const PROJECTS = {
       proc:   { lo: 28,   base: 35,   hi: 45 }
     },
     notes: 'Blank template — fill in inputs to model a new project.'
+  },
+
+  // ── Operating mines (3) ────────────────────────────────────────────────
+  // Source: Talison investor materials, IGO half-year, ALB FY filings, BHP / Lycopodium case studies.
+  greenbushes: {
+    identity: { name: 'Greenbushes — world\'s largest hard-rock lithium operation',
+      ticker: 'IGO.AX (24.99% via Talison)', company: 'Talison Lithium (Tianqi 51% / ALB 49%; IGO 24.99% indirect)',
+      jurisdiction: 'wa-australia', commodity: 'sc6', stage: 'prod', marketCurrency: 'AUD' },
+    market: { lce_mt: 21.7, sharesFD: 0, lastClose: 0, fxCadUsd: 0.66, cashUsd: 0, debtUsd: 0,
+      asOf: '2025-12', priceLow52w: 0, priceHigh52w: 0,
+      compsLowEvtLCE: 250, compsHighEvtLCE: 700, precLowEvtLCE: 400, precHighEvtLCE: 900 },
+    inputs: { mineLife: 30, constrYears: 2, rampYears: 1, ramp1: 90, ramp2: 100, tailYears: 5, tailPct: 70,
+      nameplate: 6.0, grade: 2.0, recovery: 85, sc6Grade: 6.0,
+      sc6Price: 1400, priceEsc: 0,
+      miningCost: 8, procCost: 14, gaFixed: 60, royalty: 5.0, freight: 35, opexEsc: 2.5,
+      initCapex: 1500, capex1: 35, capex2: 65, sustCapex: 25, wc: 4, salvage: -150,
+      discRate: 8, taxRate: 30, deprYears: 15, targetIRR: 12 },
+    mc: { price:{lo:800,base:1400,hi:2200}, grade:{lo:1.8,base:2.0,hi:2.2}, rec:{lo:82,base:85,hi:88},
+      capex:{lo:1200,base:1500,hi:1900}, mining:{lo:7,base:8,hi:11}, proc:{lo:12,base:14,hi:18} },
+    notes: 'Greenbushes — Talison JV (Tianqi 51% / ALB 49%; IGO 24.99% indirect). 2.1Mt SC6/yr nameplate post-CGP3 (Dec 2025 commissioning). AISC ~A$325/t. 440Mt resource @ 2.0% Li₂O — highest grade globally. Capex shown on rebuild-from-scratch basis ≈ US$1.5B for the full 2.1Mtpa complex (CGP3 alone was A$880M / ~US$580M; cumulative across CGP1/CGP2/TRP much higher). Set initCapex = 0 for going-forward valuation.'
+  },
+
+  pilgangoora: {
+    identity: { name: 'Pilgangoora — Pilgan + Ngungaju operations, Pilbara WA',
+      ticker: 'PLS.AX', company: 'Pilbara Minerals',
+      jurisdiction: 'wa-australia', commodity: 'sc6', stage: 'prod', marketCurrency: 'AUD' },
+    market: { lce_mt: 12.8, sharesFD: 3010, lastClose: 2.20, fxCadUsd: 0.66, cashUsd: 660, debtUsd: 100,
+      asOf: '2025-09', priceLow52w: 1.20, priceHigh52w: 3.40,
+      compsLowEvtLCE: 200, compsHighEvtLCE: 550, precLowEvtLCE: 350, precHighEvtLCE: 750 },
+    inputs: { mineLife: 30, constrYears: 2, rampYears: 1, ramp1: 90, ramp2: 100, tailYears: 0, tailPct: 80,
+      nameplate: 9.5, grade: 1.16, recovery: 70, sc6Grade: 5.4,
+      sc6Price: 1400, priceEsc: 0,
+      miningCost: 12, procCost: 26, gaFixed: 70, royalty: 5.0, freight: 60, opexEsc: 2.5,
+      initCapex: 800, capex1: 40, capex2: 60, sustCapex: 30, wc: 5, salvage: -120,
+      discRate: 9, taxRate: 30, deprYears: 15, targetIRR: 14 },
+    mc: { price:{lo:800,base:1400,hi:2200}, grade:{lo:1.05,base:1.16,hi:1.30}, rec:{lo:65,base:70,hi:75},
+      capex:{lo:650,base:800,hi:1050}, mining:{lo:10,base:12,hi:16}, proc:{lo:22,base:26,hi:32} },
+    notes: 'Pilbara Minerals (PLS.AX) — pure-play producer. P1000 completed Sept 2025 → 1.0Mt SC6/yr nameplate. FY26 unit cost guidance A$560-600/t (~US$370-400/t). Capex shown on rebuild basis ≈ US$800M (cumulative: P680 A$298M + P1000 A$560M ≈ A$860M / US$570M, plus original Pilgan plant + Ngungaju restart). Cash A$1.0B Jun 2025. 446Mt @ 1.16% Li₂O. Set initCapex = 0 for going-forward valuation.'
+  },
+
+  wodgina: {
+    identity: { name: 'Wodgina — MARBL JV, Pilbara WA',
+      ticker: 'MIN.AX (50% via MARBL)', company: 'Mineral Resources / Albemarle JV (50:50)',
+      jurisdiction: 'wa-australia', commodity: 'sc6', stage: 'prod', marketCurrency: 'AUD' },
+    market: { lce_mt: 7.5, sharesFD: 200, lastClose: 38.0, fxCadUsd: 0.66, cashUsd: 100, debtUsd: 4500,
+      asOf: '2025-09', priceLow52w: 22.0, priceHigh52w: 65.0,
+      compsLowEvtLCE: 200, compsHighEvtLCE: 550, precLowEvtLCE: 350, precHighEvtLCE: 750 },
+    inputs: { mineLife: 30, constrYears: 2, rampYears: 1, ramp1: 85, ramp2: 100, tailYears: 0, tailPct: 80,
+      nameplate: 7.5, grade: 1.17, recovery: 70, sc6Grade: 5.5,
+      sc6Price: 1400, priceEsc: 0,
+      miningCost: 14, procCost: 30, gaFixed: 60, royalty: 5.0, freight: 55, opexEsc: 2.5,
+      initCapex: 1500, capex1: 30, capex2: 70, sustCapex: 35, wc: 5, salvage: -100,
+      discRate: 9, taxRate: 30, deprYears: 15, targetIRR: 14 },
+    mc: { price:{lo:800,base:1400,hi:2200}, grade:{lo:1.05,base:1.17,hi:1.30}, rec:{lo:65,base:70,hi:75},
+      capex:{lo:1200,base:1500,hi:2000}, mining:{lo:11,base:14,hi:18}, proc:{lo:25,base:30,hi:38} },
+    notes: 'Wodgina — MIN/ALB MARBL JV (50:50 post 2023 restructure). 3 trains × 250kt = 750kt SC6/yr nameplate. AISC ~US$650-700/t. Resource 259Mt @ 1.17% Li₂O. Capex shown on rebuild basis ≈ US$1.5B for the full 3-train mine + plant complex (MIN 2019 original build A$1.7B+, restart through MARBL JV staged). Set initCapex = 0 for going-forward valuation.'
+  },
+
+  // ── Development projects with published studies (5) ────────────────────
+  // Source: PMET FS Oct 2025 — see /CV5 Pegmatite Lithium-Only Feasibility Study/, prnewswire Oct 20 2025.
+  pmet: {
+    identity: { name: 'Shaakichiuwaanaan / CV5 — Eeyou Istchee, Quebec',
+      ticker: 'PMET.V / PMET.AX', company: 'Patriot Battery Metals',
+      jurisdiction: 'qc-canada', commodity: 'sc6', stage: 'fs', marketCurrency: 'CAD' },
+    market: { lce_mt: 5.1, sharesFD: 141, lastClose: 5.25, fxCadUsd: 0.72, cashUsd: 50, debtUsd: 0,
+      asOf: '2026-04', priceLow52w: 3.50, priceHigh52w: 8.20,
+      compsLowEvtLCE: 100, compsHighEvtLCE: 400, precLowEvtLCE: 200, precHighEvtLCE: 600 },
+    inputs: { mineLife: 19, constrYears: 3, rampYears: 2, ramp1: 65, ramp2: 90, tailYears: 0, tailPct: 80,
+      nameplate: 5.1, grade: 1.40, recovery: 73, sc6Grade: 5.5,
+      sc6Price: 1221, priceEsc: 0,
+      miningCost: 12, procCost: 22, gaFixed: 35, royalty: 2.5, freight: 80, opexEsc: 2.5,
+      initCapex: 1510, capex1: 35, capex2: 65, sustCapex: 22, wc: 4, salvage: -80,
+      discRate: 8, taxRate: 26.5, deprYears: 19, targetIRR: 15 },
+    mc: { price:{lo:800,base:1221,hi:1800}, grade:{lo:1.25,base:1.40,hi:1.55}, rec:{lo:68,base:73,hi:78},
+      capex:{lo:1300,base:1510,hi:2000}, mining:{lo:10,base:12,hi:15}, proc:{lo:18,base:22,hi:28} },
+    notes: 'PMET FS Oct 20 2025 (CV5 lithium-only). NPV8 post-tax US$1,190M, IRR 18.1%, capex US$1,510M net of CTM-ITC + TCRR (gross C$1,978M ≈ US$1,425M). 5.1Mtpa → 800ktpa SC5.5 nameplate, 693.8ktpa LOM avg, 13.3Mt LOM SC5.5. Long-term price US$1,221/t SC5.5. 19-yr LOM with extension cases. Quebec Eeyou Istchee. Verify against NI 43-101 issued Nov 14 2025.'
+  },
+
+  // Source: Arcadium / Allkem James Bay FS update 2024 (yahoo finance summary).
+  arcadiumjb: {
+    identity: { name: 'James Bay (Galaxy) — Eeyou Istchee, Quebec',
+      ticker: 'ALTM/RIO (post-acquisition)', company: 'Arcadium Lithium → Rio Tinto',
+      jurisdiction: 'qc-canada', commodity: 'sc6', stage: 'fs', marketCurrency: 'USD' },
+    market: { lce_mt: 3.8, sharesFD: 0, lastClose: 0, fxCadUsd: 1.0, cashUsd: 0, debtUsd: 0,
+      asOf: '2024-10', priceLow52w: 0, priceHigh52w: 0,
+      compsLowEvtLCE: 100, compsHighEvtLCE: 400, precLowEvtLCE: 200, precHighEvtLCE: 600 },
+    inputs: { mineLife: 19, constrYears: 2, rampYears: 1, ramp1: 80, ramp2: 100, tailYears: 0, tailPct: 80,
+      nameplate: 2.0, grade: 1.40, recovery: 71, sc6Grade: 5.6,
+      sc6Price: 1500, priceEsc: 0,
+      miningCost: 14, procCost: 24, gaFixed: 25, royalty: 2.5, freight: 75, opexEsc: 2.5,
+      initCapex: 382, capex1: 40, capex2: 60, sustCapex: 18, wc: 4, salvage: -50,
+      discRate: 8, taxRate: 26.5, deprYears: 19, targetIRR: 15 },
+    mc: { price:{lo:800,base:1500,hi:2200}, grade:{lo:1.25,base:1.40,hi:1.55}, rec:{lo:67,base:71,hi:75},
+      capex:{lo:340,base:382,hi:500}, mining:{lo:11,base:14,hi:18}, proc:{lo:20,base:24,hi:30} },
+    notes: 'Arcadium / ex-Allkem James Bay FS update 2024: capex US$381.5M (was US$285.8M in 2021 FS), pre-tax NPV8 US$2.9B / post-tax US$1.7B, post-tax IRR 45.4%, payback 1.7yr. 2Mtpa → 321ktpa SC6 (avg), 19-yr LOM. Quebec Eeyou Istchee. Aug 2024: Arcadium paused investment, exploring partner. Now under Rio post-merger. Market values blank (subsumed in Rio). Verify against ALTM IR materials.'
+  },
+
+  // Source: AVZ Manono DFS Apr 2020 (minedocs).
+  manono: {
+    identity: { name: 'Manono — Roche Dure, Tanganyika DRC',
+      ticker: 'AVZ.AX (suspended)', company: 'AVZ Minerals',
+      jurisdiction: 'drc', commodity: 'sc6', stage: 'fs', marketCurrency: 'AUD' },
+    market: { lce_mt: 16.4, sharesFD: 3550, lastClose: 0.78, fxCadUsd: 0.66, cashUsd: 80, debtUsd: 0,
+      asOf: '2022-05', priceLow52w: 0.78, priceHigh52w: 1.30,
+      compsLowEvtLCE: 50, compsHighEvtLCE: 250, precLowEvtLCE: 150, precHighEvtLCE: 500 },
+    inputs: { mineLife: 20, constrYears: 2, rampYears: 1, ramp1: 80, ramp2: 100, tailYears: 0, tailPct: 80,
+      nameplate: 4.5, grade: 1.65, recovery: 73, sc6Grade: 6.0,
+      sc6Price: 1500, priceEsc: 0,
+      miningCost: 8, procCost: 22, gaFixed: 30, royalty: 3.5, freight: 120, opexEsc: 3.0,
+      initCapex: 546, capex1: 35, capex2: 65, sustCapex: 20, wc: 5, salvage: -60,
+      discRate: 12, taxRate: 30, deprYears: 18, targetIRR: 18 },
+    mc: { price:{lo:800,base:1500,hi:2200}, grade:{lo:1.45,base:1.65,hi:1.85}, rec:{lo:68,base:73,hi:78},
+      capex:{lo:480,base:546,hi:750}, mining:{lo:7,base:8,hi:10}, proc:{lo:18,base:22,hi:28} },
+    notes: 'AVZ Manono DFS Apr 2020. Pre-tax NPV10 US$2,348M / post-tax US$1,028M, post-tax IRR 33%, payback 2.25yr. Capex US$546M + sustaining US$92M. 4.5Mtpa → 700ktpa SC6, plus 45-65ktpa primary lithium sulphate + ~46ktpa tin concentrate. Resource 401Mt @ 1.65% Li₂O at Roche Dure (subsequent drilling 2022-23 expanded to 842Mt total M&I+I). DRC jurisdiction risk; AVZ suspended on ASX since 2022 over license dispute. Higher discount rate (12%) reflects political risk. Verify against avzminerals.com.au DFS.'
+  },
+
+  // Source: Liontown LTR 2H FY25 + Nov 2024 Kathleen Valley update.
+  kathleenvalley: {
+    identity: { name: 'Kathleen Valley — WA Goldfields',
+      ticker: 'LTR.AX', company: 'Liontown Resources',
+      jurisdiction: 'wa-australia', commodity: 'sc6', stage: 'prod', marketCurrency: 'AUD' },
+    market: { lce_mt: 5.4, sharesFD: 2425, lastClose: 0.85, fxCadUsd: 0.66, cashUsd: 280, debtUsd: 380,
+      asOf: '2025-12', priceLow52w: 0.55, priceHigh52w: 1.50,
+      compsLowEvtLCE: 100, compsHighEvtLCE: 400, precLowEvtLCE: 200, precHighEvtLCE: 600 },
+    inputs: { mineLife: 23, constrYears: 2, rampYears: 2, ramp1: 60, ramp2: 90, tailYears: 0, tailPct: 80,
+      nameplate: 3.0, grade: 1.40, recovery: 70, sc6Grade: 5.6,
+      sc6Price: 1500, priceEsc: 0,
+      miningCost: 28, procCost: 35, gaFixed: 35, royalty: 5.0, freight: 60, opexEsc: 2.5,
+      initCapex: 590, capex1: 40, capex2: 60, sustCapex: 45, wc: 5, salvage: -80,
+      discRate: 9, taxRate: 30, deprYears: 23, targetIRR: 14 },
+    mc: { price:{lo:800,base:1500,hi:2200}, grade:{lo:1.25,base:1.40,hi:1.55}, rec:{lo:65,base:70,hi:75},
+      capex:{lo:500,base:590,hi:750}, mining:{lo:24,base:28,hi:35}, proc:{lo:30,base:35,hi:45} },
+    notes: 'Kathleen Valley (LTR.AX) — operating since 2024. DFS 2021 capex blew out A$545M → A$895M (≈US$590M) on rebuild basis. 2H FY25 production 170-185kt SC6, AISC A$1,170-1,290/t (~US$770-850/t). FY29 target 550+ kt/yr after open-pit → underground transition. Resource 156Mt @ 1.40% Li₂O. Capex shown on rebuild basis (US$590M); for going-forward valuation set initCapex = 0 and bump sustaining to ~55 to capture UG transition spend.'
+  },
+
+  // Source: Sigma Lithium technical reports Mar 2025 + 2Q25 results.
+  sigma: {
+    identity: { name: 'Grota do Cirilo P1+P2+P3 — Minas Gerais, Brazil',
+      ticker: 'SGML', company: 'Sigma Lithium',
+      jurisdiction: 'br-brazil', commodity: 'sc6', stage: 'prod', marketCurrency: 'USD' },
+    market: { lce_mt: 12.8, sharesFD: 113, lastClose: 6.50, fxCadUsd: 1.0, cashUsd: 60, debtUsd: 240,
+      asOf: '2025-12', priceLow52w: 4.50, priceHigh52w: 16.00,
+      compsLowEvtLCE: 100, compsHighEvtLCE: 400, precLowEvtLCE: 200, precHighEvtLCE: 600 },
+    inputs: { mineLife: 20, constrYears: 2, rampYears: 2, ramp1: 70, ramp2: 90, tailYears: 0, tailPct: 80,
+      nameplate: 4.5, grade: 1.44, recovery: 60, sc6Grade: 5.5,
+      sc6Price: 1500, priceEsc: 0,
+      miningCost: 6, procCost: 14, gaFixed: 30, royalty: 2.0, freight: 90, opexEsc: 3.0,
+      initCapex: 280, capex1: 50, capex2: 50, sustCapex: 18, wc: 5, salvage: -40,
+      discRate: 8, taxRate: 25, deprYears: 18, targetIRR: 15 },
+    mc: { price:{lo:800,base:1500,hi:2200}, grade:{lo:1.30,base:1.44,hi:1.58}, rec:{lo:55,base:60,hi:65},
+      capex:{lo:230,base:280,hi:380}, mining:{lo:5,base:6,hi:8}, proc:{lo:11,base:14,hi:18} },
+    notes: 'Sigma Grota do Cirilo (SGML). P1 operating (270ktpa SC5.5 nameplate). Capex on rebuild basis ≈ US$280M for combined P1+P2+P3 (P1 historical ~US$130M including pre-build; P2 expansion US$76M; P3 ~US$80M). Combined P1+P2 NPV8 post-tax US$5.1B per Mar 2025 technical report; reserves expanded 2.6× to 34Mt. Hydropower, dry-stack tailings. 109Mt @ 1.44% Li₂O. Set initCapex = 0 for going-forward, or 155 for remaining expansion only.'
   }
 };
 
+const STAGE_LABEL = { mre:'Maiden MRE', pea:'Post-PEA', pfs:'Post-PFS', fs:'Full FS', con:'Construction', prod:'Producing' };
+function fmtMoneyM(v){
+  if(!isFinite(v)) return '—';
+  if(Math.abs(v) >= 1000) return '$' + (v/1000).toFixed(2) + 'B';
+  return '$' + Math.round(v) + 'M';
+}
+function populateDealStrip(p){
+  const text = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  const m = p.market || {};
+  const id = p.identity || {};
+  const fx = m.fxCadUsd || 0.72;
+  const mcapUsd = (m.sharesFD || 0) * (m.lastClose || 0) * fx;
+  const evUsd   = mcapUsd + (m.debtUsd || 0) - (m.cashUsd || 0);
+  text('ds-ticker',  id.ticker  || '—');
+  text('ds-company', id.company || '—');
+  text('ds-mcap',    fmtMoneyM(mcapUsd));
+  text('ds-ev',      fmtMoneyM(evUsd));
+  text('ds-cash',    m.cashUsd ? '$' + Math.round(m.cashUsd) + 'M' : '—');
+  text('ds-shares',  m.sharesFD ? Math.round(m.sharesFD) + 'M' : '—');
+  text('ds-price',   m.lastClose ? localSym() + Number(m.lastClose).toFixed(2) : '—');
+  text('ds-asof',    m.asOf || '—');
+  text('ds-stage',   STAGE_LABEL[id.stage] || '—');
+
+  // As-of footer
+  const sc6 = (function(){ const el=document.getElementById('sc6Price'); return el ? parseFloat(el.value) : null; })();
+  text('aof-spot',  sc6 ? '$' + sc6.toLocaleString() + '/t' : '—');
+  // FX displayed in two unambiguous forms: "USD/CAD 1.39" is the institutional pair quote,
+  // "(1 CAD = US$0.72)" is the literal multiplier we actually use in calculations.
+  const usdcad = fx > 0 ? (1 / fx) : 0;
+  text('aof-fx',    usdcad > 0 ? `USD/CAD ${usdcad.toFixed(2)} · 1 CAD = US$${fx.toFixed(2)}` : '—');
+  text('aof-close', m.lastClose ? localSym() + Number(m.lastClose).toFixed(2) + ' (' + (m.asOf || '—') + ')' : '—');
+  text('aof-rev',   MODEL_VERSION);
+}
+
+let _activeProject = null;
 function loadProject(key, opts = {}){
   const p = PROJECTS[key]; if(!p) return false;
+  _activeProject = p;
   const set = (id, v) => { const el = document.getElementById(id); if(el) el.value = v; };
 
   set('project-name', p.identity.name);
@@ -1547,6 +2351,7 @@ function loadProject(key, opts = {}){
     set('mv-shares',     p.market.sharesFD);
     set('mv-curr-price', p.market.lastClose);
   }
+  populateDealStrip(p);
   // Reset year-level overrides
   if(typeof OV === 'object') Object.keys(OV).forEach(k => delete OV[k]);
   // Sync price preset chips (Mid is the canonical default)
@@ -1570,6 +2375,555 @@ function loadProject(key, opts = {}){
 
 // Backward-compat shim — older inline handlers may still call this
 function loadCiscoPreset(){ return loadProject('qtwo'); }
+
+// ══════════════════════════════════════════════════════════════════════
+// URL STATE — capture all inputs into a base64 hash for shareable links
+// ══════════════════════════════════════════════════════════════════════
+function captureState(){
+  const out = {};
+  document.querySelectorAll('input[type="number"], input[type="text"]').forEach(el => {
+    if(el.id) out[el.id] = el.value;
+  });
+  // Year-level overrides
+  if(typeof OV === 'object') out.__OV = OV;
+  // Active project
+  const sw = document.getElementById('project-switcher');
+  if(sw) out.__PROJECT = sw.value;
+  return out;
+}
+
+function applyState(state){
+  if(!state || typeof state !== 'object') return;
+  if(state.__PROJECT && PROJECTS[state.__PROJECT]){
+    loadProject(state.__PROJECT, { skipRender: true });
+  }
+  Object.entries(state).forEach(([k, v]) => {
+    if(k === '__OV' || k === '__PROJECT') return;
+    const el = document.getElementById(k);
+    if(el && (el.tagName === 'INPUT')) el.value = v;
+  });
+  if(state.__OV && typeof OV === 'object'){
+    Object.keys(OV).forEach(k => delete OV[k]);
+    Object.assign(OV, state.__OV);
+  }
+}
+
+function shareLink(){
+  try{
+    const state = captureState();
+    // UTF-8 safe base64
+    const json = JSON.stringify(state);
+    const b64 = btoa(unescape(encodeURIComponent(json)));
+    const url = location.origin + location.pathname + location.search + '#s=' + b64;
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = document.getElementById('share-btn');
+        if(btn){ const orig = btn.textContent; btn.textContent = 'Link copied'; btn.style.color = 'var(--accent)';
+          setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1500); }
+      }).catch(() => prompt('Copy this share link:', url));
+    } else {
+      prompt('Copy this share link:', url);
+    }
+  } catch(e){
+    console.warn('shareLink failed', e);
+    alert('Could not generate share link: ' + e.message);
+  }
+}
+
+function loadFromHash(){
+  if(!location.hash || !location.hash.startsWith('#s=')) return false;
+  try{
+    const b64 = location.hash.slice(3);
+    const json = decodeURIComponent(escape(atob(b64)));
+    const state = JSON.parse(json);
+    applyState(state);
+    return true;
+  } catch(e){
+    console.warn('loadFromHash failed', e);
+    return false;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CSV EXPORT — annual schedule + precedents + peers
+// ══════════════════════════════════════════════════════════════════════
+function _csvCell(v){
+  if(v === null || v === undefined) return '';
+  const s = String(v);
+  if(/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+function _csvDownload(filename, rows){
+  const csv = rows.map(r => r.map(_csvCell).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+}
+
+function exportCSV(){
+  const tag = (() => {
+    const id = (_activeProject && _activeProject.identity) || {};
+    const ticker = (id.ticker || 'project').replace(/[^A-Za-z0-9]+/g, '_');
+    const today = new Date().toISOString().slice(0, 10);
+    return `${ticker}_${today}`;
+  })();
+
+  // 1. Annual schedule
+  const headers = ['Year','Phase','Through_Mt','Grade_pct','Recovery_pct','SC6_kt','Price_USDpt',
+                   'Revenue_USDM','Mining_USDM','Processing_USDM','GA_USDM','Royalty_USDM','Freight_USDM',
+                   'CAPEX_USDM','SustainingCAPEX_USDM','EBITDA_USDM','DA_USDM','EBIT_USDM','Tax_USDM',
+                   'WC_USDM','FCF_USDM','DiscountedFCF_USDM','CumFCF_USDM','CumNPV_USDM'];
+  const phaseLabel = { C:'Construction', R:'Ramp', P:'Production', T:'Tail', X:'Closure' };
+  const rows = (_model || buildModel());
+  const dr = g('discRate');
+  const scheduleRows = [headers].concat(rows.map(r => [
+    r.t,
+    phaseLabel[r.phase] || r.phase,
+    (r.through||0).toFixed(2), (r.grade||0).toFixed(2), (r.rec||0).toFixed(1),
+    (r.sc6||0).toFixed(0), (r.price||0).toFixed(0),
+    (r.rev||0).toFixed(2), (r.mining||0).toFixed(2), (r.proc||0).toFixed(2),
+    (r.ga||0).toFixed(2), (r.roy||0).toFixed(2), (r.frt||0).toFixed(2),
+    (r.cpx||0).toFixed(2), (r.sust||0).toFixed(2),
+    (r.ebitda||0).toFixed(2), (r.da||0).toFixed(2), (r.ebit||0).toFixed(2), (r.tax||0).toFixed(2),
+    (r.wc||0).toFixed(2),
+    (r.fcf||0).toFixed(2),
+    ((r.fcf||0) / Math.pow(1 + dr/100, r.t)).toFixed(2),
+    (r.cumFCF||0).toFixed(2), (r.cumNPV||0).toFixed(2),
+  ]));
+  _csvDownload(`${tag}_annual_schedule.csv`, scheduleRows);
+
+  // 2. Precedent transactions
+  if(typeof PRECEDENTS !== 'undefined'){
+    const ph = ['Date','Deal','Stage','EV_USDM','Resource_MtLCE','EV_per_t_LCE','Premium_pct','Structure'];
+    const pRows = [ph].concat(PRECEDENTS.map(p => [
+      p.date, p.deal, p.stageLbl, p.ev, p.lce, p.evtLCE,
+      p.premium === null ? '' : p.premium, p.structure
+    ]));
+    setTimeout(() => _csvDownload(`${tag}_precedents.csv`, pRows), 200);
+  }
+
+  // 3. Risk register
+  if(typeof RISKS !== 'undefined'){
+    const rh = ['Risk','Category','Likelihood','Impact','Score','Status','Mitigation'];
+    const rRows = [rh].concat([...RISKS]
+      .sort((a,b) => b.L*b.I - a.L*a.I)
+      .map(r => [r.name, r.cat, r.L, r.I, r.L*r.I, r.status, r.mitig]));
+    setTimeout(() => _csvDownload(`${tag}_risks.csv`, rRows), 400);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// PRINT / PDF — IC one-pager
+// ══════════════════════════════════════════════════════════════════════
+function printOnePager(){
+  document.body.classList.add('printing');
+  // Allow layout to settle before invoking print
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => document.body.classList.remove('printing'), 600);
+  }, 80);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// WACC BUILDER
+// ══════════════════════════════════════════════════════════════════════
+function updateWACC(){
+  const v = id => parseFloat((document.getElementById(id) || {}).value) || 0;
+  const rf   = v('wacc-rf');
+  const erp  = v('wacc-erp');
+  const beta = v('wacc-beta');
+  const crp  = v('wacc-crp');
+  const sz   = v('wacc-size');
+  const kd   = v('wacc-kd');
+  const dW   = v('wacc-debtw') / 100;     // debt weight 0..1
+  const eW   = 1 - dW;
+  const tax  = (v('taxRate') || 25) / 100;
+
+  const ke       = rf + beta * erp + crp + sz;
+  const kdPost   = kd * (1 - tax);
+  const wacc     = eW * ke + dW * kdPost;
+
+  const set = (id, txt) => { const el = document.getElementById(id); if(el) el.textContent = txt; };
+  set('wacc-ke',        ke.toFixed(2) + '%');
+  set('wacc-ke-sub',    `${rf.toFixed(1)} + ${beta.toFixed(2)}·${erp.toFixed(1)} + ${crp.toFixed(1)} + ${sz.toFixed(1)}`);
+  set('wacc-kd-post',   kdPost.toFixed(2) + '%');
+  set('wacc-kd-sub',    `${kd.toFixed(1)}% × (1 − ${(tax*100).toFixed(1)}%)`);
+  set('wacc-result',    wacc.toFixed(2) + '%');
+  set('wacc-result-sub', `${(eW*100).toFixed(0)}% E · ${(dW*100).toFixed(0)}% D`);
+
+  // Active discount-rate indicator (read-only display)
+  const dr = parseFloat((document.getElementById('discRate') || {}).value);
+  const drv = isFinite(dr) ? dr.toFixed(2) + '%' : '—';
+  set('wacc-active', drv);
+
+  return wacc;
+}
+
+function applyWACC(){
+  const wacc = updateWACC();
+  const dr = document.getElementById('discRate');
+  if(dr){
+    dr.value = Math.round(wacc * 10) / 10;   // round to one decimal to match input step
+    if(typeof scheduleRender === 'function') scheduleRender();
+    const btn = document.querySelector('.wacc-apply-btn');
+    if(btn){ const orig = btn.textContent; btn.textContent = 'Applied'; btn.style.background = 'var(--green)';
+      setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1400); }
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// RISK REGISTER — likelihood × impact reference set
+// (QTWO/Cisco-flavoured defaults; refine per project)
+// ══════════════════════════════════════════════════════════════════════
+const RISKS = [
+  { name:'Federal IAA permitting',    cat:'Permitting', L:3, I:5, status:'open',  mitig:'Project not yet in IAA. Assess once trigger thresholds are exceeded; potential 24–36mo path.' },
+  { name:'Quebec MELCC environmental',cat:'Permitting', L:3, I:4, status:'watch', mitig:'Provincial path well-trod (PMET precedent); robust baseline data needed.' },
+  { name:'Cree Nation IBA',           cat:'Social',     L:3, I:5, status:'open',  mitig:'IBA negotiation is on the critical path. PMET took ~18mo; expect comparable.' },
+  { name:'Capex overrun',             cat:'Execution',  L:4, I:4, status:'watch', mitig:'Pre-PEA accuracy ±30%. PMET FS came in within band; lock EPC contractor early.' },
+  { name:'Schedule slip — remote build',cat:'Execution',L:4, I:3, status:'watch', mitig:'James Bay remoteness compounds delays. Add 3–6mo buffer in base case.' },
+  { name:'Lithium price drawdown',    cat:'Market',     L:4, I:5, status:'watch', mitig:'SC6 cycle volatility. Stress-test at $700/t covered in MC; offtake hedging at FID.' },
+  { name:'USD/CAD FX',                cat:'Market',     L:3, I:2, status:'mitig', mitig:'CAD opex vs USD revenue is a tailwind. Limited downside until BOC pivot. (Model uses 1 CAD = US$0.72.)' },
+  { name:'Offtake counterparty',      cat:'Commercial', L:2, I:3, status:'mitig', mitig:'Multiple offtakers active in James Bay (Ford, GM, LG, VW). Diversification credible.' },
+  { name:'Tailings management (TSF)', cat:'Environmental',L:2,I:5,status:'watch', mitig:'Filtered/dry-stack TSF the standard for new builds. Extra capex ~5–8%.' },
+  { name:'Water permit / impact',     cat:'Environmental',L:2,I:3,status:'watch', mitig:'Hydro-rich QC reduces conflict; baseline studies still essential.' },
+  { name:'Junior equity dilution',    cat:'Funding',    L:5, I:4, status:'open',  mitig:'$1.4–2.3B build vs $381M MCAP. PEA→PFS→DFS→FID raises modeled in cascade.' },
+  { name:'Global supply / oversupply',cat:'Market',     L:3, I:4, status:'watch', mitig:'2025–27 SC6 surplus narrative. Cisco scale & DMS cost position resilience.' },
+];
+
+function _dotsHTML(n, max=5){
+  let h = '';
+  for(let i = 1; i <= max; i++){
+    h += `<span class="${i <= n ? 'on' : ''}">●</span>`;
+  }
+  return h;
+}
+
+function renderRiskRegister(){
+  const tbody = document.getElementById('risk-body'); if(!tbody) return;
+  // Pre-sort by score desc
+  const rows = [...RISKS].sort((a,b) => (b.L * b.I) - (a.L * a.I));
+  tbody.innerHTML = rows.map(r => {
+    const sc = r.L * r.I;
+    const cls = sc <= 6 ? 'lo' : sc <= 12 ? 'mid' : 'hi';
+    const statusLbl = { open:'Open', watch:'Watch', mitig:'Mitigated' }[r.status] || r.status;
+    return `
+      <tr>
+        <td><div class="risk-name">${r.name}</div></td>
+        <td><span class="risk-cat">${r.cat}</span></td>
+        <td class="num"><span class="risk-dots">${_dotsHTML(r.L)}</span></td>
+        <td class="num"><span class="risk-dots">${_dotsHTML(r.I)}</span></td>
+        <td class="num"><span class="risk-score ${cls}">${sc}</span></td>
+        <td><div class="risk-mitig">${r.mitig}</div></td>
+        <td><span class="risk-status ${r.status}">${statusLbl}</span></td>
+      </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// OFFER-PRICE BUILDER — implied EV, premium, sources & uses, acquirer IRR
+// ══════════════════════════════════════════════════════════════════════
+function _irrFromCashflows(cfs, guess = 0.1){
+  // Newton-Raphson root find of NPV(r) = 0; cfs[0] is t=0 outflow (negative)
+  let r = guess;
+  for(let i = 0; i < 80; i++){
+    let npv = 0, dnpv = 0;
+    for(let t = 0; t < cfs.length; t++){
+      const f = cfs[t] / Math.pow(1 + r, t);
+      npv += f;
+      if(t > 0) dnpv -= t * cfs[t] / Math.pow(1 + r, t + 1);
+    }
+    if(Math.abs(dnpv) < 1e-9) break;
+    const next = r - npv / dnpv;
+    if(!isFinite(next)) break;
+    if(Math.abs(next - r) < 1e-7) return next;
+    r = Math.max(-0.99, Math.min(5, next));
+  }
+  // Bisect fallback if Newton diverges
+  let lo = -0.5, hi = 1.5;
+  const f = rr => cfs.reduce((s, c, t) => s + c / Math.pow(1 + rr, t), 0);
+  if(f(lo) * f(hi) > 0) return null;
+  for(let i = 0; i < 80; i++){
+    const mid = (lo + hi) / 2;
+    if(f(mid) > 0) lo = mid; else hi = mid;
+  }
+  return (lo + hi) / 2;
+}
+
+function updateOffer(){
+  const v = id => parseFloat((document.getElementById(id) || {}).value) || 0;
+  const offerCad = v('offer-price');
+  const hold     = Math.max(1, v('offer-hold') | 0);
+  const acqWacc  = v('offer-wacc') / 100;
+
+  let cashP  = v('offer-cash-pct');
+  let scripP = v('offer-scrip-pct');
+  let debtP  = v('offer-debt-pct');
+  const sumP = cashP + scripP + debtP;
+  const warn = document.getElementById('offer-mix-warn');
+  if(warn){
+    warn.textContent = Math.abs(sumP - 100) > 0.5
+      ? `Mix sums to ${sumP.toFixed(0)}% — values pro-rated to 100% for the build.`
+      : '';
+  }
+  if(sumP > 0){ cashP = cashP * 100 / sumP; scripP = scripP * 100 / sumP; debtP = debtP * 100 / sumP; }
+
+  const mk  = (_activeProject && _activeProject.market) || {};
+  const fx  = mk.fxCadUsd || 0.72;
+  const shares = mk.sharesFD || 0;
+  const cashOnBs = mk.cashUsd || 0;
+  const debtOnBs = mk.debtUsd || 0;
+  const spotCad = mk.lastClose || 0;
+  const hi52    = mk.priceHigh52w || 0;
+
+  // Implied takeout values
+  const offerUsdShare = offerCad * fx;
+  const mcapOfferUsd  = offerUsdShare * shares;
+  const evOfferUsd    = mcapOfferUsd + debtOnBs - cashOnBs;
+
+  // Premium calcs (vs CAD prices since offer is in CAD)
+  const premSpot = spotCad > 0 ? (offerCad / spotCad - 1) * 100 : null;
+  const premHi52 = hi52    > 0 ? (offerCad / hi52    - 1) * 100 : null;
+
+  // Project NPV at acquirer's WACC (used as baseline NAV)
+  const acqNPV_M = npvFromRows(_model || buildModel(), acqWacc * 100);
+  const pnav     = acqNPV_M > 0 ? evOfferUsd / acqNPV_M : null;
+
+  const set = (id, t) => { const el = document.getElementById(id); if(el) el.textContent = t; };
+  const fmtPct = p => p === null ? '—' : (p > 0 ? '+' : '') + p.toFixed(0) + '%';
+  set('offer-ev',         fmtMoneyM(evOfferUsd));
+  set('offer-prem-spot',  fmtPct(premSpot));
+  set('offer-prem-hi',    fmtPct(premHi52));
+  set('offer-pnav',       pnav !== null ? pnav.toFixed(2) + '×' : '—');
+
+  // Sources & uses
+  const cashUsd  = mcapOfferUsd * cashP / 100;
+  const scripUsd = mcapOfferUsd * scripP / 100;
+  const debtUsd  = mcapOfferUsd * debtP / 100;
+  const su = document.getElementById('offer-su');
+  if(su){
+    const total = mcapOfferUsd || 1;
+    const row = (lbl, val, cls) => {
+      const w = (val / total) * 100;
+      return `<div class="offer-su-row">
+        <div class="offer-su-lbl">${lbl}</div>
+        <div class="offer-su-track"><div class="offer-su-fill ${cls}" style="width:${w}%;">${w >= 8 ? w.toFixed(0)+'%' : ''}</div></div>
+        <div class="offer-su-val">${fmtMoneyM(val)}</div>
+      </div>`;
+    };
+    su.innerHTML = row('Cash', cashUsd, 'offer-su-cash')
+                 + row('Scrip', scripUsd, 'offer-su-scrip')
+                 + row('Debt',  debtUsd,  'offer-su-debt');
+  }
+
+  // IRR matrix: rows = hold periods, cols = exit P/NAV multiples
+  // Approximation: acquirer pays mcapOfferUsd at t=0, receives project FCF y1..H,
+  // sells at year H for exitMult × (NAV remaining @ acquirer WACC at year H).
+  // NAV_remaining(H) = sum_{t>H} fcf_t / (1+acqWacc)^(t-H).
+  const rows = _model || buildModel();
+  const fcfByYear = {};
+  rows.forEach(r => { fcfByYear[r.t] = r.fcf || 0; });
+  const maxYear = Math.max(...rows.map(r => r.t));
+
+  const navRemaining = (H) => {
+    let v = 0;
+    for(let t = H + 1; t <= maxYear; t++){
+      const f = fcfByYear[t] || 0;
+      v += f / Math.pow(1 + acqWacc, t - H);
+    }
+    return v;
+  };
+
+  const holds = [3, 5, 7];
+  const mults = [1.0, 1.2, 1.5];
+
+  const tbody = document.getElementById('offer-irr-body');
+  if(tbody){
+    tbody.innerHTML = holds.map(H => {
+      const navH = navRemaining(H);
+      const cells = mults.map(M => {
+        const cfs = [-mcapOfferUsd];   // year 0 outflow
+        for(let t = 1; t <= H; t++){ cfs.push(fcfByYear[t] || 0); }
+        cfs[H] = (cfs[H] || 0) + navH * M;   // exit value at year H, plus that year's FCF
+        const irr = _irrFromCashflows(cfs);
+        if(irr === null) return '<td>—</td>';
+        const pct = irr * 100;
+        const cls = pct >= 18 ? 'irr-good' : pct >= 10 ? 'irr-mid' : 'irr-bad';
+        return `<td class="${cls}">${pct.toFixed(1)}%</td>`;
+      }).join('');
+      return `<tr><td>${H}-yr hold</td>${cells}</tr>`;
+    }).join('');
+  }
+
+  // Drop the offer marker onto the football field (if rendered)
+  document.querySelectorAll('.ff-marker.offer').forEach(el => el.remove());
+  document.querySelectorAll('#ff-rows .ff-track').forEach(track => {
+    // Existing axis max is encoded via the existing solid MCAP marker's position; reuse pct
+    const existing = track.querySelector('.ff-marker:not(.offer)');
+    if(!existing) return;
+    // Read current MCAP marker percentage; compute offer percentage relative to same scale
+    const mcapPct = parseFloat(existing.style.left) || 0;
+    const mcap = (_activeProject && _activeProject.market)
+      ? (_activeProject.market.sharesFD || 0) * (_activeProject.market.lastClose || 0) * (_activeProject.market.fxCadUsd || 0.72)
+      : 0;
+    if(mcap <= 0 || mcapPct <= 0) return;
+    const scale = mcapPct / mcap;
+    const offerPct = Math.max(0, Math.min(100, mcapOfferUsd * scale));
+    const m = document.createElement('div');
+    m.className = 'ff-marker offer';
+    m.dataset.label = 'OFFER ' + fmtMoneyM(mcapOfferUsd);
+    m.style.left = offerPct + '%';
+    track.appendChild(m);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// PRECEDENT TRANSACTIONS — hard-rock lithium M&A reference set
+// EV figures are public-disclosure approximations; verify before quoting.
+// ══════════════════════════════════════════════════════════════════════
+const PRECEDENTS = [
+  { date:'2025-03', sortDate:'2025-03', deal:'Rio Tinto / Arcadium Lithium',     stage:'prod', stageLbl:'Producing', ev:6700, lce:7.5,  evtLCE:893, premium:90, structure:'All-cash' },
+  { date:'2024-12', sortDate:'2024-12', deal:'Volkswagen / Patriot stake (PMET)',stage:'pfs',  stageLbl:'Post-PFS',  ev:502,  lce:9.1,  evtLCE:55,  premium:null,structure:'Strategic stake' },
+  { date:'2024-09', sortDate:'2024-09', deal:'Pilbara Minerals / Latin Resources',stage:'pfs', stageLbl:'Post-PFS',  ev:386,  lce:5.6,  evtLCE:69,  premium:55, structure:'All-stock' },
+  { date:'2024-03', sortDate:'2024-03', deal:'SQM / Codelco (Salar JV)',         stage:'prod', stageLbl:'Producing', ev:5500, lce:11.8, evtLCE:466, premium:null,structure:'JV / 50:50' },
+  { date:'2023-10', sortDate:'2023-10', deal:'Allkem / Livent merger → Arcadium',stage:'prod', stageLbl:'Producing', ev:10600,lce:14.0, evtLCE:757, premium:0,  structure:'All-stock merger' },
+  { date:'2023-09', sortDate:'2023-09', deal:'Albemarle / Liontown (terminated)',stage:'fs',   stageLbl:'Full FS',    ev:4200, lce:6.6,  evtLCE:636, premium:62, structure:'All-cash (failed)' },
+  { date:'2023-04', sortDate:'2023-04', deal:'CATL / Global Lithium',            stage:'pea',  stageLbl:'Post-PEA',   ev:166,  lce:0.6,  evtLCE:277, premium:null,structure:'Equity placement' },
+  { date:'2022-12', sortDate:'2022-12', deal:'Rio Tinto / Rincon Salar',         stage:'pfs',  stageLbl:'Post-PFS',   ev:825,  lce:1.8,  evtLCE:458, premium:null,structure:'Asset purchase' },
+  { date:'2022-08', sortDate:'2022-08', deal:'Tianqi / IGO — Greenbushes (legacy)',stage:'prod',stageLbl:'Producing', ev:14000,lce:17.7, evtLCE:791, premium:null,structure:'JV stake' },
+  { date:'2021-08', sortDate:'2021-08', deal:'Lithium Americas / Millennial',    stage:'pea',  stageLbl:'Post-PEA',   ev:400,  lce:4.1,  evtLCE:98,  premium:78, structure:'All-stock' },
+];
+
+let _precSortKey = 'date', _precSortDir = -1;
+function renderPrecedents(){
+  const tbody = document.getElementById('prec-body'); if(!tbody) return;
+  const rows = [...PRECEDENTS].sort((a,b) => {
+    const k = _precSortKey;
+    const av = (k === 'date') ? a.sortDate : a[k];
+    const bv = (k === 'date') ? b.sortDate : b[k];
+    if(av === null) return 1; if(bv === null) return -1;
+    if(typeof av === 'number') return (av - bv) * _precSortDir;
+    return String(av).localeCompare(String(bv)) * _precSortDir;
+  });
+
+  const fmtEV  = v => v >= 1000 ? '$' + (v/1000).toFixed(1) + 'B' : '$' + v.toLocaleString();
+  const fmtPct = v => v === null ? '—' : v.toFixed(0) + '%';
+
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td>${r.date}</td>
+      <td style="white-space:normal">${r.deal}</td>
+      <td><span class="prec-stage s-${r.stage}">${r.stageLbl}</span></td>
+      <td class="num">${fmtEV(r.ev)}</td>
+      <td class="num">${r.lce.toFixed(1)}</td>
+      <td class="num">$${r.evtLCE}</td>
+      <td class="num">${fmtPct(r.premium)}</td>
+      <td>${r.structure}</td>
+    </tr>`).join('');
+
+  // Update sort-direction indicator on headers
+  document.querySelectorAll('#prec-table thead th').forEach(th => {
+    th.classList.remove('sort-asc', 'sort-desc');
+    if(th.dataset.sort === _precSortKey){
+      th.classList.add(_precSortDir === 1 ? 'sort-asc' : 'sort-desc');
+    }
+  });
+}
+
+// Wire up sortable headers (idempotent — guard via dataset flag)
+function _wirePrecedentHeaders(){
+  const ths = document.querySelectorAll('#prec-table thead th');
+  ths.forEach(th => {
+    if(th.dataset.wired) return;
+    th.dataset.wired = '1';
+    th.addEventListener('click', () => {
+      const k = th.dataset.sort;
+      if(k === _precSortKey){ _precSortDir *= -1; }
+      else { _precSortKey = k; _precSortDir = (k === 'deal' || k === 'structure' || k === 'stage') ? 1 : -1; }
+      renderPrecedents();
+    });
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// FOOTBALL FIELD — multi-method valuation triangulation
+// ══════════════════════════════════════════════════════════════════════
+function renderFootballField(npv, mcapUsd){
+  const rowsEl = document.getElementById('ff-rows');
+  const axisEl = document.getElementById('ff-axis');
+  if(!rowsEl || !axisEl) return;
+
+  const mk  = (_activeProject && _activeProject.market) || {};
+  const fx  = mk.fxCadUsd || 0.72;
+  const lce = mk.lce_mt || 0;
+  const cash = mk.cashUsd || 0;
+  const debt = mk.debtUsd || 0;
+  const shares = mk.sharesFD || 0;
+
+  // DCF (price band): rebuild model at low/high SC6 prices, compute NPV → equity value
+  const curRate = g('discRate');
+  const dcfPriceLo = npvFromRows(buildModel(900),  curRate) + cash - debt;
+  const dcfPriceHi = npvFromRows(buildModel(1800), curRate) + cash - debt;
+
+  // DCF (WACC band): same model, two discount rates ±2 pts around current
+  const dcfWaccLo  = npvFromRows(_model, Math.min(curRate + 2, 25)) + cash - debt;
+  const dcfWaccHi  = npvFromRows(_model, Math.max(curRate - 2, 4))  + cash - debt;
+
+  // Comps & precedents: equity value approx = EV (juniors near zero net cash)
+  const compsLo   = (mk.compsLowEvtLCE  || 0) * lce;
+  const compsHi   = (mk.compsHighEvtLCE || 0) * lce;
+  const precLo    = (mk.precLowEvtLCE   || 0) * lce;
+  const precHi    = (mk.precHighEvtLCE  || 0) * lce;
+
+  // 52-week trading range → MCAP_USD_M
+  const tradeLo = (mk.priceLow52w  || 0) * shares * fx;
+  const tradeHi = (mk.priceHigh52w || 0) * shares * fx;
+
+  const rows = [
+    { lbl: 'DCF — price band',   sub: 'SC6 $900 → $1,800/t @ current WACC', cls: 'dcf',   lo: Math.min(dcfPriceLo, dcfPriceHi), hi: Math.max(dcfPriceLo, dcfPriceHi) },
+    { lbl: 'DCF — WACC band',    sub: `${(curRate-2).toFixed(0)}% → ${(curRate+2).toFixed(0)}% discount`, cls: 'dcf', lo: Math.min(dcfWaccLo, dcfWaccHi), hi: Math.max(dcfWaccLo, dcfWaccHi) },
+    { lbl: 'Comps EV/t LCE',     sub: `$${mk.compsLowEvtLCE}–${mk.compsHighEvtLCE}/t × ${lce} Mt LCE`, cls: 'comps', lo: compsLo, hi: compsHi },
+    { lbl: 'Precedents EV/t LCE',sub: `$${mk.precLowEvtLCE}–${mk.precHighEvtLCE}/t × ${lce} Mt LCE`, cls: 'prec',  lo: precLo,  hi: precHi  },
+    { lbl: '52-week trading',    sub: `C$${(mk.priceLow52w||0).toFixed(2)} – C$${(mk.priceHigh52w||0).toFixed(2)}`, cls: 'trade', lo: tradeLo, hi: tradeHi },
+  ].filter(r => r.hi > 0);
+
+  // Domain: 0 to 110% of max
+  const maxV = Math.max(mcapUsd, ...rows.map(r => r.hi)) * 1.1 || 1;
+  const pct = v => Math.max(0, Math.min(100, (v / maxV) * 100));
+  const fmt = v => v >= 1000 ? '$' + (v/1000).toFixed(2) + 'B' : '$' + Math.round(v) + 'M';
+
+  // Render axis ticks at 0, 25%, 50%, 75%, 100% of maxV
+  axisEl.innerHTML = '';
+  [0, 0.25, 0.50, 0.75, 1.0].forEach(f => {
+    const t = document.createElement('div');
+    t.className = 'ff-tick';
+    t.style.left = (f * 100) + '%';
+    t.textContent = fmt(maxV * f);
+    axisEl.appendChild(t);
+  });
+
+  // Render rows
+  rowsEl.innerHTML = rows.map(r => {
+    const lo = pct(r.lo);
+    const hi = pct(r.hi);
+    const wid = Math.max(hi - lo, 1);
+    const midText = fmt((r.lo + r.hi) / 2);
+    return `
+      <div class="ff-row">
+        <div class="ff-row-lbl">${r.lbl}<small>${r.sub}</small></div>
+        <div class="ff-track">
+          <div class="ff-bar-edge lo" style="left:${lo}%;">${fmt(r.lo)}</div>
+          <div class="ff-bar ${r.cls}" style="left:${lo}%;width:${wid}%;">
+            ${wid > 12 ? midText : ''}
+          </div>
+          <div class="ff-bar-edge hi" style="left:${hi}%;">${fmt(r.hi)}</div>
+          <div class="ff-marker" data-label="MCAP ${fmt(mcapUsd)}" style="left:${pct(mcapUsd)}%;"></div>
+        </div>
+      </div>`;
+  }).join('');
+}
 
 // ══════════════════════════════════════════════════════════════════════
 // STATE
@@ -1786,25 +3140,88 @@ function render(){
   let pb = null, pbRow = rows.find(r => r.cumFCF >= 0 && r.t > 1);
   if(pbRow){ const prev = rows[pbRow.t - 2]; pb = prev ? pbRow.t - prev.cumFCF/(pbRow.cumFCF - prev.cumFCF) : pbRow.t; }
 
-  document.getElementById('k-npv').textContent  = '$' + (npv/1000).toFixed(2) + 'B';
-  document.getElementById('k-npv2').textContent = 'WACC: ' + g('discRate').toFixed(1) + '%';
-  document.getElementById('k-npv').style.color  = npv >= 0 ? BRAND.green : BRAND.red;
-  document.getElementById('k-npv8').textContent = '$' + (npv8/1000).toFixed(2) + 'B';
-  document.getElementById('k-npv8b').textContent= 'discount rate: 8%';
-  document.getElementById('k-irr').textContent  = irr !== null ? irr.toFixed(1) + '%' : 'N/A';
-  document.getElementById('k-irr2').textContent = 'Target: ' + gi('targetIRR') + '%';
-  document.getElementById('k-pb').textContent   = pb !== null ? pb.toFixed(1) + ' yrs' : 'N/A';
-  document.getElementById('k-pb2').textContent  = 'from first constr.';
-  document.getElementById('k-peak').textContent = '$' + Math.abs(peakFund).toFixed(0) + 'M';
+  // ── Compute AISC at full production for KPI ──
+  const _fp = prodRows.find(r => r.phase === 'P');
+  const aiscPerT = _fp ? (_fp.opex + _fp.sust) / _fp.sc6 * 1000 : null;
+
+  // ── Market-derived KPIs from active project profile ──
+  const mk = (_activeProject && _activeProject.market) || {};
+  const fx = mk.fxCadUsd || 0.72;
+  const sharesFD = mk.sharesFD || 0;
+  const lastClose = mk.lastClose || 0;
+  const lceMt = mk.lce_mt || 0;
+  const mcapUsd = sharesFD * lastClose * fx;                 // US$M
+  const evUsd   = mcapUsd + (mk.debtUsd || 0) - (mk.cashUsd || 0);
+  const navUsd  = npv;                                       // US$M, post-tax @ WACC
+  // NPV / share, fully diluted, in CAD (display currency)
+  const navPerShareCad = sharesFD > 0 ? (navUsd / fx) / sharesFD : null;
+  const evPerTLCE      = lceMt > 0 ? evUsd / lceMt : null;   // $/t LCE
+  const pnav           = navUsd > 0 && mcapUsd > 0 ? mcapUsd / navUsd : null;
 
   // ── Inducement ──
   const ind = calcInducement(gi('targetIRR'));
   const be  = calcBreakeven();
   const indLCE = ind / 0.1484;
-  document.getElementById('k-ind').textContent  = '$' + ind.toFixed(0);
-  document.getElementById('k-ind2').textContent = 'min. SC6 $/t';
-  document.getElementById('ind-price').textContent = '$' + ind.toFixed(0) + '/t SC6';
-  document.getElementById('ind-lce').textContent   = '$' + indLCE.toFixed(0) + '/t LCE equivalent';
+  const indEl = document.getElementById('ind-price'); if(indEl) indEl.textContent = '$' + ind.toFixed(0) + '/t SC6';
+  const indLceEl = document.getElementById('ind-lce'); if(indLceEl) indLceEl.textContent = '$' + indLCE.toFixed(0) + '/t LCE equivalent';
+
+  // ── KPI bar v2 ──
+  const $ = id => document.getElementById(id);
+  $('k-npv').textContent  = '$' + (npv/1000).toFixed(2) + 'B';
+  $('k-npv').style.color  = npv >= 0 ? BRAND.accent : BRAND.red;
+  $('k-npv2').textContent = '@ 8%: $' + (npv8/1000).toFixed(2) + 'B';
+
+  $('k-npv-share').textContent = navPerShareCad !== null ? localSym() + navPerShareCad.toFixed(2) : '—';
+  $('k-npv-share').style.color = (navPerShareCad !== null && lastClose > 0)
+    ? (navPerShareCad >= lastClose ? BRAND.green : BRAND.red) : BRAND.fg;
+  $('k-npv-share-sub').textContent = lastClose > 0 ? 'vs spot: ' + localSym() + lastClose.toFixed(2) : 'vs spot: —';
+
+  $('k-irr').textContent  = irr !== null ? irr.toFixed(1) + '%' : 'N/A';
+  $('k-irr').style.color  = (irr !== null && irr >= gi('targetIRR')) ? BRAND.green : BRAND.amber;
+  $('k-irr2').textContent = 'Payback: ' + (pb !== null ? pb.toFixed(1) + ' yrs' : '—');
+
+  $('k-aisc').textContent = aiscPerT !== null ? '$' + aiscPerT.toFixed(0) : '—';
+  $('k-aisc').style.color = BRAND.fg;
+  $('k-aisc-sub').textContent = 'Peak fund: $' + Math.abs(peakFund).toFixed(0) + 'M';
+
+  $('k-evlce').textContent = evPerTLCE !== null ? '$' + evPerTLCE.toFixed(0) : '—';
+  $('k-evlce').style.color = BRAND.cyan;
+
+  $('k-pnav').textContent = pnav !== null ? pnav.toFixed(2) + '×' : '—';
+  $('k-pnav').style.color = pnav !== null && pnav < 0.5 ? BRAND.green : BRAND.fg;
+  $('k-pnav-sub').textContent = 'Inducement: $' + ind.toFixed(0) + '/t';
+
+  // As-of footer: refresh spot SC6 cell on every render so it tracks sidebar edits
+  const _aofSpot = document.getElementById('aof-spot');
+  if(_aofSpot) _aofSpot.textContent = '$' + Math.round(g('sc6Price')).toLocaleString() + '/t';
+
+  // ── NAV Bridge (DCF NPV → Equity NAV → NAV/share) ──
+  const cash = mk.cashUsd || 0;
+  const debt = mk.debtUsd || 0;
+  const equityNavUsd = npv + cash - debt;
+  const navPerShareUsd = sharesFD > 0 ? equityNavUsd / sharesFD : null;
+  const navShareCad = navPerShareUsd !== null ? navPerShareUsd / fx : null;
+
+  const nbSet = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  nbSet('nb-npv',    fmtMoneyM(npv));
+  nbSet('nb-cash',   fmtMoneyM(cash));
+  nbSet('nb-debt',   fmtMoneyM(debt));
+  nbSet('nb-equity', fmtMoneyM(equityNavUsd));
+  nbSet('nb-shares', sharesFD ? sharesFD.toFixed(0) + 'M' : '—');
+  nbSet('nb-nav-share', navShareCad !== null ? localSym() + navShareCad.toFixed(2) : '—');
+  nbSet('nb-nav-share-sub', lastClose > 0 && navShareCad !== null
+    ? 'vs spot ' + localSym() + lastClose.toFixed(2) + ' (' + ((navShareCad/lastClose - 1) * 100).toFixed(0) + '% upside)'
+    : 'vs spot —');
+  const nbNote = document.getElementById('nb-note');
+  if(nbNote){
+    nbNote.innerHTML = `<b style="color:var(--fg)">Bridge note:</b> uses post-tax NPV at WACC of ${g('discRate').toFixed(1)}%, current cash/debt from project profile, and basic + ITM warrant FD shares (${sharesFD.toFixed(0)}M). Project-finance equity issue at FID will dilute further — see funding cascade below.`;
+  }
+
+  // Football field — multi-method valuation triangulation
+  if(typeof renderFootballField === 'function') renderFootballField(npv, mcapUsd);
+
+  // Offer-price builder + acquirer returns (also re-applies offer marker on football field)
+  if(typeof updateOffer === 'function') updateOffer();
 
   // Cost breakdown metrics (at nameplate, full production)
   const fp = prodRows.find(r => r.phase === 'P');
@@ -1913,7 +3330,7 @@ function renderPlantFlow(){
       label: 'LCE Equivalent',
       num: (lceKt).toFixed(0), unit: 'kt LCE/yr',
       numBig: (lceKt).toFixed(1), unitBig: 'kt LCE/yr',
-      formula: `<b>${sc6Kt.toFixed(0)}kt SC6</b> × <b>0.1484</b>\n(Li₂O → Li₂CO₃ MW ratio)`,
+      formula: `<b>${sc6Kt.toFixed(0)}kt SC6</b> × <b>0.1484</b>\n(t LCE / t SC6 = 6% × 2.473)`,
       cls: ''
     },
     {
@@ -2072,20 +3489,26 @@ function renderTable(rows){
     tdYear.innerHTML = `<span class="phase ${phMap[r.phase]}">${r.phase==='C'?'Constr':r.phase==='R'?'Ramp':r.phase==='T'?'Tail':r.phase==='X'?'Closure':'Prod'}</span> Y${r.t}${r.py?` (P${r.py})`:''}`;
     tr.appendChild(tdYear);
 
+    // Helpers for this row
+    const dim = () => { const td=document.createElement('td'); td.className='dim-val'; td.textContent='–'; return td; };
+    const dcfYear = (r.fcf || 0) / Math.pow(1 + g('discRate')/100, r.t);
+
     if(isC){
-      // Construction row - minimal data, span across production cols
-      const empties = [0,0,0,0,0,0,0,0,0,0,0];
-      empties.forEach(()=>{ const td=document.createElement('td'); td.className='dim-val'; td.textContent='–'; tr.appendChild(td); });
+      // Construction row: 11 production-side dims, then CAPEX, then 4 dims (sust + P&L), ΔWC dim, FCF, DCF, Cum FCF, Cum NPV
+      for(let i=0;i<11;i++) tr.appendChild(dim());
       const tdCpx = document.createElement('td'); tdCpx.className='neg'; tdCpx.textContent='('+r.cpx.toFixed(0)+')'; tr.appendChild(tdCpx);
-      const td2 = document.createElement('td'); td2.className='dim-val'; td2.textContent='–'; tr.appendChild(td2);
-      [0,0,0,0].forEach(()=>{ const td=document.createElement('td'); td.className='dim-val'; td.textContent='–'; tr.appendChild(td); });
+      for(let i=0;i<5;i++) tr.appendChild(dim()); // sust + EBITDA + D&A + EBIT + Tax
+      tr.appendChild(dim()); // ΔWC
       const tdFCF = document.createElement('td'); tdFCF.className=cls(r.fcf); tdFCF.textContent=r.fcf.toFixed(1); tr.appendChild(tdFCF);
+      const tdDCF = document.createElement('td'); tdDCF.className=cls(dcfYear)+' dim-val'; tdDCF.textContent=dcfYear.toFixed(1); tr.appendChild(tdDCF);
       const tdCum = document.createElement('td'); tdCum.className=cls(r.cumFCF); tdCum.textContent=r.cumFCF.toFixed(1); tr.appendChild(tdCum);
       const tdNPV = document.createElement('td'); tdNPV.className=cls(r.cumNPV); tdNPV.textContent=r.cumNPV.toFixed(1); tr.appendChild(tdNPV);
     } else if(isX){
-      const empties = 19;
-      for(let i=0;i<empties;i++){ const td=document.createElement('td'); td.className='dim-val'; td.textContent='–'; tr.appendChild(td); }
+      // Closure row: 18 dims (production + costs + capex + P&L) + ΔWC dim + FCF + DCF + Cum FCF + Cum NPV = 22 cells
+      for(let i=0;i<18;i++) tr.appendChild(dim());
+      tr.appendChild(dim()); // ΔWC
       const tdFCF = document.createElement('td'); tdFCF.className=cls(r.fcf); tdFCF.textContent=r.fcf.toFixed(1); tr.appendChild(tdFCF);
+      const tdDCF = document.createElement('td'); tdDCF.className=cls(dcfYear)+' dim-val'; tdDCF.textContent=dcfYear.toFixed(1); tr.appendChild(tdDCF);
       const tdCum = document.createElement('td'); tdCum.className=cls(r.cumFCF); tdCum.textContent=r.cumFCF.toFixed(1); tr.appendChild(tdCum);
       const tdNPV = document.createElement('td'); tdNPV.className=cls(r.cumNPV); tdNPV.textContent=r.cumNPV.toFixed(1); tr.appendChild(tdNPV);
     } else {
@@ -2155,8 +3578,15 @@ function renderTable(rows){
       const tdDA     = document.createElement('td'); tdDA.className='dim-val'; tdDA.textContent=r.da.toFixed(1); tr.appendChild(tdDA);
       const tdEBIT   = document.createElement('td'); tdEBIT.className=cls(r.ebit); tdEBIT.textContent=r.ebit.toFixed(1); tr.appendChild(tdEBIT);
       const tdTax    = document.createElement('td'); tdTax.className='neg'; tdTax.textContent=r.tax>0?'('+r.tax.toFixed(1)+')':'–'; tr.appendChild(tdTax);
-      // FCF
+      // ΔWC (positive value in r.wc means cash drag, displayed as parens)
+      const tdWC = document.createElement('td');
+      const wcVal = r.wc || 0;
+      tdWC.className = wcVal > 0 ? 'neg' : (wcVal < 0 ? 'pos' : 'dim-val');
+      tdWC.textContent = Math.abs(wcVal) < 0.05 ? '–' : (wcVal > 0 ? '('+wcVal.toFixed(1)+')' : (-wcVal).toFixed(1));
+      tr.appendChild(tdWC);
+      // FCF + Discounted FCF (per-year, at WACC)
       const tdFCF = document.createElement('td'); tdFCF.className=cls(r.fcf)+' '+rowCls; tdFCF.textContent=r.fcf.toFixed(1); tr.appendChild(tdFCF);
+      const tdDCF = document.createElement('td'); tdDCF.className=cls(dcfYear)+' dim-val'; tdDCF.textContent=dcfYear.toFixed(1); tr.appendChild(tdDCF);
       const tdCum = document.createElement('td'); tdCum.className=cls(r.cumFCF); tdCum.textContent=r.cumFCF.toFixed(1); tr.appendChild(tdCum);
       const tdNPV = document.createElement('td'); tdNPV.className=cls(r.cumNPV); tdNPV.textContent=r.cumNPV.toFixed(1); tr.appendChild(tdNPV);
     }
@@ -2564,133 +3994,6 @@ function mcTab(tab){
   ['hist','irr','tornado','prob'].forEach(t=>{ document.getElementById('mc-'+t+'-panel').style.display=t===tab?'block':'none'; });
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// CISCO LITHIUM PROJECT — QUEBEC PRESET
-// Calibrated from: PMET Shaakichiuwaanaan FS (Oct 2025) + Q2 Metals Cisco MRE (Apr 20 2026)
-// MRE: 295 Mt @ 1.36% Li₂O Inferred (270 Mt OP + 24 Mt UG) → 9.9 Mt LCE
-// All monetary values in USD. FX assumption: 0.72 CAD/USD (1 CAD = US$0.72)
-// Key peer refs: PMET FS OPEX C$729/t SC5.5 (US$525/t) | AISC C$800/t (US$576/t)
-// Cisco advantage: 150km to Matagami rail vs PMET's 834km → ~US$80/t SC5.5 freight saving
-// ══════════════════════════════════════════════════════════════════════
-function loadCiscoPreset(){
-  const s = id => document.getElementById(id);
-  const FX = 0.72; // CAD/USD (1 CAD = US$0.72)
-
-  // Project identity
-  s('project-name').value = 'Cisco Lithium Project — Eeyou Istchee, Quebec';
-
-  // ── Mine configuration ──────────────────────────────────────────
-  s('mineLife').value     = 30;   // 295Mt ÷ 7.5Mtpa ≈ 39yr ore life; use 30 for reserve conversion assumption
-  s('constrYears').value  = 2;    // simplified 2yr (realistic 3yr for large plant; update when PEA published)
-  s('rampYears').value    = 3;    // large plant, DMS relatively simple but remote logistics
-  s('ramp1').value        = 55;   // yr1 ramp: logistics, commissioning challenges in James Bay
-  s('ramp2').value        = 80;   // yr2 ramp: DMS stabilisation
-  s('tailYears').value    = 3;    // declining ore quality in later open pit benches
-  s('tailPct').value      = 65;
-
-  // ── Production ──────────────────────────────────────────────────
-  // At 7.5 Mtpa, 1.36% grade, 72% recovery, SC5.5: → 1,336 kt SC5.5/yr
-  s('nameplate').value   = 7.5;
-  s('grade').value       = 1.36;  // confirmed MRE grade Apr 20 2026
-  s('recovery').value    = 72;    // DMS-only; PMET FS confirmed 72% for DMS
-  s('sc6Grade').value    = 5.5;   // SC5.5 product grade (PMET / Quebec standard)
-
-  // ── Price deck ──────────────────────────────────────────────────
-  // PMET FS long-term: US$1,221/t SC5.5. Current spot (Sep 2025): US$830/t SC6 ≈ US$760/t SC5.5
-  // Using US$1,400/t SC5.5 (Mid) as the default — above spot, in line with long-term consensus.
-  s('sc6Price').value    = 1400;
-  s('priceEsc').value    = 0;
-  // Sync the Price Deck preset buttons so "Mid" is visually active
-  document.querySelectorAll('.presets .pr').forEach(b => {
-    b.classList.toggle('on', /Mid/.test(b.textContent));
-  });
-
-  // ── Operating costs (USD, calibrated to PMET FS at 0.72 FX) ──
-  // PMET implied ~US$77/t ore all-in ex-transport on 5.1Mtpa OP+UG hybrid
-  // Cisco: predominantly OP (270/295 Mt), better logistics → lower unit costs
-  // Mining: US$13.50/t ore (C$18.75: open pit at 3.0:1 strip, includes blasting/hauling/drill)
-  // Processing: US$21.50/t ore (C$29.85: DMS-only, hydro power @ C$0.045/kWh is a major advantage)
-  // Note: combined US$35/t ore × 5.61 t ore/t SC5.5 = US$197/t SC5.5 mine+process
-  // G&A: US$28M/yr (C$39M: FIFO camp ~250 people, HSE, community, corporate)
-  // Royalty: 2.5% revenue (simplified; actual = QC mining duties 16% on profit >C$50M + 0.5% gross minimum)
-  // Freight: US$43/t SC5.5 (150km truck to Matagami @ C$0.19/t-km = C$28.5/t + CN Rail ~C$30/t = C$58.5 → US$42)
-  // → Implied total cash OPEX ≈ US$262-290/t SC5.5 → well below PMET's US$525 due to OP-dominant + logistics
-  s('miningCost').value  = 13.50;  // $/t ore
-  s('procCost').value    = 21.50;  // $/t ore (DMS only — materially cheaper than flotation)
-  s('gaFixed').value     = 28;     // $M/yr USD
-  s('royalty').value     = 2.5;    // % revenue (simplified Quebec mining duty proxy)
-  s('freight').value     = 43;     // $/t SC5.5 (road to Matagami + CN Rail to Bécancour)
-  s('opexEsc').value     = 2.5;    // CAD inflation pass-through ~2.5%/yr
-
-  // ── Capital structure ───────────────────────────────────────────
-  // PMET FS: C$1,978M gross for 5.1 Mtpa. Scale to 7.5 Mtpa using 0.6 power law:
-  //   C$1,978M × (7.5/5.1)^0.6 = C$1,978M × 1.26 = C$2,493M gross
-  //   Net of CTM-ITC (30% on ~35% of eligible spend): C$2,493M × 0.79 = C$1,969M
-  //   Using gross US$1,795M (C$2,493M × 0.72) as base — note net ~US$1,416M after credits
-  //   Range: US$1,400M – US$2,300M (±30% at PEA-level accuracy, no FS yet)
-  s('initCapex').value   = 1795;   // $M USD gross (range P10-P90: 1400-2300)
-  s('capex1').value      = 30;     // 30% in constr yr1 (site prep, early procurement)
-  s('capex2').value      = 70;     // 70% in constr yr2 (plant build, commissioning)
-  s('sustCapex').value   = 18;     // $/t SC5.5 (US$24M/yr at nameplate — lower than PMET UG sustaining)
-  s('wc').value          = 4;      // % revenue working capital
-  s('salvage').value     = -60;    // $M closure cost (larger remote site)
-
-  // ── Financial ──────────────────────────────────────────────────
-  // Quebec combined tax: Federal 15% + QC provincial 11.5% = 26.5%
-  // WACC: 10% base (junior project, single asset, pre-financing; institutional partner could lower to 8-9%)
-  // Target IRR: 18% (consistent with PMET FS 18.1% after-tax IRR; appropriate for world-class asset)
-  s('discRate').value    = 10;
-  s('taxRate').value     = 26.5;   // Federal 15% + Quebec 11.5%
-  s('deprYears').value   = 20;
-  s('targetIRR').value   = 18;
-
-  // ── Monte Carlo ranges (calibrated to Cisco-specific risk profile) ──
-  // Price: SC5.5 USD/t — wide range reflects lithium cycle volatility
-  document.getElementById('mc-price-lo').value    = 600;   // P10: bear market (2024 lows territory)
-  document.getElementById('mc-price-base').value  = 900;   // P50: conservative base
-  document.getElementById('mc-price-hi').value    = 1600;  // P90: bull case (approaching PMET FS assumption)
-  // Grade: MRE is 1.36% Inferred; small dilution risk, upside from high-grade zones
-  document.getElementById('mc-grade-lo').value    = 1.22;  // P10: dilution, lower-grade domains
-  document.getElementById('mc-grade-base').value  = 1.36;  // P50: confirmed MRE grade
-  document.getElementById('mc-grade-hi').value    = 1.50;  // P90: high-grade nova-style zones
-  // Recovery: DMS-only is well-proven on similar pegmatites
-  document.getElementById('mc-rec-lo').value      = 67;    // P10: coarser fines losses
-  document.getElementById('mc-rec-base').value    = 72;    // P50: PMET FS confirmed rate
-  document.getElementById('mc-rec-hi').value      = 76;    // P90: optimised plant
-  // CAPEX: pre-PEA accuracy ±30%; major risk is remote construction cost overrun
-  document.getElementById('mc-capex-lo').value    = 1400;  // P10: optimal execution, tax credits maxed
-  document.getElementById('mc-capex-base').value  = 1795;  // P50: gross, pre-credits
-  document.getElementById('mc-capex-hi').value    = 2450;  // P90: 30% overrun (common for remote QC builds)
-  // Mining: open pit at 3:1 strip — relatively low risk
-  document.getElementById('mc-mining-lo').value   = 11.00; // P10: efficient contractor
-  document.getElementById('mc-mining-base').value = 13.50; // P50: base case
-  document.getElementById('mc-mining-hi').value   = 18.00; // P90: strip creep, hard rock blasting
-  // Processing: DMS only — well-understood technology, low risk
-  document.getElementById('mc-proc-lo').value     = 18.00; // P10: high utilisation
-  document.getElementById('mc-proc-base').value   = 21.50; // P50: base case
-  document.getElementById('mc-proc-hi').value     = 28.00; // P90: reagent/maintenance cost creep
-
-  // ── Market Valuation inputs (Cisco-specific) ──
-  const mvLce = document.getElementById('mv-lce');
-  const mvShares = document.getElementById('mv-shares');
-  const mvCurrP = document.getElementById('mv-curr-price');
-  if(mvLce) mvLce.value = 9.9;     // 295 Mt @ 1.36% = 9.9 Mt LCE confirmed MRE
-  if(mvShares) mvShares.value = 196; // Current shares + minimal dilution assumption
-  if(mvCurrP) mvCurrP.value = 2.80;  // Current QTWO price (Apr 2026)
-  mvSetStage(0); // Maiden MRE stage — correct current stage
-
-  // Reset any year-level overrides
-  Object.keys(OV).forEach(k => delete OV[k]);
-
-  scheduleRender();
-
-  // Notify user
-  const btn = event.target;
-  const orig = btn.textContent;
-  btn.textContent = 'Cisco preset loaded';
-  btn.style.background = BRAND.green;
-  setTimeout(() => { btn.textContent = orig; btn.style.background = BRAND.cyan; }, 2500);
-}
 
 // ══════════════════════════════════════════════════════════════════════
 // MARKET VALUATION — $/t LCE · XY BUBBLE CHART + CHIP TOGGLES
@@ -2789,11 +4092,12 @@ function updateMV(){
   const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
   const fmtEV = ev => ev >= 1000 ? '$'+(ev/1000).toFixed(2)+'B' : '$'+ev.toFixed(0)+'M';
 
-  const currEV = currP / fx * shares;
+  // CAD price/share × USD-per-CAD × shares → USD market cap
+  const currEV = currP * fx * shares;
   const ciscoLce = lce > 0 ? currEV / lce : 0;
   const npvPctNow = npvM > 0 ? (currEV / npvM * 100) : 0;
   set('mv-c1-mc',     fmtEV(currEV));
-  set('mv-c1-cad',    'C$' + currP.toFixed(2) + '/sh');
+  set('mv-c1-cad',    localSym() + currP.toFixed(2) + '/sh');
   set('mv-c1-lce',    '$' + ciscoLce.toFixed(0) + '/t LCE');
   set('mv-c1-npvpct', npvPctNow.toFixed(1) + '% of DCF NPV' + (npvM > 0 ? ' (' + fmtEV(npvM) + ')' : ''));
 
@@ -2802,7 +4106,7 @@ function updateMV(){
   const evHR  = hrAvg * lce;
   const cadHR = evHR * 1e6 / (shares * 1e6) / fx;
   set('mv-c2-mc',      fmtEV(evHR));
-  set('mv-c2-cad',     'C$' + cadHR.toFixed(2) + '/sh');
+  set('mv-c2-cad',     localSym() + cadHR.toFixed(2) + '/sh');
   set('mv-c2-lce',     '$' + hrAvg.toFixed(0) + '/t LCE avg');
   set('mv-c2-mult',    (currP > 0 ? (cadHR/currP).toFixed(1)+'×' : '—') + ' current price');
   set('mv-hr-wavg-sm', hrAvg > 0 ? '$'+hrAvg.toFixed(0)+'/t' : '—');
@@ -2812,7 +4116,7 @@ function updateMV(){
   const evNPV  = npvM * stage.mid;
   const cadNPV = evNPV * 1e6 / (shares * 1e6) / fx;
   set('mv-c3-mc',     fmtEV(evNPV));
-  set('mv-c3-cad',    'C$' + cadNPV.toFixed(2) + '/sh');
+  set('mv-c3-cad',    localSym() + cadNPV.toFixed(2) + '/sh');
   set('mv-c3-npvpct', Math.round(stage.mid*100) + '% of NPV (' + stage.label + ' · ' + Math.round(stage.lo*100) + '\u2013' + Math.round(stage.hi*100) + '% range)');
   set('mv-c3-mult',   (currP > 0 ? (cadNPV/currP).toFixed(1)+'×' : '—') + ' current price');
 
@@ -3160,7 +4464,7 @@ function renderFunding(){
     const npvColor = c.npvPerShCAD > price0 * 2 ? BRAND.green : c.npvPerShCAD > price0 ? BRAND.amber : BRAND.red;
     return `<div class="fnd-stage">
       <div class="fnd-stage-name" style="color:${c.color}">${c.label}</div>
-      <div class="fnd-stage-val" style="color:${npvColor}">C$${c.npvPerShCAD.toFixed(2)}</div>
+      <div class="fnd-stage-val" style="color:${npvColor}">${localSym()}${c.npvPerShCAD.toFixed(2)}</div>
       <div class="fnd-stage-sub">per-share NPV</div>
       <div class="fnd-stage-sub fnd-stage-sharesin">${c.sharesAfter.toFixed(0)}M shares</div>
       ${c.raiseUSD > 0 ? `<div class="fnd-stage-raise">
@@ -3273,7 +4577,12 @@ function peerGetMyProject(){
   const sc6 = fp ? fp.sc6 : 0;
   const aisc = fp ? (fp.opex + fp.sust) / fp.sc6 * 1000 : 0;
   const capex = g('initCapex');
-  const resource = (parseFloat(document.getElementById('mv-lce')?.value || 9.9)) / 0.1484 * 100 / g('grade'); // Mt implied
+  // Implied ore tonnage (Mt) from contained LCE and Li₂O grade.
+  //   contained_LCE_t = ore_t × (grade_pct / 100) × 2.473
+  //   2.473 = Li₂CO₃ / Li₂O molar mass (74 / 30)
+  //   ore_Mt = LCE_Mt × 100 / (grade_pct × 2.473)
+  const _LI2O_TO_LCE = 2.473;
+  const resource = (parseFloat(document.getElementById('mv-lce')?.value || 9.9)) * 100 / (g('grade') * _LI2O_TO_LCE);
   const projectName = (document.getElementById('project-name')?.value || 'My Project').substring(0, 28);
   return {
     n: '' + projectName,
@@ -4137,7 +5446,7 @@ function renderCatalystCalendar(){
       <div class="cat-time">${s.time}</div>
       <div class="cat-dot" style="background:${s.color};box-shadow:0 0 0 3px ${s.color}22;"></div>
       <div class="cat-stage" style="color:${s.color}">${s.name}</div>
-      <div class="cat-uplift" style="color:${upColor}">C$${projCADperSh.toFixed(2)}<br><span style="font-size:9px;font-weight:normal;color:${upColor}">${upliftPct>=0?'+':''}${upliftPct.toFixed(0)}%</span></div>
+      <div class="cat-uplift" style="color:${upColor}">${localSym()}${projCADperSh.toFixed(2)}<br><span style="font-size:9px;font-weight:normal;color:${upColor}">${upliftPct>=0?'+':''}${upliftPct.toFixed(0)}%</span></div>
       <div class="cat-desc">${s.desc}</div>
     </div>`;
   }).join('');
@@ -4185,6 +5494,23 @@ buildCyclePresets();
   const isPristine = !nm || /Unnamed Spodumene Project/i.test(nm.value || '');
   if(isPristine) loadProject('qtwo', { skipRender: true });
 })();
+
+// If a #s= hash is present, hydrate from URL state (overrides QTWO defaults)
+loadFromHash();
+
+// Initial WACC compute + keep "Currently using" cell synced when sidebar discRate edits
+updateWACC();
+const _drInput = document.getElementById('discRate');
+if(_drInput) _drInput.addEventListener('input', updateWACC);
+const _txInput = document.getElementById('taxRate');
+if(_txInput) _txInput.addEventListener('input', updateWACC);
+
+// Precedent transactions
+_wirePrecedentHeaders();
+renderPrecedents();
+
+// Risk register
+renderRiskRegister();
 
 render();
 </script>
