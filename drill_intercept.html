@@ -1,0 +1,2138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drill Intercept Calculator / Zovlyn Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #0c0d0a; --bg-2: #131410; --bg-3: #1a1c16;
+  --line: #2a2c24; --line-2: #3a3d33;
+  --fg: #d8d4c2; --fg-2: #8a8773; --fg-3: #5d5b4d;
+  --accent: #5dd3a8; --accent-2: #3aa881; --accent-dim: rgba(93,211,168,0.10); --accent-soft: rgba(93,211,168,0.18);
+  --green: #5dd380; --amber: #e8b658; --red: #ff5f56; --cyan: #6acfe0;
+  --r: 4px;
+  --mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--mono);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+/* ─── Page chrome ─── */
+.t-top{background:var(--bg-2);border-bottom:1px solid var(--line);padding:8px 24px;display:flex;align-items:center;gap:24px;font-size:11px;color:var(--fg-2);flex-wrap:wrap}
+.t-top .session{color:var(--accent);font-weight:600}
+.t-spacer{flex:1}
+.t-nav{padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:12px}
+.t-mark{display:flex;align-items:center;gap:12px}
+.t-badge{width:32px;height:32px;background:var(--accent);color:var(--bg);display:grid;place-items:center;font-weight:800;font-size:16px;border-radius:var(--r)}
+.t-mark-text{display:flex;flex-direction:column;line-height:1.05}
+.t-mark-name{font-weight:700;font-size:13px;color:var(--fg);letter-spacing:0.14em}
+.t-mark-sub{font-size:9.5px;color:var(--fg-3);letter-spacing:0.22em;font-weight:500}
+.t-nav-r{display:flex;gap:18px;font-size:11px;color:var(--fg-2);align-items:center}
+.t-nav-r a{color:var(--fg-2);letter-spacing:0.08em;text-transform:uppercase;transition:color .15s}
+.t-nav-r a:hover{color:var(--accent)}
+.t-nav-r a.home::before{content:'← '}
+
+/* ─── Cover ─── */
+.cover{max-width:1280px;margin:0 auto;padding:36px 24px 24px;border-bottom:1px solid var(--line)}
+.cover .tags{display:flex;gap:12px;flex-wrap:wrap;font-size:10.5px;color:var(--fg-3);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px}
+.cover .tags .accent{color:var(--accent)}
+.cover .tags .sep{color:var(--line-2)}
+.cover h1{font-weight:500;font-size:clamp(28px,4.5vw,44px);line-height:1.05;letter-spacing:-0.025em;color:var(--fg);margin-bottom:10px}
+.cover h1 .accent{color:var(--accent)}
+.cover .sub{font-family:var(--sans);font-size:15px;color:var(--fg-2);max-width:680px;line-height:1.55;margin-bottom:18px}
+.cover .meta{display:flex;gap:24px;flex-wrap:wrap;font-size:10.5px;color:var(--fg-3);letter-spacing:0.06em;padding-top:12px;border-top:1px dashed var(--line-2)}
+.cover .meta strong{color:var(--fg);font-weight:500}
+
+/* ─── Calculator shell ─── */
+.calc{max-width:1280px;margin:0 auto;padding:28px 24px 60px;display:grid;grid-template-columns:340px 1fr;gap:20px}
+@media (max-width:920px){.calc{grid-template-columns:1fr}}
+
+/* ─── Cards ─── */
+.card{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r)}
+.card-h{padding:12px 16px;border-bottom:1px dashed var(--line-2);font-size:10.5px;color:var(--accent);text-transform:uppercase;letter-spacing:0.14em;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-h::before{content:'▸ '}
+.card-h .meta{font-size:9.5px;color:var(--fg-3);letter-spacing:0.1em;font-weight:500}
+.card-h .meta::before{content:''}
+.card-b{padding:16px}
+
+/* ─── Inputs ─── */
+.controls .group{padding:14px 0;border-bottom:1px dashed var(--line-2)}
+.controls .group:last-child{border-bottom:none;padding-bottom:0}
+.controls .group:first-child{padding-top:0}
+.controls .group-h{font-size:10px;color:var(--fg-3);letter-spacing:0.14em;text-transform:uppercase;font-weight:600;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.controls .group-h .ct{color:var(--accent);font-weight:600}
+.lbl{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}
+.lbl-name{font-size:10px;color:var(--fg-3);letter-spacing:0.14em;text-transform:uppercase;font-weight:600}
+.lbl-val{font-size:13px;color:var(--accent);font-feature-settings:'tnum';font-weight:600}
+.t-input,.t-select{background:var(--bg);border:1px solid var(--line-2);color:var(--fg);padding:9px 12px;font-family:var(--mono);font-size:13px;font-weight:600;border-radius:var(--r);width:100%;outline:none;transition:border-color .15s;font-feature-settings:'tnum'}
+.t-input:focus,.t-select:focus{border-color:var(--accent)}
+.t-input::placeholder{color:var(--fg-3)}
+.t-textarea{background:var(--bg);border:1px solid var(--line-2);color:var(--fg);padding:9px 12px;font-family:var(--mono);font-size:12px;border-radius:var(--r);width:100%;outline:none;resize:vertical;min-height:42px}
+.t-textarea:focus{border-color:var(--accent)}
+input[type=range].t-range{width:100%;accent-color:var(--accent);height:18px}
+.range-cap{font-size:9.5px;color:var(--fg-3);letter-spacing:0.08em;display:flex;justify-content:space-between;margin-top:4px;font-feature-settings:'tnum'}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.t-btn{font-size:11.5px;font-weight:600;padding:9px 14px;cursor:pointer;border-radius:var(--r);letter-spacing:0.06em;display:inline-flex;align-items:center;gap:6px;transition:all .15s;border:1px solid transparent;font-family:var(--mono)}
+.t-btn-s{background:transparent;color:var(--fg-2);border-color:var(--line-2);width:100%;justify-content:center;text-transform:uppercase}
+.t-btn-s:hover{color:var(--accent);border-color:var(--accent)}
+.t-btn-p{background:var(--accent);color:var(--bg);width:100%;justify-content:center;text-transform:uppercase;border-color:var(--accent)}
+.t-btn-p:hover{background:var(--accent-2);border-color:var(--accent-2)}
+
+/* ─── Intercept stack ─── */
+.intercept-card{background:var(--bg);border:1px solid var(--line-2);border-radius:var(--r);margin-bottom:8px;overflow:hidden;transition:border-color .15s}
+.intercept-card.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent-soft)}
+.intercept-h{padding:8px 10px;display:flex;align-items:center;gap:8px;cursor:pointer;background:var(--bg-2);font-size:11px}
+.intercept-h:hover{background:var(--bg-3)}
+.intercept-h .num{color:var(--accent);font-weight:700;font-size:12px}
+.intercept-h .hdr-summary{flex:1;color:var(--fg-2);font-feature-settings:'tnum';font-size:11px;letter-spacing:0.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.intercept-h .hdr-summary .gm{color:var(--accent);font-weight:600}
+.intercept-h .hdr-summary .empty{color:var(--fg-3);font-style:italic}
+.intercept-h .caret{color:var(--fg-3);font-size:10px;transition:transform .15s}
+.intercept-card.active .intercept-h .caret{transform:rotate(90deg);color:var(--accent)}
+.intercept-h .rm{background:transparent;border:1px solid var(--line-2);color:var(--fg-3);width:22px;height:22px;cursor:pointer;border-radius:var(--r);font-size:13px;line-height:1;display:grid;place-items:center;padding:0;font-family:var(--mono)}
+.intercept-h .rm:hover{color:var(--red);border-color:var(--red)}
+.intercept-h .rm:disabled{opacity:0.25;cursor:not-allowed}
+.intercept-b{padding:12px 12px 14px;border-top:1px dashed var(--line-2);display:none}
+.intercept-card.active .intercept-b{display:block}
+
+/* ─── Metals table ─── */
+.metals-h{display:grid;grid-template-columns:54px 1fr 56px 1fr 60px 22px;gap:6px;font-size:9px;color:var(--fg-3);letter-spacing:0.1em;text-transform:uppercase;font-weight:600;padding:0 2px 6px}
+.metal-row{display:grid;grid-template-columns:54px 1fr 56px 1fr 60px 22px;gap:6px;align-items:center;margin-bottom:6px}
+.metal-row .m-input{background:var(--bg);border:1px solid var(--line-2);color:var(--fg);padding:6px 6px;font-family:var(--mono);font-size:11.5px;font-weight:600;border-radius:var(--r);width:100%;outline:none;font-feature-settings:'tnum';min-width:0}
+.metal-row .m-input:focus{border-color:var(--accent)}
+.metal-row.dim .m-input{color:var(--fg-3)}
+.metal-row.dim select.m-input{color:var(--fg-2)}
+.metal-row select.m-input{cursor:pointer}
+.metal-rm{background:transparent;border:1px solid var(--line-2);color:var(--fg-3);width:22px;height:26px;cursor:pointer;border-radius:var(--r);font-size:13px;line-height:1;display:grid;place-items:center;padding:0;font-family:var(--mono)}
+.metal-rm:hover{color:var(--red);border-color:var(--red)}
+.metal-rm:disabled{opacity:0.25;cursor:not-allowed}
+.btn-add{margin-top:6px;background:transparent;border:1px dashed var(--line-2);color:var(--fg-3);padding:7px;font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;border-radius:var(--r);width:100%;cursor:pointer;transition:all .15s}
+.btn-add:hover{color:var(--accent);border-color:var(--accent)}
+.btn-add.tight{padding:6px;margin-top:8px}
+
+/* ─── Results panel ─── */
+.results{display:flex;flex-direction:column;gap:20px}
+
+/* KPI strip */
+.kpi-strip{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;border:1px solid var(--line);border-radius:var(--r);background:var(--line);gap:1px;overflow:hidden}
+@media (max-width:720px){.kpi-strip{grid-template-columns:1fr 1fr}}
+.kpi{background:var(--bg-2);padding:18px 18px;display:flex;flex-direction:column;gap:6px;justify-content:space-between;min-height:96px;position:relative}
+.kpi.hero{background:linear-gradient(180deg,var(--bg-2) 0%,#161812 100%)}
+.kpi.hero::after{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent)}
+.kpi-l{font-size:9.5px;color:var(--fg-3);text-transform:uppercase;letter-spacing:0.14em;font-weight:500}
+.kpi-v{font-size:30px;font-weight:600;color:var(--fg);font-feature-settings:'tnum';letter-spacing:-0.02em;line-height:1.05;transition:color .25s}
+.kpi-v.hl{color:var(--accent)}
+.kpi-v.amber{color:var(--amber)}
+.kpi-v.dim{color:var(--fg-2)}
+.kpi-v.red{color:var(--red)}
+.kpi.hero .kpi-v{font-size:42px}
+.kpi-sub{font-size:10px;color:var(--fg-3);letter-spacing:0.04em;font-feature-settings:'tnum'}
+.kpi-sub .accent{color:var(--accent)}
+.kpi-eq{font-size:9.5px;color:var(--fg-3);letter-spacing:0.04em;font-family:var(--mono);font-feature-settings:'tnum'}
+
+/* hole summary strip */
+.hole-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+@media (max-width:720px){.hole-strip{grid-template-columns:repeat(2,1fr)}}
+.hole-cell{background:var(--bg-2);padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.hole-cell .v{font-size:18px;font-weight:600;color:var(--fg);font-feature-settings:'tnum'}
+.hole-cell .v.accent{color:var(--accent)}
+.hole-cell .v.amber{color:var(--amber)}
+.hole-cell .v.dim{color:var(--fg-2)}
+.hole-cell .l{font-size:9px;color:var(--fg-3);text-transform:uppercase;letter-spacing:0.12em;font-weight:600}
+.hole-cell .sub{font-size:9.5px;color:var(--fg-2);font-weight:500;font-feature-settings:'tnum';margin-top:1px}
+.hole-cell .sub.amber{color:var(--amber)}
+.hole-cell .sub.green{color:var(--green)}
+.hole-cell .sub.red{color:var(--red)}
+
+/* ─── Project scorecard contained-metal block ─── */
+.sc-cm-block{margin-top:18px;padding-top:14px;border-top:1px dashed var(--line-2)}
+.sc-cm-h{font-size:10.5px;color:var(--accent);text-transform:uppercase;letter-spacing:0.14em;font-weight:600;margin-bottom:10px}
+.sc-cm-h::before{content:'▸ '}
+.sc-cm-inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media (max-width:720px){.sc-cm-inputs{grid-template-columns:1fr}}
+.sc-cm-inp{display:flex;flex-direction:column;gap:4px}
+.sc-cm-inp span{font-size:9.5px;color:var(--fg-3);text-transform:uppercase;letter-spacing:0.12em;font-weight:600}
+.sc-cm-inp input{background:var(--bg);border:1px solid var(--line-2);color:var(--fg);padding:7px 10px;font-family:var(--mono);font-size:12.5px;font-weight:600;border-radius:var(--r);outline:none;font-feature-settings:'tnum'}
+.sc-cm-inp input:focus{border-color:var(--accent)}
+
+/* ─── Chart card ─── */
+.chart-wrap{height:300px;position:relative}
+.chart-wrap-tall{height:440px;position:relative}
+.chart-wrap-mid{height:280px;position:relative}
+@media (max-width:720px){.chart-wrap-tall{height:340px}.chart-wrap-mid{height:240px}}
+.legend-pills{display:flex;gap:14px;flex-wrap:wrap;padding:0 0 10px;align-items:center}
+.legend-pill{font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;color:var(--fg-2);display:inline-flex;align-items:center;gap:6px;white-space:nowrap;cursor:pointer;user-select:none}
+.legend-pill.static{cursor:default}
+.legend-pill::before{content:'';width:10px;height:10px;border-radius:50%;background:var(--cyan)}
+.legend-pill.au::before{background:var(--amber)}
+.legend-pill.cu::before{background:var(--red)}
+.legend-pill.u::before{background:var(--green)}
+.legend-pill.li::before{background:var(--fg-2)}
+.legend-pill.ni::before{background:var(--cyan)}
+.legend-pill.zn::before{background:#b08ad6}
+.legend-pill.other::before{background:var(--fg-3)}
+.legend-pill.poly::before{background:var(--cyan)}
+.legend-pill.match::before{background:rgba(93,211,168,0.5);border:1.5px solid var(--accent);width:10px;height:10px;border-radius:50%}
+.legend-pill.user::before{background:var(--accent);width:11px;height:11px;border-radius:1px;border:1.5px solid var(--bg);transform:rotate(45deg);box-shadow:0 0 0 3px rgba(93,211,168,0.22);animation:pulse 2.4s ease-in-out infinite}
+.legend-pill.iso::before{background:transparent;border-top:1px dashed var(--fg-3);width:14px;height:0;border-radius:0}
+.legend-pill.off{opacity:0.35}
+.legend-pill.off::before{background:transparent;border:1px solid var(--fg-3)}
+.legend-pill.commodity-toggle{cursor:pointer;background:transparent;border:none;padding:0;font-family:var(--mono);transition:opacity .15s}
+.legend-pill.commodity-toggle:hover{opacity:0.75}
+
+.filter-bar{display:grid;grid-template-columns:1.4fr 2fr auto;gap:14px;align-items:center;padding:10px 0 14px;border-top:1px dashed var(--line-2);margin-top:6px}
+@media (max-width:720px){.filter-bar{grid-template-columns:1fr;gap:8px}}
+.filter-cell{display:flex;align-items:center;gap:10px;min-width:0}
+.filter-l{font-size:9.5px;color:var(--fg-3);text-transform:uppercase;letter-spacing:0.12em;font-weight:600;white-space:nowrap}
+.filter-v{font-size:11px;color:var(--accent);font-feature-settings:'tnum';font-weight:600;min-width:48px;text-align:right}
+.filter-input{font-size:11.5px;padding:7px 10px;font-weight:500}
+.filter-reset{padding:7px 14px;font-size:10px}
+.filter-bar input[type=range]{flex:1;min-width:0}
+
+table.sens th.sortable{cursor:pointer;user-select:none;position:relative;padding-right:18px}
+table.sens th.sortable:hover{color:var(--accent)}
+table.sens th.sort-asc::after{content:' ▲';color:var(--accent);font-size:8px;position:absolute;right:6px;top:50%;transform:translateY(-50%)}
+table.sens th.sort-desc::after{content:' ▼';color:var(--accent);font-size:8px;position:absolute;right:6px;top:50%;transform:translateY(-50%)}
+table.sens tbody tr.proj-row{cursor:pointer}
+table.sens tbody tr.proj-row.matched td{background:var(--accent-dim);color:var(--fg)}
+table.sens tbody tr.proj-row.matched td:first-child{color:var(--accent);font-weight:700}
+.legend-sep{color:var(--line-2);font-size:11px}
+.legend-pill-dep{font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.legend-pill-dep::before{content:'';width:10px;height:10px;border-radius:50%;background:currentColor}
+.legend-toggle{margin-left:auto;font-size:10px;color:var(--fg-2);letter-spacing:0.1em;text-transform:uppercase;font-weight:600;background:transparent;border:1px solid var(--line-2);padding:4px 10px;border-radius:var(--r);cursor:pointer;font-family:var(--mono);transition:all .15s}
+.legend-toggle:hover{color:var(--accent);border-color:var(--accent)}
+.legend-toggle.on{color:var(--accent);border-color:var(--accent);background:var(--accent-dim)}
+
+@keyframes pulse {
+  0%, 100% { box-shadow:0 0 0 3px rgba(93,211,168,0.22); }
+  50%      { box-shadow:0 0 0 6px rgba(93,211,168,0.10); }
+}
+
+/* ─── Tables ─── */
+table.sens{width:100%;border-collapse:collapse;font-size:12px;font-feature-settings:'tnum'}
+table.sens thead th{padding:9px 14px;text-align:right;background:var(--bg-3);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--fg-3);border-bottom:1px solid var(--line)}
+table.sens thead th:first-child{text-align:left}
+table.sens tbody td{padding:7px 14px;border-bottom:1px solid var(--line);color:var(--fg-2);text-align:right}
+table.sens tbody td:first-child{text-align:left;color:var(--fg);font-weight:600}
+table.sens tbody tr:last-child td{border-bottom:none}
+table.sens tbody tr:hover td{background:var(--bg-3);color:var(--fg)}
+table.sens tbody tr.active td{background:var(--accent-dim);color:var(--fg)}
+table.sens tbody tr.proj-divider td{background:var(--bg-3);padding:5px 14px;text-align:left;color:var(--accent);font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;border-bottom:1px solid var(--line-2);border-top:1px solid var(--line-2)}
+.share-bar{display:inline-block;height:6px;background:var(--accent);border-radius:1px;vertical-align:middle;margin-left:6px;min-width:1px;max-width:80px}
+
+.bench-actions{display:flex;gap:4px;justify-content:flex-end}
+.bench-act-btn{background:transparent;border:1px solid var(--line-2);color:var(--fg-3);padding:3px 8px;font-family:var(--mono);font-size:9.5px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;border-radius:var(--r);cursor:pointer;transition:all .15s}
+.bench-act-btn:hover{color:var(--accent);border-color:var(--accent)}
+.bench-act-btn.del:hover{color:var(--red);border-color:var(--red)}
+.empty-state{font-family:var(--sans);font-size:13px;color:var(--fg-3);text-align:center;padding:24px 16px}
+
+/* ─── Stage indicator ─── */
+.stage-row{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:14px;font-feature-settings:'tnum'}
+@media (max-width:720px){.stage-row{grid-template-columns:repeat(5,1fr);font-size:9px}}
+.stage-cell{background:var(--bg-2);padding:8px 6px;display:flex;flex-direction:column;gap:2px;text-align:center;transition:background .25s}
+.stage-cell.on{background:var(--accent-dim)}
+.stage-cell .l{font-size:9px;color:var(--fg-3);text-transform:uppercase;letter-spacing:0.1em;font-weight:600}
+.stage-cell.on .l{color:var(--accent)}
+.stage-cell .v{font-size:10.5px;color:var(--fg-2);font-weight:600}
+.stage-cell.on .v{color:var(--fg)}
+
+/* ─── Footnotes ─── */
+.fn{font-family:var(--sans);font-size:12px;color:var(--fg-3);line-height:1.55}
+.fn p{margin-bottom:6px}
+.fn p strong{color:var(--fg-2);font-weight:600}
+.fn table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;margin:8px 0;font-feature-settings:'tnum'}
+.fn table th, .fn table td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:right;color:var(--fg-3)}
+.fn table th{color:var(--fg-2);font-weight:600;text-transform:uppercase;font-size:9.5px;letter-spacing:0.1em;border-bottom:1px solid var(--line-2)}
+.fn table td:first-child, .fn table th:first-child{text-align:left;color:var(--fg-2)}
+
+/* Footer */
+.foot{border-top:1px solid var(--line);padding:24px;font-size:10.5px;color:var(--fg-3);letter-spacing:0.06em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;max-width:1280px;margin:0 auto}
+.foot a{color:var(--accent)}
+
+/* Reveal */
+.reveal{opacity:1;transform:none;transition:opacity .5s ease,transform .5s ease}
+</style>
+</head>
+<body>
+
+<!-- Status bar -->
+<div class="t-top">
+  <span class="session" id="t-session">SESSION 00:00:00</span>
+  <span>TOOL · DRILL INTERCEPT CALC</span>
+  <span>VERSION · 2.0</span>
+  <span class="t-spacer"></span>
+  <span id="t-clock">10-MAY-2026 · 11:42 EDT</span>
+</div>
+
+<!-- Nav -->
+<div class="t-nav">
+  <a href="index.html" class="t-mark">
+    <div class="t-badge">Z</div>
+    <div class="t-mark-text">
+      <div class="t-mark-name">ZOVLYN</div>
+      <div class="t-mark-sub">RESEARCH</div>
+    </div>
+  </a>
+  <div class="t-nav-r">
+    <a href="index.html" class="home">ALL TOOLS</a>
+    <a href="lithium_screener.html">SCREENER</a>
+    <a href="lce_converter.html">LCE CONVERTER</a>
+    <a href="system.html">SYSTEM</a>
+  </div>
+</div>
+
+<!-- Cover -->
+<header class="cover reveal">
+  <div class="tags">
+    <span class="accent">// ZOVLYN/CALCULATOR</span><span class="sep">│</span>
+    <span>EXPLORATION · DRILLING</span><span class="sep">│</span>
+    <span>UPDATED 2026-05-10 · v2</span>
+  </div>
+  <h1><span class="accent">Drill</span> Intercept Calculator</h1>
+  <p class="sub">Compute Au-equivalent grade and gram-meters for any drill intercept — multi-intercept holes supported. Rank against world-class benchmarks; compare your project's drilling profile against major deposits at each development stage. NI 43-101 / JORC equivalence formula. Editable prices and recoveries per metal. Commodity-agnostic.</p>
+  <div class="meta">
+    <span>HOLE · <strong>1 + N intercepts</strong></span>
+    <span>METALS · <strong>11 incl. Li₂O · U₃O₈</strong></span>
+    <span>BASIS · <strong>NI 43-101 AuEq</strong></span>
+    <span>BENCHMARKS · <strong id="benchCount">…</strong></span>
+    <span>UNIVERSE · <strong id="profileCount">…</strong></span>
+  </div>
+</header>
+
+<!-- Calculator -->
+<div class="calc">
+
+  <!-- Controls -->
+  <aside class="card controls reveal">
+    <div class="card-h">Inputs <span class="meta"><span id="ctrlICount">0</span> intercepts</span></div>
+    <div class="card-b">
+
+      <div class="group">
+        <div class="group-h">Hole header</div>
+        <input id="projName" class="t-input" type="text" placeholder="Project name" style="margin-bottom:8px">
+        <input id="holeId" class="t-input" type="text" placeholder="Hole ID  (e.g. DDH-001)" style="margin-bottom:8px">
+        <textarea id="notes" class="t-textarea" placeholder="Notes (optional)"></textarea>
+      </div>
+
+      <div class="group">
+        <div class="group-h">Intercepts <span class="ct" id="grpICount">0</span></div>
+        <div id="interceptStack"></div>
+        <button class="btn-add" id="addIntercept">+ Add intercept</button>
+      </div>
+
+      <div class="group">
+        <button class="t-btn t-btn-p" id="saveBtn">💾 Save hole to local storage</button>
+      </div>
+
+      <div class="group">
+        <button class="t-btn t-btn-s" id="exFost" style="margin-bottom:6px">↻ Load Fosterville Swan example</button>
+        <button class="t-btn t-btn-s" id="clearBtn">↻ Clear hole</button>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- Results -->
+  <section class="results reveal">
+
+    <!-- KPI strip — active intercept -->
+    <div class="kpi-strip" id="kpis">
+      <div class="kpi hero">
+        <div class="kpi-l">ACTIVE INTERCEPT · Au-EQUIVALENT GRADE · <span id="auEqMetals" style="color:var(--fg-3)">— metals</span></div>
+        <div class="kpi-v hl" id="vAuEq">— g/t</div>
+        <div class="kpi-sub">across <span id="vMetalCount" class="accent">0</span> active metals · NI 43-101 weighted</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-l">True width</div>
+        <div class="kpi-v" id="vTrueW">— m</div>
+        <div class="kpi-eq">= L × TW%</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-l">Intercept g·m</div>
+        <div class="kpi-v" id="vGm">—</div>
+        <div class="kpi-eq">= AuEq × TW</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-l">Rank vs benchmark</div>
+        <div class="kpi-v dim" id="vRank">—</div>
+        <div class="kpi-eq" id="vRankSub">enter intercept</div>
+      </div>
+    </div>
+
+    <!-- Hole-level rollup -->
+    <div class="hole-strip" id="holeStrip">
+      <div class="hole-cell"><span class="l">Intercepts in hole</span><span class="v" id="hCount">0</span></div>
+      <div class="hole-cell"><span class="l">Total hole g·m</span><span class="v accent" id="hTotalGm">—</span></div>
+      <div class="hole-cell"><span class="l">Best intercept g·m</span><span class="v" id="hBestGm">—</span></div>
+      <div class="hole-cell"><span class="l">High-grade intercepts</span><span class="v" id="hHighGrade">— / —</span></div>
+    </div>
+
+    <!-- Per-metal contribution -->
+    <div class="card">
+      <div class="card-h">Per-metal contribution to AuEq <span class="meta">active intercept · share of $/tonne</span></div>
+      <div class="card-b" style="padding:0;overflow-x:auto">
+        <table class="sens">
+          <thead>
+            <tr>
+              <th>Metal</th>
+              <th>Grade</th>
+              <th>$/t at recovery</th>
+              <th>AuEq contribution (g/t)</th>
+              <th>Share</th>
+            </tr>
+          </thead>
+          <tbody id="contribBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Benchmark scatter -->
+    <div class="card">
+      <div class="card-h">Benchmark scatter · world-class drill intercepts <span class="meta">log-log · iso-curves at 100/1k/5k/10k g·m</span></div>
+      <div class="card-b">
+        <div class="legend-pills">
+          <span class="legend-pill user static">Your active intercept</span>
+          <span class="legend-sep">│</span>
+          <span class="legend-pill au static">Au</span>
+          <span class="legend-pill cu static">Cu</span>
+          <span class="legend-pill u static">U₃O₈</span>
+          <span class="legend-pill li static">Li₂O</span>
+          <span class="legend-pill poly static">Polymetallic / other</span>
+          <span class="legend-sep">│</span>
+          <span class="legend-pill iso static">Iso-gram-meter curve</span>
+        </div>
+        <div class="chart-wrap-tall"><canvas id="benchChart"></canvas></div>
+        <div class="kpi-eq" style="margin-top:8px;color:var(--fg-2)">g·m = AuEq grade × true width · the universal cross-deposit ranking metric</div>
+      </div>
+    </div>
+
+    <!-- Project scatter — drilling universe + your holes -->
+    <div class="card">
+      <div class="card-h">Project scatter · drilling universe + your holes <span class="meta" id="profileMeta">universe loading…</span></div>
+      <div class="card-b">
+        <div class="legend-pills" style="padding-bottom:6px">
+          <span class="legend-pill user static">Your saved intercepts</span>
+          <span class="legend-pill match static" id="matchPill" style="display:none">Matched project</span>
+          <span class="legend-sep">│</span>
+          <button type="button" class="legend-pill on au commodity-toggle" data-c="Au">Au</button>
+          <button type="button" class="legend-pill on cu commodity-toggle" data-c="Cu">Cu</button>
+          <button type="button" class="legend-pill on li commodity-toggle" data-c="Li">Li</button>
+          <button type="button" class="legend-pill on ni commodity-toggle" data-c="Ni">Ni</button>
+          <button type="button" class="legend-pill on u commodity-toggle"  data-c="U">U</button>
+          <button type="button" class="legend-pill on zn commodity-toggle" data-c="Zn">Zn</button>
+          <button type="button" class="legend-pill on other commodity-toggle" data-c="Other">Other</button>
+          <button class="legend-toggle on" id="overlayToggle">KDE contours</button>
+        </div>
+        <div class="filter-bar">
+          <div class="filter-cell">
+            <span class="filter-l">Min g·m</span>
+            <input type="range" id="minGmSlider" class="t-range" min="0" max="2000" step="10" value="0">
+            <span class="filter-v" id="minGmVal">0</span>
+          </div>
+          <div class="filter-cell">
+            <span class="filter-l">Project search</span>
+            <input id="projSearch" class="t-input filter-input" type="text" list="universeProjects" placeholder="Type a universe project (autocompletes)">
+            <datalist id="universeProjects"></datalist>
+          </div>
+          <button class="t-btn t-btn-s filter-reset" id="filterReset">Reset</button>
+        </div>
+        <div class="chart-wrap-tall"><canvas id="profileChart"></canvas></div>
+        <div class="kpi-eq" style="margin-top:8px;color:var(--fg-2)" id="profileSub">Loading drill universe…</div>
+        <div class="stage-row" id="stageRow">
+          <div class="stage-cell" data-stage="discovery"><span class="l">Discovery</span><span class="v">≥1 hole &gt;100 g·m</span></div>
+          <div class="stage-cell" data-stage="scoping"><span class="l">Scoping</span><span class="v">5–15 &gt;100</span></div>
+          <div class="stage-cell" data-stage="pea"><span class="l">PEA</span><span class="v">15–30 &gt;100</span></div>
+          <div class="stage-cell" data-stage="pfs"><span class="l">PFS</span><span class="v">30–80 &gt;100</span></div>
+          <div class="stage-cell" data-stage="fs"><span class="l">FS / mine</span><span class="v">80+ &gt;100</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project scorecard — appears when a project is matched -->
+    <div class="card" id="scorecardCard" style="display:none">
+      <div class="card-h">Project scorecard
+        <span class="meta">
+          <span id="scName" style="color:var(--accent);font-weight:700"></span>
+          · <span id="scN">0</span> intercepts ·
+          <span id="scTier" style="color:var(--accent);text-transform:uppercase;font-weight:600">discovery</span>
+        </span>
+      </div>
+      <div class="card-b">
+        <div class="hole-strip" id="scStatsTop">
+          <div class="hole-cell"><span class="l">Intercepts</span><span class="v" id="scStatN">—</span><span class="sub" id="scStatNSub">—</span></div>
+          <div class="hole-cell"><span class="l">Best g·m</span><span class="v accent" id="scStatBest">—</span><span class="sub" id="scStatBestSub">—</span></div>
+          <div class="hole-cell"><span class="l">Median g·m</span><span class="v" id="scStatMed">—</span><span class="sub" id="scStatMedSub">typical hole</span></div>
+          <div class="hole-cell"><span class="l">Best : Median</span><span class="v" id="scStatRatio">—</span><span class="sub" id="scStatRatioSub">style indicator</span></div>
+        </div>
+        <div class="hole-strip" id="scStatsBot" style="margin-top:1px">
+          <div class="hole-cell"><span class="l">&gt; 100 g·m</span><span class="v" id="scStat100">—</span><span class="sub" id="scStat100Sub">—</span></div>
+          <div class="hole-cell"><span class="l">&gt; 1,000 g·m</span><span class="v" id="scStat1k">—</span><span class="sub" id="scStat1kSub">—</span></div>
+          <div class="hole-cell"><span class="l">Log-σ (g·m)</span><span class="v" id="scStatSigma">—</span><span class="sub" id="scStatSigmaSub">consistency</span></div>
+          <div class="hole-cell"><span class="l">Hit rate &gt; 50</span><span class="v" id="scStatHit">—</span><span class="sub">mineralisation</span></div>
+        </div>
+
+        <div class="stage-row" id="scTierRow" style="margin-top:14px">
+          <div class="stage-cell" data-stage="discovery"><span class="l">Discovery</span><span class="v">score &lt; 1.0</span></div>
+          <div class="stage-cell" data-stage="scoping"><span class="l">Scoping</span><span class="v">1.0 – 1.5</span></div>
+          <div class="stage-cell" data-stage="pea"><span class="l">PEA</span><span class="v">1.5 – 2.0</span></div>
+          <div class="stage-cell" data-stage="pfs"><span class="l">PFS</span><span class="v">2.0 – 2.5</span></div>
+          <div class="stage-cell" data-stage="fs"><span class="l">FS / Mine</span><span class="v">≥ 2.5</span></div>
+        </div>
+        <div class="kpi-eq" style="margin-top:6px;color:var(--fg-2)">
+          Composite score <span id="scTierScore" style="color:var(--accent);font-weight:600">—</span>
+          · 0.4·log₁₀(n) + 0.3·log₁₀(n&gt;100) + 0.2·log₁₀(n&gt;1k) + 0.1·log₁₀(median)
+        </div>
+
+        <!-- Contained metal block -->
+        <div class="sc-cm-block">
+          <div class="sc-cm-h">
+            Contained metal proxy (AuEq) ·
+            <span style="color:var(--fg-3)">tune footprint assumptions:</span>
+          </div>
+          <div class="sc-cm-inputs">
+            <label class="sc-cm-inp"><span>Strike (m)</span><input type="number" id="scStrike" value="500" min="50" step="50"></label>
+            <label class="sc-cm-inp"><span>Dip extent (m)</span><input type="number" id="scDip" value="300" min="50" step="50"></label>
+            <label class="sc-cm-inp"><span>Density (t/m³)</span><input type="number" id="scDensity" value="2.7" min="1.5" max="6" step="0.1"></label>
+          </div>
+          <div class="hole-strip" style="margin-top:10px">
+            <div class="hole-cell"><span class="l">Mean g·m (AuEq)</span><span class="v" id="scMeanGm">—</span><span class="sub">grade × width avg</span></div>
+            <div class="hole-cell"><span class="l">Contained AuEq</span><span class="v accent" id="scContainedT">—</span><span class="sub" id="scContainedOz">—</span></div>
+            <div class="hole-cell"><span class="l">vs 1 Moz threshold</span><span class="v" id="scThreshSmall">—</span><span class="sub">small-mine bar</span></div>
+            <div class="hole-cell"><span class="l">vs 5 Moz threshold</span><span class="v" id="scThreshMajor">—</span><span class="sub">major bar</span></div>
+          </div>
+          <div class="kpi-eq" style="margin-top:8px;color:var(--fg-3)">
+            <strong style="color:var(--amber)">Caveat.</strong>
+            Contained AuEq = mean(g·m) × density × strike × dip. Sensitive to footprint — adjust to your project's actual strike/dip. Assumes
+            tabular orebody and uniform mineralisation. Thresholds in AuEq: <strong>1 Moz ≈ 30 t</strong> · <strong>5 Moz ≈ 150 t</strong>.
+            Treat as rank-order signal, not resource estimate.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top projects table -->
+    <div class="card">
+      <div class="card-h">Top projects in universe
+        <span style="display:flex;gap:10px;align-items:center;margin-left:auto">
+          <button class="legend-toggle" id="scopeToggle" title="Filter chart cloud + KDE to just the projects visible in this table">Scope chart to table</button>
+          <span class="meta" id="projTableMeta">sortable · click row to highlight</span>
+        </span>
+      </div>
+      <div class="card-b" style="padding:0;overflow-x:auto">
+        <table class="sens" id="projTable">
+          <thead>
+            <tr>
+              <th data-sort="name"     class="sortable">Project</th>
+              <th data-sort="primary"  class="sortable">Commodity</th>
+              <th data-sort="n"        class="sortable sort-desc">n int</th>
+              <th data-sort="best"     class="sortable">Best g·m</th>
+              <th data-sort="median"   class="sortable">Median g·m</th>
+              <th data-sort="above100" class="sortable">&gt;100</th>
+              <th data-sort="above1k"  class="sortable">&gt;1k</th>
+              <th data-sort="loc"      class="sortable">Location</th>
+            </tr>
+          </thead>
+          <tbody id="projTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Saved holes -->
+    <div class="card">
+      <div class="card-h">Saved holes <span class="meta" id="savedMeta">localStorage · this browser</span></div>
+      <div class="card-b" style="padding:0;overflow-x:auto">
+        <table class="sens" id="savedTable">
+          <thead>
+            <tr>
+              <th>Project · Hole</th>
+              <th>Date</th>
+              <th>Intercepts</th>
+              <th>Best g·m</th>
+              <th>Hole g·m</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="savedBody"></tbody>
+        </table>
+        <div id="savedEmpty" class="empty-state">No saved holes. Save your first one above — they persist in this browser only.</div>
+      </div>
+    </div>
+
+    <!-- Methodology -->
+    <div class="card">
+      <div class="card-h">Notes <span class="meta">methodology + drill-stage thresholds</span></div>
+      <div class="card-b fn">
+        <p><strong>1. AuEq formula.</strong> NI 43-101 / JORC standard: <em>AuEq = Σ(grade × price × recovery) / (Au_price × Au_recovery)</em>. Each metal row carries its own price and recovery — edit them to match your assumptions. Defaults: Au $2,400/oz @ 90%, Ag $28/oz @ 75%, Cu $4.20/lb @ 88%, Pb $0.95/lb @ 80%, Zn $1.30/lb @ 85%, Ni $8/lb @ 70%, Mo $20/lb @ 80%, Co $15/lb @ 65%, Sn $14/lb @ 72%, Li₂O $14.50/lb @ 75%, U₃O₈ $80/lb @ 90%.</p>
+        <p><strong>2. Multi-intercept holes.</strong> A drill hole can have several mineralised zones at different depths. Add as many intercepts as your assays show — each gets its own AuEq, true width, and gram-meters. The hole's "Total g·m" is the sum across intercepts; "Best g·m" is the largest single intercept. Save the whole hole as one record; the saved-holes table shows hole-level rollups.</p>
+        <p><strong>3. Gram-meters and ranking.</strong> The universal cross-commodity ranking metric: <em>g·m = AuEq grade × true width</em>. Rank tile compares your <em>active</em> intercept against the 46-hole benchmark set. The benchmark scatter's iso-curves let you see the grade-vs-width trade-off explicitly.</p>
+        <p><strong>4b. Project scorecard.</strong> Appears below the chart when a project is selected. Eight stat tiles: <em>n intercepts</em> · <em>best g·m</em> · <em>median g·m</em> · <em>best:median ratio</em> (50×+ = bonanza vein, &lt;5× = bulk-tonnage) · <em>n &gt; 100 g·m</em> · <em>n &gt; 1,000 g·m</em> · <em>log-σ of g·m</em> (consistency — tight ≤0.3, high-var ≥0.9) · <em>hit rate &gt; 50 g·m</em>. <strong>Composite tier</strong> via weighted log-score: <code>0.4·log(n) + 0.3·log(n&gt;100) + 0.2·log(n&gt;1k) + 0.1·log(median)</code> bucketed into Discovery / Scoping / PEA / PFS / FS. <strong>Contained AuEq proxy</strong>: <code>mean(g·m) × density × strike × dip / 1e6</code> → tonnes AuEq → troy oz at 32,150.5 oz/t. Tunable footprint (default 500m × 300m × 2.7 t/m³). Compared to <strong>1 Moz</strong> small-mine and <strong>5 Moz</strong> major thresholds (in AuEq). This is a rank-order proxy, not a resource estimate — it assumes a tabular orebody with uniform mineralisation. Calibrate the strike/dip to your project's actual geometry before quoting numbers.</p>
+        <p><strong>4. Project scatter — drilling universe + filters.</strong> Same log-log axes as the benchmark chart (true width × AuEq grade). Background cloud is 4,188 real drill intercepts across 1,180 projects, coloured by commodity group (Au / Cu / Li / Ni / U / Zn / Other). True width is assumed equal to downhole length — the source spreadsheet has no TW indicator, so all g·m figures are upper bounds. <strong>Filters:</strong> click a commodity pill to toggle that group on/off (also hides its KDE envelope and removes its projects from the summary table); drag the <em>Min g·m</em> slider to suppress low-significance intercepts; type into <em>Project search</em> for autocomplete from the universe. Matched-project halos always show, regardless of filter state. Toggle <em>KDE contours</em> to overlay per-commodity envelopes (50% solid fill = inner half of mass; 80% dashed = outer 80%). Envelopes are computed live in-browser as a Gaussian fit on log10(width) × log10(AuEq grade) — every filter change (commodity, min g·m, scope-to-table, project search) reshapes the contour. Initial scipy KDE on the full universe lives in <code>drill_universe.json</code> as a baseline reference but is no longer rendered. Stage indicator below tracks # holes &gt; 100 g·m for your saved holes. The summary table below the chart ranks all universe projects on n intercepts / best g·m / median g·m / # &gt;100 g·m / # &gt;1k g·m — click a row to highlight that project, or toggle <em>Scope chart to table</em> to filter the chart's cloud + KDE to just the visible top-50 rows.</p>
+        <table>
+          <thead><tr><th>Stage</th><th># total holes</th><th># &gt;100 g·m</th><th># &gt;1,000 g·m</th></tr></thead>
+          <tbody>
+            <tr><td>Discovery</td><td>1–5</td><td>1–2</td><td>0–1</td></tr>
+            <tr><td>Scoping</td><td>30–80</td><td>5–15</td><td>1–3</td></tr>
+            <tr><td>PEA</td><td>50–150</td><td>15–30</td><td>3–10</td></tr>
+            <tr><td>PFS</td><td>150–400</td><td>30–80</td><td>10–30</td></tr>
+            <tr><td>FS / mine</td><td>300–2,000+</td><td>80–300</td><td>30–100+</td></tr>
+          </tbody>
+        </table>
+        <p>Holes need to be <em>spatially correlated</em> to count as a deposit — random scattered hits don't aggregate. Narrow-vein bonanza deposits (Fosterville, Brucejack) need many more holes per ton mineable than bulk porphyries (Detour, Hemi).</p>
+        <p><strong>5. Commodity coloring.</strong> Benchmark dots are coloured by the metal that contributes the most to AuEq at v1 default prices: <span style="color:#e8b658">Au</span>, <span style="color:#ff5f56">Cu</span>, <span style="color:#5dd380">U₃O₈</span>, <span style="color:#8a8773">Li₂O</span>, or <span style="color:#6acfe0">Polymetallic</span> (no single metal &gt; 70% of AuEq). Your active intercept is a <span style="color:#5dd3a8">green diamond</span> with a soft halo.</p>
+        <p><strong>6. Saved data.</strong> Stored in your browser's localStorage under key <code>zovlyn_drill_holes</code> (records from the v1 schema auto-migrate on load). Private to this browser; not synced. Clearing browser data wipes the list.</p>
+        <p><strong>7. Out of scope (still v3).</strong> No raw-assay compositor (still summary-style intercepts), no NSR / smelter terms, no true-width-from-angles calc, no spatial / coordinate handling. Deposit drilling profiles are <em>approximate</em> — verify in source NI 43-101 reports before quoting. <em>Not investment advice.</em></p>
+      </div>
+    </div>
+
+  </section>
+</div>
+
+<div class="foot">
+  <div>ZOVLYN/CALCULATOR · DRILL-01 · v2.0 · NOT INVESTMENT ADVICE</div>
+  <div><a href="system.html">SYSTEM →</a> · <a href="index.html">← TOOLS</a></div>
+</div>
+
+<script>
+// ─── Clock + session ───
+(function(){
+  const clock=document.getElementById('t-clock'),session=document.getElementById('t-session');
+  const t0=Date.now(),mons=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function tick(){
+    const n=new Date();
+    clock.textContent=String(n.getDate()).padStart(2,'0')+'-'+mons[n.getMonth()]+'-'+n.getFullYear()+' · '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+' EDT';
+    const e=Math.floor((Date.now()-t0)/1000);
+    session.textContent='SESSION '+String(Math.floor(e/3600)).padStart(2,'0')+':'+String(Math.floor((e%3600)/60)).padStart(2,'0')+':'+String(e%60).padStart(2,'0');
+  }
+  tick();setInterval(tick,1000);
+})();
+
+// ─── Reveal ───
+(function(){
+  if(!('IntersectionObserver'in window)){document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));return;}
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.05});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+})();
+
+// ─── Chart.js defaults ───
+Chart.defaults.color='#8a8773';
+Chart.defaults.font.family="'JetBrains Mono', monospace";
+Chart.defaults.font.size=10.5;
+Chart.defaults.borderColor='rgba(58,61,51,0.5)';
+
+// ─── Metal defaults ───
+const DEFAULTS = {
+  Au:   {price:2400, priceUnit:'$/oz', recovery:90, gradeUnit:'g/t'},
+  Ag:   {price:28,   priceUnit:'$/oz', recovery:75, gradeUnit:'g/t'},
+  Cu:   {price:4.20, priceUnit:'$/lb', recovery:88, gradeUnit:'%'  },
+  Pb:   {price:0.95, priceUnit:'$/lb', recovery:80, gradeUnit:'%'  },
+  Zn:   {price:1.30, priceUnit:'$/lb', recovery:85, gradeUnit:'%'  },
+  Ni:   {price:8.00, priceUnit:'$/lb', recovery:70, gradeUnit:'%'  },
+  Mo:   {price:20.0, priceUnit:'$/lb', recovery:80, gradeUnit:'%'  },
+  Co:   {price:15.0, priceUnit:'$/lb', recovery:65, gradeUnit:'%'  },
+  Sn:   {price:14.0, priceUnit:'$/lb', recovery:72, gradeUnit:'%'  },
+  Li2O: {price:14.50,priceUnit:'$/lb', recovery:75, gradeUnit:'%'  },
+  U3O8: {price:80.0, priceUnit:'$/lb', recovery:90, gradeUnit:'%'  },
+  custom:{price:0,   priceUnit:'$/lb', recovery:80, gradeUnit:'g/t'}
+};
+const SYM_LIST = ['Au','Ag','Cu','Pb','Zn','Ni','Mo','Co','Sn','Li2O','U3O8','custom'];
+function symLabel(sym){
+  if (sym === 'U3O8') return 'U₃O₈';
+  if (sym === 'Li2O') return 'Li₂O';
+  return sym;
+}
+
+// ─── Inline benchmark fallback ───
+const BENCHMARKS_FALLBACK = [
+  {id:"fosterville-swan-udh3167",project:"Fosterville · Swan Zone",operator:"Agnico Eagle",country:"Australia",year:2019,hole:"UDH3167",deposit_type:"Orogenic Au",true_width_m:7.4,auEq_gpt:976.0,gram_meters:7222,grades:[{sym:"Au",grade:976.0,unit:"g/t"}]},
+  {id:"johnson-tract-jt19-082",project:"Johnson Tract",operator:"HighGold",country:"USA · AK",year:2019,hole:"JT19-082",deposit_type:"VMS Au",true_width_m:107.8,auEq_gpt:19.55,gram_meters:2107,grades:[{sym:"Au",grade:19.55,unit:"g/t"}]},
+  {id:"contact-lake-cl26036",project:"Contact Lake",operator:"Stallion",country:"Canada · SK",year:2026,hole:"CL26036",deposit_type:"Orogenic Au",true_width_m:51.83,auEq_gpt:15.11,gram_meters:783,grades:[{sym:"Au",grade:15.11,unit:"g/t"}]},
+  {id:"detour-lake-rep",project:"Detour Lake",operator:"Agnico Eagle",country:"Canada · ON",year:2020,hole:"rep.",deposit_type:"Bulk Au",true_width_m:200.0,auEq_gpt:1.0,gram_meters:200,grades:[{sym:"Au",grade:1.0,unit:"g/t"}]},
+  {id:"eskay-creek-109-rep",project:"Eskay Creek · 109 Zone",operator:"Skeena",country:"Canada · BC",year:1990,hole:"rep.",deposit_type:"VMS Au-Ag",true_width_m:27.0,auEq_gpt:72.36,gram_meters:1954,grades:[{sym:"Au",grade:50.0,unit:"g/t"},{sym:"Ag",grade:2300.0,unit:"g/t"}]},
+  {id:"palmer-cmr23-172",project:"Palmer Project",operator:"American Pacific",country:"USA · AK",year:2023,hole:"CMR23-172",deposit_type:"VMS Cu-Zn",true_width_m:43.8,auEq_gpt:8.78,gram_meters:385,grades:[{sym:"Cu",grade:6.54,unit:"%"},{sym:"Zn",grade:3.15,unit:"%"}]},
+  {id:"oyu-tolgoi-hugo-dummett-rep",project:"Oyu Tolgoi · Hugo Dummett N",operator:"Rio Tinto",country:"Mongolia",year:2003,hole:"rep.",deposit_type:"Porphyry Cu-Au",true_width_m:200.0,auEq_gpt:2.46,gram_meters:492,grades:[{sym:"Cu",grade:1.5,unit:"%"},{sym:"Au",grade:0.7,unit:"g/t"}]},
+  {id:"resolution-copper-rep",project:"Resolution Copper",operator:"Rio Tinto / BHP",country:"USA · AZ",year:2010,hole:"rep.",deposit_type:"Porphyry Cu",true_width_m:200.0,auEq_gpt:1.76,gram_meters:352,grades:[{sym:"Cu",grade:1.5,unit:"%"}]},
+  {id:"nexgen-arrow-ar-15-44b",project:"Arrow · A2 Sub-Zone",operator:"NexGen",country:"Canada · SK",year:2015,hole:"AR-15-44b",deposit_type:"Unconformity U",true_width_m:56.5,auEq_gpt:262.9,gram_meters:14854,grades:[{sym:"U3O8",grade:11.5,unit:"%"}]}
+];
+
+let BENCHMARKS = BENCHMARKS_FALLBACK;
+let UNIVERSE = {meta:{}, intercepts:[], kde_contours:{}, projects:[]};
+const COMMODITY_PALETTE = {
+  Au:    {dot:'rgba(232,182,88,0.40)',  fill:'rgba(232,182,88,0.10)',  border:'#e8b658'},
+  Cu:    {dot:'rgba(255,95,86,0.40)',   fill:'rgba(255,95,86,0.10)',   border:'#ff5f56'},
+  Li:    {dot:'rgba(138,135,115,0.45)', fill:'rgba(138,135,115,0.10)', border:'#a8a597'},
+  Ni:    {dot:'rgba(106,207,224,0.40)', fill:'rgba(106,207,224,0.10)', border:'#6acfe0'},
+  U:     {dot:'rgba(93,211,128,0.40)',  fill:'rgba(93,211,128,0.10)',  border:'#5dd380'},
+  Zn:    {dot:'rgba(176,138,214,0.40)', fill:'rgba(176,138,214,0.10)', border:'#b08ad6'},
+  Other: {dot:'rgba(120,118,100,0.40)', fill:'rgba(120,118,100,0.10)', border:'#787664'},
+};
+const COMMODITY_LIST = ['Au','Cu','Li','Ni','U','Zn','Other'];
+const STORAGE_KEY = 'zovlyn_drill_holes';
+const LEGACY_KEY = 'zovlyn_drill_intercepts';
+
+// ─── Element refs ───
+const el = {
+  projName: document.getElementById('projName'),
+  holeId:   document.getElementById('holeId'),
+  notes:    document.getElementById('notes'),
+  interceptStack: document.getElementById('interceptStack'),
+  addIntercept:   document.getElementById('addIntercept'),
+  saveBtn:  document.getElementById('saveBtn'),
+  exFost:   document.getElementById('exFost'),
+  clearBtn: document.getElementById('clearBtn'),
+  vAuEq:    document.getElementById('vAuEq'),
+  vTrueW:   document.getElementById('vTrueW'),
+  vGm:      document.getElementById('vGm'),
+  vRank:    document.getElementById('vRank'),
+  vRankSub: document.getElementById('vRankSub'),
+  vMetalCount: document.getElementById('vMetalCount'),
+  hCount:    document.getElementById('hCount'),
+  hTotalGm:  document.getElementById('hTotalGm'),
+  hBestGm:   document.getElementById('hBestGm'),
+  hHighGrade:document.getElementById('hHighGrade'),
+  contribBody: document.getElementById('contribBody'),
+  savedBody: document.getElementById('savedBody'),
+  savedEmpty: document.getElementById('savedEmpty'),
+  savedMeta: document.getElementById('savedMeta'),
+  benchCount: document.getElementById('benchCount'),
+  profileCount: document.getElementById('profileCount'),
+  ctrlICount: document.getElementById('ctrlICount'),
+  grpICount: document.getElementById('grpICount'),
+  profileMeta: document.getElementById('profileMeta'),
+  profileSub: document.getElementById('profileSub'),
+  overlayToggle: document.getElementById('overlayToggle'),
+  matchPill: document.getElementById('matchPill'),
+  stageRow: document.getElementById('stageRow'),
+};
+
+const fmt = (v,d=0) => isFinite(v) ? v.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}) : '—';
+const fmtSmart = v => v >= 100 ? fmt(v,0) : v >= 10 ? fmt(v,1) : v >= 1 ? fmt(v,2) : fmt(v,3);
+
+// ─── KPI count-up animation ─────────────────────────────────
+const kpiState = new WeakMap();
+function setKpiNumber(elNode, newVal, suffix='', d=null) {
+  if (newVal === '—' || newVal === null || newVal === undefined || (typeof newVal === 'number' && (!isFinite(newVal) || newVal === 0))) {
+    elNode.textContent = '—' + (suffix ? ' '+suffix : '');
+    kpiState.set(elNode, 0);
+    return;
+  }
+  const target = Number(newVal);
+  if (!isFinite(target)) { elNode.textContent = String(newVal); return; }
+  const current = kpiState.get(elNode) || 0;
+  const start = performance.now();
+  const dur = 320;
+  const fmtVal = v => {
+    const dec = d != null ? d : (v >= 100 ? 0 : v >= 10 ? 1 : v >= 1 ? 2 : 3);
+    return v.toLocaleString(undefined,{minimumFractionDigits:dec,maximumFractionDigits:dec});
+  };
+  function tick(now) {
+    const t = Math.min(1, (now - start) / dur);
+    const e = 1 - Math.pow(1 - t, 3); // ease-out cubic
+    const v = current + (target - current) * e;
+    elNode.textContent = fmtVal(v) + (suffix ? ' '+suffix : '');
+    if (t < 1) requestAnimationFrame(tick); else kpiState.set(elNode, target);
+  }
+  requestAnimationFrame(tick);
+}
+
+// ─── Data model ─────────────────────────────────────────────
+function uid(prefix='i') { return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+function defaultMetalSeed() {
+  return [
+    {sym:'Au', grade:0, unit:'g/t', price:2400, priceUnit:'$/oz', recovery:90},
+    {sym:'Ag', grade:0, unit:'g/t', price:28,   priceUnit:'$/oz', recovery:75},
+    {sym:'Cu', grade:0, unit:'%',   price:4.20, priceUnit:'$/lb', recovery:88},
+    {sym:'Pb', grade:0, unit:'%',   price:0.95, priceUnit:'$/lb', recovery:80},
+    {sym:'Zn', grade:0, unit:'%',   price:1.30, priceUnit:'$/lb', recovery:85},
+  ];
+}
+
+// ─── Build intercept card ───────────────────────────────────
+function buildInterceptCard(spec) {
+  const card = document.createElement('div');
+  card.className = 'intercept-card' + (spec.active ? ' active' : '');
+  card.dataset.id = spec.id || uid();
+  card.innerHTML = `
+    <div class="intercept-h">
+      <span class="num">#<span class="idx">?</span></span>
+      <span class="hdr-summary"><span class="empty">empty intercept · click to edit</span></span>
+      <span class="caret">▸</span>
+      <button class="rm" title="Remove intercept">×</button>
+    </div>
+    <div class="intercept-b">
+      <div class="row2">
+        <div>
+          <div class="lbl"><span class="lbl-name">From (m)</span></div>
+          <input class="t-input ic-from" type="number" step="0.1" value="${spec.from ?? 0}" inputmode="decimal">
+        </div>
+        <div>
+          <div class="lbl"><span class="lbl-name">To (m)</span></div>
+          <input class="t-input ic-to" type="number" step="0.1" value="${spec.to ?? 10}" inputmode="decimal">
+        </div>
+      </div>
+      <div style="margin-top:10px">
+        <div class="lbl">
+          <span class="lbl-name">True width</span>
+          <span class="lbl-val ic-twval">${spec.twPct ?? 80}%</span>
+        </div>
+        <input class="t-range ic-tw" type="range" min="10" max="100" step="1" value="${spec.twPct ?? 80}">
+        <div class="range-cap"><span>10%</span><span>100% (parallel)</span></div>
+        <div class="kpi-eq" style="margin-top:6px">downhole <span class="ic-dh" style="color:var(--fg-2)">—</span> · TW <span class="ic-tw-m" style="color:var(--accent)">—</span></div>
+      </div>
+      <div style="margin-top:14px">
+        <div class="metals-h">
+          <span>Metal</span><span>Grade</span><span>Unit</span><span>Price</span><span>Rec %</span><span></span>
+        </div>
+        <div class="ic-metals"></div>
+        <button class="btn-add tight ic-add-metal">+ Add metal</button>
+      </div>
+    </div>
+  `;
+  // Populate metals
+  const metalsBody = card.querySelector('.ic-metals');
+  (spec.metals && spec.metals.length ? spec.metals : defaultMetalSeed()).forEach((m,i) => {
+    metalsBody.appendChild(buildMetalRow(m, i === 0));
+  });
+  // Header / collapse toggle
+  card.querySelector('.intercept-h').addEventListener('click', e => {
+    if (e.target.closest('.rm')) return;
+    setActiveIntercept(card.dataset.id);
+  });
+  // Remove
+  card.querySelector('.rm').addEventListener('click', () => {
+    const cards = [...el.interceptStack.children];
+    if (cards.length <= 1) return; // never remove last
+    const wasActive = card.classList.contains('active');
+    card.remove();
+    if (wasActive) {
+      const remaining = el.interceptStack.children[0];
+      if (remaining) remaining.classList.add('active');
+    }
+    recompute();
+  });
+  // Geometry inputs
+  ['ic-from','ic-to','ic-tw'].forEach(c => {
+    card.querySelector('.'+c).addEventListener('input', recompute);
+  });
+  // Add metal in this intercept
+  card.querySelector('.ic-add-metal').addEventListener('click', () => {
+    metalsBody.appendChild(buildMetalRow({sym:'custom', grade:0, unit:'g/t', price:0, priceUnit:'$/lb', recovery:80}, false));
+    recompute();
+  });
+  return card;
+}
+
+function setActiveIntercept(id) {
+  [...el.interceptStack.children].forEach(c => c.classList.toggle('active', c.dataset.id === id));
+  recompute();
+}
+
+// ─── Metal row builder ──────────────────────────────────────
+function buildMetalRow(spec, isFirst=false) {
+  const row = document.createElement('div');
+  row.className = 'metal-row';
+  row.innerHTML = `
+    <select class="m-input metal-sym">${SYM_LIST.map(s=>`<option value="${s}"${s===spec.sym?' selected':''}>${symLabel(s)}</option>`).join('')}</select>
+    <input class="m-input metal-grade" type="number" step="0.01" inputmode="decimal" value="${spec.grade}">
+    <select class="m-input metal-unit">
+      <option value="g/t"${spec.unit==='g/t'?' selected':''}>g/t</option>
+      <option value="%"${spec.unit==='%'?' selected':''}>%</option>
+      <option value="oz/t"${spec.unit==='oz/t'?' selected':''}>oz/t</option>
+    </select>
+    <input class="m-input metal-price" type="number" step="0.01" inputmode="decimal" value="${spec.price}" title="${spec.priceUnit}">
+    <input class="m-input metal-rec" type="number" step="1" min="0" max="100" inputmode="decimal" value="${spec.recovery}">
+    <button class="metal-rm" title="Remove" ${isFirst?'disabled':''}>×</button>
+  `;
+  row.dataset.priceUnit = spec.priceUnit;
+  row.dataset.sym = spec.sym;
+  const symSel = row.querySelector('.metal-sym');
+  const gradeIn = row.querySelector('.metal-grade');
+  const unitSel = row.querySelector('.metal-unit');
+  const priceIn = row.querySelector('.metal-price');
+  const recIn   = row.querySelector('.metal-rec');
+  symSel.addEventListener('change', () => {
+    const newSym = symSel.value;
+    const oldSym = row.dataset.sym || spec.sym;
+    const oldDef = DEFAULTS[oldSym] || DEFAULTS.custom;
+    const newDef = DEFAULTS[newSym] || DEFAULTS.custom;
+    if (parseFloat(priceIn.value) === oldDef.price) priceIn.value = newDef.price;
+    if (parseFloat(recIn.value)   === oldDef.recovery) recIn.value   = newDef.recovery;
+    if (unitSel.value === oldDef.gradeUnit) unitSel.value = newDef.gradeUnit;
+    row.dataset.priceUnit = newDef.priceUnit;
+    row.dataset.sym = newSym;
+    priceIn.title = newDef.priceUnit;
+    recompute();
+  });
+  [gradeIn, unitSel, priceIn, recIn].forEach(n => n.addEventListener('input', recompute));
+  row.querySelector('.metal-rm').addEventListener('click', () => {
+    if (row.querySelector('.metal-rm').disabled) return;
+    row.remove();
+    recompute();
+  });
+  return row;
+}
+
+// ─── Read state from DOM ────────────────────────────────────
+function readIntercept(card) {
+  const from = parseFloat(card.querySelector('.ic-from').value) || 0;
+  const to   = parseFloat(card.querySelector('.ic-to').value) || 0;
+  const twPct= parseFloat(card.querySelector('.ic-tw').value) || 0;
+  const dh   = Math.max(0, to - from);
+  const trueW= dh * (twPct / 100);
+  const metals = [...card.querySelectorAll('.metal-row')].map(r => ({
+    sym: r.querySelector('.metal-sym').value,
+    grade: parseFloat(r.querySelector('.metal-grade').value) || 0,
+    unit: r.querySelector('.metal-unit').value,
+    price: parseFloat(r.querySelector('.metal-price').value) || 0,
+    priceUnit: r.dataset.priceUnit || '$/lb',
+    recovery: parseFloat(r.querySelector('.metal-rec').value) || 0,
+  }));
+  return {id: card.dataset.id, from, to, twPct, dh, trueW, metals};
+}
+
+function readAllIntercepts() {
+  return [...el.interceptStack.children].map(readIntercept);
+}
+
+function getActiveCard() {
+  return el.interceptStack.querySelector('.intercept-card.active') || el.interceptStack.firstElementChild;
+}
+
+// ─── AuEq math ───────────────────────────────────────────────
+function priceToGPerGram(price, unit) {
+  if (unit === '$/oz') return price / 31.1035;
+  if (unit === '$/lb') return price / 453.592;
+  return 0;
+}
+function gradeToGpt(grade, unit) {
+  if (unit === '%')    return grade * 10000;
+  if (unit === 'oz/t') return grade * 31.1035;
+  return grade;
+}
+function calcAuEq(rows) {
+  const norm = rows.map(r => ({
+    sym: r.sym,
+    grade_gpt: gradeToGpt(r.grade, r.unit),
+    pricePerGram: priceToGPerGram(r.price, r.priceUnit),
+    rec: (r.recovery || 0) / 100,
+  }));
+  const au = norm.find(r => r.sym === 'Au');
+  const auDenom = au ? (au.pricePerGram * au.rec) : 0;
+  if (!auDenom) return {auEq:0, contributions:[], auDenom:0};
+  const contribs = norm.map(r => {
+    const rev = r.grade_gpt * r.pricePerGram * r.rec;
+    return {sym:r.sym, contrib_gpt: rev / auDenom, rev_per_t: rev, grade_gpt: r.grade_gpt};
+  });
+  const auEq = contribs.reduce((s,c) => s + c.contrib_gpt, 0);
+  return {auEq, contributions: contribs.map(c=>({...c, share: auEq ? c.contrib_gpt/auEq : 0})), auDenom};
+}
+
+// ─── Commodity classification ───────────────────────────────
+const _CAT_FACTORS = {Cu:1.1737, Pb:0.2412, Zn:0.3508, Ni:1.7775, Mo:0, Co:0, Sn:0, Li2O:3.453, U3O8:22.86};
+function commodityCategory(rec) {
+  const grades = rec.grades || [];
+  if (!grades.length) return 'Poly';
+  const contribs = grades.map(g => {
+    let proxy = 0;
+    if (g.sym === 'Au') {
+      proxy = g.unit === 'oz/t' ? g.grade * 31.1035 : g.grade;
+    } else if (g.sym === 'Ag') {
+      const gpt = g.unit === 'oz/t' ? g.grade * 31.1035 : g.grade;
+      proxy = gpt * 0.00972;
+    } else {
+      const pct = g.unit === '%' ? g.grade : g.unit === 'g/t' ? g.grade / 10000 : 0;
+      proxy = pct * (_CAT_FACTORS[g.sym] || 0);
+    }
+    return {sym: g.sym, contrib: proxy};
+  });
+  const total = contribs.reduce((s,c) => s + c.contrib, 0);
+  if (!total) return 'Poly';
+  contribs.sort((a,b) => b.contrib - a.contrib);
+  const top = contribs[0];
+  if (top.contrib / total < 0.7) return 'Poly';
+  if (top.sym === 'Au')   return 'Au';
+  if (top.sym === 'Cu')   return 'Cu';
+  if (top.sym === 'U3O8') return 'U';
+  if (top.sym === 'Li2O') return 'Li';
+  return 'Poly';
+}
+const COMMODITY_COLORS = {
+  Au:   {fill:'rgba(232,182,88,0.85)',  border:'#e8b658', label:'Au'},
+  Cu:   {fill:'rgba(255,95,86,0.85)',   border:'#ff5f56', label:'Cu'},
+  U:    {fill:'rgba(93,211,128,0.85)',  border:'#5dd380', label:'U₃O₈'},
+  Li:   {fill:'rgba(138,135,115,0.85)', border:'#8a8773', label:'Li₂O'},
+  Poly: {fill:'rgba(106,207,224,0.85)', border:'#6acfe0', label:'Polymetallic'},
+};
+const CATEGORY_ORDER = ['Au','Cu','U','Li','Poly'];
+
+// ─── Render: contributions table ─────────────────────────────
+function renderContribs(rows, contribs) {
+  if (!contribs.length || contribs.every(c => !c.rev_per_t)) {
+    el.contribBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--fg-3);padding:18px">Enter at least one non-zero metal grade with valid price and recovery.</td></tr>';
+    return;
+  }
+  let html = '';
+  for (let i=0; i<rows.length; i++) {
+    const r = rows[i], c = contribs[i];
+    if (!c || !r.grade) continue;
+    const sym = symLabel(r.sym);
+    const barW = Math.max(1, Math.round(c.share * 80));
+    html += `<tr>
+      <td>${sym}</td>
+      <td>${fmtSmart(r.grade)} ${r.unit}</td>
+      <td>$${fmt(c.rev_per_t,2)}</td>
+      <td>${fmtSmart(c.contrib_gpt)}</td>
+      <td>${(c.share*100).toFixed(1)}% <span class="share-bar" style="width:${barW}px"></span></td>
+    </tr>`;
+  }
+  if (!html) html = '<tr><td colspan="5" style="text-align:center;color:var(--fg-3);padding:18px">No active metals (all grades = 0).</td></tr>';
+  el.contribBody.innerHTML = html;
+}
+
+// ─── Benchmark scatter ──────────────────────────────────────
+const isoLevels = [
+  {gm:100,    label:'100 g·m'},
+  {gm:1000,   label:'1,000 g·m'},
+  {gm:5000,   label:'5,000 g·m'},
+  {gm:10000,  label:'10,000 g·m'},
+];
+const X_MIN = 1, X_MAX = 500, Y_MIN = 0.3, Y_MAX = 3000;
+function isoCurveData(gm) {
+  const pts = [];
+  const N = 60;
+  for (let i = 0; i <= N; i++) {
+    const lx = Math.log10(X_MIN) + (Math.log10(X_MAX) - Math.log10(X_MIN)) * (i/N);
+    const x = Math.pow(10, lx);
+    const y = gm / x;
+    if (y < Y_MIN * 0.8 || y > Y_MAX * 1.2) continue;
+    pts.push({x, y});
+  }
+  return pts;
+}
+const isoLabelsPlugin = {
+  id: 'isoLabels',
+  afterDatasetsDraw(chart) {
+    const {ctx, scales:{x,y}, chartArea} = chart;
+    if (!chartArea) return;
+    ctx.save();
+    ctx.font = "10px 'JetBrains Mono', monospace";
+    ctx.fillStyle = 'rgba(138,135,115,0.85)';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+    isoLevels.forEach(({gm, label}) => {
+      const xVal = x.max;
+      const yVal = gm / xVal;
+      if (yVal < y.min || yVal > y.max) return;
+      const px = x.getPixelForValue(xVal);
+      const py = y.getPixelForValue(yVal);
+      ctx.fillText(label, px - 6, py - 2);
+    });
+    ctx.restore();
+  }
+};
+
+const benchChart = new Chart(document.getElementById('benchChart'), {
+  type: 'scatter',
+  data: {datasets: []},
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    parsing: false,
+    plugins: {
+      legend: {display: false},
+      tooltip: {
+        backgroundColor:'#0c0d0a', titleColor:'#d8d4c2', bodyColor:'#d8d4c2',
+        borderColor:'#2a2c24', borderWidth:1, padding:10,
+        titleFont:{family:"'JetBrains Mono', monospace",size:11,weight:'600'},
+        bodyFont:{family:"'JetBrains Mono', monospace",size:11},
+        filter: ctx => ctx.dataset.type === 'scatter' && ctx.dataset.label !== 'You · halo' && ctx.dataset.label !== 'Other intercepts in hole' && ctx.raw && ctx.raw.meta,
+        callbacks: {
+          title: ctx => {
+            const p = ctx[0].raw;
+            if (!p || !p.meta) return '';
+            const m = p.meta;
+            return `${m.project} · ${m.hole} · ${m.year}`;
+          },
+          label: ctx => {
+            const p = ctx.raw;
+            if (!p || !p.meta) return '';
+            const m = p.meta;
+            const lines = [`AuEq ${fmtSmart(m.auEq_gpt)} g/t × ${fmtSmart(m.true_width_m)} m = ${fmt(m.gram_meters,0)} g·m`];
+            if (m.grades && m.grades.length > 1) {
+              lines.push('—');
+              m.grades.forEach(g => lines.push(`  ${symLabel(g.sym)} ${fmtSmart(g.grade)} ${g.unit}`));
+            }
+            const tail = [];
+            if (m.deposit_type) tail.push(m.deposit_type);
+            if (m.country) tail.push(m.country);
+            if (tail.length) lines.push(`(${tail.join(' · ')})`);
+            return lines;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        type: 'logarithmic', min: X_MIN, max: X_MAX,
+        title: {display:true, text:'True width (m, log)', font:{family:"'JetBrains Mono', monospace",size:10,weight:'600'}, color:'#5d5b4d'},
+        grid: {color:'rgba(58,61,51,0.3)'},
+        ticks: {callback: v => [1,3,10,30,100,300].includes(v) ? v : '', font:{family:"'JetBrains Mono', monospace",size:10}}
+      },
+      y: {
+        type: 'logarithmic', min: Y_MIN, max: Y_MAX,
+        title: {display:true, text:'AuEq grade (g/t, log)', font:{family:"'JetBrains Mono', monospace",size:10,weight:'600'}, color:'#5d5b4d'},
+        grid: {color:'rgba(58,61,51,0.3)'},
+        ticks: {callback: v => [0.3,1,3,10,30,100,300,1000].includes(v) ? v : '', font:{family:"'JetBrains Mono', monospace",size:10}}
+      }
+    }
+  },
+  plugins: [isoLabelsPlugin]
+});
+
+function rebuildChartDatasets() {
+  const datasets = [];
+  isoLevels.forEach(({gm}) => {
+    datasets.push({
+      type:'line', data:isoCurveData(gm),
+      borderColor:'rgba(58,61,51,0.7)', borderDash:[3,4], borderWidth:1,
+      fill:false, pointRadius:0, pointHoverRadius:0, tension:0,
+    });
+  });
+  const grouped = {Au:[], Cu:[], U:[], Li:[], Poly:[]};
+  BENCHMARKS.forEach(b => {
+    const cat = commodityCategory(b);
+    grouped[cat].push({x: b.true_width_m, y: b.auEq_gpt, meta: {...b, category: cat}});
+  });
+  CATEGORY_ORDER.forEach(cat => {
+    if (!grouped[cat].length) return;
+    const c = COMMODITY_COLORS[cat];
+    datasets.push({
+      type:'scatter', label:c.label, data:grouped[cat],
+      backgroundColor:c.fill, borderColor:c.border, borderWidth:1,
+      pointRadius:5, pointHoverRadius:8,
+    });
+  });
+  // "Other intercepts in current hole" — small green diamonds
+  datasets.push({
+    type:'scatter', label:'Other intercepts in hole', data:[],
+    backgroundColor:'rgba(93,211,168,0.55)', borderColor:'#5dd3a8', borderWidth:1,
+    pointStyle:'rectRot', pointRadius:7, pointHoverRadius:9,
+  });
+  // Halo
+  datasets.push({
+    type:'scatter', label:'You · halo', data:[],
+    backgroundColor:'rgba(93,211,168,0.18)', borderColor:'rgba(93,211,168,0.55)', borderWidth:1.5,
+    pointStyle:'circle', pointRadius:24, pointHoverRadius:26,
+  });
+  // Active diamond
+  datasets.push({
+    type:'scatter', label:'You', data:[],
+    backgroundColor:'#5dd3a8', borderColor:'#0c0d0a', borderWidth:2,
+    pointStyle:'rectRot', pointRadius:11, pointHoverRadius:13,
+  });
+  benchChart.data.datasets = datasets;
+  benchChart.update('none');
+}
+
+function setUserPoints(activeIntercept, otherIntercepts) {
+  const ds = benchChart.data.datasets;
+  const main = ds[ds.length - 1];
+  const halo = ds[ds.length - 2];
+  const others = ds[ds.length - 3];
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi*0.99, v));
+  if (activeIntercept && activeIntercept.trueW > 0 && activeIntercept.auEq > 0) {
+    const x = clamp(activeIntercept.trueW, X_MIN, X_MAX);
+    const y = clamp(activeIntercept.auEq,  Y_MIN, Y_MAX);
+    const pt = {x, y, meta: {project:'Your active intercept', hole:'—', year:'—', auEq_gpt:activeIntercept.auEq, true_width_m:activeIntercept.trueW, gram_meters:activeIntercept.auEq*activeIntercept.trueW}};
+    main.data = [pt];
+    halo.data = [{x, y}];
+  } else {
+    main.data = [];
+    halo.data = [];
+  }
+  others.data = (otherIntercepts || []).filter(ic => ic.trueW > 0 && ic.auEq > 0).map(ic => ({
+    x: clamp(ic.trueW, X_MIN, X_MAX),
+    y: clamp(ic.auEq,  Y_MIN, Y_MAX),
+    meta: null,
+  }));
+  benchChart.update('none');
+}
+
+// ─── Project scatter chart (drilling universe + KDE contours + user intercepts) ───
+// Project chart shares axes with the benchmark scatter (log-log: width × AuEq)
+const projectChart = new Chart(document.getElementById('profileChart'), {
+  type: 'scatter',
+  data: {datasets: []},
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    parsing: false,
+    plugins: {
+      legend: {display: false},
+      tooltip: {
+        backgroundColor:'#0c0d0a', titleColor:'#d8d4c2', bodyColor:'#d8d4c2',
+        borderColor:'#2a2c24', borderWidth:1, padding:10,
+        titleFont:{family:"'JetBrains Mono', monospace",size:11,weight:'600'},
+        bodyFont:{family:"'JetBrains Mono', monospace",size:11},
+        filter: ctx => ctx.dataset.type === 'scatter' && ctx.raw && ctx.raw.meta,
+        callbacks: {
+          title: ctx => {
+            const m = ctx[0].raw.meta;
+            if (!m) return '';
+            if (m.is_user)     return `${m.project || 'Your project'} · ${m.holeId || '—'}`;
+            if (m.is_universe) return `${m.project} · ${m.commodity}`;
+            return '';
+          },
+          label: ctx => {
+            const m = ctx.raw.meta;
+            if (!m) return '';
+            if (m.is_user) {
+              return [
+                `AuEq ${fmtSmart(m.auEq)} g/t × ${fmtSmart(m.trueW)} m = ${fmt(m.gm,0)} g·m`,
+                `intercept ${m.from}–${m.to} m`,
+              ];
+            }
+            if (m.is_universe) {
+              return [`${fmtSmart(m.grade)} g/t × ${fmtSmart(m.width)} m = ${fmt(m.gm,0)} g·m`];
+            }
+            return '';
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        type:'logarithmic', min:X_MIN, max:X_MAX,
+        title:{display:true, text:'True width (m, log)', font:{family:"'JetBrains Mono', monospace",size:10,weight:'600'}, color:'#5d5b4d'},
+        grid:{color:'rgba(58,61,51,0.3)'},
+        ticks:{callback: v => [1,3,10,30,100,300].includes(v) ? v : '', font:{family:"'JetBrains Mono', monospace",size:10}}
+      },
+      y: {
+        type:'logarithmic', min:Y_MIN, max:Y_MAX,
+        title:{display:true, text:'AuEq grade (g/t, log)', font:{family:"'JetBrains Mono', monospace",size:10,weight:'600'}, color:'#5d5b4d'},
+        grid:{color:'rgba(58,61,51,0.3)'},
+        ticks:{callback: v => [0.3,1,3,10,30,100,300,1000].includes(v) ? v : '', font:{family:"'JetBrains Mono', monospace",size:10}}
+      }
+    }
+  },
+  plugins: [isoLabelsPlugin]
+});
+
+let contoursOn = true;
+const enabledCommodities = new Set(COMMODITY_LIST);
+let minGm = 0;
+let projectStats = [];   // computed once on init
+let tableSort = {col:'n', dir:'desc'};
+let scopeToTable = false;
+let scopedProjects = new Set();        // recomputed from visible-table rows when scope is on
+let scopedInterceptCounts = {};        // commodity -> # filtered intercepts (for subtitle)
+
+// Gaussian envelope on log10(width) x log10(grade). Replaces precomputed
+// scipy KDE contours when "Scope chart to table" is on. For a 2D Gaussian,
+// the level-set f(x) = k forms an ellipse; semi-axes scale by k_sigma where
+// k_sigma = sqrt(-2 ln(1 - fraction)). 50% mass -> ~1.177σ, 80% -> ~1.794σ.
+function gaussianEnvelope(points, fraction) {
+  if (points.length < 6) return null;
+  const n = points.length;
+  let sx = 0, sy = 0;
+  for (const [x,y] of points) { sx += x; sy += y; }
+  const mx = sx / n, my = sy / n;
+  let cxx = 0, cyy = 0, cxy = 0;
+  for (const [x,y] of points) {
+    const dx = x - mx, dy = y - my;
+    cxx += dx*dx; cyy += dy*dy; cxy += dx*dy;
+  }
+  cxx /= n; cyy /= n; cxy /= n;
+  // Eigenvalues of [[cxx,cxy],[cxy,cyy]] — real, since matrix is symmetric
+  const tr = cxx + cyy;
+  const det = cxx*cyy - cxy*cxy;
+  const disc = Math.sqrt(Math.max(0, tr*tr/4 - det));
+  const l1 = Math.max(0, tr/2 + disc);
+  const l2 = Math.max(0, tr/2 - disc);
+  const angle = Math.atan2(2*cxy, cxx - cyy) / 2;
+  const kSigma = Math.sqrt(Math.max(0, -2 * Math.log(1 - fraction)));
+  const a = kSigma * Math.sqrt(l1);
+  const b = kSigma * Math.sqrt(l2);
+  if (!isFinite(a) || !isFinite(b) || a <= 0 || b <= 0) return null;
+  const ca = Math.cos(angle), sa = Math.sin(angle);
+  const pts = [];
+  const N = 48;
+  for (let i = 0; i <= N; i++) {
+    const t = 2 * Math.PI * i / N;
+    const ex = a * Math.cos(t);
+    const ey = b * Math.sin(t);
+    const lx = mx + ex * ca - ey * sa;
+    const ly = my + ex * sa + ey * ca;
+    pts.push([Math.pow(10, lx), Math.pow(10, ly)]);
+  }
+  return pts;
+}
+
+el.overlayToggle.addEventListener('click', () => {
+  contoursOn = !contoursOn;
+  el.overlayToggle.classList.toggle('on', contoursOn);
+  renderProfile();
+});
+
+// Commodity-pill toggle handlers (delegated)
+document.querySelectorAll('.commodity-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const c = btn.dataset.c;
+    if (enabledCommodities.has(c)) { enabledCommodities.delete(c); btn.classList.remove('on'); btn.classList.add('off'); }
+    else { enabledCommodities.add(c); btn.classList.add('on'); btn.classList.remove('off'); }
+    renderAll();
+  });
+});
+
+// Min g·m slider (doesn't change scope, only chart cloud rendering)
+const minGmSlider = document.getElementById('minGmSlider');
+const minGmVal = document.getElementById('minGmVal');
+minGmSlider.addEventListener('input', () => {
+  minGm = parseFloat(minGmSlider.value) || 0;
+  minGmVal.textContent = minGm > 0 ? minGm.toLocaleString() + ' g·m' : '0';
+  renderProfile();
+});
+
+// Project search field — pipes into the hole-header project name
+const projSearch = document.getElementById('projSearch');
+projSearch.addEventListener('input', () => {
+  el.projName.value = projSearch.value;
+  renderAll();
+});
+projSearch.addEventListener('change', () => {
+  el.projName.value = projSearch.value;
+  renderAll();
+});
+
+// Filter reset
+document.getElementById('filterReset').addEventListener('click', () => {
+  COMMODITY_LIST.forEach(c => enabledCommodities.add(c));
+  document.querySelectorAll('.commodity-toggle').forEach(b => { b.classList.add('on'); b.classList.remove('off'); });
+  minGm = 0;
+  minGmSlider.value = 0;
+  minGmVal.textContent = '0';
+  contoursOn = true;
+  el.overlayToggle.classList.add('on');
+  scopeToTable = false;
+  document.getElementById('scopeToggle').classList.remove('on');
+  projSearch.value = '';
+  el.projName.value = '';
+  renderAll();
+});
+
+function clampPt(x, y) {
+  return {
+    x: Math.max(X_MIN, Math.min(X_MAX*0.99, x)),
+    y: Math.max(Y_MIN, Math.min(Y_MAX*0.99, y)),
+  };
+}
+
+function renderProfile() {
+  const projName = (el.projName.value || '').trim();
+  const projNameLc = projName.toLowerCase();
+  const all = loadSaved();
+  const projHoles = projName ? all.filter(h => (h.projName || '').trim().toLowerCase() === projNameLc) : [];
+
+  const datasets = [];
+
+  // Iso-curves first (back)
+  isoLevels.forEach(({gm}) => {
+    datasets.push({
+      type:'line', data:isoCurveData(gm),
+      borderColor:'rgba(58,61,51,0.7)', borderDash:[3,4], borderWidth:1,
+      fill:false, pointRadius:0, pointHoverRadius:0, tension:0,
+    });
+  });
+
+  // First pass: walk universe, classify each intercept (in-scope / matched / unmatched-by-commodity).
+  // Also collect per-commodity log-space point sets for live envelope recompute when scope is on.
+  const matched = [];
+  const unmatchedByC = {};
+  const logPtsByC = {};            // for live envelope when scope is on
+  COMMODITY_LIST.forEach(c => { unmatchedByC[c] = []; logPtsByC[c] = []; });
+  let cloudShown = 0, cloudTotal = 0;
+  scopedInterceptCounts = {};
+  (UNIVERSE.intercepts || []).forEach(([p, c, w, g]) => {
+    if (!isFinite(w) || !isFinite(g) || w <= 0 || g <= 0) return;
+    cloudTotal++;
+    const gm = w * g;
+    const isMatched = projNameLc && p && p.toLowerCase() === projNameLc;
+    const inScope = scopeToTable ? (p && scopedProjects.has(p)) : true;
+    const key = COMMODITY_LIST.includes(c) ? c : 'Other';
+    const pt = clampPt(w, g);
+    pt.meta = {project:p || '(no project)', commodity:c, width:w, grade:g, gm, is_universe:true};
+    if (isMatched) {
+      matched.push(pt);
+      cloudShown++;
+    } else if (inScope && enabledCommodities.has(key) && gm >= minGm) {
+      cloudShown++;
+      unmatchedByC[key].push(pt);
+    }
+    // Envelope source: scoped intercepts (commodity + min-gm filtered), regardless of matched flag,
+    // so the user's project still contributes to its own commodity's envelope.
+    if (inScope && enabledCommodities.has(key) && gm >= minGm) {
+      logPtsByC[key].push([Math.log10(w), Math.log10(g)]);
+      scopedInterceptCounts[key] = (scopedInterceptCounts[key] || 0) + 1;
+    }
+  });
+
+  // KDE contours (filtered by enabled commodities + global toggle).
+  // Source has two modes:
+  //  - Project selected (projNameLc has matches): KDE built ONLY from this
+  //    project's intercepts, grouped by commodity. Shows the project's own
+  //    shape. Min-g·m / scope filters are ignored for this source.
+  //  - No project selected: KDE built from the full filter-respecting set
+  //    (logPtsByC — commodity enabled, g·m ≥ minGm, in-scope if scope on).
+  let kdeSourceByC;
+  if (projNameLc && matched.length > 0) {
+    kdeSourceByC = {};
+    COMMODITY_LIST.forEach(c => kdeSourceByC[c] = []);
+    matched.forEach(pt => {
+      const m = pt.meta;
+      const key = COMMODITY_LIST.includes(m.commodity) ? m.commodity : 'Other';
+      kdeSourceByC[key].push([Math.log10(m.width), Math.log10(m.grade)]);
+    });
+  } else {
+    kdeSourceByC = logPtsByC;
+  }
+  if (contoursOn) {
+    COMMODITY_LIST.forEach(c => {
+      if (!enabledCommodities.has(c)) return;
+      const pal = COMMODITY_PALETTE[c];
+      const pts = kdeSourceByC[c];
+      const outer = gaussianEnvelope(pts, 0.80);
+      const inner = gaussianEnvelope(pts, 0.50);
+      [{poly:outer, isInner:false}, {poly:inner, isInner:true}].forEach(({poly, isInner}) => {
+        if (!poly || poly.length < 4) return;
+        const data = poly.map(([x,y]) => clampPt(x,y));
+        datasets.push({
+          type:'line', data,
+          borderColor: pal.border,
+          backgroundColor: isInner ? pal.fill : 'transparent',
+          borderWidth: isInner ? 1.4 : 0.8,
+          borderDash: isInner ? [] : [3,3],
+          fill: isInner,
+          pointRadius: 0, pointHoverRadius: 0, tension: 0.25,
+        });
+      });
+    });
+  }
+  COMMODITY_LIST.forEach(c => {
+    if (!unmatchedByC[c].length) return;
+    const pal = COMMODITY_PALETTE[c];
+    datasets.push({
+      type:'scatter', label:c, data:unmatchedByC[c],
+      backgroundColor: pal.dot, borderColor: 'transparent', borderWidth: 0,
+      pointRadius: 1.8, pointHoverRadius: 5, hoverBackgroundColor: pal.border,
+    });
+  });
+  // Matched dots — bright halo
+  if (matched.length) {
+    datasets.push({
+      type:'scatter', label:'Matched project (universe)', data:matched,
+      backgroundColor:'rgba(93,211,168,0.6)', borderColor:'#5dd3a8', borderWidth:1.5,
+      pointStyle:'circle', pointRadius:5, pointHoverRadius:7,
+    });
+  }
+  // User saved hole intercepts — bright diamonds on top
+  const userPoints = projHoles.flatMap(h =>
+    (h.intercepts || []).map(ic => {
+      const pt = clampPt(ic.trueW || 0, ic.auEq || 0);
+      pt.meta = {is_user:true, project:h.projName, holeId:h.holeId, from:ic.from, to:ic.to, auEq:ic.auEq, trueW:ic.trueW, gm:ic.gm};
+      return pt;
+    })
+  ).filter(p => p.meta.gm > 0);
+  datasets.push({
+    type:'scatter', label: projName || 'Your saved intercepts', data: userPoints,
+    backgroundColor:'#5dd3a8', borderColor:'#0c0d0a', borderWidth:1.5,
+    pointStyle:'rectRot', pointRadius:9, pointHoverRadius:11,
+  });
+
+  projectChart.data.datasets = datasets;
+  projectChart.update('none');
+
+  // Header sub + stage indicator
+  const total = projHoles.length;
+  const universeN = (UNIVERSE.intercepts || []).length;
+  const filterTail = (() => {
+    const parts = [];
+    if (minGm > 0) parts.push(`g·m ≥ ${minGm}`);
+    if (enabledCommodities.size < COMMODITY_LIST.length) parts.push(`${enabledCommodities.size}/${COMMODITY_LIST.length} commodities`);
+    return parts.length ? ` · filter: ${parts.join(', ')}` : '';
+  })();
+  if (!projName) {
+    el.profileMeta.textContent = universeN
+      ? `universe · ${cloudShown.toLocaleString()}/${universeN.toLocaleString()} shown · ${(UNIVERSE.projects||[]).length.toLocaleString()} projects${filterTail}`
+      : 'universe loading…';
+    el.profileSub.textContent = `Background cloud = real intercepts coloured by commodity. KDE contours = inner 50% (solid fill) and outer 80% (dashed) probability mass on log10 axes — recomputed live as a Gaussian envelope from whatever the current filters allow through (commodity, min g·m, scope). Click a pill, drag the slider, or type a project name and watch the envelope shift.`;
+  } else {
+    const above100 = projHoles.filter(h => (h.hole_gm||0) > 100).length;
+    const above1k  = projHoles.filter(h => (h.hole_gm||0) > 1000).length;
+    el.profileMeta.textContent = `"${projName}" · saved ${total} · matched ${matched.length} in universe · ${above100} >100 g·m · ${above1k} >1k g·m${filterTail}`;
+    if (matched.length >= 6) {
+      el.profileSub.textContent = `Project mode — KDE rebuilt from "${projName}"'s ${matched.length} matched intercepts only (universe envelope hidden). Halos always show; your saved diamonds plot on top.`;
+    } else if (matched.length > 0) {
+      el.profileSub.textContent = `Project mode — only ${matched.length} matched intercept${matched.length===1?'':'s'} for "${projName}"; need ≥6 in a commodity for a stable envelope, so no contour drawn. Halos visible.`;
+    } else {
+      el.profileSub.textContent = `No "${projName}" matches in the universe (${universeN.toLocaleString()} loaded). Universe envelope shown for context; your saved holes plot as green diamonds.`;
+    }
+  }
+  if (scopeToTable) {
+    const scopedTotal = Object.values(scopedInterceptCounts).reduce((s,v)=>s+v, 0);
+    el.profileSub.textContent = `Scope: ${scopedProjects.size} projects from table · ${scopedTotal.toLocaleString()} intercepts after filters · KDE recomputed live as Gaussian envelope (50% solid / 80% dashed) on log10(width) × log10(grade).`;
+  }
+  if (el.matchPill) el.matchPill.style.display = matched.length ? 'inline-flex' : 'none';
+
+  // Per-project scorecard (shows iff a project is matched in the universe)
+  renderProjectScorecard(matched, projName);
+
+  // Stage indicator
+  const above100Stage = projHoles.filter(h => (h.hole_gm||0) > 100).length;
+  let stage = null;
+  if (above100Stage >= 80)      stage = 'fs';
+  else if (above100Stage >= 30) stage = 'pfs';
+  else if (above100Stage >= 15) stage = 'pea';
+  else if (above100Stage >= 5)  stage = 'scoping';
+  else if (above100Stage >= 1)  stage = 'discovery';
+  [...el.stageRow.children].forEach(c => c.classList.toggle('on', c.dataset.stage === stage));
+}
+
+// ─── Project scorecard: per-project stats, tier, contained-metal proxy ─────
+let scParams = {strike: 500, dip: 300, density: 2.7};
+
+function median(arr) {
+  if (!arr.length) return 0;
+  const s = arr.slice().sort((a,b) => a - b);
+  const n = s.length;
+  return n % 2 ? s[(n-1)/2] : (s[n/2 - 1] + s[n/2]) / 2;
+}
+function stdev(arr) {
+  if (arr.length < 2) return 0;
+  const m = arr.reduce((s,v)=>s+v, 0) / arr.length;
+  const v = arr.reduce((s,x) => s + (x-m)*(x-m), 0) / arr.length;
+  return Math.sqrt(v);
+}
+
+// Composite tier score thresholds calibrated against the actual dataset:
+//   1 great hole (Brucejack-like, n=1):                 score ≈ 0.6  → Discovery
+//   ~10 holes, 5 over 100 g·m, 1 over 1k:               score ≈ 0.9  → Discovery
+//   ~30 holes, mostly >100 (e.g. Corvette n=38):        score ≈ 1.5  → Scoping
+//   ~100 holes, 50 over 100, 15 over 1k:                score ≈ 1.8  → PEA
+//   ~500 holes (FS-stage):                              score ≈ 2.4  → PFS
+//   >2,000 holes (operating mine, press-only sample):   score ≈ 2.8+ → FS / Mine
+// Dataset bias: press-release-only intercepts under-count operating mines.
+// Tier = "drilling-effort tier" not "regulatory stage" — see methodology.
+function tierFromScore(s) {
+  if (s >= 2.5) return {key:'fs',        label:'FS / Mine'};
+  if (s >= 2.0) return {key:'pfs',       label:'PFS'};
+  if (s >= 1.5) return {key:'pea',       label:'PEA'};
+  if (s >= 1.0) return {key:'scoping',   label:'Scoping'};
+  return                {key:'discovery', label:'Discovery'};
+}
+
+function computeScorecard(name, rows) {
+  // rows: [{c, w, g, gm}]
+  const n = rows.length;
+  if (!n) return null;
+  const gms = rows.map(r => r.gm);
+  const widths = rows.map(r => r.w);
+  const grades = rows.map(r => r.g);
+  const best   = Math.max(...gms);
+  const med    = median(gms);
+  const meanGm = gms.reduce((s,v)=>s+v, 0) / n;
+  const above100 = gms.filter(g => g > 100).length;
+  const above1k  = gms.filter(g => g > 1000).length;
+  const above50  = gms.filter(g => g > 50).length;
+  const hitRate50 = n ? above50 / n : 0;
+  const logGm = gms.filter(v => v > 0).map(Math.log10);
+  const logSigma = stdev(logGm);
+  const ratio = med > 0 ? best / med : 0;
+
+  // Tier composite score
+  const tierScore =
+      0.4 * Math.log10(n + 1) +
+      0.3 * Math.log10(above100 + 1) +
+      0.2 * Math.log10(above1k + 1) +
+      0.1 * Math.log10((med || 1));
+  const tier = tierFromScore(tierScore);
+
+  // Contained metal in AuEq tonnes — proxy.
+  // mean_gm has units (g/t × m). Multiply by density (t/m³) and area (m²)
+  // and you get mass = density × area × thickness × grade = grams of metal.
+  // /1e6 → tonnes. Convert to troy oz at 32,150.5 oz/t.
+  const area_m2  = scParams.strike * scParams.dip;
+  const grams    = meanGm * scParams.density * area_m2;
+  const tonnes   = grams / 1e6;
+  const ozEq     = tonnes * 32150.5;
+
+  return {
+    name, n, best, med, meanGm, above100, above1k, hitRate50, logSigma, ratio,
+    tierScore, tier,
+    contained: {tonnes, ozEq, area_m2, ...scParams},
+  };
+}
+
+// ─── Project stats + summary table ─────────────────────────
+function buildProjectStats() {
+  const byProj = new Map();
+  const projLocations = new Map(); // proj -> Map(location -> count) for top-location lookup
+  // Walk universe intercepts; xlsx had a Location column but we didn't ship it in
+  // the compact array — accept that for now and recover later if needed.
+  (UNIVERSE.intercepts || []).forEach(([p, c, w, g]) => {
+    if (!p) return;
+    if (!isFinite(w) || !isFinite(g) || w <= 0 || g <= 0) return;
+    if (!byProj.has(p)) byProj.set(p, []);
+    byProj.get(p).push({c, w, g, gm: w*g});
+  });
+  const out = [];
+  byProj.forEach((rows, name) => {
+    const gms = rows.map(r => r.gm).sort((a,b) => a - b);
+    const median = gms.length % 2 ? gms[(gms.length-1)/2] : (gms[gms.length/2 - 1] + gms[gms.length/2]) / 2;
+    const best = gms[gms.length - 1];
+    const above100 = gms.filter(g => g > 100).length;
+    const above1k  = gms.filter(g => g > 1000).length;
+    const cmix = {};
+    rows.forEach(r => { const k = COMMODITY_LIST.includes(r.c) ? r.c : 'Other'; cmix[k] = (cmix[k]||0)+1; });
+    const primary = Object.entries(cmix).sort((a,b) => b[1] - a[1])[0][0];
+    out.push({name, n: rows.length, best, median, above100, above1k, primary, loc: ''});
+  });
+  return out;
+}
+
+function populateProjectDatalist() {
+  const dl = document.getElementById('universeProjects');
+  if (!dl) return;
+  // Sorted alphabetically; native datalist filters substrings as you type
+  const names = projectStats.map(p => p.name).sort((a,b) => a.localeCompare(b));
+  dl.innerHTML = names.map(n => `<option value="${escapeHtml(n)}"></option>`).join('');
+}
+
+function sortProjectStats(arr) {
+  const {col, dir} = tableSort;
+  const sign = dir === 'asc' ? 1 : -1;
+  const get = p => col === 'name' || col === 'primary' || col === 'loc' ? (p[col] || '') : (p[col] || 0);
+  return arr.slice().sort((a, b) => {
+    const va = get(a), vb = get(b);
+    if (typeof va === 'string') return sign * va.localeCompare(vb);
+    return sign * (va - vb);
+  });
+}
+
+function renderProjectTable() {
+  const body = document.getElementById('projTableBody');
+  const meta = document.getElementById('projTableMeta');
+  if (!body) return;
+  // Filter by enabled commodities (show projects whose primary is enabled)
+  const filtered = projectStats.filter(p => enabledCommodities.has(p.primary));
+  const sorted = sortProjectStats(filtered);
+  const top = sorted.slice(0, 50);
+  const projNameLc = ((el.projName.value || '').trim()).toLowerCase();
+
+  body.innerHTML = top.map(p => {
+    const matchedClass = projNameLc && p.name.toLowerCase() === projNameLc ? ' matched' : '';
+    const palBorder = (COMMODITY_PALETTE[p.primary] || COMMODITY_PALETTE.Other).border;
+    return `<tr class="proj-row${matchedClass}" data-name="${escapeHtml(p.name)}">
+      <td>${escapeHtml(p.name)}</td>
+      <td><span style="color:${palBorder};font-weight:600">${p.primary}</span></td>
+      <td>${p.n}</td>
+      <td><strong style="color:var(--accent)">${fmt(p.best, 0)}</strong></td>
+      <td>${fmt(p.median, 0)}</td>
+      <td>${p.above100}</td>
+      <td>${p.above1k}</td>
+      <td style="color:var(--fg-3)">—</td>
+    </tr>`;
+  }).join('');
+
+  meta.textContent = `${filtered.length} projects · showing top ${top.length} by ${tableSort.col} ${tableSort.dir === 'asc' ? '↑' : '↓'}`;
+
+  // Update sort indicators on headers
+  document.querySelectorAll('#projTable th.sortable').forEach(th => {
+    th.classList.remove('sort-asc','sort-desc');
+    if (th.dataset.sort === tableSort.col) th.classList.add(tableSort.dir === 'asc' ? 'sort-asc' : 'sort-desc');
+  });
+}
+
+function fmtMass(t) {
+  // 't' = tonnes of AuEq. Pick a sensible unit/precision.
+  if (!isFinite(t) || t <= 0) return '— t';
+  if (t >= 1000) return fmt(t/1000, 1) + ' kt';
+  if (t >= 1) return fmt(t, 1) + ' t';
+  return fmt(t * 1000, 0) + ' kg';
+}
+
+function styleFromRatio(r) {
+  if (r >= 50) return {label:'BONANZA',   cls:'amber'};
+  if (r >= 20) return {label:'VEIN-STYLE',cls:'amber'};
+  if (r >= 10) return {label:'MIXED',     cls:''};
+  if (r >= 5)  return {label:'CONSISTENT',cls:'green'};
+  return         {label:'BULK',           cls:'green'};
+}
+function consistencyFromSigma(s) {
+  // log10-sigma typical range: 0.3 (very consistent) → 1.0+ (highly variable)
+  if (s >= 0.9) return {label:'HIGH VAR', cls:'red'};
+  if (s >= 0.6) return {label:'MEDIUM',   cls:'amber'};
+  if (s >= 0.3) return {label:'LOW',      cls:'green'};
+  return         {label:'TIGHT',          cls:'green'};
+}
+
+function renderProjectScorecard(matched, name) {
+  const card = document.getElementById('scorecardCard');
+  if (!card) return;
+  if (!name || !matched.length) {
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = '';
+
+  // Convert matched points back into rows
+  const rows = matched.map(pt => ({
+    c: pt.meta.commodity, w: pt.meta.width, g: pt.meta.grade, gm: pt.meta.gm,
+  }));
+  const s = computeScorecard(name, rows);
+  if (!s) { card.style.display = 'none'; return; }
+
+  document.getElementById('scName').textContent = name;
+  document.getElementById('scN').textContent = s.n;
+  document.getElementById('scTier').textContent = s.tier.label;
+
+  // Top row tiles
+  const setTile = (id, v, sub, subCls) => {
+    document.getElementById(id).textContent = v;
+    if (sub != null) {
+      const el = document.getElementById(id + 'Sub');
+      if (el) {
+        el.textContent = sub;
+        el.classList.remove('amber','green','red');
+        if (subCls) el.classList.add(subCls);
+      }
+    }
+  };
+  setTile('scStatN',    s.n, s.n >= 30 ? 'enough for fit' : s.n >= 6 ? 'envelope-capable' : 'too few for stable fit', s.n >= 30 ? 'green' : s.n >= 6 ? '' : 'amber');
+  setTile('scStatBest', fmt(s.best, 0), 'top intercept');
+  setTile('scStatMed',  fmt(s.med, 0), 'typical hole');
+  const style = styleFromRatio(s.ratio);
+  setTile('scStatRatio',fmt(s.ratio, 1) + '×', style.label, style.cls);
+
+  // Bottom row tiles
+  const pct = (x, total) => total ? Math.round(100 * x / total) + '%' : '0%';
+  setTile('scStat100',  s.above100, pct(s.above100, s.n) + ' of holes');
+  setTile('scStat1k',   s.above1k,  pct(s.above1k, s.n)  + ' of holes');
+  const cons = consistencyFromSigma(s.logSigma);
+  setTile('scStatSigma',s.logSigma.toFixed(2), cons.label, cons.cls);
+  setTile('scStatHit',  Math.round(s.hitRate50 * 100) + '%', null);
+
+  // Tier row highlight
+  [...document.getElementById('scTierRow').children].forEach(c => {
+    c.classList.toggle('on', c.dataset.stage === s.tier.key);
+  });
+  document.getElementById('scTierScore').textContent = s.tierScore.toFixed(2);
+
+  // Contained metal
+  setTile('scMeanGm',     fmt(s.meanGm, 0), null);
+  document.getElementById('scContainedT').textContent = fmtMass(s.contained.tonnes);
+  document.getElementById('scContainedOz').textContent =
+    s.contained.ozEq >= 1e6 ? fmt(s.contained.ozEq / 1e6, 2) + ' Moz' :
+    s.contained.ozEq >= 1e3 ? fmt(s.contained.ozEq / 1e3, 0) + ' koz' :
+    fmt(s.contained.ozEq, 0) + ' oz';
+  const rSmall = s.contained.tonnes / 30;    // 1 Moz threshold
+  const rMajor = s.contained.tonnes / 150;   // 5 Moz threshold
+  const rPct = r => r >= 1 ? '≥ 100%' :
+                    r >= 0.5 ? Math.round(r*100) + '%' :
+                    r >= 0.1 ? Math.round(r*100) + '%' :
+                               '< 10%';
+  setTile('scThreshSmall', rPct(rSmall), null);
+  document.getElementById('scThreshSmallSub').textContent = 'small-mine bar';
+  setTile('scThreshMajor', rPct(rMajor), null);
+  document.getElementById('scThreshMajorSub').textContent = 'major bar';
+  document.getElementById('scThreshSmall').classList.remove('hl','amber','dim');
+  document.getElementById('scThreshSmall').classList.add(rSmall >= 1 ? 'hl' : rSmall >= 0.3 ? 'amber' : 'dim');
+  document.getElementById('scThreshMajor').classList.remove('hl','amber','dim');
+  document.getElementById('scThreshMajor').classList.add(rMajor >= 1 ? 'hl' : rMajor >= 0.3 ? 'amber' : 'dim');
+}
+
+// Contained-metal input handlers — re-render scorecard on each tick
+['scStrike','scDip','scDensity'].forEach(id => {
+  const inp = document.getElementById(id);
+  if (!inp) return;
+  inp.addEventListener('input', () => {
+    const v = parseFloat(inp.value);
+    if (id === 'scStrike'  && v >= 50) scParams.strike  = v;
+    if (id === 'scDip'     && v >= 50) scParams.dip     = v;
+    if (id === 'scDensity' && v >= 1) scParams.density = v;
+    renderAll();
+  });
+});
+
+// Recompute the set of project names currently visible in the table.
+// Scope = top 50 after commodity filter + sort — same logic as renderProjectTable.
+function recomputeScopedProjects() {
+  if (!scopeToTable) { scopedProjects = new Set(); return; }
+  const filtered = projectStats.filter(p => enabledCommodities.has(p.primary));
+  const sorted = sortProjectStats(filtered);
+  scopedProjects = new Set(sorted.slice(0, 50).map(p => p.name));
+}
+
+// Render-pipeline orchestrator. Recompute scope, then redraw table + chart.
+function renderAll() {
+  recomputeScopedProjects();
+  renderProjectTable();
+  renderProfile();
+}
+
+// Sortable headers (delegated, attached once on init)
+function wireProjectTableHeaders() {
+  document.querySelectorAll('#projTable th.sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.sort;
+      if (tableSort.col === col) {
+        tableSort.dir = tableSort.dir === 'asc' ? 'desc' : 'asc';
+      } else {
+        tableSort.col = col;
+        // numeric columns default to descending; text columns to ascending
+        tableSort.dir = ['n','best','median','above100','above1k'].includes(col) ? 'desc' : 'asc';
+      }
+      renderAll();
+    });
+  });
+}
+
+// Scope toggle handler
+document.getElementById('scopeToggle').addEventListener('click', () => {
+  scopeToTable = !scopeToTable;
+  document.getElementById('scopeToggle').classList.toggle('on', scopeToTable);
+  renderAll();
+});
+
+// Click a project row → drop into project name field, trigger highlight everywhere
+document.getElementById('projTableBody').addEventListener('click', e => {
+  const row = e.target.closest('tr.proj-row');
+  if (!row) return;
+  const name = row.dataset.name;
+  el.projName.value = name;
+  document.getElementById('projSearch').value = name;
+  renderAll();
+});
+
+// ─── Saved holes (localStorage) ─────────────────────────────
+function loadSaved() {
+  try {
+    let arr = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    return arr.map(migrateRecord);
+  } catch (e) { return []; }
+}
+function persistSaved(arr) { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
+
+function migrateRecord(rec) {
+  if (rec.intercepts) return rec;
+  // Old shape: top-level `metals`, `from`, `to`, `twPct`, `auEq`, `trueW`, `gm`
+  return {
+    id: rec.id || uid('h'),
+    savedAt: rec.savedAt || new Date().toISOString(),
+    projName: rec.projName || '',
+    holeId: rec.holeId || '',
+    notes: rec.notes || '',
+    intercepts: [{
+      id: uid(),
+      from: rec.from || 0, to: rec.to || 0, twPct: rec.twPct || 80,
+      metals: rec.metals || defaultMetalSeed(),
+      auEq: rec.auEq || 0, trueW: rec.trueW || 0, gm: rec.gm || 0,
+    }],
+    hole_gm: rec.gm || 0,
+    best_gm: rec.gm || 0,
+    count: 1,
+  };
+}
+
+// One-time: migrate legacy key to new key on first load if new key absent
+(function migrateLegacy(){
+  try {
+    const newRaw = localStorage.getItem(STORAGE_KEY);
+    const legRaw = localStorage.getItem(LEGACY_KEY);
+    if (!newRaw && legRaw) {
+      const arr = JSON.parse(legRaw);
+      const migrated = arr.map(migrateRecord);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+    }
+  } catch(e) { /* ignore */ }
+})();
+
+function renderSaved() {
+  const arr = loadSaved();
+  if (!arr.length) {
+    el.savedBody.innerHTML = '';
+    el.savedEmpty.style.display = '';
+    el.savedMeta.textContent = 'localStorage · this browser · 0 saved';
+    return;
+  }
+  el.savedEmpty.style.display = 'none';
+  el.savedMeta.textContent = `localStorage · this browser · ${arr.length} saved · ${new Set(arr.map(h=>h.projName||'(no project)')).size} projects`;
+
+  // Sort by project, then by savedAt desc
+  const byProj = {};
+  arr.forEach(h => {
+    const k = h.projName || '(no project)';
+    (byProj[k] = byProj[k] || []).push(h);
+  });
+  const projects = Object.keys(byProj).sort();
+  let html = '';
+  projects.forEach(proj => {
+    const holes = byProj[proj].sort((a,b)=>(b.savedAt||'').localeCompare(a.savedAt||''));
+    html += `<tr class="proj-divider"><td colspan="6">${escapeHtml(proj)} · ${holes.length} hole${holes.length===1?'':'s'}</td></tr>`;
+    holes.forEach(r => {
+      html += `<tr data-id="${r.id}">
+        <td>${escapeHtml(r.holeId || '(no hole id)')}</td>
+        <td style="color:var(--fg-3)">${(r.savedAt||'').slice(0,10)}</td>
+        <td>${r.count || (r.intercepts ? r.intercepts.length : 1)}</td>
+        <td>${fmt(r.best_gm||0,0)}</td>
+        <td><strong style="color:var(--accent)">${fmt(r.hole_gm||0,0)}</strong></td>
+        <td><div class="bench-actions">
+          <button class="bench-act-btn load" data-id="${r.id}">Load</button>
+          <button class="bench-act-btn del"  data-id="${r.id}">×</button>
+        </div></td>
+      </tr>`;
+    });
+  });
+  el.savedBody.innerHTML = html;
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+el.savedBody.addEventListener('click', e => {
+  const btn = e.target.closest('.bench-act-btn');
+  if (!btn) return;
+  const id = btn.dataset.id;
+  if (btn.classList.contains('load')) loadHole(id);
+  else if (btn.classList.contains('del')) deleteHole(id);
+});
+
+function saveHole() {
+  const intercepts = readAllIntercepts().map(ic => {
+    const {auEq} = calcAuEq(ic.metals);
+    return {
+      id: ic.id,
+      from: ic.from, to: ic.to, twPct: ic.twPct,
+      metals: ic.metals,
+      auEq, trueW: ic.trueW, gm: auEq * ic.trueW,
+    };
+  });
+  if (!intercepts.length) { alert('Add at least one intercept first.'); return; }
+  const projName = (el.projName.value || '').trim() || 'Untitled project';
+  const holeId   = (el.holeId.value   || '').trim() || ('hole-' + new Date().toISOString().slice(0,16).replace('T',' '));
+  const hole_gm = intercepts.reduce((s,ic)=>s+(ic.gm||0), 0);
+  const best_gm = intercepts.reduce((m,ic)=>Math.max(m, ic.gm||0), 0);
+  const rec = {
+    id: uid('h'),
+    savedAt: new Date().toISOString(),
+    projName, holeId,
+    notes: el.notes.value || '',
+    intercepts,
+    hole_gm, best_gm, count: intercepts.length,
+  };
+  const arr = loadSaved();
+  arr.unshift(rec);
+  persistSaved(arr);
+  renderSaved();
+  renderProfile();
+  el.saveBtn.textContent = '✓ SAVED';
+  setTimeout(() => el.saveBtn.textContent = '💾 Save hole to local storage', 1100);
+}
+el.saveBtn.addEventListener('click', saveHole);
+
+function loadHole(id) {
+  const rec = loadSaved().find(r => r.id === id);
+  if (!rec) return;
+  el.projName.value = rec.projName || '';
+  el.holeId.value   = rec.holeId   || '';
+  el.notes.value    = rec.notes    || '';
+  // Rebuild intercept stack
+  el.interceptStack.innerHTML = '';
+  (rec.intercepts && rec.intercepts.length ? rec.intercepts : [{from:0,to:10,twPct:80,metals:defaultMetalSeed()}]).forEach((ic, i) => {
+    const card = buildInterceptCard({...ic, active: i===0});
+    el.interceptStack.appendChild(card);
+  });
+  recompute();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function deleteHole(id) {
+  const rec = loadSaved().find(r => r.id === id);
+  if (!rec) return;
+  if (!window.confirm(`Delete '${rec.projName} · ${rec.holeId}'?`)) return;
+  persistSaved(loadSaved().filter(r => r.id !== id));
+  renderSaved();
+  renderProfile();
+}
+
+// ─── Add intercept ──────────────────────────────────────────
+el.addIntercept.addEventListener('click', () => {
+  // Inherit metal list from active intercept (so metal columns stay consistent)
+  const active = getActiveCard();
+  let metals = defaultMetalSeed();
+  if (active) {
+    const ic = readIntercept(active);
+    metals = ic.metals.map(m => ({...m, grade:0}));
+  }
+  const card = buildInterceptCard({metals});
+  el.interceptStack.appendChild(card);
+  setActiveIntercept(card.dataset.id);
+});
+
+// ─── Recompute (everything) ─────────────────────────────────
+let recomputeTimer = null;
+function recompute() {
+  if (recomputeTimer) cancelAnimationFrame(recomputeTimer);
+  recomputeTimer = requestAnimationFrame(() => recomputeNow());
+}
+function recomputeNow() {
+  const cards = [...el.interceptStack.children];
+  // Number the cards & update headers
+  cards.forEach((card, i) => {
+    card.querySelector('.idx').textContent = i + 1;
+    card.querySelector('.rm').disabled = cards.length <= 1;
+    const ic = readIntercept(card);
+    const {auEq, contributions} = calcAuEq(ic.metals);
+    const gm = auEq * ic.trueW;
+    // header summary
+    const hdr = card.querySelector('.hdr-summary');
+    if (gm > 0) {
+      hdr.innerHTML = `${fmtSmart(ic.dh)}m · TW ${fmtSmart(ic.trueW)}m · <span class="gm">${fmt(gm,0)} g·m</span> @ ${fmtSmart(auEq)} g/t AuEq`;
+    } else if (auEq > 0) {
+      hdr.innerHTML = `<span class="empty">${fmtSmart(ic.dh)}m intercept · enter true width &amp; metals</span>`;
+    } else {
+      hdr.innerHTML = `<span class="empty">empty intercept · click to edit</span>`;
+    }
+    // Body geometry display
+    if (card.classList.contains('active')) {
+      card.querySelector('.ic-twval').textContent = ic.twPct + '%';
+      card.querySelector('.ic-dh').textContent = fmtSmart(ic.dh) + ' m';
+      card.querySelector('.ic-tw-m').textContent = fmtSmart(ic.trueW) + ' m';
+    }
+    // Dim metal rows with grade=0
+    [...card.querySelectorAll('.metal-row')].forEach(r => {
+      const grade = parseFloat(r.querySelector('.metal-grade').value) || 0;
+      r.classList.toggle('dim', grade <= 0);
+    });
+    // Stash on the card
+    card._auEq = auEq; card._gm = gm; card._trueW = ic.trueW; card._contributions = contributions; card._metals = ic.metals;
+  });
+
+  // Active intercept
+  const active = getActiveCard();
+  const activeIc = active ? {auEq: active._auEq||0, trueW: active._trueW||0, gm: active._gm||0, contributions: active._contributions||[], metals: active._metals||[]} : null;
+  const others = cards.filter(c => c !== active).map(c => ({auEq: c._auEq||0, trueW: c._trueW||0}));
+
+  // KPIs (active intercept)
+  setKpiNumber(el.vAuEq, activeIc && activeIc.auEq > 0 ? activeIc.auEq : '—', activeIc && activeIc.auEq > 0 ? 'g/t' : '');
+  setKpiNumber(el.vTrueW, activeIc && activeIc.trueW > 0 ? activeIc.trueW : '—', activeIc && activeIc.trueW > 0 ? 'm' : '');
+  setKpiNumber(el.vGm, activeIc && activeIc.gm > 0 ? activeIc.gm : '—', '', 0);
+  const activeMetals = (activeIc && activeIc.metals || []).filter(m => m.grade > 0);
+  el.vMetalCount.textContent = activeMetals.length;
+  document.getElementById('auEqMetals').textContent = activeMetals.length === 1
+    ? activeMetals[0].sym + ' only'
+    : activeMetals.length + ' metals';
+
+  // Rank (active intercept g·m)
+  if (activeIc && activeIc.gm > 0) {
+    const sorted = BENCHMARKS.slice().sort((a,b) => b.gram_meters - a.gram_meters);
+    const rank = 1 + sorted.filter(b => b.gram_meters > activeIc.gm).length;
+    const total = sorted.length;
+    el.vRank.textContent = '#' + rank + ' / ' + total;
+    const pct = rank / total;
+    el.vRank.classList.remove('hl','amber','dim');
+    if (pct <= 0.25)     { el.vRank.classList.add('hl');    el.vRankSub.textContent = 'top quartile'; }
+    else if (pct <= 0.5) { el.vRank.classList.add('amber'); el.vRankSub.textContent = 'top half'; }
+    else                 { el.vRank.classList.add('dim');   el.vRankSub.textContent = 'lower half'; }
+  } else {
+    el.vRank.textContent = '—';
+    el.vRank.classList.remove('hl','amber'); el.vRank.classList.add('dim');
+    el.vRankSub.textContent = 'enter intercept';
+  }
+
+  // Hole-level rollups
+  const allGms = cards.map(c => c._gm || 0);
+  const total_gm = allGms.reduce((s,v)=>s+v, 0);
+  const best_gm = allGms.reduce((m,v)=>Math.max(m,v), 0);
+  const high_count = allGms.filter(g => g > 100).length;
+  el.hCount.textContent = cards.length;
+  el.ctrlICount.textContent = cards.length;
+  el.grpICount.textContent = cards.length;
+  setKpiNumber(el.hTotalGm, total_gm > 0 ? total_gm : '—', '', 0);
+  setKpiNumber(el.hBestGm, best_gm > 0 ? best_gm : '—', '', 0);
+  el.hHighGrade.textContent = `${high_count} / ${cards.length}`;
+
+  renderContribs(activeIc ? activeIc.metals : [], activeIc ? activeIc.contributions : []);
+  setUserPoints(activeIc, others);
+}
+
+// Project name change → re-render profile + table (matched-row highlight follows)
+el.projName.addEventListener('input', () => { renderAll(); });
+
+// ─── Examples / clear ───────────────────────────────────────
+el.exFost.addEventListener('click', () => {
+  el.projName.value = 'Fosterville';
+  el.holeId.value = 'UDH3167';
+  el.notes.value = 'Kirkland Lake Gold news, Aug 2019. One of the all-time best Au intercepts.';
+  el.interceptStack.innerHTML = '';
+  el.interceptStack.appendChild(buildInterceptCard({
+    from: 1141.4, to: 1148.8, twPct: 100, active: true,
+    metals: [
+      {sym:'Au', grade:976, unit:'g/t', price:2400, priceUnit:'$/oz', recovery:90},
+      {sym:'Ag', grade:0,   unit:'g/t', price:28,   priceUnit:'$/oz', recovery:75},
+      {sym:'Cu', grade:0,   unit:'%',   price:4.20, priceUnit:'$/lb', recovery:88},
+      {sym:'Pb', grade:0,   unit:'%',   price:0.95, priceUnit:'$/lb', recovery:80},
+      {sym:'Zn', grade:0,   unit:'%',   price:1.30, priceUnit:'$/lb', recovery:85},
+    ],
+  }));
+  recompute();
+  renderAll();
+});
+el.clearBtn.addEventListener('click', () => {
+  el.projName.value = '';
+  el.holeId.value = '';
+  el.notes.value = '';
+  el.interceptStack.innerHTML = '';
+  el.interceptStack.appendChild(buildInterceptCard({active:true}));
+  recompute();
+  renderAll();
+});
+
+// ─── Init ───────────────────────────────────────────────────
+async function init() {
+  // Fetch benchmarks
+  try {
+    const r = await fetch('drill_benchmarks.json', {cache:'no-store'});
+    if (r.ok) {
+      const j = await r.json();
+      if (Array.isArray(j) && j.length) BENCHMARKS = j;
+    }
+  } catch (e) { /* keep fallback */ }
+  // Fetch drilling universe (KDE-ready intercepts + per-commodity contours)
+  try {
+    const r = await fetch('drill_universe.json', {cache:'no-store'});
+    if (r.ok) {
+      const j = await r.json();
+      if (j && Array.isArray(j.intercepts)) UNIVERSE = j;
+    }
+  } catch (e) { /* keep empty */ }
+  el.benchCount.textContent = BENCHMARKS.length + ' holes';
+  const uN = (UNIVERSE.intercepts || []).length;
+  el.profileCount.textContent = uN
+    ? `${uN.toLocaleString()} intercepts / ${(UNIVERSE.projects||[]).length.toLocaleString()} projects`
+    : '—';
+  rebuildChartDatasets();
+  // Build summary stats from universe (cheap; runs once)
+  projectStats = buildProjectStats();
+  populateProjectDatalist();
+  wireProjectTableHeaders();
+  // Seed first intercept
+  el.interceptStack.appendChild(buildInterceptCard({active:true}));
+  renderSaved();
+  renderAll();
+  recompute();
+}
+init();
+</script>
+</body>
+</html>
