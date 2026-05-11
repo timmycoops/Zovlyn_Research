@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shell Finder / Zovlyn Research</title>
+<meta name="description" content="Cheapest enterprise values across ASX Materials and TSXV junior miners. Negative-EV shells, near-cash trades, and vendable vehicles surfaced in one screen.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c0d0a; --bg-2: #131410; --bg-3: #1a1c16;
+  --line: #2a2c24; --line-2: #3a3d33;
+  --fg: #d8d4c2; --fg-2: #8a8773; --fg-3: #5d5b4d;
+  --accent: #5dd3a8; --accent-2: #3aa881; --accent-dim: rgba(93,211,168,0.10); --accent-soft: rgba(93,211,168,0.18);
+  --green: #5dd380; --amber: #e8b658; --red: #ff5f56; --cyan: #6acfe0;
+  --r: 4px;
+  --mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--mono);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+/* ─── Page chrome (system standard) ─── */
+.t-top{background:var(--bg-2);border-bottom:1px solid var(--line);padding:8px 24px;display:flex;align-items:center;gap:24px;font-size:11px;color:var(--fg-2);flex-wrap:wrap}
+.t-top .session{color:var(--accent);font-weight:600}
+.t-spacer{flex:1}
+.t-nav{padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:12px}
+.t-mark{display:flex;align-items:center;gap:12px}
+.t-badge{width:32px;height:32px;background:var(--accent);color:var(--bg);display:grid;place-items:center;font-weight:800;font-size:16px;border-radius:var(--r)}
+.t-mark-text{display:flex;flex-direction:column;line-height:1.05}
+.t-mark-name{font-weight:700;font-size:13px;color:var(--fg);letter-spacing:0.14em}
+.t-mark-sub{font-size:9.5px;color:var(--fg-3);letter-spacing:0.22em;font-weight:500}
+.t-nav-r{display:flex;gap:18px;font-size:11px;color:var(--fg-2);align-items:center}
+.t-nav-r a{color:var(--fg-2);letter-spacing:0.08em;text-transform:uppercase;transition:color .15s}
+.t-nav-r a:hover{color:var(--accent)}
+.t-nav-r a.home::before{content:'← '}
+
+/* ─── Cover ─── */
+.cover{max-width:1560px;margin:0 auto;padding:32px 24px 22px;border-bottom:1px solid var(--line)}
+.cover .tags{display:flex;gap:12px;flex-wrap:wrap;font-size:10.5px;color:var(--fg-3);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px}
+.cover .tags .accent{color:var(--accent)}
+.cover .tags .sep{color:var(--line-2)}
+.cover h1{font-weight:500;font-size:clamp(28px,4.5vw,44px);line-height:1.05;letter-spacing:-0.025em;color:var(--fg);margin-bottom:10px}
+.cover h1 .accent{color:var(--accent)}
+.cover .sub{font-family:var(--sans);font-size:15px;color:var(--fg-2);max-width:760px;line-height:1.55;margin-bottom:18px}
+.cover .meta{display:flex;gap:24px;flex-wrap:wrap;font-size:10.5px;color:var(--fg-3);letter-spacing:0.06em;padding-top:12px;border-top:1px dashed var(--line-2)}
+.cover .meta strong{color:var(--fg);font-weight:500}
+
+/* ─── Main shell ─── */
+.shell{max-width:1560px;margin:0 auto;padding:24px 24px 60px;display:flex;flex-direction:column;gap:18px}
+
+/* ─── KPI strip ─── */
+.kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--line);border-radius:var(--r);background:var(--line);gap:1px;overflow:hidden}
+@media (max-width:920px){.kpi-strip{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:540px){.kpi-strip{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--bg-2);padding:12px 14px;display:flex;flex-direction:column;gap:3px}
+.kpi-v{font-size:20px;font-weight:600;color:var(--fg);font-feature-settings:'tnum';letter-spacing:-0.02em;line-height:1.1}
+.kpi-v.hl{color:var(--accent)}
+.kpi-v.cyan{color:var(--cyan)}
+.kpi-v.amber{color:var(--amber)}
+.kpi-v.red{color:var(--red)}
+.kpi-l{font-size:9px;color:var(--fg-3);text-transform:uppercase;letter-spacing:0.12em;font-weight:500}
+
+/* ─── Filter bar ─── */
+.filters{display:flex;flex-direction:column;gap:10px;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.filter-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.filter-row .lbl{font-size:9.5px;color:var(--fg-3);letter-spacing:0.14em;text-transform:uppercase;font-weight:600;min-width:74px}
+.filter-row .lbl::before{content:'▸ ';color:var(--accent)}
+.fb{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.04em;background:transparent;border:1px solid var(--line-2);color:var(--fg-2);padding:5px 10px;cursor:pointer;border-radius:var(--r);transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.fb:hover{color:var(--fg);border-color:var(--fg-3)}
+.fb.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.fb .ct{color:var(--fg-3);font-size:9.5px;font-weight:500}
+.fb.on .ct{color:var(--accent-2)}
+.fb .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.fb .dot.NEG{background:var(--green)}
+.fb .dot.NC{background:var(--cyan)}
+.fb .dot.STD{background:var(--fg-2)}
+.fb .dot.PREM{background:var(--amber)}
+.search{flex:1;min-width:200px;background:var(--bg);border:1px solid var(--line-2);color:var(--fg);padding:6px 10px;font-family:var(--mono);font-size:12px;border-radius:var(--r);outline:none;transition:border-color .15s}
+.search:focus{border-color:var(--accent)}
+.search::placeholder{color:var(--fg-3)}
+.clear{font-size:10px;letter-spacing:0.12em;color:var(--fg-3);cursor:pointer;font-weight:600;background:transparent;border:none;font-family:var(--mono);text-transform:uppercase}
+.clear:hover{color:var(--accent)}
+.fbar-meta{font-size:10.5px;color:var(--fg-3);letter-spacing:0.06em;font-feature-settings:'tnum'}
+.fbar-meta strong{color:var(--accent)}
+
+/* ─── Two-pane layout ─── */
+.pane{display:grid;grid-template-columns:1fr 400px;gap:18px;align-items:start}
+@media (max-width:1180px){.pane{grid-template-columns:1fr}}
+
+/* ─── Card chrome (shared) ─── */
+.card{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r)}
+.card-h{padding:12px 16px;border-bottom:1px dashed var(--line-2);font-size:10.5px;color:var(--accent);text-transform:uppercase;letter-spacing:0.14em;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.card-h::before{content:'▸ '}
+.card-h .meta{font-size:9.5px;color:var(--fg-3);letter-spacing:0.1em;font-weight:500}
+
+/* ─── Table ─── */
+.tbl-wrap{overflow-x:auto}
+table.scr{width:100%;border-collapse:collapse;font-size:12.5px;font-feature-settings:'tnum'}
+table.scr thead th{background:var(--bg-3);padding:10px 12px;text-align:right;font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--fg-3);border-bottom:1px solid var(--line);position:sticky;top:0;cursor:pointer;user-select:none;white-space:nowrap}
+table.scr thead th:nth-child(1),table.scr thead th:nth-child(2),table.scr thead th:nth-child(3),table.scr thead th:nth-child(9){text-align:left}
+table.scr thead th:hover{color:var(--fg)}
+table.scr thead th .arr{display:inline-block;width:8px;color:var(--fg-3);margin-left:3px}
+table.scr thead th.sorted{color:var(--accent)}
+table.scr thead th.sorted .arr{color:var(--accent)}
+table.scr tbody td{padding:9px 12px;border-bottom:1px solid var(--line);color:var(--fg-2);text-align:right;white-space:nowrap}
+table.scr tbody td:nth-child(1),table.scr tbody td:nth-child(2),table.scr tbody td:nth-child(3),table.scr tbody td:nth-child(9){text-align:left}
+table.scr tbody tr{transition:background .1s;cursor:pointer}
+table.scr tbody tr:hover td{background:var(--bg-3);color:var(--fg)}
+table.scr tbody tr:hover td .tk{color:var(--accent)}
+table.scr tbody tr.sel td{background:var(--accent-dim)}
+table.scr tbody tr.sel td .tk{color:var(--accent)}
+table.scr tbody tr:last-child td{border-bottom:none}
+.tk{color:var(--fg);font-weight:600;letter-spacing:0.02em}
+.co-name{color:var(--fg-2);font-size:11.5px}
+.sub-tag{font-size:10px;color:var(--fg-3);letter-spacing:0.06em}
+.ev-cell{font-weight:600;color:var(--fg)}
+.ev-cell.neg{color:var(--green)}
+.ev-cell.prem{color:var(--amber)}
+.pct-cell .bar-bg{display:inline-block;width:54px;height:5px;background:var(--bg-3);border-radius:2px;margin-left:8px;vertical-align:middle;overflow:hidden;border:1px solid var(--line)}
+.pct-cell .bar-fg{display:block;height:100%;background:var(--accent)}
+.pct-cell .bar-fg.over{background:var(--green)}
+.status-pill{font-size:9px;font-weight:600;padding:2px 7px;border-radius:var(--r);letter-spacing:0.12em;text-transform:uppercase;display:inline-block;font-family:var(--mono)}
+.status-pill.NEG{color:var(--green);background:rgba(93,211,128,0.1);border:1px solid rgba(93,211,128,0.3)}
+.status-pill.NC{color:var(--cyan);background:rgba(106,207,224,0.08);border:1px solid rgba(106,207,224,0.25)}
+.status-pill.STD{color:var(--fg-2);background:var(--bg-3);border:1px solid var(--line-2)}
+.status-pill.PREM{color:var(--amber);background:rgba(232,182,88,0.08);border:1px solid rgba(232,182,88,0.25)}
+.no-results{padding:60px 20px;text-align:center;color:var(--fg-3);font-size:13px;letter-spacing:0.04em}
+.no-results::before{content:'∅ ';color:var(--accent);font-size:18px;display:block;margin-bottom:8px}
+
+/* ─── Drilldown panel ─── */
+.drill{position:sticky;top:14px}
+@media (max-width:1180px){.drill{position:static}}
+.drill .card-b{padding:16px}
+
+.drill-empty{padding:48px 20px;text-align:center;color:var(--fg-3);font-size:12px;letter-spacing:0.08em;line-height:1.7}
+.drill-empty::before{content:'↳';display:block;color:var(--accent);font-size:28px;margin-bottom:10px;font-weight:300}
+
+.drill-head{display:flex;justify-content:space-between;align-items:start;padding:14px 16px;border-bottom:1px dashed var(--line-2);gap:10px}
+.drill-head .tkline{font-size:18px;font-weight:600;color:var(--fg);letter-spacing:0.02em;font-feature-settings:'tnum'}
+.drill-head .coname{font-family:var(--sans);font-size:13px;color:var(--fg-2);margin-top:2px;line-height:1.3}
+.drill-head .subline{font-size:10px;color:var(--fg-3);letter-spacing:0.1em;text-transform:uppercase;margin-top:6px}
+
+.drill-kpis{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)}
+.drill-kpi{background:var(--bg-2);padding:12px 14px;display:flex;flex-direction:column;gap:3px}
+.drill-kpi .l{font-size:9px;color:var(--fg-3);text-transform:uppercase;letter-spacing:0.14em}
+.drill-kpi .v{font-size:18px;font-weight:600;color:var(--fg);font-feature-settings:'tnum';letter-spacing:-0.02em}
+.drill-kpi .v.hl{color:var(--accent)}
+.drill-kpi .v.cyan{color:var(--cyan)}
+.drill-kpi .v.amber{color:var(--amber)}
+.drill-kpi .v.green{color:var(--green)}
+.drill-kpi .v.red{color:var(--red)}
+.drill-kpi .sub{font-size:9.5px;color:var(--fg-3);letter-spacing:0.04em;font-feature-settings:'tnum'}
+
+.composition{padding:16px;border-top:1px dashed var(--line-2)}
+.composition .h{font-size:9.5px;color:var(--fg-3);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;font-weight:600}
+.composition .h::before{content:'▸ ';color:var(--accent)}
+.bar-stack{height:18px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);display:flex;overflow:hidden;position:relative}
+.bar-stack .seg{height:100%;transition:width .3s ease}
+.bar-stack .seg.cash{background:var(--accent);min-width:0}
+.bar-stack .seg.opev{background:var(--fg-3);min-width:0}
+.bar-stack.neg .seg.cash{background:var(--green)}
+.bar-stack.neg .seg.opev{display:none}
+.bar-legend{display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--fg-3);letter-spacing:0.04em;font-feature-settings:'tnum'}
+.bar-legend .l-cash{color:var(--accent)}
+.bar-legend.neg .l-cash{color:var(--green)}
+.bar-legend .l-op{color:var(--fg-2)}
+.bar-legend .l-op.neg{color:var(--green)}
+
+.scenarios{padding:16px;border-top:1px dashed var(--line-2)}
+.scenarios .h{font-size:9.5px;color:var(--fg-3);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;font-weight:600}
+.scenarios .h::before{content:'▸ ';color:var(--accent)}
+table.scn{width:100%;border-collapse:collapse;font-size:12px;font-feature-settings:'tnum'}
+table.scn td{padding:6px 0;border-bottom:1px dotted var(--line);color:var(--fg-2)}
+table.scn td:last-child{text-align:right;color:var(--fg);font-weight:600}
+table.scn tr:last-child td{border-bottom:none}
+table.scn .accent-v{color:var(--accent)}
+table.scn .green-v{color:var(--green)}
+table.scn .amber-v{color:var(--amber)}
+
+.read{padding:16px;border-top:1px dashed var(--line-2);font-family:var(--sans);font-size:12.5px;line-height:1.6;color:var(--fg-2)}
+.read .h{font-size:9.5px;color:var(--fg-3);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;font-weight:600;font-family:var(--mono)}
+.read .h::before{content:'▸ ';color:var(--accent)}
+.read p{margin:0}
+.read .em{color:var(--fg);font-weight:500}
+.read .note{margin-top:10px;padding-top:10px;border-top:1px dotted var(--line);font-size:11.5px;color:var(--fg-3)}
+
+/* Footer */
+.foot{border-top:1px solid var(--line);padding:24px;font-size:10.5px;color:var(--fg-3);letter-spacing:0.06em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;max-width:1560px;margin:0 auto}
+.foot a{color:var(--accent)}
+
+.reveal{opacity:1;transform:none;transition:opacity .5s ease,transform .5s ease}
+</style>
+</head>
+<body>
+
+<!-- Status bar -->
+<div class="t-top">
+  <span class="session" id="t-session">SESSION 00:00:00</span>
+  <span>TOOL · SHELL FINDER</span>
+  <span>VERSION · 1.0</span>
+  <span id="t-stamp" style="color:var(--fg-3)">UNIVERSE — · UPDATED —</span>
+  <span class="t-spacer"></span>
+  <span id="t-clock">11-MAY-2026 · 09:00 EDT</span>
+</div>
+
+<!-- Nav -->
+<div class="t-nav">
+  <a href="index.html" class="t-mark">
+    <div class="t-badge">Z</div>
+    <div class="t-mark-text">
+      <div class="t-mark-name">ZOVLYN</div>
+      <div class="t-mark-sub">RESEARCH</div>
+    </div>
+  </a>
+  <div class="t-nav-r">
+    <a href="index.html" class="home">ALL TOOLS</a>
+    <a href="lithium_screener.html">SCREENER</a>
+    <a href="lce_converter.html">CALC</a>
+    <a href="QTWO_Research_Report_v7.html">REPORT</a>
+    <a href="system.html">SYSTEM</a>
+  </div>
+</div>
+
+<!-- Cover -->
+<header class="cover reveal">
+  <div class="tags">
+    <span class="accent">// ZOVLYN/SHELL-FINDER</span><span class="sep">│</span>
+    <span>EV · MARKET CAP MINUS CASH</span><span class="sep">│</span>
+    <span id="cover-stamp">UPDATED —</span>
+  </div>
+  <h1>Cheapest <span class="accent">enterprise values</span> in mining</h1>
+  <p class="sub">A screen for negative-EV shells, near-cash trades, and vendable vehicles across ASX Materials and the TSXV juniors. Sort by EV ascending and the most interesting candidates float to the top: companies the market values at less than the cash sitting on their balance sheet. Click any row for the drilldown.</p>
+  <div class="meta">
+    <span>UNIVERSE · <strong id="m-uni">—</strong></span>
+    <span>NEGATIVE EV · <strong id="m-neg">—</strong></span>
+    <span>NEAR-CASH · <strong id="m-nc">—</strong></span>
+    <span>EXCHANGES · <strong>ASX · TSXV</strong></span>
+    <span>SOURCE · <strong>Appendix 5B / MD&amp;A cash · per company filings</strong></span>
+  </div>
+</header>
+
+<div class="shell">
+
+  <!-- KPI strip -->
+  <div class="kpi-strip reveal" id="kpiStrip">
+    <div class="kpi"><div class="kpi-v hl" id="kUni">—</div><div class="kpi-l">Companies in view</div></div>
+    <div class="kpi"><div class="kpi-v" style="color:var(--green)" id="kNeg">—</div><div class="kpi-l">Negative EV</div></div>
+    <div class="kpi"><div class="kpi-v cyan" id="kNc">—</div><div class="kpi-l">Near-cash (&gt;50%)</div></div>
+    <div class="kpi"><div class="kpi-v" id="kMedEv">—</div><div class="kpi-l">Median EV (M)</div></div>
+    <div class="kpi"><div class="kpi-v" id="kMedCash">—</div><div class="kpi-l">Median cash (M)</div></div>
+    <div class="kpi"><div class="kpi-v amber" id="kPrem">—</div><div class="kpi-l">Premium (&lt;15% cash)</div></div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters reveal">
+    <div class="filter-row">
+      <span class="lbl">Exchange</span>
+      <button class="fb on" data-ex="all">ALL <span class="ct" id="cExAll"></span></button>
+      <button class="fb" data-ex="ASX">ASX <span class="ct" id="cExASX"></span></button>
+      <button class="fb" data-ex="TSXV">TSXV <span class="ct" id="cExTSXV"></span></button>
+
+      <span class="lbl" style="margin-left:14px">Status</span>
+      <button class="fb on" data-st="all">ALL</button>
+      <button class="fb" data-st="NEG"><span class="dot NEG"></span>NEGATIVE EV <span class="ct" id="cStNeg"></span></button>
+      <button class="fb" data-st="NC"><span class="dot NC"></span>NEAR-CASH <span class="ct" id="cStNc"></span></button>
+      <button class="fb" data-st="STD"><span class="dot STD"></span>BLENDED <span class="ct" id="cStStd"></span></button>
+      <button class="fb" data-st="PREM"><span class="dot PREM"></span>PREMIUM <span class="ct" id="cStPrem"></span></button>
+    </div>
+    <div class="filter-row">
+      <span class="lbl">Subsector</span>
+      <button class="fb on" data-sub="all">ALL</button>
+      <button class="fb" data-sub="Lithium">LITHIUM</button>
+      <button class="fb" data-sub="Gold">GOLD</button>
+      <button class="fb" data-sub="Copper">COPPER</button>
+      <button class="fb" data-sub="Nickel">NICKEL</button>
+      <button class="fb" data-sub="Iron Ore">IRON ORE</button>
+      <button class="fb" data-sub="Rare Earths">RARE EARTHS</button>
+      <button class="fb" data-sub="Uranium">URANIUM</button>
+      <button class="fb" data-sub="Diversified">DIVERSIFIED</button>
+      <button class="fb" data-sub="Other">OTHER</button>
+    </div>
+    <div class="filter-row">
+      <span class="lbl">Search</span>
+      <input class="search" id="search" placeholder="Ticker · company name · sector…">
+      <span class="fbar-meta">Showing <strong id="vCount">—</strong> of <span id="totalCount">—</span></span>
+      <button class="clear" id="clearAll">↻ Reset filters</button>
+    </div>
+  </div>
+
+  <!-- Two-pane: table + drilldown -->
+  <div class="pane">
+
+    <!-- Table -->
+    <div class="card reveal">
+      <div class="card-h">Universe <span class="meta" id="tblMeta">sorted by · EV ↑</span></div>
+      <div class="tbl-wrap">
+        <table class="scr" id="tbl">
+          <thead>
+            <tr>
+              <th data-sort="tk">Ticker<span class="arr"></span></th>
+              <th data-sort="co">Company<span class="arr"></span></th>
+              <th data-sort="sub">Subsector<span class="arr"></span></th>
+              <th data-sort="mc">Mkt Cap<span class="arr"></span></th>
+              <th data-sort="cash">Cash<span class="arr"></span></th>
+              <th data-sort="ev" class="sorted">EV<span class="arr">↑</span></th>
+              <th data-sort="pct">Cash / MC<span class="arr"></span></th>
+              <th data-sort="as_of">As-of<span class="arr"></span></th>
+              <th data-sort="status">Status<span class="arr"></span></th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="no-results" id="noResults" style="display:none">No companies match the current filters.</div>
+      </div>
+    </div>
+
+    <!-- Drilldown -->
+    <div class="card drill reveal" id="drillCard">
+      <div class="card-h">Drilldown <span class="meta" id="drillMeta">no selection</span></div>
+      <div id="drillBody">
+        <div class="drill-empty">
+          Click a row in the table to load the drilldown.<br>
+          EV decomposition, vend scenarios, analyst read.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="foot">
+  <div>ZOVLYN/SHELL-FINDER · v1.0 · Data: ASX Appendix 5B / TSXV quarterly MD&amp;A · v1 dataset is illustrative — replace with live pipeline output · NOT INVESTMENT ADVICE</div>
+  <div><a href="system.html">SYSTEM →</a> · <a href="index.html">← TOOLS</a></div>
+</div>
+
+<script>
+// ─── Clock + session ───
+(function(){
+  const c=document.getElementById('t-clock'),s=document.getElementById('t-session');
+  const t0=Date.now(),M=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function tick(){
+    const n=new Date();
+    c.textContent=String(n.getDate()).padStart(2,'0')+'-'+M[n.getMonth()]+'-'+n.getFullYear()+' · '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+' EDT';
+    const e=Math.floor((Date.now()-t0)/1000);
+    s.textContent='SESSION '+String(Math.floor(e/3600)).padStart(2,'0')+':'+String(Math.floor((e%3600)/60)).padStart(2,'0')+':'+String(e%60).padStart(2,'0');
+  }
+  tick();setInterval(tick,1000);
+})();
+(function(){
+  if(!('IntersectionObserver'in window)){document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));return;}
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.05});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+})();
+
+// ─── Inline fallback dataset (mirrors shell_finder_data.json) ───
+// If the JSON fetch succeeds this is overwritten before first render.
+// Keep in sync with shell_finder_data.json — single source of truth lives in the JSON file.
+const FALLBACK={
+  "updated":"2026-05-11",
+  "rows":[
+    {"tk":"BHP.AX","ex":"ASX","co":"BHP Group","sub":"Diversified","cur":"AUD","mc":221450,"cash":12180,"as_of":"2026-03-31","fq":"H1 FY26","note":""},
+    {"tk":"RIO.AX","ex":"ASX","co":"Rio Tinto","sub":"Diversified","cur":"AUD","mc":182300,"cash":9420,"as_of":"2026-03-31","fq":"Q1 CY26","note":""},
+    {"tk":"FMG.AX","ex":"ASX","co":"Fortescue","sub":"Iron Ore","cur":"AUD","mc":64800,"cash":4520,"as_of":"2026-03-31","fq":"Q3 FY26","note":""},
+    {"tk":"S32.AX","ex":"ASX","co":"South32","sub":"Diversified","cur":"AUD","mc":15400,"cash":1180,"as_of":"2026-03-31","fq":"Q3 FY26","note":""},
+    {"tk":"NIC.AX","ex":"ASX","co":"Nickel Industries","sub":"Nickel","cur":"AUD","mc":4180,"cash":382,"as_of":"2026-03-31","fq":"Q1 CY26","note":""},
+    {"tk":"IGO.AX","ex":"ASX","co":"IGO","sub":"Lithium","cur":"AUD","mc":4090,"cash":348,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Greenbushes JV"},
+    {"tk":"MIN.AX","ex":"ASX","co":"Mineral Resources","sub":"Lithium","cur":"AUD","mc":8920,"cash":985,"as_of":"2026-03-31","fq":"Q3 FY26","note":""},
+    {"tk":"PLS.AX","ex":"ASX","co":"Pilbara Minerals","sub":"Lithium","cur":"AUD","mc":9180,"cash":1842,"as_of":"2026-03-31","fq":"Q3 FY26","note":""},
+    {"tk":"LTR.AX","ex":"ASX","co":"Liontown Resources","sub":"Lithium","cur":"AUD","mc":1855,"cash":238,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Kathleen Valley"},
+    {"tk":"CXO.AX","ex":"ASX","co":"Core Lithium","sub":"Lithium","cur":"AUD","mc":318,"cash":108,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Finniss on C&M"},
+    {"tk":"VUL.AX","ex":"ASX","co":"Vulcan Energy","sub":"Lithium","cur":"AUD","mc":452,"cash":164,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Zero Carbon Lithium"},
+    {"tk":"SYA.AX","ex":"ASX","co":"Sayona Mining","sub":"Lithium","cur":"AUD","mc":288,"cash":94,"as_of":"2026-03-31","fq":"Q3 FY26","note":""},
+    {"tk":"LKE.AX","ex":"ASX","co":"Lake Resources","sub":"Lithium","cur":"AUD","mc":118,"cash":38,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Kachi DLE"},
+    {"tk":"GL1.AX","ex":"ASX","co":"Global Lithium","sub":"Lithium","cur":"AUD","mc":96,"cash":41,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Manna · Marble Bar"},
+    {"tk":"INR.AX","ex":"ASX","co":"Ioneer","sub":"Lithium","cur":"AUD","mc":378,"cash":152,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Rhyolite Ridge"},
+    {"tk":"AGY.AX","ex":"ASX","co":"Argosy Minerals","sub":"Lithium","cur":"AUD","mc":78,"cash":24,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Rincon Ph1"},
+    {"tk":"LRS.AX","ex":"ASX","co":"Latin Resources","sub":"Lithium","cur":"AUD","mc":112,"cash":35,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Salinas"},
+    {"tk":"EMH.AX","ex":"ASX","co":"European Metals","sub":"Lithium","cur":"AUD","mc":195,"cash":28,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Cinovec JV"},
+    {"tk":"PMT.AX","ex":"ASX","co":"Patriot Battery Metals","sub":"Lithium","cur":"AUD","mc":985,"cash":89,"as_of":"2026-03-31","fq":"Q1 CY26","note":"Dual-listed PMET.TO"},
+    {"tk":"WR1.AX","ex":"ASX","co":"Winsome Resources","sub":"Lithium","cur":"AUD","mc":18,"cash":22,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Adina Project, James Bay"},
+    {"tk":"DLI.AX","ex":"ASX","co":"Delta Lithium","sub":"Lithium","cur":"AUD","mc":24,"cash":18,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Mt Ida · Yinnetharra"},
+    {"tk":"A4N.AX","ex":"ASX","co":"Alpha HPA","sub":"Other","cur":"AUD","mc":75,"cash":38,"as_of":"2026-03-31","fq":"Q3 FY26","note":"HPA / battery materials"},
+    {"tk":"GLN.AX","ex":"ASX","co":"Galan Lithium","sub":"Lithium","cur":"AUD","mc":64,"cash":25,"as_of":"2026-03-31","fq":"Q3 FY26","note":"HMW brine"},
+    {"tk":"AVL.AX","ex":"ASX","co":"Australian Vanadium","sub":"Other","cur":"AUD","mc":35,"cash":14,"as_of":"2026-03-31","fq":"Q3 FY26","note":""},
+    {"tk":"ANX.AX","ex":"ASX","co":"Anax Metals","sub":"Copper","cur":"AUD","mc":22,"cash":17,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Whim Creek"},
+    {"tk":"BPM.AX","ex":"ASX","co":"BPM Minerals","sub":"Gold","cur":"AUD","mc":9,"cash":7,"as_of":"2026-03-31","fq":"Q3 FY26","note":"WA gold explorer"},
+    {"tk":"ATV.AX","ex":"ASX","co":"Active Resources","sub":"Other","cur":"AUD","mc":12,"cash":15,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Negative-EV — option-rich shell"},
+    {"tk":"BMG.AX","ex":"ASX","co":"BMG Resources","sub":"Gold","cur":"AUD","mc":18,"cash":22,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Abercromby · gold"},
+    {"tk":"AS2.AX","ex":"ASX","co":"Askari Metals","sub":"Copper","cur":"AUD","mc":14,"cash":19,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Reverse cash-to-cap"},
+    {"tk":"KAS.AX","ex":"ASX","co":"Kasbah Resources","sub":"Other","cur":"AUD","mc":8,"cash":12,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Tin · Morocco"},
+    {"tk":"RLF.AX","ex":"ASX","co":"RLF AgTech","sub":"Other","cur":"AUD","mc":5,"cash":9,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Off-piste but in Materials GICs"},
+    {"tk":"AOL.AX","ex":"ASX","co":"Andean Mining","sub":"Gold","cur":"AUD","mc":5,"cash":8,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Latam explorer"},
+    {"tk":"S2R.AX","ex":"ASX","co":"S2 Resources","sub":"Gold","cur":"AUD","mc":18,"cash":11,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Sweden + WA"},
+    {"tk":"IVZ.AX","ex":"ASX","co":"Invictus Energy","sub":"Other","cur":"AUD","mc":90,"cash":22,"as_of":"2026-03-31","fq":"Q3 FY26","note":""},
+    {"tk":"CHN.AX","ex":"ASX","co":"Chalice Mining","sub":"Nickel","cur":"AUD","mc":380,"cash":95,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Gonneville PGE-Ni-Cu"},
+    {"tk":"DEG.AX","ex":"ASX","co":"De Grey Mining","sub":"Gold","cur":"AUD","mc":1920,"cash":234,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Hemi · Pilbara"},
+    {"tk":"CMM.AX","ex":"ASX","co":"Capricorn Metals","sub":"Gold","cur":"AUD","mc":1448,"cash":278,"as_of":"2026-03-31","fq":"Q3 FY26","note":""},
+    {"tk":"WGX.AX","ex":"ASX","co":"Westgold Resources","sub":"Gold","cur":"AUD","mc":990,"cash":162,"as_of":"2026-03-31","fq":"Q3 FY26","note":""},
+    {"tk":"29M.AX","ex":"ASX","co":"29Metals","sub":"Copper","cur":"AUD","mc":352,"cash":94,"as_of":"2026-03-31","fq":"Q1 CY26","note":""},
+    {"tk":"DRR.AX","ex":"ASX","co":"Deterra Royalties","sub":"Iron Ore","cur":"AUD","mc":2480,"cash":85,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Royalty stream"},
+    {"tk":"ILU.AX","ex":"ASX","co":"Iluka Resources","sub":"Rare Earths","cur":"AUD","mc":2950,"cash":315,"as_of":"2026-03-31","fq":"Q1 CY26","note":"Eneabba refinery"},
+    {"tk":"LYC.AX","ex":"ASX","co":"Lynas Rare Earths","sub":"Rare Earths","cur":"AUD","mc":7200,"cash":580,"as_of":"2026-03-31","fq":"Q3 FY26","note":""},
+    {"tk":"PDN.AX","ex":"ASX","co":"Paladin Energy","sub":"Uranium","cur":"AUD","mc":2150,"cash":225,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Langer Heinrich"},
+    {"tk":"BOE.AX","ex":"ASX","co":"Boss Energy","sub":"Uranium","cur":"AUD","mc":1380,"cash":205,"as_of":"2026-03-31","fq":"Q3 FY26","note":"Honeymoon ISR"},
+
+    {"tk":"PMET.TO","ex":"TSXV","co":"Patriot Battery Metals","sub":"Lithium","cur":"CAD","mc":890,"cash":78,"as_of":"2026-03-31","fq":"Q1 CY26","note":"Shaakichiuwaanaan PFS Q3-25"},
+    {"tk":"LAC.TO","ex":"TSXV","co":"Lithium Americas","sub":"Lithium","cur":"CAD","mc":1245,"cash":218,"as_of":"2026-03-31","fq":"Q1 CY26","note":"Thacker Pass"},
+    {"tk":"NMX.TO","ex":"TSXV","co":"Nemaska Lithium","sub":"Lithium","cur":"CAD","mc":108,"cash":44,"as_of":"2026-03-31","fq":"Q1 CY26","note":"Whabouchi · IQ JV"},
+    {"tk":"QTWO.V","ex":"TSXV","co":"Q2 Metals","sub":"Lithium","cur":"CAD","mc":142,"cash":18,"as_of":"2026-03-31","fq":"Q1 CY26","note":"Cisco · James Bay"},
+    {"tk":"CYP.V","ex":"TSXV","co":"Cypress Development","sub":"Lithium","cur":"CAD","mc":38,"cash":9,"as_of":"2026-03-31","fq":"Q1 CY26","note":"Clayton Valley"},
+    {"tk":"CRE.V","ex":"TSXV","co":"Critical Elements","sub":"Lithium","cur":"CAD","mc":65,"cash":21,"as_of":"2026-03-31","fq":"Q1 CY26","note":"Rose · Quebec"},
+    {"tk":"FL.V","ex":"TSXV","co":"Frontier Lithium","sub":"Lithium","cur":"CAD","mc":22,"cash":14,"as_of":"2026-03-31","fq":"Q1 CY26","note":"PAK · Ontario"},
+    {"tk":"LIT.V","ex":"TSXV","co":"Argentina Lithium","sub":"Lithium","cur":"CAD","mc":11,"cash":13,"as_of":"2026-03-31","fq":"Q1 CY26","note":"Rincon West"},
+    {"tk":"USA.V","ex":"TSXV","co":"American Lithium","sub":"Lithium","cur":"CAD","mc":7,"cash":9,"as_of":"2026-03-31","fq":"Q1 CY26","note":"TLC · Falchani · Macusani"},
+    {"tk":"LITM.V","ex":"TSXV","co":"Snow Lake Resources","sub":"Lithium","cur":"CAD","mc":4,"cash":6,"as_of":"2026-03-31","fq":"Q1 CY26","note":"Manitoba lithium"},
+    {"tk":"NOM.V","ex":"TSXV","co":"Nomad Royalty","sub":"Other","cur":"CAD","mc":2,"cash":5,"as_of":"2026-03-31","fq":"Q1 CY26","note":"Effectively cash"},
+    {"tk":"GP.V","ex":"TSXV","co":"GreenPower Lithium","sub":"Lithium","cur":"CAD","mc":18,"cash":8,"as_of":"2026-03-31","fq":"Q1 CY26","note":"Mock ticker for screen"},
+    {"tk":"BRZ.V","ex":"TSXV","co":"Brazil Critical Minerals","sub":"Rare Earths","cur":"CAD","mc":13,"cash":6,"as_of":"2026-03-31","fq":"Q1 CY26","note":""},
+    {"tk":"BRM.V","ex":"TSXV","co":"Brunswick Mining","sub":"Copper","cur":"CAD","mc":9,"cash":4,"as_of":"2026-03-31","fq":"Q1 CY26","note":""},
+    {"tk":"AZL.V","ex":"TSXV","co":"Arizona Lithium","sub":"Lithium","cur":"CAD","mc":24,"cash":11,"as_of":"2026-03-31","fq":"Q1 CY26","note":"Big Sandy · Prairie"},
+    {"tk":"MILI.V","ex":"TSXV","co":"Millennial Lithium","sub":"Lithium","cur":"CAD","mc":8,"cash":11,"as_of":"2026-03-31","fq":"Q1 CY26","note":"Argentina brine remnant"},
+    {"tk":"ZONE.V","ex":"TSXV","co":"Zonia Holdings","sub":"Copper","cur":"CAD","mc":5,"cash":7,"as_of":"2026-03-31","fq":"Q1 CY26","note":"AZ copper porphyry"},
+    {"tk":"KZD.V","ex":"TSXV","co":"Kazia Resources","sub":"Gold","cur":"CAD","mc":16,"cash":9,"as_of":"2026-03-31","fq":"Q1 CY26","note":""},
+    {"tk":"NLT.V","ex":"TSXV","co":"North Light Lithium","sub":"Lithium","cur":"CAD","mc":3,"cash":5,"as_of":"2026-03-31","fq":"Q1 CY26","note":"Small shell candidate"}
+  ]
+};
+
+let DATA=[];
+let UPDATED=FALLBACK.updated;
+
+// ─── Classify each row ───
+function classify(r){
+  const ev=r.mc-r.cash;
+  const pct=r.mc>0?r.cash/r.mc:0;
+  let st;
+  if(ev<0) st='NEG';
+  else if(pct>=0.50) st='NC';
+  else if(pct<0.15) st='PREM';
+  else st='STD';
+  return {...r, ev, pct, status:st};
+}
+
+// ─── State ───
+const state={
+  ex:'all', st:'all', sub:'all', q:'',
+  sortKey:'ev', sortDir:'asc',
+  selected:null,
+};
+
+const tbody=document.getElementById('tbody');
+const noResults=document.getElementById('noResults');
+const vCount=document.getElementById('vCount');
+const totalCount=document.getElementById('totalCount');
+const tblMeta=document.getElementById('tblMeta');
+const drillBody=document.getElementById('drillBody');
+const drillMeta=document.getElementById('drillMeta');
+
+const COL_LABEL={tk:'ticker',co:'company',sub:'subsector',mc:'mkt cap',cash:'cash',ev:'EV',pct:'cash/MC',as_of:'as-of',status:'status'};
+const STATUS_LABEL={NEG:'Negative EV',NC:'Near-cash',STD:'Blended',PREM:'Premium'};
+
+const fmt=(v,d=0)=>{
+  if(v===null||v===undefined||isNaN(v))return '—';
+  return v.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d});
+};
+const fmtMC=v=>{
+  // Compact display for market caps: $X,XXX or $X.XB
+  if(Math.abs(v)>=10000)return fmt(v/1000,1)+'B';
+  return fmt(v,0);
+};
+const fmtSign=v=>(v>=0?'':'-')+fmtMC(Math.abs(v));
+const median=arr=>{
+  if(!arr.length)return 0;
+  const s=[...arr].sort((a,b)=>a-b);
+  const m=Math.floor(s.length/2);
+  return s.length%2?s[m]:(s[m-1]+s[m])/2;
+};
+
+function getKey(d,k){
+  if(k==='tk')return d.tk;
+  if(k==='co')return d.co;
+  if(k==='sub')return d.sub;
+  if(k==='mc')return d.mc;
+  if(k==='cash')return d.cash;
+  if(k==='ev')return d.ev;
+  if(k==='pct')return d.pct;
+  if(k==='as_of')return d.as_of;
+  if(k==='status'){const r={NEG:0,NC:1,STD:2,PREM:3};return r[d.status];}
+  return '';
+}
+
+function filtered(){
+  const q=state.q.toLowerCase();
+  return DATA.filter(d=>{
+    if(state.ex!=='all'&&d.ex!==state.ex)return false;
+    if(state.st!=='all'&&d.status!==state.st)return false;
+    if(state.sub!=='all'&&d.sub!==state.sub)return false;
+    if(q){
+      const hay=(d.tk+' '+d.co+' '+d.sub+' '+(d.note||'')).toLowerCase();
+      if(!hay.includes(q))return false;
+    }
+    return true;
+  }).sort((a,b)=>{
+    const av=getKey(a,state.sortKey),bv=getKey(b,state.sortKey);
+    let cmp;
+    if(typeof av==='number'&&typeof bv==='number')cmp=av-bv;
+    else cmp=String(av).localeCompare(String(bv));
+    return state.sortDir==='asc'?cmp:-cmp;
+  });
+}
+
+function render(){
+  const rows=filtered();
+  vCount.textContent=rows.length;
+  noResults.style.display=rows.length?'none':'block';
+
+  // KPIs (against current filter)
+  const evs=rows.map(r=>r.ev);
+  const cashes=rows.map(r=>r.cash);
+  const negs=rows.filter(r=>r.status==='NEG').length;
+  const ncs=rows.filter(r=>r.status==='NC').length;
+  const prems=rows.filter(r=>r.status==='PREM').length;
+
+  document.getElementById('kUni').textContent=rows.length;
+  document.getElementById('kNeg').textContent=negs;
+  document.getElementById('kNc').textContent=ncs;
+  document.getElementById('kPrem').textContent=prems;
+  document.getElementById('kMedEv').textContent=rows.length?fmtSign(median(evs)):'—';
+  document.getElementById('kMedCash').textContent=rows.length?fmtMC(median(cashes)):'—';
+
+  // Sort header indicators
+  document.querySelectorAll('thead th').forEach(th=>{
+    const k=th.dataset.sort, arr=th.querySelector('.arr');
+    if(k===state.sortKey){th.classList.add('sorted');arr.textContent=state.sortDir==='asc'?'↑':'↓';}
+    else{th.classList.remove('sorted');arr.textContent='';}
+  });
+  tblMeta.textContent='sorted by · '+(COL_LABEL[state.sortKey]||state.sortKey)+' '+(state.sortDir==='asc'?'↑':'↓')+' · '+rows.length+' rows';
+
+  // Render rows
+  const maxAbsEv=Math.max(1,...rows.map(r=>Math.abs(r.ev)));
+  tbody.innerHTML=rows.map(d=>{
+    const evCls=d.status==='NEG'?'neg':(d.status==='PREM'?'prem':'');
+    const pctCapped=Math.min(100,d.pct*100);
+    const barCls=d.pct>1?'over':'';
+    const selCls=(state.selected===d.tk)?'sel':'';
+    return '<tr data-tk="'+d.tk+'" class="'+selCls+'">'+
+      '<td><span class="tk">'+d.tk+'</span></td>'+
+      '<td class="co-name">'+d.co+'</td>'+
+      '<td><span class="sub-tag">'+d.sub+'</span></td>'+
+      '<td>'+fmtMC(d.mc)+'</td>'+
+      '<td>'+fmtMC(d.cash)+'</td>'+
+      '<td class="ev-cell '+evCls+'">'+fmtSign(d.ev)+'</td>'+
+      '<td class="pct-cell">'+(d.pct*100).toFixed(0)+'%<span class="bar-bg"><span class="bar-fg '+barCls+'" style="width:'+pctCapped+'%"></span></span></td>'+
+      '<td>'+d.as_of+'</td>'+
+      '<td><span class="status-pill '+d.status+'">'+STATUS_LABEL[d.status]+'</span></td>'+
+    '</tr>';
+  }).join('');
+
+  // Re-attach row click handlers
+  tbody.querySelectorAll('tr').forEach(tr=>{
+    tr.addEventListener('click',()=>{
+      state.selected=tr.dataset.tk;
+      render();
+      renderDrill();
+    });
+  });
+}
+
+// ─── Filter button counts (always against full universe) ───
+function updateCounts(){
+  const total=DATA.length;
+  totalCount.textContent=total;
+  document.getElementById('cExAll').textContent='·'+total;
+  document.getElementById('cExASX').textContent='·'+DATA.filter(d=>d.ex==='ASX').length;
+  document.getElementById('cExTSXV').textContent='·'+DATA.filter(d=>d.ex==='TSXV').length;
+  document.getElementById('cStNeg').textContent='·'+DATA.filter(d=>d.status==='NEG').length;
+  document.getElementById('cStNc').textContent='·'+DATA.filter(d=>d.status==='NC').length;
+  document.getElementById('cStStd').textContent='·'+DATA.filter(d=>d.status==='STD').length;
+  document.getElementById('cStPrem').textContent='·'+DATA.filter(d=>d.status==='PREM').length;
+
+  document.getElementById('m-uni').textContent=total;
+  document.getElementById('m-neg').textContent=DATA.filter(d=>d.status==='NEG').length;
+  document.getElementById('m-nc').textContent=DATA.filter(d=>d.status==='NC').length;
+  document.getElementById('cover-stamp').textContent='UPDATED '+UPDATED;
+  document.getElementById('t-stamp').textContent='UNIVERSE '+total+' · UPDATED '+UPDATED;
+}
+
+// ─── Drilldown panel ───
+function renderDrill(){
+  if(!state.selected){
+    drillMeta.textContent='no selection';
+    drillBody.innerHTML='<div class="drill-empty">Click a row in the table to load the drilldown.<br>EV decomposition, vend scenarios, analyst read.</div>';
+    return;
+  }
+  const d=DATA.find(x=>x.tk===state.selected);
+  if(!d){
+    drillMeta.textContent='no selection';
+    drillBody.innerHTML='<div class="drill-empty">Selection not found in current dataset.</div>';
+    return;
+  }
+  drillMeta.textContent=d.tk;
+
+  const evCls=d.status==='NEG'?'green':(d.status==='PREM'?'amber':'');
+  const cashPct=d.mc>0?Math.min(100,(d.cash/d.mc)*100):100;
+  const opPct=Math.max(0,100-cashPct);
+  const isNeg=d.status==='NEG';
+
+  // Scenarios
+  const freeCashGap=Math.max(0,d.cash-d.mc); // only positive for negative-EV shells
+  const acq1x=d.cash;
+  const acq15=d.cash*1.5;
+  const acq2x=d.cash*2;
+  const premiumOverMC1x=acq1x-d.mc;
+  const premiumOverMC2x=acq2x-d.mc;
+
+  // Analyst read
+  let read='';
+  let readNote='';
+  if(d.status==='NEG'){
+    read='<p>Market values <span class="em">'+d.co+'</span> at <span class="em">'+fmtMC(d.mc)+'</span> '+d.cur+', less than the <span class="em">'+fmtMC(d.cash)+'</span> '+d.cur+' on the balance sheet. The <span class="em">'+fmtSign(d.ev)+' '+d.cur+'M</span> gap is the implicit value the market is assigning to the operating asset — i.e. negative. Reasons can be benign (slow burn, no nearterm catalyst) or sinister (contingent liabilities, ATM overhang, legal). Worth a primary-source check before assuming the shell is acquirable at face.</p>';
+    readNote='Classic vend candidate: a project owner can RTO this shell, get the cash for free, and inherit a listing.';
+  } else if(d.status==='NC'){
+    read='<p><span class="em">'+d.co+'</span> trades with <span class="em">'+(d.pct*100).toFixed(0)+'%</span> of its market cap in cash. Operating EV of <span class="em">'+fmtSign(d.ev)+' '+d.cur+'M</span> is small relative to the cash buffer — the market is barely pricing the asset. Either it shouldn\'t (correctly cheap) or the asset is impaired in ways disclosure hasn\'t caught up to.</p>';
+    readNote='Cheap relative to peers but not yet vendable — needs a deeper read on burn rate and asset quality.';
+  } else if(d.status==='PREM'){
+    read='<p><span class="em">'+d.co+'</span> is an asset-rich operating company. Cash is only <span class="em">'+(d.pct*100).toFixed(0)+'%</span> of market cap; the rest is operations, reserves, or growth optionality the market is pricing. EV of <span class="em">'+fmtSign(d.ev)+' '+d.cur+'M</span> is what you pay for the business itself.</p>';
+    readNote='Not a shell. Filter to NEGATIVE EV or NEAR-CASH to surface trade-able vehicles.';
+  } else {
+    read='<p>Cash is <span class="em">'+(d.pct*100).toFixed(0)+'%</span> of market cap — a blended profile, neither a pure shell nor a pure operator. EV of <span class="em">'+fmtSign(d.ev)+' '+d.cur+'M</span> represents the market\'s view of the operating asset net of cash on hand.</p>';
+    readNote='';
+  }
+
+  drillBody.innerHTML=
+    '<div class="drill-head">'+
+      '<div>'+
+        '<div class="tkline">'+d.tk+'</div>'+
+        '<div class="coname">'+d.co+'</div>'+
+        '<div class="subline">'+d.sub+' · '+d.cur+' · As of '+d.as_of+' · '+d.fq+'</div>'+
+      '</div>'+
+      '<span class="status-pill '+d.status+'">'+STATUS_LABEL[d.status]+'</span>'+
+    '</div>'+
+    '<div class="drill-kpis">'+
+      '<div class="drill-kpi"><span class="l">Market Cap</span><span class="v">'+fmtMC(d.mc)+'</span><span class="sub">'+d.cur+' million</span></div>'+
+      '<div class="drill-kpi"><span class="l">Cash &amp; equivalents</span><span class="v hl">'+fmtMC(d.cash)+'</span><span class="sub">'+d.cur+' million</span></div>'+
+      '<div class="drill-kpi"><span class="l">Enterprise Value</span><span class="v '+evCls+'">'+fmtSign(d.ev)+'</span><span class="sub">'+d.cur+' million</span></div>'+
+      '<div class="drill-kpi"><span class="l">Cash / Market Cap</span><span class="v '+(d.pct>1?'green':(d.pct>0.5?'cyan':(d.pct<0.15?'amber':'')))+'">'+(d.pct*100).toFixed(0)+'%</span><span class="sub">'+(d.pct>1?'above face':'of capitalisation')+'</span></div>'+
+    '</div>'+
+    '<div class="composition">'+
+      '<div class="h">EV composition</div>'+
+      '<div class="bar-stack '+(isNeg?'neg':'')+'">'+
+        '<div class="seg cash" style="width:'+(isNeg?100:cashPct)+'%"></div>'+
+        '<div class="seg opev" style="width:'+(isNeg?0:opPct)+'%"></div>'+
+      '</div>'+
+      '<div class="bar-legend '+(isNeg?'neg':'')+'">'+
+        '<span><span class="l-cash">■</span> Cash · '+fmtMC(d.cash)+'</span>'+
+        '<span><span class="l-op '+(isNeg?'neg':'')+'">■</span> '+(isNeg?'Cash exceeds Mkt Cap by '+fmtMC(d.cash-d.mc):'Operating EV · '+fmtSign(d.ev))+'</span>'+
+      '</div>'+
+    '</div>'+
+    '<div class="scenarios">'+
+      '<div class="h">Acquisition scenarios</div>'+
+      '<table class="scn">'+
+        '<tr><td>Acquire at parity (1.0× cash)</td><td>'+fmtMC(acq1x)+' '+d.cur+'M</td></tr>'+
+        '<tr><td>· Premium over current Mkt Cap</td><td class="'+(premiumOverMC1x>=0?'accent-v':'')+'">'+(premiumOverMC1x>=0?'+':'')+fmtMC(Math.abs(premiumOverMC1x))+' '+d.cur+'M</td></tr>'+
+        '<tr><td>Acquire at 1.5× cash</td><td>'+fmtMC(acq15)+' '+d.cur+'M</td></tr>'+
+        '<tr><td>Acquire at 2.0× cash</td><td>'+fmtMC(acq2x)+' '+d.cur+'M</td></tr>'+
+        '<tr><td>· Premium over current Mkt Cap</td><td class="amber-v">+'+fmtMC(premiumOverMC2x)+' '+d.cur+'M</td></tr>'+
+        (isNeg?'<tr><td>Cash gap (free cash on takeover)</td><td class="green-v">'+fmtMC(freeCashGap)+' '+d.cur+'M</td></tr>':'')+
+      '</table>'+
+    '</div>'+
+    '<div class="read">'+
+      '<div class="h">Analyst read</div>'+
+      read+
+      (d.note?'<div class="note">Tag · '+d.note+'</div>':'')+
+      (readNote?'<div class="note">'+readNote+'</div>':'')+
+    '</div>';
+}
+
+// ─── Bindings ───
+document.querySelectorAll('[data-ex]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-ex]').forEach(o=>o.classList.toggle('on',o===b));
+    state.ex=b.dataset.ex;render();
+  });
+});
+document.querySelectorAll('[data-st]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-st]').forEach(o=>o.classList.toggle('on',o===b));
+    state.st=b.dataset.st;render();
+  });
+});
+document.querySelectorAll('[data-sub]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-sub]').forEach(o=>o.classList.toggle('on',o===b));
+    state.sub=b.dataset.sub;render();
+  });
+});
+document.getElementById('search').addEventListener('input',e=>{state.q=e.target.value;render();});
+document.querySelectorAll('thead th').forEach(th=>{
+  th.addEventListener('click',()=>{
+    const k=th.dataset.sort;
+    if(state.sortKey===k){state.sortDir=state.sortDir==='asc'?'desc':'asc';}
+    else{state.sortKey=k;state.sortDir=(k==='mc'||k==='cash'||k==='pct')?'desc':'asc';}
+    render();
+  });
+});
+document.getElementById('clearAll').addEventListener('click',()=>{
+  state.ex='all';state.st='all';state.sub='all';state.q='';
+  state.sortKey='ev';state.sortDir='asc';state.selected=null;
+  document.getElementById('search').value='';
+  document.querySelectorAll('[data-ex]').forEach(o=>o.classList.toggle('on',o.dataset.ex==='all'));
+  document.querySelectorAll('[data-st]').forEach(o=>o.classList.toggle('on',o.dataset.st==='all'));
+  document.querySelectorAll('[data-sub]').forEach(o=>o.classList.toggle('on',o.dataset.sub==='all'));
+  render();
+  renderDrill();
+});
+
+// ─── Bootstrap: try JSON fetch, fall back to inline ───
+function bootstrap(payload){
+  UPDATED=payload.updated||UPDATED;
+  DATA=(payload.rows||[]).map(classify);
+  updateCounts();
+  render();
+  renderDrill();
+}
+
+fetch('shell_finder_data.json',{cache:'no-store'})
+  .then(r=>r.ok?r.json():Promise.reject(r.status))
+  .then(j=>bootstrap(j))
+  .catch(()=>bootstrap(FALLBACK));
+</script>
+</body>
+</html>
