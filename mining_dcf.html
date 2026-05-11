@@ -2053,7 +2053,7 @@ if (window.Chart) {
   Chart.defaults.borderColor = 'rgba(58,61,51,0.5)';           // --line-2
   Chart.defaults.plugins.legend.labels.color = '#d8d4c2';      // --fg
 }
-const MODEL_VERSION = '2026-05-09 · v0.5 (peer reference set)';
+const MODEL_VERSION = '2026-05-09 · v0.6 (rebuild-basis capex)';
 
 // Brand semantic colours for chart datasets — single source of truth
 const BRAND = {
@@ -2157,18 +2157,17 @@ const PROJECTS = {
     market: { lce_mt: 21.7, sharesFD: 0, lastClose: 0, fxCadUsd: 0.66, cashUsd: 0, debtUsd: 0,
       asOf: '2025-12', priceLow52w: 0, priceHigh52w: 0,
       compsLowEvtLCE: 250, compsHighEvtLCE: 700, precLowEvtLCE: 400, precHighEvtLCE: 900 },
-    inputs: { mineLife: 30, constrYears: 0, rampYears: 0, ramp1: 100, ramp2: 100, tailYears: 5, tailPct: 70,
+    inputs: { mineLife: 30, constrYears: 2, rampYears: 1, ramp1: 90, ramp2: 100, tailYears: 5, tailPct: 70,
       nameplate: 6.0, grade: 2.0, recovery: 85, sc6Grade: 6.0,
       sc6Price: 1400, priceEsc: 0,
       miningCost: 8, procCost: 14, gaFixed: 60, royalty: 5.0, freight: 35, opexEsc: 2.5,
-      initCapex: 0, capex1: 0, capex2: 0, sustCapex: 25, wc: 4, salvage: -150,
+      initCapex: 1500, capex1: 35, capex2: 65, sustCapex: 25, wc: 4, salvage: -150,
       discRate: 8, taxRate: 30, deprYears: 15, targetIRR: 12 },
     mc: { price:{lo:800,base:1400,hi:2200}, grade:{lo:1.8,base:2.0,hi:2.2}, rec:{lo:82,base:85,hi:88},
-      capex:{lo:0,base:0,hi:50}, mining:{lo:7,base:8,hi:11}, proc:{lo:12,base:14,hi:18} },
-    notes: 'Greenbushes — Talison JV (Tianqi 51% / ALB 49%; IGO 24.99% indirect via Tianqi). 2.1Mt SC6/yr nameplate post-CGP3 (Dec 2025), 1.48Mt actual FY25. AISC ~A$325/t (~US$215/t) — globally lowest. 440Mt @ 2.0% Li₂O. WA royalty 5%. No pure-play stock; market values left blank. Indicative — verify against ALB / IGO filings.'
+      capex:{lo:1200,base:1500,hi:1900}, mining:{lo:7,base:8,hi:11}, proc:{lo:12,base:14,hi:18} },
+    notes: 'Greenbushes — Talison JV (Tianqi 51% / ALB 49%; IGO 24.99% indirect). 2.1Mt SC6/yr nameplate post-CGP3 (Dec 2025 commissioning). AISC ~A$325/t. 440Mt resource @ 2.0% Li₂O — highest grade globally. Capex shown on rebuild-from-scratch basis ≈ US$1.5B for the full 2.1Mtpa complex (CGP3 alone was A$880M / ~US$580M; cumulative across CGP1/CGP2/TRP much higher). Set initCapex = 0 for going-forward valuation.'
   },
 
-  // Source: Pilbara Minerals Q4 FY25 + Sept 2025 quarterly report, P1000 expansion materials.
   pilgangoora: {
     identity: { name: 'Pilgangoora — Pilgan + Ngungaju operations, Pilbara WA',
       ticker: 'PLS.AX', company: 'Pilbara Minerals',
@@ -2176,18 +2175,17 @@ const PROJECTS = {
     market: { lce_mt: 12.8, sharesFD: 3010, lastClose: 2.20, fxCadUsd: 0.66, cashUsd: 660, debtUsd: 100,
       asOf: '2025-09', priceLow52w: 1.20, priceHigh52w: 3.40,
       compsLowEvtLCE: 200, compsHighEvtLCE: 550, precLowEvtLCE: 350, precHighEvtLCE: 750 },
-    inputs: { mineLife: 30, constrYears: 0, rampYears: 1, ramp1: 95, ramp2: 100, tailYears: 0, tailPct: 80,
+    inputs: { mineLife: 30, constrYears: 2, rampYears: 1, ramp1: 90, ramp2: 100, tailYears: 0, tailPct: 80,
       nameplate: 9.5, grade: 1.16, recovery: 70, sc6Grade: 5.4,
       sc6Price: 1400, priceEsc: 0,
       miningCost: 12, procCost: 26, gaFixed: 70, royalty: 5.0, freight: 60, opexEsc: 2.5,
-      initCapex: 0, capex1: 0, capex2: 0, sustCapex: 30, wc: 5, salvage: -120,
+      initCapex: 800, capex1: 40, capex2: 60, sustCapex: 30, wc: 5, salvage: -120,
       discRate: 9, taxRate: 30, deprYears: 15, targetIRR: 14 },
     mc: { price:{lo:800,base:1400,hi:2200}, grade:{lo:1.05,base:1.16,hi:1.30}, rec:{lo:65,base:70,hi:75},
-      capex:{lo:0,base:0,hi:80}, mining:{lo:10,base:12,hi:16}, proc:{lo:22,base:26,hi:32} },
-    notes: 'Pilbara Minerals (ASX:PLS) — pure-play producer, P1000 expansion completed Sept 2025 → 1.0Mt SC6/yr nameplate. FY26 unit cost guidance A$560-600/t (~US$370-400/t). Cash A$1.0B (Jun 2025). Resource 446Mt @ 1.16% Li₂O. Verify against PLS quarterly reports.'
+      capex:{lo:650,base:800,hi:1050}, mining:{lo:10,base:12,hi:16}, proc:{lo:22,base:26,hi:32} },
+    notes: 'Pilbara Minerals (PLS.AX) — pure-play producer. P1000 completed Sept 2025 → 1.0Mt SC6/yr nameplate. FY26 unit cost guidance A$560-600/t (~US$370-400/t). Capex shown on rebuild basis ≈ US$800M (cumulative: P680 A$298M + P1000 A$560M ≈ A$860M / US$570M, plus original Pilgan plant + Ngungaju restart). Cash A$1.0B Jun 2025. 446Mt @ 1.16% Li₂O. Set initCapex = 0 for going-forward valuation.'
   },
 
-  // Source: Mineral Resources / MARBL JV (50:50 MIN/ALB), Pilbara WA. Train 3 restart announced 2024.
   wodgina: {
     identity: { name: 'Wodgina — MARBL JV, Pilbara WA',
       ticker: 'MIN.AX (50% via MARBL)', company: 'Mineral Resources / Albemarle JV (50:50)',
@@ -2195,15 +2193,15 @@ const PROJECTS = {
     market: { lce_mt: 7.5, sharesFD: 200, lastClose: 38.0, fxCadUsd: 0.66, cashUsd: 100, debtUsd: 4500,
       asOf: '2025-09', priceLow52w: 22.0, priceHigh52w: 65.0,
       compsLowEvtLCE: 200, compsHighEvtLCE: 550, precLowEvtLCE: 350, precHighEvtLCE: 750 },
-    inputs: { mineLife: 30, constrYears: 0, rampYears: 1, ramp1: 90, ramp2: 100, tailYears: 0, tailPct: 80,
+    inputs: { mineLife: 30, constrYears: 2, rampYears: 1, ramp1: 85, ramp2: 100, tailYears: 0, tailPct: 80,
       nameplate: 7.5, grade: 1.17, recovery: 70, sc6Grade: 5.5,
       sc6Price: 1400, priceEsc: 0,
       miningCost: 14, procCost: 30, gaFixed: 60, royalty: 5.0, freight: 55, opexEsc: 2.5,
-      initCapex: 0, capex1: 0, capex2: 0, sustCapex: 35, wc: 5, salvage: -100,
+      initCapex: 1500, capex1: 30, capex2: 70, sustCapex: 35, wc: 5, salvage: -100,
       discRate: 9, taxRate: 30, deprYears: 15, targetIRR: 14 },
     mc: { price:{lo:800,base:1400,hi:2200}, grade:{lo:1.05,base:1.17,hi:1.30}, rec:{lo:65,base:70,hi:75},
-      capex:{lo:0,base:0,hi:50}, mining:{lo:11,base:14,hi:18}, proc:{lo:25,base:30,hi:38} },
-    notes: 'Wodgina — MIN/ALB MARBL JV (50:50). 3 trains × 250kt = 750kt SC6/yr nameplate. AISC ~US$650-700/t SC6. Resource 259Mt @ 1.17% Li₂O. MIN.AX listing reflects MIN parent (lithium ~10-15% of MIN business; iron ore + mining services dominate). Verify against MIN half-year & ALB segment data.'
+      capex:{lo:1200,base:1500,hi:2000}, mining:{lo:11,base:14,hi:18}, proc:{lo:25,base:30,hi:38} },
+    notes: 'Wodgina — MIN/ALB MARBL JV (50:50 post 2023 restructure). 3 trains × 250kt = 750kt SC6/yr nameplate. AISC ~US$650-700/t. Resource 259Mt @ 1.17% Li₂O. Capex shown on rebuild basis ≈ US$1.5B for the full 3-train mine + plant complex (MIN 2019 original build A$1.7B+, restart through MARBL JV staged). Set initCapex = 0 for going-forward valuation.'
   },
 
   // ── Development projects with published studies (5) ────────────────────
@@ -2272,15 +2270,15 @@ const PROJECTS = {
     market: { lce_mt: 5.4, sharesFD: 2425, lastClose: 0.85, fxCadUsd: 0.66, cashUsd: 280, debtUsd: 380,
       asOf: '2025-12', priceLow52w: 0.55, priceHigh52w: 1.50,
       compsLowEvtLCE: 100, compsHighEvtLCE: 400, precLowEvtLCE: 200, precHighEvtLCE: 600 },
-    inputs: { mineLife: 23, constrYears: 0, rampYears: 2, ramp1: 60, ramp2: 90, tailYears: 0, tailPct: 80,
+    inputs: { mineLife: 23, constrYears: 2, rampYears: 2, ramp1: 60, ramp2: 90, tailYears: 0, tailPct: 80,
       nameplate: 3.0, grade: 1.40, recovery: 70, sc6Grade: 5.6,
       sc6Price: 1500, priceEsc: 0,
       miningCost: 28, procCost: 35, gaFixed: 35, royalty: 5.0, freight: 60, opexEsc: 2.5,
-      initCapex: 0, capex1: 0, capex2: 0, sustCapex: 55, wc: 5, salvage: -80,
+      initCapex: 590, capex1: 40, capex2: 60, sustCapex: 45, wc: 5, salvage: -80,
       discRate: 9, taxRate: 30, deprYears: 23, targetIRR: 14 },
     mc: { price:{lo:800,base:1500,hi:2200}, grade:{lo:1.25,base:1.40,hi:1.55}, rec:{lo:65,base:70,hi:75},
-      capex:{lo:0,base:0,hi:200}, mining:{lo:24,base:28,hi:35}, proc:{lo:30,base:35,hi:45} },
-    notes: 'Kathleen Valley (LTR.AX) — operating since 2024. Original DFS 2021 capex blew out A$545M → A$895M (≈US$590M sunk). 2H FY25 production 170-185kt SC6, AISC A$1,170-1,290/t (~US$770-850/t). FY29 target 550+ kt/yr after open-pit → underground transition. Resource 156Mt @ 1.40% Li₂O. Going-forward DCF: initCapex set to 0 (build is sunk); sustaining elevated to capture UG transition spend. To value the asset on a rebuild basis, set initCapex = 590.'
+      capex:{lo:500,base:590,hi:750}, mining:{lo:24,base:28,hi:35}, proc:{lo:30,base:35,hi:45} },
+    notes: 'Kathleen Valley (LTR.AX) — operating since 2024. DFS 2021 capex blew out A$545M → A$895M (≈US$590M) on rebuild basis. 2H FY25 production 170-185kt SC6, AISC A$1,170-1,290/t (~US$770-850/t). FY29 target 550+ kt/yr after open-pit → underground transition. Resource 156Mt @ 1.40% Li₂O. Capex shown on rebuild basis (US$590M); for going-forward valuation set initCapex = 0 and bump sustaining to ~55 to capture UG transition spend.'
   },
 
   // Source: Sigma Lithium technical reports Mar 2025 + 2Q25 results.
@@ -2291,15 +2289,15 @@ const PROJECTS = {
     market: { lce_mt: 12.8, sharesFD: 113, lastClose: 6.50, fxCadUsd: 1.0, cashUsd: 60, debtUsd: 240,
       asOf: '2025-12', priceLow52w: 4.50, priceHigh52w: 16.00,
       compsLowEvtLCE: 100, compsHighEvtLCE: 400, precLowEvtLCE: 200, precHighEvtLCE: 600 },
-    inputs: { mineLife: 20, constrYears: 0, rampYears: 2, ramp1: 70, ramp2: 90, tailYears: 0, tailPct: 80,
+    inputs: { mineLife: 20, constrYears: 2, rampYears: 2, ramp1: 70, ramp2: 90, tailYears: 0, tailPct: 80,
       nameplate: 4.5, grade: 1.44, recovery: 60, sc6Grade: 5.5,
       sc6Price: 1500, priceEsc: 0,
       miningCost: 6, procCost: 14, gaFixed: 30, royalty: 2.0, freight: 90, opexEsc: 3.0,
-      initCapex: 155, capex1: 60, capex2: 40, sustCapex: 18, wc: 5, salvage: -40,
+      initCapex: 280, capex1: 50, capex2: 50, sustCapex: 18, wc: 5, salvage: -40,
       discRate: 8, taxRate: 25, deprYears: 18, targetIRR: 15 },
     mc: { price:{lo:800,base:1500,hi:2200}, grade:{lo:1.30,base:1.44,hi:1.58}, rec:{lo:55,base:60,hi:65},
-      capex:{lo:130,base:155,hi:230}, mining:{lo:5,base:6,hi:8}, proc:{lo:11,base:14,hi:18} },
-    notes: 'Sigma Grota do Cirilo (SGML). Combined P1+P2+P3 NPV8 post-tax US$5.7B (Mar 2025 technical report; reserves expanded 2.6× to 34Mt). P1 operating (270ktpa SC5.5 nameplate). P2 expansion capex ~US$76M, P3 capex ~US$80M, total expansion ~US$155M to reach 766ktpa total. Hydropower, dry-stack tailings (lowest CO₂ in industry). 109Mt resource @ 1.44% Li₂O. Verify against SGML investor materials & SEC filings.'
+      capex:{lo:230,base:280,hi:380}, mining:{lo:5,base:6,hi:8}, proc:{lo:11,base:14,hi:18} },
+    notes: 'Sigma Grota do Cirilo (SGML). P1 operating (270ktpa SC5.5 nameplate). Capex on rebuild basis ≈ US$280M for combined P1+P2+P3 (P1 historical ~US$130M including pre-build; P2 expansion US$76M; P3 ~US$80M). Combined P1+P2 NPV8 post-tax US$5.1B per Mar 2025 technical report; reserves expanded 2.6× to 34Mt. Hydropower, dry-stack tailings. 109Mt @ 1.44% Li₂O. Set initCapex = 0 for going-forward, or 155 for remaining expansion only.'
   }
 };
 
