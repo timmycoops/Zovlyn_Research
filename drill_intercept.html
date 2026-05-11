@@ -1303,14 +1303,29 @@ function renderProfile() {
   });
 
   // KDE contours (filtered by enabled commodities + global toggle).
-  // Source: always the live Gaussian envelope on the same filter set that
-  // builds the cloud (commodity enabled + g·m ≥ minGm, plus scope if on).
-  // This guarantees the contour tracks every filter you change.
+  // Source has two modes:
+  //  - Project selected (projNameLc has matches): KDE built ONLY from this
+  //    project's intercepts, grouped by commodity. Shows the project's own
+  //    shape. Min-g·m / scope filters are ignored for this source.
+  //  - No project selected: KDE built from the full filter-respecting set
+  //    (logPtsByC — commodity enabled, g·m ≥ minGm, in-scope if scope on).
+  let kdeSourceByC;
+  if (projNameLc && matched.length > 0) {
+    kdeSourceByC = {};
+    COMMODITY_LIST.forEach(c => kdeSourceByC[c] = []);
+    matched.forEach(pt => {
+      const m = pt.meta;
+      const key = COMMODITY_LIST.includes(m.commodity) ? m.commodity : 'Other';
+      kdeSourceByC[key].push([Math.log10(m.width), Math.log10(m.grade)]);
+    });
+  } else {
+    kdeSourceByC = logPtsByC;
+  }
   if (contoursOn) {
     COMMODITY_LIST.forEach(c => {
       if (!enabledCommodities.has(c)) return;
       const pal = COMMODITY_PALETTE[c];
-      const pts = logPtsByC[c];
+      const pts = kdeSourceByC[c];
       const outer = gaussianEnvelope(pts, 0.80);
       const inner = gaussianEnvelope(pts, 0.50);
       [{poly:outer, isInner:false}, {poly:inner, isInner:true}].forEach(({poly, isInner}) => {
@@ -1380,9 +1395,13 @@ function renderProfile() {
     const above100 = projHoles.filter(h => (h.hole_gm||0) > 100).length;
     const above1k  = projHoles.filter(h => (h.hole_gm||0) > 1000).length;
     el.profileMeta.textContent = `"${projName}" · saved ${total} · matched ${matched.length} in universe · ${above100} >100 g·m · ${above1k} >1k g·m${filterTail}`;
-    el.profileSub.textContent = matched.length
-      ? `Found ${matched.length} matching intercepts in the universe — green halos (always shown, ignore commodity / g·m filters). Your saved holes plot on top as bright diamonds.`
-      : `No "${projName}" matches in the universe (${universeN.toLocaleString()} loaded). Your saved holes plot as green diamonds on top.`;
+    if (matched.length >= 6) {
+      el.profileSub.textContent = `Project mode — KDE rebuilt from "${projName}"'s ${matched.length} matched intercepts only (universe envelope hidden). Halos always show; your saved diamonds plot on top.`;
+    } else if (matched.length > 0) {
+      el.profileSub.textContent = `Project mode — only ${matched.length} matched intercept${matched.length===1?'':'s'} for "${projName}"; need ≥6 in a commodity for a stable envelope, so no contour drawn. Halos visible.`;
+    } else {
+      el.profileSub.textContent = `No "${projName}" matches in the universe (${universeN.toLocaleString()} loaded). Universe envelope shown for context; your saved holes plot as green diamonds.`;
+    }
   }
   if (scopeToTable) {
     const scopedTotal = Object.values(scopedInterceptCounts).reduce((s,v)=>s+v, 0);
