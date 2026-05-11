@@ -282,12 +282,15 @@ table.dcf{border-collapse:collapse;font-size:11px;font-family:var(--font-mono);w
 .snav:hover{color:var(--fg);border-color:var(--border2);}
 .snav.active{color:var(--accent);border-color:var(--accent);background:rgba(232,182,88,.08);}
 
-/* ── Section header block (used by new sections) ── */
-.sec-block{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
-.sec-block-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;background:linear-gradient(180deg,rgba(106,207,224,.04),transparent);}
-.sec-block-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);display:flex;align-items:center;gap:8px;}
-.sec-block-sub{font-size:10px;color:var(--fg-2);font-family:var(--font-mono);}
-.sec-block-body{padding:14px 16px;}
+/* ── Section block (used by new sections) ── */
+.sec-block{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;display:block;visibility:visible;}
+.sec-block-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;background:linear-gradient(180deg,rgba(106,207,224,.04),transparent);visibility:visible;}
+.sec-block-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);display:flex;align-items:center;gap:8px;visibility:visible;}
+.sec-block-sub{font-size:10px;color:var(--fg-2);font-family:var(--font-mono);visibility:visible;}
+.sec-block-body{padding:14px 16px;visibility:visible;}
+/* Defensive: bodies must stay block-level (or grid via subclass), and
+   never accidentally inherit display:none from anywhere. */
+.sec-block-body:not(.wacc-grid):not(.offer-grid){display:block;}
 
 /* ── Scenario Comparison ── */
 .scn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px;}
@@ -2053,7 +2056,7 @@ if (window.Chart) {
   Chart.defaults.borderColor = 'rgba(58,61,51,0.5)';           // --line-2
   Chart.defaults.plugins.legend.labels.color = '#d8d4c2';      // --fg
 }
-const MODEL_VERSION = '2026-05-09 · v0.6.1 (cdn cache bust)';
+const MODEL_VERSION = '2026-05-09 · v0.6.2 (visibility hardening)';
 
 // Brand semantic colours for chart datasets — single source of truth
 const BRAND = {
