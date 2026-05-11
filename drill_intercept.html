@@ -145,6 +145,21 @@ input[type=range].t-range{width:100%;accent-color:var(--accent);height:18px}
 .hole-cell .v.amber{color:var(--amber)}
 .hole-cell .v.dim{color:var(--fg-2)}
 .hole-cell .l{font-size:9px;color:var(--fg-3);text-transform:uppercase;letter-spacing:0.12em;font-weight:600}
+.hole-cell .sub{font-size:9.5px;color:var(--fg-2);font-weight:500;font-feature-settings:'tnum';margin-top:1px}
+.hole-cell .sub.amber{color:var(--amber)}
+.hole-cell .sub.green{color:var(--green)}
+.hole-cell .sub.red{color:var(--red)}
+
+/* ─── Project scorecard contained-metal block ─── */
+.sc-cm-block{margin-top:18px;padding-top:14px;border-top:1px dashed var(--line-2)}
+.sc-cm-h{font-size:10.5px;color:var(--accent);text-transform:uppercase;letter-spacing:0.14em;font-weight:600;margin-bottom:10px}
+.sc-cm-h::before{content:'▸ '}
+.sc-cm-inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media (max-width:720px){.sc-cm-inputs{grid-template-columns:1fr}}
+.sc-cm-inp{display:flex;flex-direction:column;gap:4px}
+.sc-cm-inp span{font-size:9.5px;color:var(--fg-3);text-transform:uppercase;letter-spacing:0.12em;font-weight:600}
+.sc-cm-inp input{background:var(--bg);border:1px solid var(--line-2);color:var(--fg);padding:7px 10px;font-family:var(--mono);font-size:12.5px;font-weight:600;border-radius:var(--r);outline:none;font-feature-settings:'tnum'}
+.sc-cm-inp input:focus{border-color:var(--accent)}
 
 /* ─── Chart card ─── */
 .chart-wrap{height:300px;position:relative}
@@ -439,6 +454,68 @@ table.sens tbody tr.proj-divider td{background:var(--bg-3);padding:5px 14px;text
       </div>
     </div>
 
+    <!-- Project scorecard — appears when a project is matched -->
+    <div class="card" id="scorecardCard" style="display:none">
+      <div class="card-h">Project scorecard
+        <span class="meta">
+          <span id="scName" style="color:var(--accent);font-weight:700"></span>
+          · <span id="scN">0</span> intercepts ·
+          <span id="scTier" style="color:var(--accent);text-transform:uppercase;font-weight:600">discovery</span>
+        </span>
+      </div>
+      <div class="card-b">
+        <div class="hole-strip" id="scStatsTop">
+          <div class="hole-cell"><span class="l">Intercepts</span><span class="v" id="scStatN">—</span><span class="sub" id="scStatNSub">—</span></div>
+          <div class="hole-cell"><span class="l">Best g·m</span><span class="v accent" id="scStatBest">—</span><span class="sub" id="scStatBestSub">—</span></div>
+          <div class="hole-cell"><span class="l">Median g·m</span><span class="v" id="scStatMed">—</span><span class="sub" id="scStatMedSub">typical hole</span></div>
+          <div class="hole-cell"><span class="l">Best : Median</span><span class="v" id="scStatRatio">—</span><span class="sub" id="scStatRatioSub">style indicator</span></div>
+        </div>
+        <div class="hole-strip" id="scStatsBot" style="margin-top:1px">
+          <div class="hole-cell"><span class="l">&gt; 100 g·m</span><span class="v" id="scStat100">—</span><span class="sub" id="scStat100Sub">—</span></div>
+          <div class="hole-cell"><span class="l">&gt; 1,000 g·m</span><span class="v" id="scStat1k">—</span><span class="sub" id="scStat1kSub">—</span></div>
+          <div class="hole-cell"><span class="l">Log-σ (g·m)</span><span class="v" id="scStatSigma">—</span><span class="sub" id="scStatSigmaSub">consistency</span></div>
+          <div class="hole-cell"><span class="l">Hit rate &gt; 50</span><span class="v" id="scStatHit">—</span><span class="sub">mineralisation</span></div>
+        </div>
+
+        <div class="stage-row" id="scTierRow" style="margin-top:14px">
+          <div class="stage-cell" data-stage="discovery"><span class="l">Discovery</span><span class="v">score &lt; 1.0</span></div>
+          <div class="stage-cell" data-stage="scoping"><span class="l">Scoping</span><span class="v">1.0 – 1.5</span></div>
+          <div class="stage-cell" data-stage="pea"><span class="l">PEA</span><span class="v">1.5 – 2.0</span></div>
+          <div class="stage-cell" data-stage="pfs"><span class="l">PFS</span><span class="v">2.0 – 2.5</span></div>
+          <div class="stage-cell" data-stage="fs"><span class="l">FS / Mine</span><span class="v">≥ 2.5</span></div>
+        </div>
+        <div class="kpi-eq" style="margin-top:6px;color:var(--fg-2)">
+          Composite score <span id="scTierScore" style="color:var(--accent);font-weight:600">—</span>
+          · 0.4·log₁₀(n) + 0.3·log₁₀(n&gt;100) + 0.2·log₁₀(n&gt;1k) + 0.1·log₁₀(median)
+        </div>
+
+        <!-- Contained metal block -->
+        <div class="sc-cm-block">
+          <div class="sc-cm-h">
+            Contained metal proxy (AuEq) ·
+            <span style="color:var(--fg-3)">tune footprint assumptions:</span>
+          </div>
+          <div class="sc-cm-inputs">
+            <label class="sc-cm-inp"><span>Strike (m)</span><input type="number" id="scStrike" value="500" min="50" step="50"></label>
+            <label class="sc-cm-inp"><span>Dip extent (m)</span><input type="number" id="scDip" value="300" min="50" step="50"></label>
+            <label class="sc-cm-inp"><span>Density (t/m³)</span><input type="number" id="scDensity" value="2.7" min="1.5" max="6" step="0.1"></label>
+          </div>
+          <div class="hole-strip" style="margin-top:10px">
+            <div class="hole-cell"><span class="l">Mean g·m (AuEq)</span><span class="v" id="scMeanGm">—</span><span class="sub">grade × width avg</span></div>
+            <div class="hole-cell"><span class="l">Contained AuEq</span><span class="v accent" id="scContainedT">—</span><span class="sub" id="scContainedOz">—</span></div>
+            <div class="hole-cell"><span class="l">vs 1 Moz threshold</span><span class="v" id="scThreshSmall">—</span><span class="sub">small-mine bar</span></div>
+            <div class="hole-cell"><span class="l">vs 5 Moz threshold</span><span class="v" id="scThreshMajor">—</span><span class="sub">major bar</span></div>
+          </div>
+          <div class="kpi-eq" style="margin-top:8px;color:var(--fg-3)">
+            <strong style="color:var(--amber)">Caveat.</strong>
+            Contained AuEq = mean(g·m) × density × strike × dip. Sensitive to footprint — adjust to your project's actual strike/dip. Assumes
+            tabular orebody and uniform mineralisation. Thresholds in AuEq: <strong>1 Moz ≈ 30 t</strong> · <strong>5 Moz ≈ 150 t</strong>.
+            Treat as rank-order signal, not resource estimate.
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Top projects table -->
     <div class="card">
       <div class="card-h">Top projects in universe
@@ -494,6 +571,7 @@ table.sens tbody tr.proj-divider td{background:var(--bg-3);padding:5px 14px;text
         <p><strong>1. AuEq formula.</strong> NI 43-101 / JORC standard: <em>AuEq = Σ(grade × price × recovery) / (Au_price × Au_recovery)</em>. Each metal row carries its own price and recovery — edit them to match your assumptions. Defaults: Au $2,400/oz @ 90%, Ag $28/oz @ 75%, Cu $4.20/lb @ 88%, Pb $0.95/lb @ 80%, Zn $1.30/lb @ 85%, Ni $8/lb @ 70%, Mo $20/lb @ 80%, Co $15/lb @ 65%, Sn $14/lb @ 72%, Li₂O $14.50/lb @ 75%, U₃O₈ $80/lb @ 90%.</p>
         <p><strong>2. Multi-intercept holes.</strong> A drill hole can have several mineralised zones at different depths. Add as many intercepts as your assays show — each gets its own AuEq, true width, and gram-meters. The hole's "Total g·m" is the sum across intercepts; "Best g·m" is the largest single intercept. Save the whole hole as one record; the saved-holes table shows hole-level rollups.</p>
         <p><strong>3. Gram-meters and ranking.</strong> The universal cross-commodity ranking metric: <em>g·m = AuEq grade × true width</em>. Rank tile compares your <em>active</em> intercept against the 46-hole benchmark set. The benchmark scatter's iso-curves let you see the grade-vs-width trade-off explicitly.</p>
+        <p><strong>4b. Project scorecard.</strong> Appears below the chart when a project is selected. Eight stat tiles: <em>n intercepts</em> · <em>best g·m</em> · <em>median g·m</em> · <em>best:median ratio</em> (50×+ = bonanza vein, &lt;5× = bulk-tonnage) · <em>n &gt; 100 g·m</em> · <em>n &gt; 1,000 g·m</em> · <em>log-σ of g·m</em> (consistency — tight ≤0.3, high-var ≥0.9) · <em>hit rate &gt; 50 g·m</em>. <strong>Composite tier</strong> via weighted log-score: <code>0.4·log(n) + 0.3·log(n&gt;100) + 0.2·log(n&gt;1k) + 0.1·log(median)</code> bucketed into Discovery / Scoping / PEA / PFS / FS. <strong>Contained AuEq proxy</strong>: <code>mean(g·m) × density × strike × dip / 1e6</code> → tonnes AuEq → troy oz at 32,150.5 oz/t. Tunable footprint (default 500m × 300m × 2.7 t/m³). Compared to <strong>1 Moz</strong> small-mine and <strong>5 Moz</strong> major thresholds (in AuEq). This is a rank-order proxy, not a resource estimate — it assumes a tabular orebody with uniform mineralisation. Calibrate the strike/dip to your project's actual geometry before quoting numbers.</p>
         <p><strong>4. Project scatter — drilling universe + filters.</strong> Same log-log axes as the benchmark chart (true width × AuEq grade). Background cloud is 4,188 real drill intercepts across 1,180 projects, coloured by commodity group (Au / Cu / Li / Ni / U / Zn / Other). True width is assumed equal to downhole length — the source spreadsheet has no TW indicator, so all g·m figures are upper bounds. <strong>Filters:</strong> click a commodity pill to toggle that group on/off (also hides its KDE envelope and removes its projects from the summary table); drag the <em>Min g·m</em> slider to suppress low-significance intercepts; type into <em>Project search</em> for autocomplete from the universe. Matched-project halos always show, regardless of filter state. Toggle <em>KDE contours</em> to overlay per-commodity envelopes (50% solid fill = inner half of mass; 80% dashed = outer 80%). Envelopes are computed live in-browser as a Gaussian fit on log10(width) × log10(AuEq grade) — every filter change (commodity, min g·m, scope-to-table, project search) reshapes the contour. Initial scipy KDE on the full universe lives in <code>drill_universe.json</code> as a baseline reference but is no longer rendered. Stage indicator below tracks # holes &gt; 100 g·m for your saved holes. The summary table below the chart ranks all universe projects on n intercepts / best g·m / median g·m / # &gt;100 g·m / # &gt;1k g·m — click a row to highlight that project, or toggle <em>Scope chart to table</em> to filter the chart's cloud + KDE to just the visible top-50 rows.</p>
         <table>
           <thead><tr><th>Stage</th><th># total holes</th><th># &gt;100 g·m</th><th># &gt;1,000 g·m</th></tr></thead>
@@ -1409,6 +1487,9 @@ function renderProfile() {
   }
   if (el.matchPill) el.matchPill.style.display = matched.length ? 'inline-flex' : 'none';
 
+  // Per-project scorecard (shows iff a project is matched in the universe)
+  renderProjectScorecard(matched, projName);
+
   // Stage indicator
   const above100Stage = projHoles.filter(h => (h.hole_gm||0) > 100).length;
   let stage = null;
@@ -1418,6 +1499,81 @@ function renderProfile() {
   else if (above100Stage >= 5)  stage = 'scoping';
   else if (above100Stage >= 1)  stage = 'discovery';
   [...el.stageRow.children].forEach(c => c.classList.toggle('on', c.dataset.stage === stage));
+}
+
+// ─── Project scorecard: per-project stats, tier, contained-metal proxy ─────
+let scParams = {strike: 500, dip: 300, density: 2.7};
+
+function median(arr) {
+  if (!arr.length) return 0;
+  const s = arr.slice().sort((a,b) => a - b);
+  const n = s.length;
+  return n % 2 ? s[(n-1)/2] : (s[n/2 - 1] + s[n/2]) / 2;
+}
+function stdev(arr) {
+  if (arr.length < 2) return 0;
+  const m = arr.reduce((s,v)=>s+v, 0) / arr.length;
+  const v = arr.reduce((s,x) => s + (x-m)*(x-m), 0) / arr.length;
+  return Math.sqrt(v);
+}
+
+// Composite tier score thresholds calibrated against the actual dataset:
+//   1 great hole (Brucejack-like, n=1):                 score ≈ 0.6  → Discovery
+//   ~10 holes, 5 over 100 g·m, 1 over 1k:               score ≈ 0.9  → Discovery
+//   ~30 holes, mostly >100 (e.g. Corvette n=38):        score ≈ 1.5  → Scoping
+//   ~100 holes, 50 over 100, 15 over 1k:                score ≈ 1.8  → PEA
+//   ~500 holes (FS-stage):                              score ≈ 2.4  → PFS
+//   >2,000 holes (operating mine, press-only sample):   score ≈ 2.8+ → FS / Mine
+// Dataset bias: press-release-only intercepts under-count operating mines.
+// Tier = "drilling-effort tier" not "regulatory stage" — see methodology.
+function tierFromScore(s) {
+  if (s >= 2.5) return {key:'fs',        label:'FS / Mine'};
+  if (s >= 2.0) return {key:'pfs',       label:'PFS'};
+  if (s >= 1.5) return {key:'pea',       label:'PEA'};
+  if (s >= 1.0) return {key:'scoping',   label:'Scoping'};
+  return                {key:'discovery', label:'Discovery'};
+}
+
+function computeScorecard(name, rows) {
+  // rows: [{c, w, g, gm}]
+  const n = rows.length;
+  if (!n) return null;
+  const gms = rows.map(r => r.gm);
+  const widths = rows.map(r => r.w);
+  const grades = rows.map(r => r.g);
+  const best   = Math.max(...gms);
+  const med    = median(gms);
+  const meanGm = gms.reduce((s,v)=>s+v, 0) / n;
+  const above100 = gms.filter(g => g > 100).length;
+  const above1k  = gms.filter(g => g > 1000).length;
+  const above50  = gms.filter(g => g > 50).length;
+  const hitRate50 = n ? above50 / n : 0;
+  const logGm = gms.filter(v => v > 0).map(Math.log10);
+  const logSigma = stdev(logGm);
+  const ratio = med > 0 ? best / med : 0;
+
+  // Tier composite score
+  const tierScore =
+      0.4 * Math.log10(n + 1) +
+      0.3 * Math.log10(above100 + 1) +
+      0.2 * Math.log10(above1k + 1) +
+      0.1 * Math.log10((med || 1));
+  const tier = tierFromScore(tierScore);
+
+  // Contained metal in AuEq tonnes — proxy.
+  // mean_gm has units (g/t × m). Multiply by density (t/m³) and area (m²)
+  // and you get mass = density × area × thickness × grade = grams of metal.
+  // /1e6 → tonnes. Convert to troy oz at 32,150.5 oz/t.
+  const area_m2  = scParams.strike * scParams.dip;
+  const grams    = meanGm * scParams.density * area_m2;
+  const tonnes   = grams / 1e6;
+  const ozEq     = tonnes * 32150.5;
+
+  return {
+    name, n, best, med, meanGm, above100, above1k, hitRate50, logSigma, ratio,
+    tierScore, tier,
+    contained: {tonnes, ozEq, area_m2, ...scParams},
+  };
 }
 
 // ─── Project stats + summary table ─────────────────────────
@@ -1499,6 +1655,117 @@ function renderProjectTable() {
     if (th.dataset.sort === tableSort.col) th.classList.add(tableSort.dir === 'asc' ? 'sort-asc' : 'sort-desc');
   });
 }
+
+function fmtMass(t) {
+  // 't' = tonnes of AuEq. Pick a sensible unit/precision.
+  if (!isFinite(t) || t <= 0) return '— t';
+  if (t >= 1000) return fmt(t/1000, 1) + ' kt';
+  if (t >= 1) return fmt(t, 1) + ' t';
+  return fmt(t * 1000, 0) + ' kg';
+}
+
+function styleFromRatio(r) {
+  if (r >= 50) return {label:'BONANZA',   cls:'amber'};
+  if (r >= 20) return {label:'VEIN-STYLE',cls:'amber'};
+  if (r >= 10) return {label:'MIXED',     cls:''};
+  if (r >= 5)  return {label:'CONSISTENT',cls:'green'};
+  return         {label:'BULK',           cls:'green'};
+}
+function consistencyFromSigma(s) {
+  // log10-sigma typical range: 0.3 (very consistent) → 1.0+ (highly variable)
+  if (s >= 0.9) return {label:'HIGH VAR', cls:'red'};
+  if (s >= 0.6) return {label:'MEDIUM',   cls:'amber'};
+  if (s >= 0.3) return {label:'LOW',      cls:'green'};
+  return         {label:'TIGHT',          cls:'green'};
+}
+
+function renderProjectScorecard(matched, name) {
+  const card = document.getElementById('scorecardCard');
+  if (!card) return;
+  if (!name || !matched.length) {
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = '';
+
+  // Convert matched points back into rows
+  const rows = matched.map(pt => ({
+    c: pt.meta.commodity, w: pt.meta.width, g: pt.meta.grade, gm: pt.meta.gm,
+  }));
+  const s = computeScorecard(name, rows);
+  if (!s) { card.style.display = 'none'; return; }
+
+  document.getElementById('scName').textContent = name;
+  document.getElementById('scN').textContent = s.n;
+  document.getElementById('scTier').textContent = s.tier.label;
+
+  // Top row tiles
+  const setTile = (id, v, sub, subCls) => {
+    document.getElementById(id).textContent = v;
+    if (sub != null) {
+      const el = document.getElementById(id + 'Sub');
+      if (el) {
+        el.textContent = sub;
+        el.classList.remove('amber','green','red');
+        if (subCls) el.classList.add(subCls);
+      }
+    }
+  };
+  setTile('scStatN',    s.n, s.n >= 30 ? 'enough for fit' : s.n >= 6 ? 'envelope-capable' : 'too few for stable fit', s.n >= 30 ? 'green' : s.n >= 6 ? '' : 'amber');
+  setTile('scStatBest', fmt(s.best, 0), 'top intercept');
+  setTile('scStatMed',  fmt(s.med, 0), 'typical hole');
+  const style = styleFromRatio(s.ratio);
+  setTile('scStatRatio',fmt(s.ratio, 1) + '×', style.label, style.cls);
+
+  // Bottom row tiles
+  const pct = (x, total) => total ? Math.round(100 * x / total) + '%' : '0%';
+  setTile('scStat100',  s.above100, pct(s.above100, s.n) + ' of holes');
+  setTile('scStat1k',   s.above1k,  pct(s.above1k, s.n)  + ' of holes');
+  const cons = consistencyFromSigma(s.logSigma);
+  setTile('scStatSigma',s.logSigma.toFixed(2), cons.label, cons.cls);
+  setTile('scStatHit',  Math.round(s.hitRate50 * 100) + '%', null);
+
+  // Tier row highlight
+  [...document.getElementById('scTierRow').children].forEach(c => {
+    c.classList.toggle('on', c.dataset.stage === s.tier.key);
+  });
+  document.getElementById('scTierScore').textContent = s.tierScore.toFixed(2);
+
+  // Contained metal
+  setTile('scMeanGm',     fmt(s.meanGm, 0), null);
+  document.getElementById('scContainedT').textContent = fmtMass(s.contained.tonnes);
+  document.getElementById('scContainedOz').textContent =
+    s.contained.ozEq >= 1e6 ? fmt(s.contained.ozEq / 1e6, 2) + ' Moz' :
+    s.contained.ozEq >= 1e3 ? fmt(s.contained.ozEq / 1e3, 0) + ' koz' :
+    fmt(s.contained.ozEq, 0) + ' oz';
+  const rSmall = s.contained.tonnes / 30;    // 1 Moz threshold
+  const rMajor = s.contained.tonnes / 150;   // 5 Moz threshold
+  const rPct = r => r >= 1 ? '≥ 100%' :
+                    r >= 0.5 ? Math.round(r*100) + '%' :
+                    r >= 0.1 ? Math.round(r*100) + '%' :
+                               '< 10%';
+  setTile('scThreshSmall', rPct(rSmall), null);
+  document.getElementById('scThreshSmallSub').textContent = 'small-mine bar';
+  setTile('scThreshMajor', rPct(rMajor), null);
+  document.getElementById('scThreshMajorSub').textContent = 'major bar';
+  document.getElementById('scThreshSmall').classList.remove('hl','amber','dim');
+  document.getElementById('scThreshSmall').classList.add(rSmall >= 1 ? 'hl' : rSmall >= 0.3 ? 'amber' : 'dim');
+  document.getElementById('scThreshMajor').classList.remove('hl','amber','dim');
+  document.getElementById('scThreshMajor').classList.add(rMajor >= 1 ? 'hl' : rMajor >= 0.3 ? 'amber' : 'dim');
+}
+
+// Contained-metal input handlers — re-render scorecard on each tick
+['scStrike','scDip','scDensity'].forEach(id => {
+  const inp = document.getElementById(id);
+  if (!inp) return;
+  inp.addEventListener('input', () => {
+    const v = parseFloat(inp.value);
+    if (id === 'scStrike'  && v >= 50) scParams.strike  = v;
+    if (id === 'scDip'     && v >= 50) scParams.dip     = v;
+    if (id === 'scDensity' && v >= 1) scParams.density = v;
+    renderAll();
+  });
+});
 
 // Recompute the set of project names currently visible in the table.
 // Scope = top 50 after commodity filter + sort — same logic as renderProjectTable.
