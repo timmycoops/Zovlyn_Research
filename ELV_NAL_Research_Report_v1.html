@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELV.AX / ELVR — NAL Updated Scoping Study | Zovlyn Research</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c0d0a;
+  --bg-2: #131410;
+  --bg-3: #1a1c16;
+  --line: #2a2c24;
+  --line-2: #3a3d33;
+  --fg: #d8d4c2;
+  --fg-2: #8a8773;
+  --fg-3: #5d5b4d;
+  --accent: #5dd3a8;
+  --accent-2: #3aa881;
+  --accent-dim: rgba(93,211,168,0.10);
+  --green: #5dd380;
+  --amber: #e8b658;
+  --red: #ff5f56;
+  --cyan: #6acfe0;
+  --r: 4px;
+  --mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--sans); font-size: 14px; line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+sub { font-size: 0.7em; }
+
+/* ── Status bar ── */
+.t-top {
+  background: var(--bg-2); border-bottom: 1px solid var(--line);
+  padding: 8px 24px; display: flex; align-items: center;
+  gap: 24px; font-size: 11px; color: var(--fg-2); flex-wrap: wrap;
+  font-family: var(--mono);
+}
+.t-top .session { color: var(--accent); font-weight: 600; }
+.t-spacer { flex: 1; }
+@media (max-width: 720px) { .t-top { gap: 14px; padding: 8px 16px; } .hide-sm { display: none; } }
+
+/* ── Nav ── */
+.t-nav {
+  padding: 14px 24px; display: flex; align-items: center;
+  justify-content: space-between; border-bottom: 1px solid var(--line);
+  flex-wrap: wrap; gap: 12px;
+}
+.t-mark { display: flex; align-items: center; gap: 12px; }
+.t-badge {
+  width: 32px; height: 32px;
+  background: var(--accent); color: var(--bg);
+  display: grid; place-items: center;
+  font-weight: 800; font-size: 16px;
+  font-family: var(--mono); border-radius: var(--r);
+}
+.t-mark-text { display: flex; flex-direction: column; line-height: 1.05; }
+.t-mark-name { font-family: var(--mono); font-weight: 700; font-size: 13px; color: var(--fg); letter-spacing: 0.14em; }
+.t-mark-sub  { font-family: var(--mono); font-size: 9.5px; color: var(--fg-3); letter-spacing: 0.22em; font-weight: 500; }
+.t-nav-r { display: flex; gap: 18px; font-size: 11px; color: var(--fg-2); align-items: center; font-family: var(--mono); }
+.t-nav-r a { color: var(--fg-2); letter-spacing: 0.08em; transition: color 0.15s; text-transform: uppercase; }
+.t-nav-r a:hover { color: var(--accent); }
+.t-nav-r a.home::before { content: '← '; }
+@media (max-width: 720px) { .t-nav-r { font-size: 10px; gap: 12px; } }
+
+/* ── Wrap ── */
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px 60px; }
+@media (max-width: 720px) { .wrap { padding: 0 16px 40px; } }
+
+/* ── Cover ── */
+.cover {
+  padding: 48px 0 32px;
+  border-bottom: 1px solid var(--line);
+}
+.cover-tags {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 10.5px; color: var(--fg-3);
+  letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 18px;
+}
+.cover-tags .accent { color: var(--accent); }
+.cover-tags .sep { color: var(--line-2); }
+.cover h1 {
+  font-family: var(--mono); font-weight: 500;
+  font-size: clamp(32px, 5vw, 54px); line-height: 1.05;
+  letter-spacing: -0.025em; color: var(--fg); margin-bottom: 14px;
+}
+.cover h1 .accent { color: var(--accent); }
+.cover h1 .ticker { color: var(--fg-3); font-weight: 400; }
+.cover-sub {
+  font-size: 16px; color: var(--fg-2); max-width: 760px; line-height: 1.55;
+  margin-bottom: 28px;
+}
+.cover-meta {
+  display: flex; gap: 24px; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 11px; color: var(--fg-3);
+  letter-spacing: 0.06em; padding-top: 14px; border-top: 1px dashed var(--line-2);
+}
+.cover-meta span strong { color: var(--fg); font-weight: 500; }
+
+/* ── KPI strip ── */
+.kpi-strip {
+  display: grid; grid-template-columns: repeat(6, 1fr);
+  border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--line); gap: 1px; overflow: hidden;
+  margin: 28px 0 0;
+}
+@media (max-width: 880px) { .kpi-strip { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 480px) { .kpi-strip { grid-template-columns: repeat(2, 1fr); } }
+.kpi {
+  background: var(--bg-2); padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.kpi-v {
+  font-family: var(--mono); font-size: 22px; font-weight: 600;
+  color: var(--fg); font-feature-settings: 'tnum'; letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.kpi-v.hl { color: var(--accent); }
+.kpi-v.dim { color: var(--fg-2); }
+.kpi-v.red { color: var(--red); }
+.kpi-v.amber { color: var(--amber); }
+.kpi-v.cyan { color: var(--cyan); }
+.kpi-l {
+  font-family: var(--mono); font-size: 9.5px; color: var(--fg-3);
+  text-transform: uppercase; letter-spacing: 0.12em; font-weight: 500;
+}
+
+/* ── Page nav ── */
+.page-nav {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--bg); border-bottom: 1px solid var(--line);
+  margin: 28px -24px 0; padding: 0 24px;
+}
+.page-nav-inner {
+  max-width: 1180px; margin: 0 auto;
+  display: flex; gap: 0; overflow-x: auto;
+  scrollbar-width: none;
+}
+.page-nav-inner::-webkit-scrollbar { display: none; }
+.nav-btn {
+  background: transparent; border: none;
+  border-bottom: 2px solid transparent;
+  padding: 14px 18px; cursor: pointer; white-space: nowrap;
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  color: var(--fg-3); letter-spacing: 0.06em;
+  transition: all 0.15s;
+  text-transform: uppercase;
+}
+.nav-btn:hover { color: var(--fg-2); }
+.nav-btn.on { color: var(--accent); border-bottom-color: var(--accent); }
+.nav-btn .num { color: var(--fg-3); margin-right: 6px; font-weight: 400; }
+.nav-btn.on .num { color: var(--accent); }
+
+/* ── Pages ── */
+.page { display: none; padding-top: 32px; }
+.page.show { display: block; }
+
+/* ── Section heads ── */
+.sec { margin-bottom: 32px; }
+.sec-h {
+  display: flex; align-items: baseline; gap: 14px;
+  padding-bottom: 10px; margin-bottom: 16px;
+  border-bottom: 1px solid var(--line); flex-wrap: wrap;
+}
+.sec-h .num { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.12em; font-weight: 600; }
+.sec-h .title { font-family: var(--mono); font-size: 15px; font-weight: 600; color: var(--fg); letter-spacing: 0.02em; }
+.sec-h .meta { margin-left: auto; font-family: var(--mono); font-size: 10.5px; color: var(--fg-3); letter-spacing: 0.04em; }
+.sec p {
+  color: var(--fg-2); font-size: 14px; margin-bottom: 12px;
+  max-width: 880px;
+}
+.sec p strong { color: var(--fg); font-weight: 600; }
+.sec p a { color: var(--accent); border-bottom: 1px dashed currentColor; }
+
+/* ── Cards ── */
+.card {
+  background: var(--bg-2); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 18px 20px; margin: 14px 0;
+}
+.card-h {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+  color: var(--accent); text-transform: uppercase; letter-spacing: 0.14em;
+  margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px dashed var(--line-2);
+}
+
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+@media (max-width: 720px) { .g2, .g3 { grid-template-columns: 1fr; } }
+
+/* ── Info rows ── */
+.irow {
+  display: grid; grid-template-columns: 200px 1fr;
+  gap: 12px; padding: 5px 0; font-size: 13px;
+  border-bottom: 1px solid var(--line);
+}
+.irow:last-child { border-bottom: none; }
+.irow-l { font-family: var(--mono); font-size: 11px; color: var(--fg-3); letter-spacing: 0.04em; align-self: center; }
+.irow-v { color: var(--fg); font-feature-settings: 'tnum'; }
+.irow.hl .irow-l { color: var(--accent); font-weight: 600; }
+.irow.hl .irow-v { color: var(--fg); font-weight: 600; }
+
+/* ── Tables ── */
+.tbl { overflow-x: auto; margin: 12px 0; border: 1px solid var(--line); border-radius: var(--r); }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; font-feature-settings: 'tnum'; }
+thead th {
+  background: var(--bg-3); padding: 10px 14px;
+  text-align: left; font-family: var(--mono); font-weight: 600; font-size: 9.5px;
+  text-transform: uppercase; letter-spacing: 0.12em; color: var(--fg-3);
+  border-bottom: 1px solid var(--line); white-space: nowrap;
+}
+tbody td { padding: 9px 14px; border-bottom: 1px solid var(--line); color: var(--fg-2); }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--bg-3); color: var(--fg); }
+.t-hl td { color: var(--fg) !important; background: var(--accent-dim); }
+.t-hl td strong { color: var(--accent); }
+.t-prior td { color: var(--fg-3); font-style: italic; }
+td.num { text-align: right; font-feature-settings: 'tnum'; white-space: nowrap; }
+th.num { text-align: right; }
+
+/* ── Chart box ── */
+.chart-box {
+  background: var(--bg-2); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 18px; margin: 14px 0;
+}
+.chart-note {
+  font-family: var(--mono); font-size: 10.5px; color: var(--fg-3);
+  margin-top: 10px; line-height: 1.5; letter-spacing: 0.02em;
+}
+.chart-note a { color: var(--accent); }
+
+/* ── Pill ── */
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 10px; padding: 3px 8px;
+  border-radius: var(--r); letter-spacing: 0.08em; text-transform: uppercase;
+  font-weight: 600;
+}
+.pill.primary { color: var(--accent); border: 1px solid var(--accent-dim); background: var(--accent-dim); }
+.pill.peer    { color: var(--cyan);   border: 1px solid rgba(106,207,224,0.3); }
+.pill.exo     { color: var(--amber);  border: 1px solid rgba(232,182,88,0.3); }
+.pill.risk    { color: var(--red);    border: 1px solid rgba(255,95,86,0.3); }
+.pill.soft    { color: var(--fg-3);   border: 1px solid var(--line-2); }
+
+/* ── Catalysts / risks ── */
+.cat-list { display: flex; flex-direction: column; gap: 14px; }
+.cat-item {
+  display: grid; grid-template-columns: 28px 1fr;
+  gap: 16px; padding: 14px 0; border-bottom: 1px dashed var(--line-2);
+}
+.cat-item:last-child { border-bottom: none; }
+.cat-marker {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.04em; color: var(--accent);
+  align-self: start; padding-top: 2px;
+}
+.cat-body h5 {
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  color: var(--fg); margin-bottom: 4px; letter-spacing: 0.01em;
+}
+.cat-body h5 .stat { font-size: 10px; margin-left: 10px; letter-spacing: 0.1em; font-weight: 500; }
+.cat-body h5 .stat.done { color: var(--green); }
+.cat-body h5 .stat.next { color: var(--cyan); }
+.cat-body h5 .stat.watch { color: var(--amber); }
+.cat-body p { font-size: 13px; color: var(--fg-2); margin: 0; }
+
+.risk-list { display: flex; flex-direction: column; }
+.risk-row {
+  display: grid; grid-template-columns: 220px 1fr;
+  gap: 16px; padding: 12px 0; border-bottom: 1px dashed var(--line-2);
+  font-size: 13px;
+}
+.risk-row:last-child { border-bottom: none; }
+.risk-l { font-family: var(--mono); font-size: 11px; color: var(--red); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.risk-v { color: var(--fg-2); }
+
+/* ── Disclosure ── */
+.disc {
+  margin-top: 32px; padding: 18px 20px;
+  background: var(--bg-2); border: 1px solid var(--line);
+  border-left: 2px solid var(--red); border-radius: var(--r);
+}
+.disc h4 {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  color: var(--red); margin-bottom: 8px; letter-spacing: 0.14em;
+}
+.disc p {
+  font-family: var(--sans); font-size: 12.5px; color: var(--fg-2);
+  margin: 0; line-height: 1.65; max-width: 880px;
+}
+
+/* ── Sources ── */
+.src-list {
+  display: flex; flex-direction: column; gap: 6px;
+  font-family: var(--mono); font-size: 11.5px; color: var(--fg-3);
+}
+.src-list a { color: var(--fg-2); border-bottom: 1px dashed var(--line-2); }
+.src-list a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.src-list .src-tag { color: var(--accent); font-size: 9.5px; letter-spacing: 0.14em; margin-right: 8px; }
+
+/* ── Footer ── */
+.footer {
+  margin-top: 40px; padding: 24px 0;
+  border-top: 1px solid var(--line);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+  font-family: var(--mono); font-size: 10.5px; color: var(--fg-3);
+  letter-spacing: 0.06em;
+}
+.footer .links { display: flex; gap: 18px; flex-wrap: wrap; }
+.footer a { color: var(--accent); }
+.footer a:hover { color: var(--fg); }
+
+/* ── Reveal ── */
+.reveal { opacity: 1; transform: none; transition: opacity .5s ease, transform .5s ease; }
+</style>
+</head>
+<body>
+
+<!-- ═══ Status bar ═══ -->
+<div class="t-top">
+  <span class="session" id="t-session">SESSION 00:00:00</span>
+  <span class="hide-sm">REPORT · ELV.AX / ELVR</span>
+  <span class="hide-sm">VERSION · 1.0</span>
+  <span class="t-spacer"></span>
+  <span class="hide-sm">USER · zovlyn</span>
+  <span id="t-clock">12-MAY-2026 · 00:00</span>
+</div>
+
+<!-- ═══ Nav ═══ -->
+<div class="t-nav">
+  <a href="index.html" class="t-mark" aria-label="Zovlyn Research home">
+    <div class="t-badge">Z</div>
+    <div class="t-mark-text">
+      <div class="t-mark-name">ZOVLYN</div>
+      <div class="t-mark-sub">RESEARCH</div>
+    </div>
+  </a>
+  <div class="t-nav-r">
+    <a href="index.html" class="home">ALL TOOLS</a>
+    <a href="mining_dcf.html">DCF MODEL</a>
+    <a href="lithium_supply_model.html">SUPPLY MODEL</a>
+    <a href="lce_chart_2.html">EV/T LCE</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ═══ COVER ═══ -->
+  <header class="cover reveal">
+    <div class="cover-tags">
+      <span class="accent">// COMPANY REPORT</span>
+      <span class="sep">│</span>
+      <span>BROWNFIELD EXPANSION</span>
+      <span class="sep">│</span>
+      <span>HARD-ROCK LITHIUM</span>
+      <span class="sep">│</span>
+      <span>ABITIBI · QC</span>
+    </div>
+    <h1>
+      <span class="accent">Elevra Lithium</span>
+      <span class="ticker">— ELV.AX / ELVR</span><br>
+      NAL Updated Scoping Study
+    </h1>
+    <p class="cover-sub">
+      Elevra's 12 May 2026 update to the North American Lithium expansion study pulls
+      annual production forward by two years, lifts the incremental post-tax NPV(8%)
+      by 102% to C$969M, and keeps total initial capex unchanged at US$270M. The
+      route to 338 ktpa SC5.4 is now staged: 4,500 tpd permitted today, 6,500 tpd
+      from early CY28, full crushing replacement mid-CY29.
+    </p>
+    <div class="cover-meta">
+      <span>PUBLISHED · <strong>12 May 2026</strong></span>
+      <span>STAGE · <strong>Operating · expansion at scoping</strong></span>
+      <span>FRAMEWORK · <strong>JORC 2012</strong></span>
+      <span>POSITION · <strong>No position disclosed</strong></span>
+    </div>
+
+    <!-- KPI Strip -->
+    <div class="kpi-strip">
+      <div class="kpi"><div class="kpi-v hl">C$3,112M</div><div class="kpi-l">NPV(8%) post-tax · total project</div></div>
+      <div class="kpi"><div class="kpi-v hl">41.8%</div><div class="kpi-l">IRR · expansion · post-tax</div></div>
+      <div class="kpi"><div class="kpi-v">US$270M</div><div class="kpi-l">Initial CAPEX · total</div></div>
+      <div class="kpi"><div class="kpi-v">338 ktpa</div><div class="kpi-l">LOM SC5.4 · post-expansion</div></div>
+      <div class="kpi"><div class="kpi-v cyan">US$628/t</div><div class="kpi-l">LOM C1 · post-expansion</div></div>
+      <div class="kpi"><div class="kpi-v amber">25 mo</div><div class="kpi-l">Payback · post-tax</div></div>
+    </div>
+  </header>
+
+  <!-- ═══ PAGE NAV ═══ -->
+  <nav class="page-nav">
+    <div class="page-nav-inner" id="rpt-nav"></div>
+  </nav>
+
+  <!-- ═══ PAGE 1: ASSET ═══ -->
+  <div class="page show" id="p-asset">
+
+    <div class="sec reveal">
+      <div class="sec-h">
+        <span class="num">[01]</span>
+        <span class="title">ASSET &amp; OPERATOR</span>
+        <span class="meta">NAL · La Corne · Québec</span>
+      </div>
+      <p>The <strong>North American Lithium</strong> ("NAL") operation is a hard-rock spodumene mine and concentrator in La Corne, in the Abitibi-Témiscamingue region of Québec — <strong>~550 km north of Montréal</strong>, 60 km north of Val-d'Or, 38 km southeast of Amos. The plant restarted in March 2023 and is currently permitted for <strong>4,500 tpd of average annual milling</strong>. <strong>Elevra Lithium</strong> (ASX:ELV, NASDAQ:ELVR), the renamed entity following the Sayona Mining / Piedmont Lithium merger, is the operator.</p>
+      <p>Current run-rate concentrate production is roughly <strong>200 ktpa SC5.4</strong>. The Updated Scoping Study released <strong>12 May 2026</strong> lays out a three-stage debottlenecking pathway to 338 ktpa, sequenced inside the existing permit envelope before stepping out to 6,500 tpd. The study is preliminary — it is a scoping study, not a PFS — and is underpinned solely by current Ore Reserves rather than Inferred resource.</p>
+    </div>
+
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-h">▸ Operator · Elevra Lithium</div>
+        <div class="irow"><span class="irow-l">Listings</span><span class="irow-v">ASX:ELV · NASDAQ:ELVR</span></div>
+        <div class="irow"><span class="irow-l">HQ</span><span class="irow-v">Brisbane, Australia</span></div>
+        <div class="irow"><span class="irow-l">CEO / MD</span><span class="irow-v">Lucas Dow</span></div>
+        <div class="irow"><span class="irow-l">History</span><span class="irow-v">Sayona / Piedmont merger (rebrand 2025)</span></div>
+        <div class="irow"><span class="irow-l">Flagship</span><span class="irow-v">NAL · 100% (operating)</span></div>
+        <div class="irow"><span class="irow-l">Status</span><span class="irow-v">Producing · ~200 ktpa SC5.4 current</span></div>
+      </div>
+      <div class="card">
+        <div class="card-h">▸ Site &amp; infrastructure</div>
+        <div class="irow"><span class="irow-l">Location</span><span class="irow-v">La Corne, Abitibi-Témiscamingue, QC</span></div>
+        <div class="irow"><span class="irow-l">Access</span><span class="irow-v">Hwy 111 · Val-d'Or to Amos</span></div>
+        <div class="irow"><span class="irow-l">Rail</span><span class="irow-v">CN line ~49 km east</span></div>
+        <div class="irow"><span class="irow-l">Power</span><span class="irow-v">120 kV transmission ~2 km west</span></div>
+        <div class="irow"><span class="irow-l">Permit (current)</span><span class="irow-v">4,500 tpd avg. annual milling</span></div>
+        <div class="irow"><span class="irow-l">Plant availability</span><span class="irow-v">90% (study assumption)</span></div>
+      </div>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-h">▸ Processing flowsheet — three circuits</div>
+      <div class="g3">
+        <div>
+          <div class="pill primary">Crush &amp; sort</div>
+          <p style="font-size:13px;color:var(--fg-2);margin-top:10px">Primary, secondary and tertiary crushing plus ore sorting upgrades the plant feed before downstream concentration.</p>
+        </div>
+        <div>
+          <div class="pill primary">Concentrator</div>
+          <p style="font-size:13px;color:var(--fg-2);margin-top:10px">Grinding, desliming, magnetic separation (LIMS + WHIMS), flotation, dewatering. Output: 5.4% Li<sub>2</sub>O spodumene concentrate.</p>
+        </div>
+        <div>
+          <div class="pill primary">Utilities &amp; TSF</div>
+          <p style="font-size:13px;color:var(--fg-2);margin-top:10px">Process water, reagents, RO treatment, tailings management. Stage 3 introduces new crushing capacity sized for 338 ktpa LOM.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PAGE 2: UPDATED SCOPING STUDY ═══ -->
+  <div class="page" id="p-study">
+
+    <div class="sec reveal">
+      <div class="sec-h">
+        <span class="num">[02]</span>
+        <span class="title">UPDATED SCOPING STUDY · 12 MAY 2026</span>
+        <span class="meta">Vs. base 15 Sep 2025</span>
+      </div>
+      <p>The update reframes the September 2025 whole-of-project expansion as a <strong>staged debottlenecking</strong>. Total initial CAPEX is unchanged at <strong>US$270M (C$366M)</strong>, but spend is now split across three discrete tranches; first incremental tonnes land mid-CY27 — two years earlier than originally contemplated. Average LOM unit cash cost is essentially unchanged (US$628/t C1 vs. prior); the post-tax NPV uplift is split roughly evenly between the staging benefit and a higher Li<sub>2</sub>O price deck (Benchmark Mineral Intelligence Q1 2026).</p>
+    </div>
+
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-h">▸ Headline shift · prior → updated</div>
+        <div class="irow hl"><span class="irow-l">Incremental NPV(8%) post-tax</span><span class="irow-v">C$479M → <strong>C$969M</strong> (+102%)</span></div>
+        <div class="irow"><span class="irow-l">Total project NPV(8%)</span><span class="irow-v">— → C$3,112M (US$2,305M)</span></div>
+        <div class="irow"><span class="irow-l">IRR (expansion, post-tax)</span><span class="irow-v">— → 41.8%</span></div>
+        <div class="irow"><span class="irow-l">Payback (post-tax)</span><span class="irow-v">— → 25 months</span></div>
+        <div class="irow"><span class="irow-l">Total initial CAPEX</span><span class="irow-v">US$270M (unchanged)</span></div>
+        <div class="irow"><span class="irow-l">LOM C1 / AISC (US$/t)</span><span class="irow-v">~628 / ~683 (similar)</span></div>
+        <div class="irow"><span class="irow-l">First incremental tonnes</span><span class="irow-v">Mid-CY29 → <strong>Mid-CY27</strong></span></div>
+        <div class="irow"><span class="irow-l">LOM SC5.4 production</span><span class="irow-v">315 ktpa → 338 ktpa</span></div>
+      </div>
+      <div class="card">
+        <div class="card-h">▸ Where the NPV uplift comes from</div>
+        <div style="position:relative;height:230px"><canvas id="upliftChart"></canvas></div>
+        <p style="font-family:var(--mono);font-size:10.5px;color:var(--fg-3);margin-top:10px;line-height:1.55">~51% of the incremental NPV gain attributed to staging / throughput and other assumption changes; ~49% to the higher Li<sub>2</sub>O price deck vs. the Sep 2025 study.</p>
+      </div>
+    </div>
+
+    <div class="sec reveal" style="margin-top:32px">
+      <div class="sec-h">
+        <span class="num">[02.1]</span>
+        <span class="title">STAGE-BY-STAGE DEVELOPMENT SEQUENCE</span>
+      </div>
+      <p>The expanded pathway slots each capital deployment to a specific debottleneck rather than committing the full expansion at once. Permitting is the binding constraint; Stage 1 stays inside the existing 4,500 tpd envelope.</p>
+    </div>
+
+    <div class="tbl reveal">
+      <table>
+        <thead>
+          <tr><th>Stage</th><th>Scope</th><th>Capacity</th><th>CAPEX (C$M)</th><th>CAPEX (US$M)</th><th>First production</th></tr>
+        </thead>
+        <tbody>
+          <tr class="t-hl">
+            <td><strong>Stage 1</strong></td>
+            <td>15–20% lift within current permit envelope</td>
+            <td>4,500 tpd (permitted)</td>
+            <td class="num">96</td>
+            <td class="num">71</td>
+            <td><strong>Mid-CY27</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Stage 2</strong></td>
+            <td>Mill, flotation, filtration expansion · temporary mobile crusher</td>
+            <td>6,500 tpd</td>
+            <td class="num">81</td>
+            <td class="num">60</td>
+            <td>Early CY28</td>
+          </tr>
+          <tr>
+            <td><strong>Stage 3</strong></td>
+            <td>New crushing circuit + additional ore sorting · LOM cost reduction</td>
+            <td>6,500 tpd sustained</td>
+            <td class="num">188</td>
+            <td class="num">139</td>
+            <td>Mid-CY29</td>
+          </tr>
+          <tr class="t-hl">
+            <td><strong>Total initial</strong></td>
+            <td>—</td>
+            <td>—</td>
+            <td class="num"><strong>366</strong></td>
+            <td class="num"><strong>270</strong></td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="font-family:var(--mono);font-size:10.5px;color:var(--fg-3);margin-top:6px;letter-spacing:0.02em">CAD/USD fixed at 0.74 over LOM. Stage 3 is &gt;50% of total initial CAPEX — also the gate to the targeted LOM unit-cost reduction.</p>
+
+    <div class="chart-box reveal" style="margin-top:18px">
+      <div style="position:relative;height:300px"><canvas id="rampChart"></canvas></div>
+      <div class="chart-note">Annual SC5.4 production trajectory. Current ~200 ktpa → Stage 1 ramp mid-CY27 → Stage 2 step early CY28 → Stage 3 crushing replacement mid-CY29 → LOM average 338 ktpa. Indicative ramp shape; study reports endpoints, not the path between.</div>
+    </div>
+  </div>
+
+  <!-- ═══ PAGE 3: MINE PLAN ═══ -->
+  <div class="page" id="p-mine">
+
+    <div class="sec reveal">
+      <div class="sec-h">
+        <span class="num">[03]</span>
+        <span class="title">MINE PLAN, RESERVES &amp; RESOURCES</span>
+        <span class="meta">As at 30 Jun 2025 · JORC 2012</span>
+      </div>
+      <p>The expansion is underpinned <em>solely</em> by current Ore Reserves — no Inferred component in the production target. NAL Reserves grew 124% to <strong>48.6 Mt @ 1.11% Li<sub>2</sub>O</strong> in the August 2025 update. Open-pit mining over 21 years (vs. 35 years at the base / unexpanded rate), maximum pit depth ~380 m below surface, seven mining phases. Past underground workings constrained phase walls; current LOM plan is clear of historical workings by end-2030.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-h">▸ Ore Reserves · NAL · 30 Jun 2025</div>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Classification</th><th class="num">Tonnes (Mt)</th><th class="num">Li<sub>2</sub>O (%)</th><th class="num">Fe (%)</th><th class="num">Cut-off (%)</th></tr></thead>
+          <tbody>
+            <tr><td>Proved</td><td class="num">0.3</td><td class="num">1.01</td><td class="num">1.55</td><td class="num">0.60</td></tr>
+            <tr><td>Probable</td><td class="num">48.2</td><td class="num">1.11</td><td class="num">0.82</td><td class="num">0.60</td></tr>
+            <tr class="t-hl"><td><strong>Total Reserves</strong></td><td class="num"><strong>48.6</strong></td><td class="num"><strong>1.11</strong></td><td class="num"><strong>0.83</strong></td><td class="num">0.60</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-family:var(--mono);font-size:10.5px;color:var(--fg-3);margin-top:10px;letter-spacing:0.02em">Source: Elevra "NAL Resources and Reserves Increases", ASX release 27 Aug 2025. Reserves 124% above prior estimate.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-h">▸ Mineral Resources · NAL · JORC 2012</div>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Classification</th><th>Method</th><th class="num">Tonnes (Mt)</th><th class="num">Li<sub>2</sub>O (%)</th><th class="num">Cut-off (%)</th></tr></thead>
+          <tbody>
+            <tr><td>Indicated</td><td>Open pit</td><td class="num">76.2</td><td class="num">1.17</td><td class="num">0.60</td></tr>
+            <tr><td>Inferred</td><td>Open pit</td><td class="num">8.6</td><td class="num">1.13</td><td class="num">0.60</td></tr>
+            <tr><td>Inferred</td><td>Underground</td><td class="num">10.3</td><td class="num">1.01</td><td class="num">0.70</td></tr>
+            <tr class="t-hl"><td><strong>Total Resources</strong></td><td>—</td><td class="num"><strong>95.0</strong></td><td class="num"><strong>1.15</strong></td><td class="num">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-family:var(--mono);font-size:10.5px;color:var(--fg-3);margin-top:10px;letter-spacing:0.02em">Underground Inferred 10.3 Mt @ 1.01% sits outside the production target. Potential upside if converted via infill drilling and a future PFS; not in the current LOM.</p>
+    </div>
+
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-h">▸ Mine plan · expansion case</div>
+        <div class="irow"><span class="irow-l">LOM (from 2025)</span><span class="irow-v">21 years</span></div>
+        <div class="irow"><span class="irow-l">Total ore</span><span class="irow-v">47 Mt</span></div>
+        <div class="irow"><span class="irow-l">Total waste</span><span class="irow-v">335 Mt</span></div>
+        <div class="irow"><span class="irow-l">Strip ratio</span><span class="irow-v">7.2 : 1</span></div>
+        <div class="irow"><span class="irow-l">Average annual ROM</span><span class="irow-v">2.4 Mt/y</span></div>
+        <div class="irow"><span class="irow-l">Feed grade</span><span class="irow-v">1.11% Li<sub>2</sub>O</span></div>
+        <div class="irow"><span class="irow-l">LOM recovery</span><span class="irow-v">71.2% (WHIMS uplift vs. 69.2% base)</span></div>
+        <div class="irow hl"><span class="irow-l">LOM SC5.4 produced</span><span class="irow-v">6.85 Mt</span></div>
+      </div>
+      <div class="card">
+        <div class="card-h">▸ Throughput schedule</div>
+        <div class="irow"><span class="irow-l">Mining cap (to 1-Apr-2028)</span><span class="irow-v">4,700 tpd annual avg.</span></div>
+        <div class="irow"><span class="irow-l">Mining cap (post)</span><span class="irow-v">7,000 tpd annual avg.</span></div>
+        <div class="irow"><span class="irow-l">Plant (initial)</span><span class="irow-v">3,780 tpd to 1-Jul-2027</span></div>
+        <div class="irow"><span class="irow-l">Plant (Stage 1)</span><span class="irow-v">4,500 tpd from 1-Jul-2027</span></div>
+        <div class="irow hl"><span class="irow-l">Plant (Stage 2)</span><span class="irow-v">6,500 tpd from 1-Apr-2028</span></div>
+        <div class="irow"><span class="irow-l">Pit depth (final)</span><span class="irow-v">~380 m below topography</span></div>
+        <div class="irow"><span class="irow-l">Mining phases</span><span class="irow-v">7</span></div>
+      </div>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-h">▸ Base case vs. expansion — what changes</div>
+      <div class="tbl">
+        <table>
+          <thead>
+            <tr><th>Metric</th><th>Base (4,500 tpd)</th><th>Expansion (6,500 tpd)</th><th>Δ</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>LOM</td><td>35 yrs</td><td>21 yrs</td><td>−14 yrs (faster pull-through)</td></tr>
+            <tr><td>Average annual ROM</td><td>1.3 Mt/y</td><td>2.4 Mt/y</td><td>+85%</td></tr>
+            <tr><td>LOM SC5.4 production</td><td>194 kt/y</td><td><strong style="color:var(--accent)">338 kt/y</strong></td><td>+74%</td></tr>
+            <tr><td>LOM recovery</td><td>69.2%</td><td><strong style="color:var(--accent)">71.2%</strong></td><td>+2.0 ppt (WHIMS)</td></tr>
+            <tr><td>LOM C1 (C$/t conc)</td><td>1,076</td><td><strong style="color:var(--accent)">868</strong></td><td>−C$208/t</td></tr>
+            <tr><td>LOM AISC (C$/t conc)</td><td>1,152</td><td><strong style="color:var(--accent)">946</strong></td><td>−C$206/t</td></tr>
+            <tr><td>Total sustaining capital (C$M)</td><td>506</td><td>526</td><td>+20</td></tr>
+            <tr><td>Initial CAPEX (C$M)</td><td>—</td><td>366</td><td>—</td></tr>
+            <tr class="t-hl"><td><strong>NPV(8%) post-tax (C$M)</strong></td><td><strong>2,143</strong></td><td><strong>3,112</strong></td><td><strong>+969 (+45%)</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-family:var(--mono);font-size:10.5px;color:var(--fg-3);margin-top:10px;letter-spacing:0.02em">Same total ore, same strip, same feed grade. Expansion pulls value forward and lifts unit margins via throughput + recovery. Base-case still gets the higher long-term SC6 price in late LOM years, narrowing the per-tonne revenue gap.</p>
+    </div>
+  </div>
+
+  <!-- ═══ PAGE 4: ECONOMICS ═══ -->
+  <div class="page" id="p-econ">
+
+    <div class="sec reveal">
+      <div class="sec-h">
+        <span class="num">[04]</span>
+        <span class="title">ECONOMICS &amp; SENSITIVITY</span>
+        <span class="meta">Constant 2026 CAD · unlevered · post-tax</span>
+      </div>
+      <p>All cash flows in real 2026 CAD with no inflation. CAD/USD fixed at 0.74. Discount rate 8% real, post-tax. The SC6 price deck is the dominant swing factor — Benchmark Mineral Intelligence Q1 2026, varying <strong>US$1,260–2,430/t SC6</strong> across the LOM, with the LOM-average concentrate price (normalised to 6% Li<sub>2</sub>O) used in the model being <strong>US$2,154/t in the expansion case</strong> vs. US$2,261/t base — the expansion case has a shorter mine life so weights more years before the long-term price kicks in.</p>
+    </div>
+
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-h">▸ Headline economics · expansion</div>
+        <div class="irow hl"><span class="irow-l">Total NPV(8%) post-tax</span><span class="irow-v">C$3,112M (US$2,305M)</span></div>
+        <div class="irow"><span class="irow-l">Incremental NPV vs. base</span><span class="irow-v">C$969M (US$718M)</span></div>
+        <div class="irow"><span class="irow-l">IRR (expansion, post-tax)</span><span class="irow-v">41.8%</span></div>
+        <div class="irow"><span class="irow-l">Payback (post-tax)</span><span class="irow-v">25 months</span></div>
+        <div class="irow"><span class="irow-l">Total initial CAPEX</span><span class="irow-v">C$366M (US$270M)</span></div>
+        <div class="irow"><span class="irow-l">Total sustaining CAPEX</span><span class="irow-v">C$526M LOM</span></div>
+        <div class="irow"><span class="irow-l">Includes</span><span class="irow-v">Investment tax credit on CAPEX</span></div>
+      </div>
+      <div class="card">
+        <div class="card-h">▸ Unit costs · expansion · LOM</div>
+        <div class="irow"><span class="irow-l">C1 (LOM avg.)</span><span class="irow-v">C$868/t (US$642/t) conc</span></div>
+        <div class="irow"><span class="irow-l">AISC (LOM avg.)</span><span class="irow-v">C$946/t (US$700/t) conc</span></div>
+        <div class="irow hl"><span class="irow-l">C1 (post-expansion)</span><span class="irow-v">C$847/t (US$628/t) conc</span></div>
+        <div class="irow"><span class="irow-l">AISC (post-expansion)</span><span class="irow-v">C$922/t (US$683/t) conc</span></div>
+        <div class="irow"><span class="irow-l">Price deck (LOM range)</span><span class="irow-v">US$1,260–2,430/t SC6</span></div>
+        <div class="irow"><span class="irow-l">Price deck (LOM avg.)</span><span class="irow-v">US$2,154/t SC6 (expansion)</span></div>
+        <div class="irow"><span class="irow-l">FX</span><span class="irow-v">0.74 CAD/USD · LOM</span></div>
+      </div>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-h">▸ CAPEX by stage</div>
+      <div style="position:relative;height:240px"><canvas id="capexChart"></canvas></div>
+      <p style="font-family:var(--mono);font-size:10.5px;color:var(--fg-3);margin-top:10px;letter-spacing:0.02em">Stage 3 carries 51% of total initial CAPEX. It is also the gate to the targeted LOM unit-cost reduction — the new crushing circuit and additional ore sorting deliver the crushing-cost efficiencies needed to hit the C$847/t LOM C1 figure.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-h">▸ Indicative NPV sensitivity · SC6 price</div>
+      <div style="position:relative;height:260px"><canvas id="sensChart"></canvas></div>
+      <p style="font-family:var(--mono);font-size:10.5px;color:var(--fg-3);margin-top:10px;letter-spacing:0.02em">Zovlyn indicative scaling around the company's reported expansion-case NPV anchored at the study's LOM-average price of US$2,154/t SC6. Linearised on revenue net of opex / tax to give a directional read — the company has not published a full price-NPV curve. For a full editable model, see the <a href="mining_dcf.html">DCF model</a>.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-h">▸ Key study assumptions</div>
+      <div class="g2">
+        <div>
+          <div class="irow"><span class="irow-l">Plant availability</span><span class="irow-v">90%</span></div>
+          <div class="irow"><span class="irow-l">Concentrate basis</span><span class="irow-v">Dry metric tonnes · 5.4% Li<sub>2</sub>O</span></div>
+          <div class="irow"><span class="irow-l">Price normalisation</span><span class="irow-v">6% Li<sub>2</sub>O basis (SC6) · constant 2026 CAD</span></div>
+          <div class="irow"><span class="irow-l">Discount rate</span><span class="irow-v">8% real, post-tax</span></div>
+        </div>
+        <div>
+          <div class="irow"><span class="irow-l">Long-term SC6 price</span><span class="irow-v">US$2,430/t (2036 and beyond)</span></div>
+          <div class="irow"><span class="irow-l">Mine-life basis</span><span class="irow-v">Ore Reserves only (no Inferred)</span></div>
+          <div class="irow"><span class="irow-l">Tax credit</span><span class="irow-v">CAPEX investment tax credit included</span></div>
+          <div class="irow"><span class="irow-l">Inflation</span><span class="irow-v">None applied</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ PAGE 5: PEERS ═══ -->
+  <div class="page" id="p-peers">
+
+    <div class="sec reveal">
+      <div class="sec-h">
+        <span class="num">[05]</span>
+        <span class="title">PEER POSITIONING · COST CURVE</span>
+      </div>
+      <p>Post-expansion C1 of <strong>US$628/t</strong> places NAL meaningfully below the marginal producer and inside the second cost quartile of named global hard-rock producers and near-term restarts — well above Greenbushes and Pilgangoora, but ahead of Australian peers like Mt Marion, Bald Hill and several Quebec / Ontario projects. Stage 3 is what gets NAL there; before Stage 3, NAL sits closer to the bottom of the second quartile.</p>
+    </div>
+
+    <div class="chart-box reveal">
+      <div style="position:relative;height:340px;"><canvas id="costChart"></canvas></div>
+      <div class="chart-note">FOB cash cost per tonne SC6 — published or Zovlyn-estimated comparable C1 / C1-equivalent. Green = below current spot (US$2,300/t SC6). Amber dashed = spot reference. NAL shown both at current run-rate and post-expansion. PMET, Whabouchi and PAK are pre-production estimates.</div>
+    </div>
+
+    <div class="sec reveal" style="margin-top:32px">
+      <div class="sec-h">
+        <span class="num">[05.1]</span>
+        <span class="title">CONTEXT · SCALE &amp; LIFE</span>
+      </div>
+    </div>
+
+    <div class="tbl reveal">
+      <table>
+        <thead>
+          <tr><th>Project</th><th>Operator</th><th>Country</th><th class="num">Reserves / Resource</th><th class="num">LOM (yrs)</th><th class="num">Annual SC (kt)</th><th>Stage</th></tr>
+        </thead>
+        <tbody>
+          <tr class="t-hl"><td><strong>NAL (expansion)</strong></td><td>Elevra</td><td>Canada · QC</td><td class="num"><strong>48.6 Mt @ 1.11% (Res)</strong></td><td class="num"><strong>21</strong></td><td class="num"><strong>338</strong></td><td>Brownfield scoping</td></tr>
+          <tr><td>Greenbushes</td><td>Talison (IGO/Tianqi/Albemarle)</td><td>Australia · WA</td><td class="num">~440 Mt @ 1.5%</td><td class="num">20+</td><td class="num">~1,500</td><td>Producing</td></tr>
+          <tr><td>Pilgangoora</td><td>Pilbara Min.</td><td>Australia · WA</td><td class="num">446 Mt @ 1.15%</td><td class="num">28</td><td class="num">~640</td><td>Producing</td></tr>
+          <tr><td>Grota do Cirilo (Xuxa+Barreiro)</td><td>Sigma Lithium</td><td>Brazil</td><td class="num">~109 Mt @ 1.42%</td><td class="num">~13</td><td class="num">270 (P1)</td><td>Producing · P2 ramping</td></tr>
+          <tr><td>Kathleen Valley</td><td>Liontown</td><td>Australia · WA</td><td class="num">156 Mt @ 1.4%</td><td class="num">23</td><td class="num">~500</td><td>Producing (ramping)</td></tr>
+          <tr><td>Goulamina</td><td>Ganfeng / Leo</td><td>Mali</td><td class="num">211 Mt @ 1.37%</td><td class="num">21</td><td class="num">506</td><td>Producing (Stage 1)</td></tr>
+          <tr><td>Shaakichiuwaanaan (CV5)</td><td>PMET</td><td>Canada · QC</td><td class="num">159 Mt @ 1.42% (PEA)</td><td class="num">~24</td><td class="num">~400 (S1+S2)</td><td>FS-stage</td></tr>
+          <tr><td>Whabouchi</td><td>Nemaska Lithium</td><td>Canada · QC</td><td class="num">37 Mt @ 1.44%</td><td class="num">~33</td><td class="num">~210</td><td>Pre-production</td></tr>
+          <tr><td>PAK</td><td>Frontier Lithium</td><td>Canada · ON</td><td class="num">15 Mt @ 1.94%</td><td class="num">~26</td><td class="num">~200</td><td>PFS</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="font-family:var(--mono);font-size:10.5px;color:var(--fg-3);margin-top:12px;letter-spacing:0.02em">Sources: company technical reports and public filings. NAL row reflects Ore Reserves only; the LOM excludes the 10.3 Mt Inferred underground resource. Peer LOM figures are author-compiled and rounded; not all peers report on directly comparable bases.</p>
+  </div>
+
+  <!-- ═══ PAGE 6: CATALYSTS & RISKS ═══ -->
+  <div class="page" id="p-risks">
+
+    <div class="sec reveal">
+      <div class="sec-h">
+        <span class="num">[06]</span>
+        <span class="title">CATALYSTS</span>
+      </div>
+      <div class="cat-list">
+        <div class="cat-item">
+          <span class="cat-marker" style="color:var(--green)">[✓]</span>
+          <div class="cat-body">
+            <h5>Updated Scoping Study released <span class="stat done">12 MAY 2026 · COMPLETE</span></h5>
+            <p>Staged pathway crystallised. Total CAPEX unchanged at US$270M, NPV uplift 102% to C$969M incremental / C$3,112M total post-tax. Two-year acceleration of first incremental tonnes vs. Sep 2025 study.</p>
+          </div>
+        </div>
+        <div class="cat-item">
+          <span class="cat-marker" style="color:var(--cyan)">[→]</span>
+          <div class="cat-body">
+            <h5>Stage 2 permit (6,500 tpd) <span class="stat next">CRITICAL PATH</span></h5>
+            <p>The current mill permit is set at 4,500 tpd. Stages 2 and 3 require permit amendment for 6,500 tpd of average annual milling. This is explicitly called out as the critical path constraint.</p>
+          </div>
+        </div>
+        <div class="cat-item">
+          <span class="cat-marker" style="color:var(--cyan)">[→]</span>
+          <div class="cat-body">
+            <h5>Funding decisions <span class="stat next">2026–2027</span></h5>
+            <p>Total initial CAPEX C$366M (US$270M) sequenced across three stages — Stage 1 funding the smallest commitment (C$96M). Study language flags "no certainty" of funding when needed, and warns of potential dilution. Watch for cash position, debt facility / strategic prepayment news flow.</p>
+          </div>
+        </div>
+        <div class="cat-item">
+          <span class="cat-marker" style="color:var(--cyan)">[→]</span>
+          <div class="cat-body">
+            <h5>PFS-level study <span class="stat next">EXPECTED</span></h5>
+            <p>The May 2026 release remains a Scoping Study — preliminary, not investment grade. A PFS upgrade is the next de-risking step and would normally precede the Stage 2 capital commitment.</p>
+          </div>
+        </div>
+        <div class="cat-item">
+          <span class="cat-marker" style="color:var(--accent)">[●]</span>
+          <div class="cat-body">
+            <h5>Stage 1 commissioning <span class="stat watch">MID-CY27</span></h5>
+            <p>Within current permit envelope. Delivers a 15–20% lift over current ~200 ktpa run rate. Should also begin to bend the unit-cost curve down.</p>
+          </div>
+        </div>
+        <div class="cat-item">
+          <span class="cat-marker" style="color:var(--amber)">[~]</span>
+          <div class="cat-body">
+            <h5>SC6 price <span class="stat watch">EXOGENOUS</span></h5>
+            <p>Study price deck is Benchmark Q1 2026 — LOM SC6 varies US$1,260–2,430/t. Long-term US$2,430 from 2036. ~49% of the NPV uplift in the May update came from the higher price deck vs. Sep 2025. Price remains the dominant swing factor.</p>
+          </div>
+        </div>
+        <div class="cat-item">
+          <span class="cat-marker" style="color:var(--amber)">[~]</span>
+          <div class="cat-body">
+            <h5>Underground Inferred resource <span class="stat watch">UPSIDE</span></h5>
+            <p>10.3 Mt @ 1.01% Li<sub>2</sub>O Inferred underground sits outside the current production target. Conversion to a defined Reserve via further drilling could extend mine life beyond the current 21 years.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec reveal" style="margin-top:32px">
+      <div class="sec-h">
+        <span class="num">[06.1]</span>
+        <span class="title">KEY RISKS</span>
+      </div>
+      <div class="risk-list">
+        <div class="risk-row"><span class="risk-l">STUDY LEVEL</span><span class="risk-v">Scoping-grade only. Company's own cautionary statement: "insufficient to provide assurance of an economic development case at this stage". Numbers will move at PFS.</span></div>
+        <div class="risk-row"><span class="risk-l">PERMITTING</span><span class="risk-v">Stage 2 / 3 require amendment to lift the average annual milling permit from 4,500 to 6,500 tpd. Stage 1 stays inside the existing envelope; Stages 2 and 3 do not. Identified as the critical path.</span></div>
+        <div class="risk-row"><span class="risk-l">PRICE</span><span class="risk-v">~49% of the NPV uplift vs. the prior study came from a higher Li<sub>2</sub>O price deck. LOM-average study price US$2,154/t SC6 against recent spot in the US$700–900/t band would compress economics materially.</span></div>
+        <div class="risk-row"><span class="risk-l">FUNDING</span><span class="risk-v">Study explicitly notes no certainty of funding and risk of equity dilution. C$96M Stage 1 is manageable; cumulative C$366M through Stage 3 is not trivial relative to current cash.</span></div>
+        <div class="risk-row"><span class="risk-l">EXECUTION</span><span class="risk-v">Stage 2 routes feed through a temporary mobile crushing circuit operating alongside the existing crusher before the Stage 3 permanent replacement. Operational risk during the transition is non-zero.</span></div>
+        <div class="risk-row"><span class="risk-l">UNIT-COST GATING</span><span class="risk-v">The headline C$847/t LOM C1 is gated on completion of Stage 3 in mid-CY29. Stage 1 and Stage 2 deliver volume earlier, but the full unit-cost reduction does not arrive until the new crushing circuit and ore sorting are running.</span></div>
+        <div class="risk-row"><span class="risk-l">FX</span><span class="risk-v">Model fixes CAD/USD at 0.74 across the LOM. NAL reports concentrate sales in USD and incurs costs primarily in CAD; sustained CAD strength compresses margin.</span></div>
+        <div class="risk-row"><span class="risk-l">CORPORATE</span><span class="risk-v">Elevra is the post-merger entity of Sayona and Piedmont. Integration overhang, board / management transition risk, and any legacy offtake or marketing arrangements should be inspected.</span></div>
+      </div>
+    </div>
+
+    <div class="sec reveal" style="margin-top:32px">
+      <div class="sec-h">
+        <span class="num">[06.2]</span>
+        <span class="title">PRIMARY SOURCES</span>
+      </div>
+      <div class="src-list">
+        <div><span class="src-tag">[ASX·12-MAY-2026]</span><a href="https://cdn-api.markitdigital.com/apiman-gateway/ASX/asx-research/1.0/file/2924-03089114-2A1671600&v=undefined" target="_blank" rel="noopener">Elevra Lithium — Updated NAL Expansion Scoping Study (ASX release, PDF)</a></div>
+        <div><span class="src-tag">[GLOBENEWSWIRE·12-MAY-2026]</span><a href="https://www.manilatimes.net/2026/05/12/tmt-newswire/globenewswire/elevra-lithiums-updated-nal-expansion-scoping-study-defines-faster-growth-and-lower-costs/2341309" target="_blank" rel="noopener">Updated NAL Expansion Scoping Study Defines Faster Growth and Lower Costs (full text)</a></div>
+        <div><span class="src-tag">[ASX·12-JAN-2026]</span><a href="https://www.globenewswire.com/news-release/2026/01/12/3217361/0/en/Elevra-Lithium-Announces-Accelerated-NAL-Expansion.html" target="_blank" rel="noopener">Accelerated NAL Expansion — original staging announcement</a></div>
+        <div><span class="src-tag">[ASX·27-AUG-2025]</span><a href="https://www.abnnewswire.net/press/en/138673/Elevra-Lithium-Limited-%28ASX-ELV%29-Updated-NAL-Expansion-Scoping-Study.html" target="_blank" rel="noopener">NAL Resources &amp; Reserves Increases — referenced by the scoping study</a></div>
+        <div><span class="src-tag">[OPERATOR]</span><a href="https://www.elevra.com/projects/north-american-lithium/" target="_blank" rel="noopener">Elevra — North American Lithium project page</a></div>
+        <div><span class="src-tag">[OPERATOR]</span><a href="https://www.elevra.com/investors/" target="_blank" rel="noopener">Elevra — Investor centre</a></div>
+      </div>
+    </div>
+
+    <div class="disc reveal">
+      <h4>// DISCLOSURE</h4>
+      <p>This report is for informational purposes only and does not constitute financial advice or a recommendation to buy, sell, or hold any security. The author does not disclose a position in Elevra Lithium Limited (ASX:ELV / NASDAQ:ELVR). All data is sourced from the company's public ASX disclosures and other public filings; figures rounded as in the underlying release. The 12 May 2026 study is a Scoping Study — preliminary in nature, based on low-level technical and economic assessments, and insufficient to provide assurance of an economic development case at this stage (per the company's own cautionary language). The production target is underpinned solely by Ore Reserves; no Inferred material is in the LOM. NPV / IRR / payback estimates depend materially on lithium price, FX and execution. Readers should conduct their own due diligence.</p>
+    </div>
+  </div>
+
+  <!-- ═══ FOOTER ═══ -->
+  <div class="footer">
+    <div>ZOVLYN RESEARCH · NOT INVESTMENT ADVICE · v1.0 · BUILD 2026.05.12</div>
+    <div class="links">
+      <a href="index.html">All tools</a>
+      <a href="lithium_supply_model.html">Supply Model</a>
+      <a href="lce_chart_2.html">EV/t LCE</a>
+      <a href="mining_dcf.html">DCF Model</a>
+      <a href="lithium_projects_map_8.html">Project Map</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── Live clock ───────────────────────────────────────
+(function () {
+  const clock = document.getElementById('t-clock');
+  const session = document.getElementById('t-session');
+  const sessionStart = Date.now();
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function tick() {
+    const now = new Date();
+    const dd = String(now.getDate()).padStart(2,'0');
+    const mm = months[now.getMonth()];
+    const yyyy = now.getFullYear();
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mn = String(now.getMinutes()).padStart(2,'0');
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone.split('/').pop().slice(0,3).toUpperCase();
+    clock.textContent = dd + '-' + mm + '-' + yyyy + ' · ' + hh + ':' + mn + ' ' + tz;
+
+    const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+    const eh = String(Math.floor(elapsed / 3600)).padStart(2,'0');
+    const em = String(Math.floor((elapsed % 3600) / 60)).padStart(2,'0');
+    const es = String(elapsed % 60).padStart(2,'0');
+    session.textContent = 'SESSION ' + eh + ':' + em + ':' + es;
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+// ─── Reveal ───────────────────────────────────────────
+(function () {
+  if (!('IntersectionObserver' in window)) {
+    document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+    return;
+  }
+  const io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+})();
+
+// ─── Page nav ─────────────────────────────────────────
+const pages = [
+  ['asset',  'Asset & Operator'],
+  ['study',  'Updated Scoping Study'],
+  ['mine',   'Mine Plan & Reserves'],
+  ['econ',   'Economics & Sensitivity'],
+  ['peers',  'Peer Cost Curve'],
+  ['risks',  'Catalysts & Risks']
+];
+document.getElementById('rpt-nav').innerHTML = pages.map(([id,label],i) =>
+  `<button class="nav-btn${i===0?' on':''}" data-id="${id}"><span class="num">[0${i+1}]</span>${label}</button>`
+).join('');
+
+document.getElementById('rpt-nav').addEventListener('click', function(e){
+  const btn = e.target.closest('.nav-btn');
+  if (!btn) return;
+  const id = btn.dataset.id;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('show'));
+  document.getElementById('p-'+id).classList.add('show');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('#p-'+id+' .reveal').forEach(el => el.classList.add('in'));
+  window.scrollTo({top:0, behavior:'smooth'});
+  // Charts inside hidden pages need a render kick once visible
+  requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
+});
+
+// ─── Chart defaults ───────────────────────────────────
+Chart.defaults.color = '#8a8773';
+Chart.defaults.font.family = "'JetBrains Mono', monospace";
+Chart.defaults.font.size = 10.5;
+Chart.defaults.borderColor = 'rgba(58,61,51,0.5)';
+
+const CO = {
+  responsive: true, maintainAspectRatio: false,
+  plugins: { legend: { position: 'bottom', labels: { color: '#8a8773', font: { size: 10 }, boxWidth: 10, padding: 8 } } },
+};
+
+// ── NPV uplift attribution (doughnut) ──
+new Chart(document.getElementById('upliftChart'), {
+  type:'doughnut',
+  data:{
+    labels:['Staging / throughput', 'Higher Li₂O price deck'],
+    datasets:[{
+      data:[51, 49],
+      backgroundColor:['rgba(93,211,168,0.65)','rgba(232,182,88,0.65)'],
+      borderColor:['#5dd3a8','#e8b658'],
+      borderWidth:1
+    }]
+  },
+  options:{
+    ...CO,
+    cutout:'62%',
+    plugins:{...CO.plugins,
+      tooltip:{callbacks:{label:c=>c.label+': '+c.raw+'% of NPV uplift'}}}
+  }
+});
+
+// ── Production ramp ──
+const rampYears = ['CY25','CY26','CY27 H1','CY27 H2','CY28 H1','CY28 H2','CY29','CY30+'];
+const rampActual  = [200, 200, 200, 235, 280, 320, 338, 338];
+new Chart(document.getElementById('rampChart'), {
+  type:'line',
+  data:{
+    labels: rampYears,
+    datasets:[{
+      label:'SC5.4 production (ktpa)',
+      data: rampActual,
+      borderColor:'#5dd3a8',
+      backgroundColor:'rgba(93,211,168,0.10)',
+      fill:true, borderWidth:2, pointRadius:3, tension:.25
+    }]
+  },
+  options:{
+    ...CO,
+    plugins:{...CO.plugins, legend:{display:false},
+      tooltip:{callbacks:{label:c=>c.raw+' ktpa SC5.4'}}},
+    scales:{
+      x:{ticks:{color:'#5d5b4d'}, grid:{color:'rgba(58,61,51,0.2)'}},
+      y:{min:0, max:400, ticks:{color:'#5d5b4d', callback:v=>v+' kt'}, grid:{color:'rgba(58,61,51,0.3)'},
+         title:{display:true, text:'Annual SC5.4 (kt)', color:'#8a8773'}}
+    }
+  },
+  plugins:[
+    { id:'stages', afterDraw: ch => {
+        const ctx = ch.ctx;
+        const labels = [
+          {x: 3,  text:'Stage 1 · 4,500 tpd', color:'#5dd3a8'},
+          {x: 4,  text:'Stage 2 · 6,500 tpd', color:'#5dd3a8'},
+          {x: 6,  text:'Stage 3 · LOM 338',   color:'#5dd3a8'}
+        ];
+        ctx.save();
+        ctx.font = '10px JetBrains Mono';
+        labels.forEach(l => {
+          const x = ch.scales.x.getPixelForValue(l.x);
+          ctx.strokeStyle = 'rgba(93,211,168,0.35)';
+          ctx.setLineDash([4,4]);
+          ctx.beginPath();
+          ctx.moveTo(x, ch.chartArea.top);
+          ctx.lineTo(x, ch.chartArea.bottom);
+          ctx.stroke();
+          ctx.fillStyle = l.color;
+          ctx.fillText(l.text, x + 4, ch.chartArea.top + 12);
+        });
+        ctx.restore();
+    }}
+  ]
+});
+
+// ── CAPEX by stage (horizontal bar) ──
+new Chart(document.getElementById('capexChart'), {
+  type:'bar',
+  data:{
+    labels:['Stage 1 · permit envelope','Stage 2 · 6,500 tpd mill','Stage 3 · new crushing'],
+    datasets:[
+      { label:'CAPEX (C$M)',  data:[96, 81, 188], backgroundColor:'rgba(93,211,168,0.55)', borderColor:'#5dd3a8', borderWidth:1, stack:'cad' },
+      { label:'CAPEX (US$M)', data:[71, 60, 139], backgroundColor:'rgba(106,207,224,0.55)', borderColor:'#6acfe0', borderWidth:1, stack:'usd' }
+    ]
+  },
+  options:{
+    ...CO, indexAxis:'y',
+    plugins:{...CO.plugins,
+      tooltip:{callbacks:{label:c=> c.dataset.label + ': ' + c.raw + 'M' }}},
+    scales:{
+      x:{ticks:{color:'#5d5b4d', callback:v=>'$'+v+'M'}, grid:{color:'rgba(58,61,51,0.3)'},
+         title:{display:true,text:'Capital · M',color:'#8a8773'}},
+      y:{ticks:{color:'#d8d4c2'}, grid:{display:false}}
+    }
+  }
+});
+
+// ── NPV sensitivity (indicative) ──
+// Anchor: expansion total NPV(8%) post-tax = C$3,112M at LOM-avg SC6 ≈ US$2,154/t.
+// Approximate scaling: NPV moves linearly with revenue net of opex/tax — back-of-envelope only.
+function indicativeNPV(price){
+  const anchorPrice = 2154;   // US$/t SC6 LOM avg.
+  const anchorNPV   = 3112;   // C$M total project post-tax
+  const lomKt       = 6850;   // LOM SC5.4 production, kt (≈338 ktpa × ~20.3 effective yrs)
+  const opex_us     = 642;    // LOM avg C1 US$/t conc (expansion case)
+  const fx          = 0.74;   // CAD/USD
+  // anchor margin used to back into a leverage factor implicitly already in the 3,112 figure
+  const dPrice = price - anchorPrice;
+  const dRevenueLOM_USD = dPrice * lomKt * 1000;        // USD
+  const dRevenueLOM_CAD = dRevenueLOM_USD / fx;
+  // 8% NPV factor for 20 years ≈ 9.818, divided by LOM gives an averaged ~0.48 PV per CAD of LOM cash flow
+  // Apply a haircut for tax + royalty + discounting; use 0.30 conversion
+  const dNPV_M = (dRevenueLOM_CAD * 0.30) / 1e6;
+  return Math.max(0, anchorNPV + dNPV_M);
+}
+const sensPrices = [1000, 1250, 1500, 1750, 2000, 2154, 2250, 2500, 2750, 3000];
+const sensNPVs = sensPrices.map(indicativeNPV);
+new Chart(document.getElementById('sensChart'), {
+  type:'line',
+  data:{
+    labels: sensPrices.map(p => '$'+p.toLocaleString()),
+    datasets:[{
+      label:'Total NPV(8%) post-tax (C$M) — indicative',
+      data: sensNPVs,
+      borderColor:'#5dd3a8',
+      backgroundColor:'rgba(93,211,168,0.10)',
+      fill:true, borderWidth:2, pointRadius:4, tension:.2
+    }]
+  },
+  options:{
+    ...CO,
+    plugins:{...CO.plugins, legend:{display:false},
+      tooltip:{callbacks:{label:c=>'C$'+Math.round(c.raw).toLocaleString()+'M'}}},
+    scales:{
+      x:{ticks:{color:'#5d5b4d'}, grid:{color:'rgba(58,61,51,0.2)'},
+         title:{display:true, text:'LOM-avg SC6 price (US$/t)', color:'#8a8773'}},
+      y:{ticks:{color:'#5d5b4d', callback:v=>'C$'+v.toLocaleString()+'M'}, grid:{color:'rgba(58,61,51,0.3)'},
+         title:{display:true, text:'Total NPV(8%) post-tax (C$M)', color:'#8a8773'}}
+    }
+  },
+  plugins:[
+    { id:'anchor', afterDraw: ch => {
+        const ctx = ch.ctx;
+        const idx = sensPrices.indexOf(2154);
+        const x = ch.scales.x.getPixelForValue(idx);
+        const y = ch.scales.y.getPixelForValue(3112);
+        ctx.save();
+        ctx.fillStyle = '#5dd3a8';
+        ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2); ctx.fill();
+        ctx.font = '10px JetBrains Mono';
+        ctx.fillStyle = '#5dd3a8';
+        ctx.fillText('Study anchor · US$2,154 → C$3,112M', x + 8, y - 8);
+        ctx.restore();
+    }}
+  ]
+});
+
+// ── Cost curve (NAL highlighted) ──
+const cc = [
+  ['Greenbushes',220],['Pilgangoora',500],['Sigma',520],['Goulamina',550],
+  ['Kathleen V.',576],['Mt Holland',620],['NAL (post-exp.)',628],['Wodgina',650],
+  ['Bikita',680],['PMET*',700],['Arcadia',720],['Mt Marion',750],
+  ['NAL (current)',791],['Whabouchi*',780],['Rose*',820],['Finniss',840],
+  ['PAK*',850],['Bald Hill',1050]
+];
+const spot = 2300;
+new Chart(document.getElementById('costChart'), {
+  type:'bar',
+  data:{
+    labels: cc.map(c=>c[0]),
+    datasets:[{
+      data: cc.map(c=>c[1]),
+      backgroundColor: cc.map(c => {
+        if (c[0].indexOf('NAL') === 0) return 'rgba(93,211,168,0.75)';
+        return c[1] <= spot ? 'rgba(93,211,168,0.45)' : 'rgba(255,95,86,0.55)';
+      }),
+      borderColor: cc.map(c => {
+        if (c[0].indexOf('NAL') === 0) return '#5dd3a8';
+        return c[1] <= spot ? '#5dd3a8' : '#ff5f56';
+      }),
+      borderWidth: cc.map(c => c[0].indexOf('NAL') === 0 ? 2 : 1),
+      barPercentage: 1, categoryPercentage: 0.85,
+    }],
+  },
+  options:{
+    ...CO,
+    plugins:{...CO.plugins, legend:{display:false},
+      tooltip:{callbacks:{label:c=>'$'+c.raw+'/t SC6'}}},
+    scales:{
+      x:{ticks:{color:c => {
+            const lbl = cc[c.index] ? cc[c.index][0] : '';
+            return lbl.indexOf('NAL') === 0 ? '#5dd3a8' : '#5d5b4d';
+          }, font:{size:9}, maxRotation:55}, grid:{display:false}},
+      y:{min:0, max:1400, ticks:{color:'#5d5b4d', callback:v=>'$'+v}, grid:{color:'rgba(58,61,51,0.3)'},
+         title:{display:true, text:'$ / t SC6 (FOB · C1 equiv.)', color:'#8a8773'}}
+    }
+  },
+  plugins:[
+    { id:'spot', afterDraw: ch => {
+        const y = ch.scales.y.getPixelForValue(spot);
+        if (spot > ch.scales.y.max) return;
+        const ctx = ch.ctx; ctx.save();
+        ctx.strokeStyle = '#e8b658'; ctx.lineWidth = 1.5; ctx.setLineDash([6,4]);
+        ctx.beginPath(); ctx.moveTo(ch.chartArea.left, y);
+        ctx.lineTo(ch.chartArea.right, y); ctx.stroke();
+        ctx.fillStyle = '#e8b658'; ctx.font = '10px JetBrains Mono';
+        ctx.fillText('Spot $' + spot.toLocaleString(), ch.chartArea.right - 130, y - 6);
+        ctx.restore();
+    }}
+  ]
+});
+</script>
+</body>
+</html>
