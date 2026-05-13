@@ -239,6 +239,62 @@ th.num { text-align: right; }
 }
 .chart-note a { color: var(--accent); }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   FIGURE / IMAGE PATTERN — canonical, see /img/README.md
+
+   Live image:
+     <figure class="report-fig">
+       <img src="img/ELV/site-aerial.jpg" alt="NAL site aerial">
+       <figcaption>
+         <span class="lbl">▸ NAL site — aerial</span>
+         <span class="src">Source: Elevra investor deck, May 2026</span>
+       </figcaption>
+     </figure>
+
+   Placeholder (keeps the frame so layout doesn't shift later):
+     <figure class="report-fig is-placeholder">
+       <div class="report-fig-slot">
+         <span class="lbl">NAL site — aerial</span>
+         <span class="desc">Drop file at img/ELV/site-aerial.jpg</span>
+       </div>
+       <figcaption>
+         <span class="lbl">▸ NAL site — aerial</span>
+         <span class="src">Source: Elevra investor deck, May 2026</span>
+       </figcaption>
+     </figure>
+   ────────────────────────────────────────────────────────────────────────── */
+.report-fig {
+  margin: 14px 0; background: var(--bg-2);
+  border: 1px solid var(--line); border-radius: var(--r);
+  overflow: hidden;
+}
+.report-fig img {
+  display: block; width: 100%; height: auto;
+  border-bottom: 1px solid var(--line);
+}
+.report-fig figcaption {
+  padding: 10px 14px;
+  font-family: var(--mono); font-size: 10.5px;
+  color: var(--fg-3); letter-spacing: 0.04em;
+  display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.report-fig figcaption .lbl { color: var(--accent); text-transform: uppercase; font-weight: 600; }
+.report-fig figcaption .src { color: var(--fg-3); }
+.report-fig.is-placeholder { border-style: dashed; border-color: var(--line-2); }
+.report-fig-slot {
+  padding: 36px 20px; text-align: center;
+  color: var(--fg-3); min-height: 180px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; border-bottom: 1px dashed var(--line-2);
+}
+.report-fig-slot .lbl {
+  font-family: var(--mono); font-size: 11px; color: var(--fg-2);
+  letter-spacing: 0.08em; font-weight: 600; text-transform: uppercase;
+}
+.report-fig-slot .lbl::before { content: '[ '; color: var(--accent); }
+.report-fig-slot .lbl::after { content: ' ]'; color: var(--accent); }
+.report-fig-slot .desc { font-family: var(--mono); font-size: 10.5px; color: var(--fg-3); }
+
 /* ── Pill ── */
 .pill {
   display: inline-flex; align-items: center; gap: 6px;
@@ -435,6 +491,17 @@ th.num { text-align: right; }
       </div>
     </div>
 
+    <figure class="report-fig is-placeholder reveal">
+      <div class="report-fig-slot">
+        <span class="lbl">NAL site — aerial / location</span>
+        <span class="desc">Drop file at img/ELV/nal-site-aerial.jpg</span>
+      </div>
+      <figcaption>
+        <span class="lbl">▸ NAL · La Corne, QC</span>
+        <span class="src">Source: Elevra investor materials</span>
+      </figcaption>
+    </figure>
+
     <div class="card reveal">
       <div class="card-h">▸ Processing flowsheet — three circuits</div>
       <div class="g3">
@@ -541,6 +608,17 @@ th.num { text-align: right; }
       <div style="position:relative;height:300px"><canvas id="rampChart"></canvas></div>
       <div class="chart-note">Annual SC5.4 production trajectory. Current ~200 ktpa → Stage 1 ramp mid-CY27 → Stage 2 step early CY28 → Stage 3 crushing replacement mid-CY29 → LOM average 338 ktpa. Indicative ramp shape; study reports endpoints, not the path between.</div>
     </div>
+
+    <figure class="report-fig is-placeholder reveal">
+      <div class="report-fig-slot">
+        <span class="lbl">Stage development sequence · schedule</span>
+        <span class="desc">Drop file at img/ELV/staging-schedule.png</span>
+      </div>
+      <figcaption>
+        <span class="lbl">▸ Stage 1 / 2 / 3 — Gantt</span>
+        <span class="src">Source: Elevra Updated Scoping Study, 12 May 2026</span>
+      </figcaption>
+    </figure>
   </div>
 
   <!-- ═══ PAGE 3: MINE PLAN ═══ -->

@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMET.TO / PMT.AX — Shaakichiuwaanaan CV5 FS | Zovlyn Research</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c0d0a;
+  --bg-2: #131410;
+  --bg-3: #1a1c16;
+  --line: #2a2c24;
+  --line-2: #3a3d33;
+  --fg: #d8d4c2;
+  --fg-2: #8a8773;
+  --fg-3: #5d5b4d;
+  --accent: #5dd3a8;
+  --accent-2: #3aa881;
+  --accent-dim: rgba(93,211,168,0.10);
+  --green: #5dd380;
+  --amber: #e8b658;
+  --red: #ff5f56;
+  --cyan: #6acfe0;
+  --r: 4px;
+  --mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--sans); font-size: 14px; line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+sub { font-size: 0.7em; }
+
+/* ── Status bar ── */
+.t-top {
+  background: var(--bg-2); border-bottom: 1px solid var(--line);
+  padding: 8px 24px; display: flex; align-items: center;
+  gap: 24px; font-size: 11px; color: var(--fg-2); flex-wrap: wrap;
+  font-family: var(--mono);
+}
+.t-top .session { color: var(--accent); font-weight: 600; }
+.t-spacer { flex: 1; }
+@media (max-width: 720px) { .t-top { gap: 14px; padding: 8px 16px; } .hide-sm { display: none; } }
+
+/* ── Nav ── */
+.t-nav {
+  padding: 14px 24px; display: flex; align-items: center;
+  justify-content: space-between; border-bottom: 1px solid var(--line);
+  flex-wrap: wrap; gap: 12px;
+}
+.t-mark { display: flex; align-items: center; gap: 12px; }
+.t-badge {
+  width: 32px; height: 32px;
+  background: var(--accent); color: var(--bg);
+  display: grid; place-items: center;
+  font-weight: 800; font-size: 16px;
+  font-family: var(--mono); border-radius: var(--r);
+}
+.t-mark-text { display: flex; flex-direction: column; line-height: 1.05; }
+.t-mark-name { font-family: var(--mono); font-weight: 700; font-size: 13px; color: var(--fg); letter-spacing: 0.14em; }
+.t-mark-sub  { font-family: var(--mono); font-size: 9.5px; color: var(--fg-3); letter-spacing: 0.22em; font-weight: 500; }
+.t-nav-r { display: flex; gap: 18px; font-size: 11px; color: var(--fg-2); align-items: center; font-family: var(--mono); }
+.t-nav-r a { color: var(--fg-2); letter-spacing: 0.08em; transition: color 0.15s; text-transform: uppercase; }
+.t-nav-r a:hover { color: var(--accent); }
+.t-nav-r a.home::before { content: '← '; }
+@media (max-width: 720px) { .t-nav-r { font-size: 10px; gap: 12px; } }
+
+/* ── Wrap ── */
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px 60px; }
+@media (max-width: 720px) { .wrap { padding: 0 16px 40px; } }
+
+/* ── Cover ── */
+.cover {
+  padding: 48px 0 32px;
+  border-bottom: 1px solid var(--line);
+}
+.cover-tags {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 10.5px; color: var(--fg-3);
+  letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 18px;
+}
+.cover-tags .accent { color: var(--accent); }
+.cover-tags .sep { color: var(--line-2); }
+.cover h1 {
+  font-family: var(--mono); font-weight: 500;
+  font-size: clamp(32px, 5vw, 54px); line-height: 1.05;
+  letter-spacing: -0.025em; color: var(--fg); margin-bottom: 14px;
+}
+.cover h1 .accent { color: var(--accent); }
+.cover h1 .ticker { color: var(--fg-3); font-weight: 400; }
+.cover-sub {
+  font-size: 16px; color: var(--fg-2); max-width: 780px; line-height: 1.55;
+  margin-bottom: 28px;
+}
+.cover-meta {
+  display: flex; gap: 24px; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 11px; color: var(--fg-3);
+  letter-spacing: 0.06em; padding-top: 14px; border-top: 1px dashed var(--line-2);
+}
+.cover-meta span strong { color: var(--fg); font-weight: 500; }
+
+/* ── KPI strip ── */
+.kpi-strip {
+  display: grid; grid-template-columns: repeat(6, 1fr);
+  border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--line); gap: 1px; overflow: hidden;
+  margin: 28px 0 0;
+}
+@media (max-width: 880px) { .kpi-strip { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 480px) { .kpi-strip { grid-template-columns: repeat(2, 1fr); } }
+.kpi {
+  background: var(--bg-2); padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.kpi-v {
+  font-family: var(--mono); font-size: 22px; font-weight: 600;
+  color: var(--fg); font-feature-settings: 'tnum'; letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.kpi-v.hl { color: var(--accent); }
+.kpi-v.dim { color: var(--fg-2); }
+.kpi-v.red { color: var(--red); }
+.kpi-v.amber { color: var(--amber); }
+.kpi-v.cyan { color: var(--cyan); }
+.kpi-l {
+  font-family: var(--mono); font-size: 9.5px; color: var(--fg-3);
+  text-transform: uppercase; letter-spacing: 0.12em; font-weight: 500;
+}
+
+/* ── Page nav ── */
+.page-nav {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--bg); border-bottom: 1px solid var(--line);
+  margin: 28px -24px 0; padding: 0 24px;
+}
+.page-nav-inner {
+  max-width: 1180px; margin: 0 auto;
+  display: flex; gap: 0; overflow-x: auto;
+  scrollbar-width: none;
+}
+.page-nav-inner::-webkit-scrollbar { display: none; }
+.nav-btn {
+  background: transparent; border: none;
+  border-bottom: 2px solid transparent;
+  padding: 14px 18px; cursor: pointer; white-space: nowrap;
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  color: var(--fg-3); letter-spacing: 0.06em;
+  transition: all 0.15s;
+  text-transform: uppercase;
+}
+.nav-btn:hover { color: var(--fg-2); }
+.nav-btn.on { color: var(--accent); border-bottom-color: var(--accent); }
+.nav-btn .num { color: var(--fg-3); margin-right: 6px; font-weight: 400; }
+.nav-btn.on .num { color: var(--accent); }
+
+/* ── Pages ── */
+.page { display: none; padding-top: 32px; }
+.page.show { display: block; }
+
+/* ── Section heads ── */
+.sec { margin-bottom: 32px; }
+.sec-h {
+  display: flex; align-items: baseline; gap: 14px;
+  padding-bottom: 10px; margin-bottom: 16px;
+  border-bottom: 1px solid var(--line); flex-wrap: wrap;
+}
+.sec-h .num { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.12em; font-weight: 600; }
+.sec-h .title { font-family: var(--mono); font-size: 15px; font-weight: 600; color: var(--fg); letter-spacing: 0.02em; }
+.sec-h .meta { margin-left: auto; font-family: var(--mono); font-size: 10.5px; color: var(--fg-3); letter-spacing: 0.04em; }
+.sec p {
+  color: var(--fg-2); font-size: 14px; margin-bottom: 12px;
+  max-width: 880px;
+}
+.sec p strong { color: var(--fg); font-weight: 600; }
+.sec p a { color: var(--accent); border-bottom: 1px dashed currentColor; }
+
+/* ── Cards ── */
+.card {
+  background: var(--bg-2); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 18px 20px; margin: 14px 0;
+}
+.card-h {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+  color: var(--accent); text-transform: uppercase; letter-spacing: 0.14em;
+  margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px dashed var(--line-2);
+}
+
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+@media (max-width: 720px) { .g2, .g3 { grid-template-columns: 1fr; } }
+
+/* ── Info rows ── */
+.irow {
+  display: grid; grid-template-columns: 220px 1fr;
+  gap: 12px; padding: 5px 0; font-size: 13px;
+  border-bottom: 1px solid var(--line);
+}
+.irow:last-child { border-bottom: none; }
+.irow-l { font-family: var(--mono); font-size: 11px; color: var(--fg-3); letter-spacing: 0.04em; align-self: center; }
+.irow-v { color: var(--fg); font-feature-settings: 'tnum'; }
+.irow.hl .irow-l { color: var(--accent); font-weight: 600; }
+.irow.hl .irow-v { color: var(--fg); font-weight: 600; }
+
+/* ── Tables ── */
+.tbl { overflow-x: auto; margin: 12px 0; border: 1px solid var(--line); border-radius: var(--r); }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; font-feature-settings: 'tnum'; }
+thead th {
+  background: var(--bg-3); padding: 10px 14px;
+  text-align: left; font-family: var(--mono); font-weight: 600; font-size: 9.5px;
+  text-transform: uppercase; letter-spacing: 0.12em; color: var(--fg-3);
+  border-bottom: 1px solid var(--line); white-space: nowrap;
+}
+tbody td { padding: 9px 14px; border-bottom: 1px solid var(--line); color: var(--fg-2); }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--bg-3); color: var(--fg); }
+.t-hl td { color: var(--fg) !important; background: var(--accent-dim); }
+.t-hl td strong { color: var(--accent); }
+td.num { text-align: right; font-feature-settings: 'tnum'; white-space: nowrap; }
+th.num { text-align: right; }
+
+/* ── Chart box ── */
+.chart-box {
+  background: var(--bg-2); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 18px; margin: 14px 0;
+}
+.chart-note {
+  font-family: var(--mono); font-size: 10.5px; color: var(--fg-3);
+  margin-top: 10px; line-height: 1.5; letter-spacing: 0.02em;
+}
+.chart-note a { color: var(--accent); }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   FIGURE / IMAGE PATTERN — canonical, see /img/README.md
+
+   Live image:
+     <figure class="report-fig">
+       <img src="img/PMET/cv5-pit-shell.jpg" alt="CV5 pit-shell plan">
+       <figcaption>
+         <span class="lbl">▸ CV5 pit shell — 6 sub-pits</span>
+         <span class="src">Source: PMET FS, Oct 2025</span>
+       </figcaption>
+     </figure>
+
+   Placeholder (keeps the frame so layout doesn't shift later):
+     <figure class="report-fig is-placeholder">
+       <div class="report-fig-slot">
+         <span class="lbl">CV5 pit shell — 6 sub-pits</span>
+         <span class="desc">Drop file at img/PMET/cv5-pit-shell.jpg</span>
+       </div>
+       <figcaption>
+         <span class="lbl">▸ CV5 pit shell — 6 sub-pits</span>
+         <span class="src">Source: PMET FS, Oct 2025</span>
+       </figcaption>
+     </figure>
+   ────────────────────────────────────────────────────────────────────────── */
+.report-fig {
+  margin: 14px 0; background: var(--bg-2);
+  border: 1px solid var(--line); border-radius: var(--r);
+  overflow: hidden;
+}
+.report-fig img {
+  display: block; width: 100%; height: auto;
+  border-bottom: 1px solid var(--line);
+}
+.report-fig figcaption {
+  padding: 10px 14px;
+  font-family: var(--mono); font-size: 10.5px;
+  color: var(--fg-3); letter-spacing: 0.04em;
+  display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.report-fig figcaption .lbl { color: var(--accent); text-transform: uppercase; font-weight: 600; }
+.report-fig figcaption .src { color: var(--fg-3); }
+.report-fig.is-placeholder { border-style: dashed; border-color: var(--line-2); }
+.report-fig-slot {
+  padding: 36px 20px; text-align: center;
+  color: var(--fg-3); min-height: 180px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; border-bottom: 1px dashed var(--line-2);
+}
+.report-fig-slot .lbl {
+  font-family: var(--mono); font-size: 11px; color: var(--fg-2);
+  letter-spacing: 0.08em; font-weight: 600; text-transform: uppercase;
+}
+.report-fig-slot .lbl::before { content: '[ '; color: var(--accent); }
+.report-fig-slot .lbl::after { content: ' ]'; color: var(--accent); }
+.report-fig-slot .desc { font-family: var(--mono); font-size: 10.5px; color: var(--fg-3); }
+
+/* ── Pill ── */
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 10px; padding: 3px 8px;
+  border-radius: var(--r); letter-spacing: 0.08em; text-transform: uppercase;
+  font-weight: 600;
+}
+.pill.primary { color: var(--accent); border: 1px solid var(--accent-dim); background: var(--accent-dim); }
+.pill.peer    { color: var(--cyan);   border: 1px solid rgba(106,207,224,0.3); }
+.pill.exo     { color: var(--amber);  border: 1px solid rgba(232,182,88,0.3); }
+.pill.risk    { color: var(--red);    border: 1px solid rgba(255,95,86,0.3); }
+.pill.soft    { color: var(--fg-3);   border: 1px solid var(--line-2); }
+
+/* ── Catalysts / risks ── */
+.cat-list { display: flex; flex-direction: column; gap: 14px; }
+.cat-item {
+  display: grid; grid-template-columns: 28px 1fr;
+  gap: 16px; padding: 14px 0; border-bottom: 1px dashed var(--line-2);
+}
+.cat-item:last-child { border-bottom: none; }
+.cat-marker {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.04em; color: var(--accent);
+  align-self: start; padding-top: 2px;
+}
+.cat-body h5 {
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  color: var(--fg); margin-bottom: 4px; letter-spacing: 0.01em;
+}
+.cat-body h5 .stat { font-size: 10px; margin-left: 10px; letter-spacing: 0.1em; font-weight: 500; }
+.cat-body h5 .stat.done { color: var(--green); }
+.cat-body h5 .stat.next { color: var(--cyan); }
+.cat-body h5 .stat.watch { color: var(--amber); }
+.cat-body p { font-size: 13px; color: var(--fg-2); margin: 0; }
+
+.risk-list { display: flex; flex-direction: column; }
+.risk-row {
+  display: grid; grid-template-columns: 220px 1fr;
+  gap: 16px; padding: 12px 0; border-bottom: 1px dashed var(--line-2);
+  font-size: 13px;
+}
+.risk-row:last-child { border-bottom: none; }
+.risk-l { font-family: var(--mono); font-size: 11px; color: var(--red); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.risk-v { color: var(--fg-2); }
+
+/* ── Disclosure ── */
+.disc {
+  margin-top: 32px; padding: 18px 20px;
+  background: var(--bg-2); border: 1px solid var(--line);
+  border-left: 2px solid var(--red); border-radius: var(--r);
+}
+.disc h4 {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  color: var(--red); margin-bottom: 8px; letter-spacing: 0.14em;
+}
+.disc p {
+  font-family: var(--sans); font-size: 12.5px; color: var(--fg-2);
+  margin: 0; line-height: 1.65; max-width: 880px;
+}
+
+/* ── Sources ── */
+.src-list {
+  display: flex; flex-direction: column; gap: 6px;
+  font-family: var(--mono); font-size: 11.5px; color: var(--fg-3);
+}
+.src-list a { color: var(--fg-2); border-bottom: 1px dashed var(--line-2); }
+.src-list a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.src-list .src-tag { color: var(--accent); font-size: 9.5px; letter-spacing: 0.14em; margin-right: 8px; }
+
+/* ── Footer ── */
+.footer {
+  margin-top: 40px; padding: 24px 0;
+  border-top: 1px solid var(--line);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+  font-family: var(--mono); font-size: 10.5px; color: var(--fg-3);
+  letter-spacing: 0.06em;
+}
+.footer .links { display: flex; gap: 18px; flex-wrap: wrap; }
+.footer a { color: var(--accent); }
+.footer a:hover { color: var(--fg); }
+
+/* ── Reveal ── */
+.reveal { opacity: 1; transform: none; transition: opacity .5s ease, transform .5s ease; }
+</style>
+</head>
+<body>
+
+<!-- ═══ Status bar ═══ -->
+<div class="t-top">
+  <span class="session" id="t-session">SESSION 00:00:00</span>
+  <span class="hide-sm">REPORT · PMET.TO / PMT.AX</span>
+  <span class="hide-sm">VERSION · 1.0</span>
+  <span class="t-spacer"></span>
+  <span class="hide-sm">USER · zovlyn</span>
+  <span id="t-clock">12-MAY-2026 · 00:00</span>
+</div>
+
+<!-- ═══ Nav ═══ -->
+<div class="t-nav">
+  <a href="index.html" class="t-mark" aria-label="Zovlyn Research home">
+    <div class="t-badge">Z</div>
+    <div class="t-mark-text">
+      <div class="t-mark-name">ZOVLYN</div>
+      <div class="t-mark-sub">RESEARCH</div>
+    </div>
+  </a>
+  <div class="t-nav-r">
+    <a href="index.html" class="home">ALL TOOLS</a>
+    <a href="mining_dcf.html">DCF MODEL</a>
+    <a href="lithium_supply_model.html">SUPPLY MODEL</a>
+    <a href="lce_chart_2.html">EV/T LCE</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ═══ COVER ═══ -->
+  <header class="cover reveal">
+    <div class="cover-tags">
+      <span class="accent">// COMPANY REPORT</span>
+      <span class="sep">│</span>
+      <span>FEASIBILITY STUDY</span>
+      <span class="sep">│</span>
+      <span>HARD-ROCK LITHIUM</span>
+      <span class="sep">│</span>
+      <span>JAMES BAY · QC</span>
+    </div>
+    <h1>
+      <span class="accent">PMET Resources</span>
+      <span class="ticker">— PMET.TO / PMT.AX</span><br>
+      Shaakichiuwaanaan CV5 Feasibility Study
+    </h1>
+    <p class="cover-sub">
+      PMET's 20 October 2025 lithium-only FS on the CV5 pegmatite delivers an
+      after-tax NPV(8%) of US$1.19B (~C$1,594M) and 18.1% IRR at a modeled
+      US$1,221/t SC5.5. Up to 800 ktpa nameplate; 84.3 Mt @ 1.26% Li<sub>2</sub>O
+      Probable Reserve; US$597/t AISC; C$1.98B gross / C$1.51B net initial
+      capital. Target FID in H2 2027 with VW and PowerCo already on the cap table.
+    </p>
+    <div class="cover-meta">
+      <span>PUBLISHED · <strong>20 Oct 2025 (FS) · NI 43-101 14 Nov 2025</strong></span>
+      <span>STAGE · <strong>FS · Pre-FID</strong></span>
+      <span>FRAMEWORK · <strong>NI 43-101</strong></span>
+      <span>POSITION · <strong>No position disclosed</strong></span>
+    </div>
+
+    <!-- KPI Strip -->
+    <div class="kpi-strip">
+      <div class="kpi"><div class="kpi-v hl">US$1.19B</div><div class="kpi-l">NPV(8%) post-tax</div></div>
+      <div class="kpi"><div class="kpi-v hl">18.1%</div><div class="kpi-l">IRR · post-tax</div></div>
+      <div class="kpi"><div class="kpi-v">C$1.98B</div><div class="kpi-l">Initial CAPEX · gross</div></div>
+      <div class="kpi"><div class="kpi-v">800 ktpa</div><div class="kpi-l">SC5.5 nameplate</div></div>
+      <div class="kpi"><div class="kpi-v cyan">US$597/t</div><div class="kpi-l">AISC · LOM SC5.5</div></div>
+      <div class="kpi"><div class="kpi-v amber">4.7 yrs</div><div class="kpi-l">Payback · post-tax</div></div>
+    </div>
+  </header>
+
+  <!-- ═══ PAGE NAV ═══ -->
+  <nav class="page-nav">
+    <div class="page-nav-inner" id="rpt-nav"></div>
+  </nav>
+
+  <!-- ═══ PAGE 1: ASSET ═══ -->
+  <div class="page show" id="p-asset">
+
+    <div class="sec reveal">
+      <div class="sec-h">
+        <span class="num">[01]</span>
+        <span class="title">ASSET &amp; OPERATOR</span>
+        <span class="meta">Shaakichiuwaanaan · Eeyou Istchee · QC</span>
+      </div>
+      <p>The <strong>Shaakichiuwaanaan Project</strong> sits in the Eeyou Istchee James Bay region of Québec, immediately adjacent to the Trans-Taïga Road and Hydro-Québec's high-voltage corridor — the same geology that hosts Nemaska's Whabouchi and Q2 Metals' Cisco. The <strong>CV5 pegmatite</strong> is the lead asset and the subject of the 20 October 2025 lithium-only Feasibility Study; CV13 and other dykes along strike sit outside the FS as Mineral Resource only.</p>
+      <p><strong>PMET Resources</strong> — the post-rebrand entity of Patriot Battery Metals — is dual-listed on the <strong>TSX (PMET)</strong> and <strong>ASX (PMT)</strong>, with US ADRs trading as <strong>PMETF</strong>. The rebrand was announced 2025 alongside the broadening of the asset thesis to include the <strong>Rigel caesium discovery</strong> — now defined as the world's largest pollucite-hosted Cs<sub>2</sub>O resource — and the <strong>Helios caesium zone</strong> identified in March 2026.</p>
+    </div>
+
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-h">▸ Operator · PMET Resources</div>
+        <div class="irow"><span class="irow-l">Listings</span><span class="irow-v">TSX:PMET · ASX:PMT · OTCQX:PMETF</span></div>
+        <div class="irow"><span class="irow-l">History</span><span class="irow-v">Patriot Battery Metals · rebrand 2025</span></div>
+        <div class="irow"><span class="irow-l">Flagship</span><span class="irow-v">Shaakichiuwaanaan · 100%</span></div>
+        <div class="irow"><span class="irow-l">Stage</span><span class="irow-v">Lithium-only FS · pre-FID</span></div>
+        <div class="irow"><span class="irow-l">Strategic backers</span><span class="irow-v">Volkswagen (cornerstone option) · PowerCo (offtake)</span></div>
+        <div class="irow"><span class="irow-l">Permits</span><span class="irow-v">ESIA submitted federal + provincial 1 Apr 2026</span></div>
+      </div>
+      <div class="card">
+        <div class="card-h">▸ Site &amp; infrastructure</div>
+        <div class="irow"><span class="irow-l">Location</span><span class="irow-v">Eeyou Istchee James Bay, QC</span></div>
+        <div class="irow"><span class="irow-l">Access road</span><span class="irow-v">Trans-Taïga Road adjacent</span></div>
+        <div class="irow"><span class="irow-l">Concentrate logistics</span><span class="irow-v">Truck → Matagami → rail → Grande-Anse</span></div>
+        <div class="irow"><span class="irow-l">Power</span><span class="irow-v">Hydro-Québec · new 120 kV from Tilly substation</span></div>
+        <div class="irow"><span class="irow-l">Community</span><span class="irow-v">Cree Nation of Eastmain · IBA framework</span></div>
+        <div class="irow"><span class="irow-l">Climate</span><span class="irow-v">Sub-Arctic · year-round road access</span></div>
+      </div>
+    </div>
+
+    <figure class="report-fig is-placeholder reveal">
+      <div class="report-fig-slot">
+        <span class="lbl">Project location map · Shaakichiuwaanaan vs James Bay peers</span>
+        <span class="desc">Drop file at img/PMET/location-map.png</span>
+      </div>
+      <figcaption>
+        <span class="lbl">▸ Location · CV5, CV13, Rigel, Helios</span>
+        <span class="src">Source: PMET FS, Oct 2025</span>
+      </figcaption>
+    </figure>
+
+    <div class="card reveal">
+      <div class="card-h">▸ Pegmatite system — what's in vs. out of the FS</div>
+      <div class="g3">
+        <div>
+          <div class="pill primary">CV5 · in FS</div>
+          <p style="font-size:13px;color:var(--fg-2);margin-top:10px">Lithium-only Probable Reserve 84.3 Mt @ 1.26% Li<sub>2</sub>O. Hybrid open-pit + underground mine plan. The subject of the October 2025 FS.</p>
+        </div>
+        <div>
+          <div class="pill peer">CV13 · resource only</div>
+          <p style="font-size:13px;color:var(--fg-2);margin-top:10px">Additional Mineral Resource. Not in the FS production target. Future expansion potential along strike from CV5.</p>
+        </div>
+        <div>
+          <div class="pill exo">Rigel / Helios · caesium</div>
+          <p style="font-size:13px;color:var(--fg-2);margin-top:10px">Rigel maiden MRE 163 kt @ 10.25% Cs<sub>2</sub>O Indicated (Jul 2025) — world's largest pollucite-hosted Cs deposit. Helios is a March 2026 discovery zone. Separate from the lithium FS.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PAGE 2: THE FEASIBILITY STUDY ═══ -->
+  <div class="page" id="p-fs">
+
+    <div class="sec reveal">
+      <div class="sec-h">
+        <span class="num">[02]</span>
+        <span class="title">CV5 LITHIUM-ONLY FEASIBILITY STUDY</span>
+        <span class="meta">Eff. 20-Oct-2025 · NI 43-101 filed 14-Nov-2025</span>
+      </div>
+      <p>The FS is the project's first <strong>feasibility-grade</strong> economic study, replacing the August 2024 PEA. It is <strong>lithium-only</strong>: caesium and tantalum revenue are explicitly excluded, both from production and from economic returns. The headline number — US$1.19B after-tax NPV(8%) — is anchored on a <strong>US$1,221/t SC5.5 price deck</strong>, which is sober relative to peer studies and sits near long-term consensus rather than spot.</p>
+    </div>
+
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-h">▸ Headline FS economics</div>
+        <div class="irow hl"><span class="irow-l">After-tax NPV(8%)</span><span class="irow-v">US$1.19B (~C$1,594M)</span></div>
+        <div class="irow"><span class="irow-l">After-tax IRR</span><span class="irow-v">18.1%</span></div>
+        <div class="irow"><span class="irow-l">After-tax payback</span><span class="irow-v">4.7 years</span></div>
+        <div class="irow"><span class="irow-l">After-tax NPV(0%)</span><span class="irow-v">US$4.04B</span></div>
+        <div class="irow"><span class="irow-l">Pre-tax NPV(8%)</span><span class="irow-v">US$1.88B</span></div>
+        <div class="irow"><span class="irow-l">Pre-tax IRR</span><span class="irow-v">19.9%</span></div>
+        <div class="irow"><span class="irow-l">Pre-tax NPV(0%)</span><span class="irow-v">US$6.24B</span></div>
+        <div class="irow"><span class="irow-l">Sensitivity (+20% SC)</span><span class="irow-v">After-tax NPV → ~US$2.0B</span></div>
+      </div>
+      <div class="card">
+        <div class="card-h">▸ Price &amp; product</div>
+        <div class="irow"><span class="irow-l">Modeled SC5.5 price</span><span class="irow-v">US$1,221/t (LT real)</span></div>
+        <div class="irow"><span class="irow-l">SC6 equivalent ≈</span><span class="irow-v">~US$1,500/t (5.5 → 6.0 grade adj.)</span></div>
+        <div class="irow"><span class="irow-l">Product</span><span class="irow-v">5.5% Li<sub>2</sub>O spodumene concentrate (SC5.5)</span></div>
+        <div class="irow"><span class="irow-l">Concentrate grade rationale</span><span class="irow-v">DMS-only flowsheet → SC5.5 (no flotation)</span></div>
+        <div class="irow"><span class="irow-l">By-product credits</span><span class="irow-v">None modeled (Cs / Ta excluded)</span></div>
+        <div class="irow"><span class="irow-l">Tax shield</span><span class="irow-v">CTM-ITC + QC TCRR + 4-yr large-project holiday</span></div>
+        <div class="irow"><span class="irow-l">FX</span><span class="irow-v">CAD/USD per study assumption</span></div>
+      </div>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-h">▸ Why the IRR is what it is — the FS math at a glance</div>
+      <div style="position:relative;height:280px"><canvas id="econChart"></canvas></div>
+      <p style="font-family:var(--mono);font-size:10.5px;color:var(--fg-3);margin-top:10px;letter-spacing:0.02em">After-tax NPV at varying discount rates. NPV(0%) of US$4.04B vs. NPV(8%) of US$1.19B — the spread is the cost of waiting for ~5 years of construction + ramp before steady-state cash flow.</p>
+    </div>
+
+    <figure class="report-fig is-placeholder reveal">
+      <div class="report-fig-slot">
+        <span class="lbl">CV5 pit shell &amp; mine plan</span>
+        <span class="desc">Drop file at img/PMET/cv5-pit-shell.jpg</span>
+      </div>
+      <figcaption>
+        <span class="lbl">▸ CV5 pit shell — 6 sub-pits + UG</span>
+        <span class="src">Source: PMET FS, Oct 2025</span>
+      </figcaption>
+    </figure>
+
+    <div class="card reveal">
+      <div class="card-h">▸ FS vs. prior PEA — what changed</div>
+      <div class="tbl">
+        <table>
+          <thead>
+            <tr><th>Metric</th><th>PEA (Aug 2024)</th><th>FS (Oct 2025)</th><th>Δ</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Status</td><td>Preliminary</td><td>Feasibility</td><td>De-risked</td></tr>
+            <tr><td>Product</td><td>SC5.5</td><td>SC5.5</td><td>—</td></tr>
+            <tr><td>Modeled SC price</td><td>~US$1,375/t SC5.5</td><td>US$1,221/t SC5.5</td><td>Lower price deck</td></tr>
+            <tr><td>Annual concentrate (nameplate)</td><td>~400 ktpa (S1+S2)</td><td>~800 ktpa nameplate · 694 LOM avg.</td><td>Higher throughput design</td></tr>
+            <tr><td>Throughput</td><td>~3.0 Mtpa</td><td>5.1 Mtpa</td><td>+70%</td></tr>
+            <tr><td>Mine life</td><td>~24 yrs</td><td>19 yrs</td><td>Faster pull-through</td></tr>
+            <tr><td>Reserve / Resource basis</td><td>Indicated + Inferred</td><td><strong style="color:var(--accent)">Probable Reserves only</strong></td><td>Reserve-grade certainty</td></tr>
+            <tr><td>Initial CAPEX</td><td>~C$2.5B (PEA est.)</td><td>C$1.98B gross / C$1.51B net</td><td>Tighter, tax-credit-aware</td></tr>
+            <tr><td>After-tax NPV(8%)</td><td>~C$2.9B</td><td>~C$1.59B (US$1.19B)</td><td>Lower (price + scope)</td></tr>
+            <tr><td>After-tax IRR</td><td>~34%</td><td>18.1%</td><td>Lower (capex + price)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-family:var(--mono);font-size:10.5px;color:var(--fg-3);margin-top:10px;letter-spacing:0.02em">PEA → FS migration trimmed the headline IRR materially. The drop is driven by a more sober price deck (US$1,375 → US$1,221), a larger plant (5.1 Mtpa vs. ~3.0 Mtpa) and feasibility-grade capex precision. Reserve-only basis is the meaningful de-risking offset.</p>
+    </div>
+  </div>
+
+  <!-- ═══ PAGE 3: MINE PLAN ═══ -->
+  <div class="page" id="p-mine">
+
+    <div class="sec reveal">
+      <div class="sec-h">
+        <span class="num">[03]</span>
+        <span class="title">MINE PLAN, RESERVES &amp; RESOURCES</span>
+        <span class="meta">CV5 · NI 43-101 · Probable</span>
+      </div>
+      <p>CV5 is mined as a <strong>hybrid open-pit + underground</strong> operation. Six sub-pits feed the mill at an overall strip ratio of <strong>3.4 : 1</strong>. A higher-grade underground component using long-hole open stoping lifts steady-state output to ~800 ktpa SC5.5. The FS production target is underpinned <em>solely</em> by Probable Reserves — no Inferred material is in the 19-year plan.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-h">▸ CV5 Mineral Reserves · Oct 2025 (NI 43-101)</div>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Classification</th><th class="num">Tonnes (Mt)</th><th class="num">Li<sub>2</sub>O (%)</th><th class="num">LCE (Mt)</th><th>Method</th></tr></thead>
+          <tbody>
+            <tr><td>Proven</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td>—</td></tr>
+            <tr><td>Probable</td><td class="num">84.3</td><td class="num">1.26</td><td class="num">2.62</td><td>OP + UG</td></tr>
+            <tr class="t-hl"><td><strong>Total Reserves</strong></td><td class="num"><strong>84.3</strong></td><td class="num"><strong>1.26</strong></td><td class="num"><strong>2.62</strong></td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-family:var(--mono);font-size:10.5px;color:var(--fg-3);margin-top:10px;letter-spacing:0.02em">Source: PMET FS, NI 43-101 Technical Report, effective 20 Oct 2025. CV5 only — does not include CV13 or other dykes.</p>
+    </div>
+
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-h">▸ Production schedule</div>
+        <div class="irow"><span class="irow-l">Throughput</span><span class="irow-v">5.1 Mtpa ore</span></div>
+        <div class="irow"><span class="irow-l">Annual SC5.5 (nameplate)</span><span class="irow-v">~800 ktpa steady state</span></div>
+        <div class="irow"><span class="irow-l">Annual SC5.5 (LOM avg.)</span><span class="irow-v">693.8 ktpa</span></div>
+        <div class="irow hl"><span class="irow-l">LOM concentrate</span><span class="irow-v">13.3 Mt SC5.5</span></div>
+        <div class="irow"><span class="irow-l">Mine life</span><span class="irow-v">19 years</span></div>
+        <div class="irow"><span class="irow-l">Target FID</span><span class="irow-v">H2 2027</span></div>
+        <div class="irow"><span class="irow-l">First concentrate (study)</span><span class="irow-v">Post-FID + construction</span></div>
+      </div>
+      <div class="card">
+        <div class="card-h">▸ Mining method</div>
+        <div class="irow"><span class="irow-l">Open pit</span><span class="irow-v">6 sub-pits · strip ratio 3.4 : 1</span></div>
+        <div class="irow"><span class="irow-l">Underground</span><span class="irow-v">Long-hole open stoping · higher-grade lift</span></div>
+        <div class="irow"><span class="irow-l">Processing</span><span class="irow-v">Two-train DMS · no flotation</span></div>
+        <div class="irow"><span class="irow-l">Concentrate</span><span class="irow-v">SC5.5 · 5.5% Li<sub>2</sub>O</span></div>
+        <div class="irow"><span class="irow-l">Tailings</span><span class="irow-v">DMS coarse reject — dry-stack viable</span></div>
+        <div class="irow"><span class="irow-l">Power source</span><span class="irow-v">Hydro-Québec grid · low-carbon</span></div>
+        <div class="irow"><span class="irow-l">Logistics</span><span class="irow-v">Trucking → rail → Grande-Anse port</span></div>
+      </div>
+    </div>
+
+    <figure class="report-fig is-placeholder reveal">
+      <div class="report-fig-slot">
+        <span class="lbl">DMS-only flowsheet · two-train design</span>
+        <span class="desc">Drop file at img/PMET/dms-flowsheet.png</span>
+      </div>
+      <figcaption>
+        <span class="lbl">▸ Process flowsheet · DMS two-train</span>
+        <span class="src">Source: PMET FS, Oct 2025</span>
+      </figcaption>
+    </figure>
+
+    <div class="card reveal">
+      <div class="card-h">▸ Caesium optionality — Rigel + Helios</div>
+      <p style="color:var(--fg-2);font-size:13.5px;margin-bottom:14px">Not in the lithium FS. Stated separately in case the user wants to size the option value.</p>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Zone</th><th>Status</th><th class="num">Tonnes</th><th class="num">Cs<sub>2</sub>O %</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Rigel</strong></td><td>Maiden MRE (Jul 2025)</td><td class="num">163 kt</td><td class="num">10.25%</td><td>Indicated · pollucite-hosted · world's largest of its kind</td></tr>
+            <tr><td><strong>Helios</strong></td><td>Discovery zone (Mar 2026)</td><td class="num">TBD</td><td class="num">TBD</td><td>Widest Cs drill intercept to date · resource pending</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-family:var(--mono);font-size:10.5px;color:var(--fg-3);margin-top:10px;letter-spacing:0.02em">Caesium is a thin market — global demand ~&lt;100 tpa Cs<sub>2</sub>O — but the per-tonne price is extreme. Optionality, not central to the lithium thesis.</p>
+    </div>
+  </div>
+
+  <!-- ═══ PAGE 4: ECONOMICS ═══ -->
+  <div class="page" id="p-econ">
+
+    <div class="sec reveal">
+      <div class="sec-h">
+        <span class="num">[04]</span>
+        <span class="title">ECONOMICS &amp; SENSITIVITY</span>
+        <span class="meta">Constant CAD · unlevered · post-tax</span>
+      </div>
+      <p>The FS is sensitive in the order you'd expect: <strong>price, then capex, then opex</strong>. A +20% bump in SC5.5 price lifts after-tax NPV(8%) by ~70% to ~US$2.0B; the AISC floor of <strong>US$597/t SC5.5</strong> is genuinely defensible — well below where peer hard-rock projects sit, and significantly below where the marginal Australian operations currently produce. Initial gross capex of <strong>C$1.98B</strong> falls to <strong>C$1.51B (US$1.126B)</strong> once tax credits and pre-production revenue are deducted, materially improving the financing math.</p>
+    </div>
+
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-h">▸ Unit costs · LOM SC5.5</div>
+        <div class="irow hl"><span class="irow-l">Total cash op cost (C1)</span><span class="irow-v">~C$729/t (~US$544/t)</span></div>
+        <div class="irow hl"><span class="irow-l">AISC</span><span class="irow-v">~C$800/t (~US$597/t)</span></div>
+        <div class="irow"><span class="irow-l">Op cost basis</span><span class="irow-v">SC5.5 dry metric tonnes</span></div>
+        <div class="irow"><span class="irow-l">Cost-curve quartile</span><span class="irow-v">Q2 of named global hard-rock peers</span></div>
+        <div class="irow"><span class="irow-l">Cost resilience</span><span class="irow-v">Sub-US$600 AISC → margin even in down-cycle</span></div>
+        <div class="irow"><span class="irow-l">Capital intensity (initial)</span><span class="irow-v">~C$2,473 / annual tonne SC5.5</span></div>
+        <div class="irow"><span class="irow-l">Capital intensity (LOM)</span><span class="irow-v">~C$219 / LOM tonne SC5.5</span></div>
+      </div>
+      <div class="card">
+        <div class="card-h">▸ Capital structure</div>
+        <div class="irow"><span class="irow-l">Initial CAPEX (gross)</span><span class="irow-v">C$1.98B (incl. 11% contingency)</span></div>
+        <div class="irow"><span class="irow-l">CTM-ITC (federal)</span><span class="irow-v">~C$360M</span></div>
+        <div class="irow"><span class="irow-l">Québec TCRR</span><span class="irow-v">~C$57M</span></div>
+        <div class="irow"><span class="irow-l">Pre-production revenue</span><span class="irow-v">Modeled · reduces cash drawdown</span></div>
+        <div class="irow hl"><span class="irow-l">Initial CAPEX (net)</span><span class="irow-v">C$1.51B (~US$1.126B)</span></div>
+        <div class="irow"><span class="irow-l">Sustaining (LOM)</span><span class="irow-v">C$940M</span></div>
+        <div class="irow"><span class="irow-l">Total LOM capital</span><span class="irow-v">C$2.92B (incl. sust.)</span></div>
+        <div class="irow"><span class="irow-l">QC 4-yr tax holiday</span><span class="irow-v">~C$200M income tax savings (first 4 yrs)</span></div>
+      </div>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-h">▸ NPV sensitivity · SC5.5 price</div>
+      <div style="position:relative;height:260px"><canvas id="sensChart"></canvas></div>
+      <p style="font-family:var(--mono);font-size:10.5px;color:var(--fg-3);margin-top:10px;letter-spacing:0.02em">Zovlyn indicative scaling around the FS anchor (US$1.19B after-tax NPV at US$1,221/t SC5.5). Linearised on revenue net of opex / tax to give a directional read — the company's only disclosed sensitivity point is +20% price → ~US$2.0B NPV. For a full editable model, see the <a href="mining_dcf.html">DCF model</a>.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-h">▸ Commercial &amp; financing context</div>
+      <div class="g2">
+        <div>
+          <div class="irow"><span class="irow-l">PowerCo offtake</span><span class="irow-v">100 ktpa SC5.5 · 10 yrs · market-referenced</span></div>
+          <div class="irow"><span class="irow-l">PowerCo status</span><span class="irow-v">Binding term sheet</span></div>
+          <div class="irow"><span class="irow-l">Volkswagen equity</span><span class="irow-v">~C$69M invested · 65% premium</span></div>
+          <div class="irow"><span class="irow-l">VW option at FID</span><span class="irow-v">Right to negotiate cornerstone participation</span></div>
+        </div>
+        <div>
+          <div class="irow"><span class="irow-l">Target FID</span><span class="irow-v">H2 2027</span></div>
+          <div class="irow"><span class="irow-l">ESIA filed</span><span class="irow-v">1 Apr 2026 · federal + provincial</span></div>
+          <div class="irow"><span class="irow-l">Permitting timeline</span><span class="irow-v">12–24 months typical post-ESIA</span></div>
+          <div class="irow"><span class="irow-l">Strategic optionality</span><span class="irow-v">Canadian critical minerals / IRA-eligible jurisdiction</span></div>
+        </div>
+      </div>
+    </div>
+
+    <figure class="report-fig is-placeholder reveal">
+      <div class="report-fig-slot">
+        <span class="lbl">FS sensitivity tornado · price / capex / opex / discount rate</span>
+        <span class="desc">Drop file at img/PMET/sensitivity-tornado.png</span>
+      </div>
+      <figcaption>
+        <span class="lbl">▸ Sensitivity · tornado chart</span>
+        <span class="src">Source: PMET FS, Oct 2025</span>
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- ═══ PAGE 5: PEERS ═══ -->
+  <div class="page" id="p-peers">
+
+    <div class="sec reveal">
+      <div class="sec-h">
+        <span class="num">[05]</span>
+        <span class="title">PEER POSITIONING · COST CURVE</span>
+      </div>
+      <p>At a stated AISC of <strong>US$597/t SC5.5</strong> (≈<strong>US$650/t SC6 equivalent</strong> on a 5.5→6.0 grade adjustment), CV5 would land near the <strong>bottom of the second cost quartile</strong> of named global hard-rock producers and FS-stage projects — ahead of Mt Marion, Wodgina, NAL post-expansion, Whabouchi and PAK; behind Greenbushes, Pilgangoora and Sigma. The 800 ktpa nameplate also places it among the top-five hard-rock concentrate producers globally if delivered.</p>
+    </div>
+
+    <div class="chart-box reveal">
+      <div style="position:relative;height:340px;"><canvas id="costChart"></canvas></div>
+      <div class="chart-note">FOB cash cost per tonne SC6 equivalent — published AISC for producers, study estimates for pre-production. Green = below current spot (US$2,300/t SC6). Amber dashed = spot reference. PMET CV5 shown at the study AISC adjusted to SC6 basis (US$597/t SC5.5 ≈ US$650/t SC6).</div>
+    </div>
+
+    <div class="sec reveal" style="margin-top:32px">
+      <div class="sec-h">
+        <span class="num">[05.1]</span>
+        <span class="title">SCALE &amp; LIFE · WHERE CV5 LANDS</span>
+      </div>
+    </div>
+
+    <div class="tbl reveal">
+      <table>
+        <thead>
+          <tr><th>Project</th><th>Operator</th><th>Country</th><th class="num">Reserves</th><th class="num">LOM (yrs)</th><th class="num">Annual SC (kt)</th><th>Stage</th></tr>
+        </thead>
+        <tbody>
+          <tr class="t-hl"><td><strong>Shaakichiuwaanaan (CV5)</strong></td><td>PMET</td><td>Canada · QC</td><td class="num"><strong>84.3 Mt @ 1.26%</strong></td><td class="num"><strong>19</strong></td><td class="num"><strong>800 (nameplate)</strong></td><td>FS · pre-FID</td></tr>
+          <tr><td>Greenbushes</td><td>Talison (IGO/Tianqi/Albemarle)</td><td>Australia · WA</td><td class="num">~440 Mt @ 1.5%</td><td class="num">20+</td><td class="num">~1,500</td><td>Producing</td></tr>
+          <tr><td>Pilgangoora</td><td>Pilbara Min.</td><td>Australia · WA</td><td class="num">446 Mt @ 1.15%</td><td class="num">28</td><td class="num">~640</td><td>Producing</td></tr>
+          <tr><td>Kathleen Valley</td><td>Liontown</td><td>Australia · WA</td><td class="num">156 Mt @ 1.4%</td><td class="num">23</td><td class="num">~500</td><td>Producing (ramping)</td></tr>
+          <tr><td>Goulamina</td><td>Ganfeng / Leo</td><td>Mali</td><td class="num">211 Mt @ 1.37%</td><td class="num">21</td><td class="num">506</td><td>Producing (S1)</td></tr>
+          <tr><td>Grota do Cirilo</td><td>Sigma Lithium</td><td>Brazil</td><td class="num">~109 Mt @ 1.42%</td><td class="num">~13</td><td class="num">270 (P1)</td><td>Producing · P2 ramp</td></tr>
+          <tr><td>NAL (expansion)</td><td>Elevra</td><td>Canada · QC</td><td class="num">48.6 Mt @ 1.11%</td><td class="num">21</td><td class="num">338</td><td>Brownfield scoping</td></tr>
+          <tr><td>Whabouchi</td><td>Nemaska</td><td>Canada · QC</td><td class="num">37 Mt @ 1.44%</td><td class="num">~33</td><td class="num">~210</td><td>Pre-production</td></tr>
+          <tr><td>PAK</td><td>Frontier Lithium</td><td>Canada · ON</td><td class="num">15 Mt @ 1.94%</td><td class="num">~26</td><td class="num">~200</td><td>PFS</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="font-family:var(--mono);font-size:10.5px;color:var(--fg-3);margin-top:12px;letter-spacing:0.02em">CV5 row reflects FS Probable Reserves only. CV13 and other Shaakichiuwaanaan dykes sit outside the production target. If delivered at nameplate, CV5 would be a top-five hard-rock concentrate producer globally — behind only Greenbushes, Pilgangoora, Wodgina-class and Goulamina at full ramp.</p>
+
+    <figure class="report-fig is-placeholder reveal">
+      <div class="report-fig-slot">
+        <span class="lbl">Peer scale chart · nameplate concentrate output</span>
+        <span class="desc">Drop file at img/PMET/peer-scale.png</span>
+      </div>
+      <figcaption>
+        <span class="lbl">▸ Peer scale · annual SC (kt)</span>
+        <span class="src">Source: Zovlyn compiled · company technical reports</span>
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- ═══ PAGE 6: CATALYSTS & RISKS ═══ -->
+  <div class="page" id="p-risks">
+
+    <div class="sec reveal">
+      <div class="sec-h">
+        <span class="num">[06]</span>
+        <span class="title">CATALYSTS</span>
+      </div>
+      <div class="cat-list">
+        <div class="cat-item">
+          <span class="cat-marker" style="color:var(--green)">[✓]</span>
+          <div class="cat-body">
+            <h5>CV5 Lithium-Only FS published <span class="stat done">20 OCT 2025 · COMPLETE</span></h5>
+            <p>US$1.19B after-tax NPV(8%), 18.1% IRR, 4.7-yr payback, 800 ktpa nameplate, US$597/t AISC. NI 43-101 technical report filed 14 Nov 2025.</p>
+          </div>
+        </div>
+        <div class="cat-item">
+          <span class="cat-marker" style="color:var(--green)">[✓]</span>
+          <div class="cat-body">
+            <h5>ESIA submitted · federal + provincial <span class="stat done">1 APR 2026 · COMPLETE</span></h5>
+            <p>Environmental and Social Impact Assessment filed with both Federal and Québec authorities. Starts the formal permitting clock — typically 12–24 months to receive authorisations.</p>
+          </div>
+        </div>
+        <div class="cat-item">
+          <span class="cat-marker" style="color:var(--cyan)">[→]</span>
+          <div class="cat-body">
+            <h5>FID decision <span class="stat next">H2 2027</span></h5>
+            <p>Target final investment decision. Depends on permits, financing package (debt / equity / strategic prepayment), and lithium price environment. PowerCo offtake and Volkswagen cornerstone option are constructive.</p>
+          </div>
+        </div>
+        <div class="cat-item">
+          <span class="cat-marker" style="color:var(--cyan)">[→]</span>
+          <div class="cat-body">
+            <h5>Financing package <span class="stat next">2026–2027</span></h5>
+            <p>C$1.51B net initial capital is sizeable. Federal CTM-ITC and Québec TCRR are baked in; outstanding components include senior debt, equity raise sizing, and any strategic prepayment from VW / PowerCo. Watch for project-finance term sheet news.</p>
+          </div>
+        </div>
+        <div class="cat-item">
+          <span class="cat-marker" style="color:var(--cyan)">[→]</span>
+          <div class="cat-body">
+            <h5>Caesium FS / spin-out <span class="stat next">OPTIONALITY</span></h5>
+            <p>Rigel (163 kt @ 10.25% Cs<sub>2</sub>O Indicated) is the world's largest pollucite-hosted Cs deposit. Helios discovery zone (Mar 2026) adds resource. Cs market is thin (~&lt;100 tpa global demand) but high-value. A separate study or spin-out is possible.</p>
+          </div>
+        </div>
+        <div class="cat-item">
+          <span class="cat-marker" style="color:var(--accent)">[●]</span>
+          <div class="cat-body">
+            <h5>Resource expansion · CV13 + along strike <span class="stat watch">ONGOING</span></h5>
+            <p>CV13 and other dykes are not in the FS production target. Future drilling could meaningfully extend mine life or add a second mill train. Greenstone trend acquisition (Nov 2025) added 10 km of strike length.</p>
+          </div>
+        </div>
+        <div class="cat-item">
+          <span class="cat-marker" style="color:var(--amber)">[~]</span>
+          <div class="cat-body">
+            <h5>SC5.5 price <span class="stat watch">EXOGENOUS</span></h5>
+            <p>Study price US$1,221/t SC5.5 sits near long-term consensus, not spot. A sustained spot &gt;US$1,500 SC6 lifts after-tax NPV materially (+20% price → ~US$2.0B NPV). Price down-cycle is the dominant downside swing.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec reveal" style="margin-top:32px">
+      <div class="sec-h">
+        <span class="num">[06.1]</span>
+        <span class="title">KEY RISKS</span>
+      </div>
+      <div class="risk-list">
+        <div class="risk-row"><span class="risk-l">CAPITAL · QUANTUM</span><span class="risk-v">C$1.98B gross / C$1.51B net is large relative to PMET's market cap. Financing risk is the single biggest near-term overhang — equity dilution, project debt covenants, or strategic dilution are all on the table.</span></div>
+        <div class="risk-row"><span class="risk-l">PRICE</span><span class="risk-v">FS sensitivity to SC5.5 price is high — +20% price → +70% NPV. Conversely, sustained lithium spot below the US$1,221/t base case meaningfully compresses returns and could push out FID.</span></div>
+        <div class="risk-row"><span class="risk-l">PERMITTING TIMELINE</span><span class="risk-v">ESIA filed April 2026; permits typically take 12–24 months. Slippage delays H2 2027 FID. Cree Nation consent and federal review (Impact Assessment Agency of Canada) are both required.</span></div>
+        <div class="risk-row"><span class="risk-l">EXECUTION</span><span class="risk-v">Greenfield project in a remote James Bay setting. Construction labour, supply chain, weather, and tailings management all in scope. 11% capex contingency is reasonable but not large for a project of this size.</span></div>
+        <div class="risk-row"><span class="risk-l">FX</span><span class="risk-v">Revenue is USD, costs predominantly CAD. CAD strength compresses margin; the FS does not disclose a price-FX matrix in the press release headline.</span></div>
+        <div class="risk-row"><span class="risk-l">RESERVE BASIS</span><span class="risk-v">100% Probable (no Proven). FS conversion from Indicated → Probable is the norm but means continued sterilisation and stope-design refinement during early production years.</span></div>
+        <div class="risk-row"><span class="risk-l">SCOPE</span><span class="risk-v">FS is lithium-only at CV5. Investors should not double-count Rigel / Helios caesium value or CV13 resource until separate studies or formal resource expansion is published.</span></div>
+        <div class="risk-row"><span class="risk-l">COUNTERPARTY · OFFTAKE</span><span class="risk-v">PowerCo binding term sheet is constructive but binding term sheets are not signed long-form agreements. Volkswagen Group strategic position is a positive — also a constraint on M&amp;A optionality.</span></div>
+      </div>
+    </div>
+
+    <div class="sec reveal" style="margin-top:32px">
+      <div class="sec-h">
+        <span class="num">[06.2]</span>
+        <span class="title">PRIMARY SOURCES</span>
+      </div>
+      <div class="src-list">
+        <div><span class="src-tag">[PMET·20-OCT-2025]</span><a href="https://www.pmet.ca/news/pmet-resources-delivers-positive-cv5-lithium-only-feasibility-study-for-its-large-scale-shaakichiuwaanaan-project/" target="_blank" rel="noopener">PMET Resources — CV5 Lithium-Only Feasibility Study release</a></div>
+        <div><span class="src-tag">[PMET·14-NOV-2025]</span><a href="https://www.juniorminingnetwork.com/junior-miner-news/press-releases/1816-tsx/pmet/191518-pmet-resources-files-ni-43-101-technical-report-on-the-cv5-lithium-only-feasibility-study-on-its-shaakichiuwaanaan-project.html" target="_blank" rel="noopener">NI 43-101 Technical Report filing notice</a></div>
+        <div><span class="src-tag">[ANALYST·21-OCT-2025]</span><a href="https://thedeepdive.ca/pmet-feasibility-us1-19b-npv-irr/" target="_blank" rel="noopener">The Deep Dive — PMET FS confirms US$1.19B NPV, 18.1% IRR (third-party summary)</a></div>
+        <div><span class="src-tag">[PMET·JUL-2025]</span><a href="https://www.juniorminingnetwork.com/junior-miner-news/press-releases/1816-tsx/pmet/184016-world-s-largest-pollucite-hosted-caesium-pegmatite-mineral-resource-defined-at-shaakichiuwaanaan.html" target="_blank" rel="noopener">Rigel — world's largest pollucite-hosted caesium pegmatite resource</a></div>
+        <div><span class="src-tag">[PMET·1-APR-2026]</span><a href="https://patriotbatterymetals.com/patriot-provides-permitting-progress-update-on-the-shaakichiuwaanaan-lithium-project/" target="_blank" rel="noopener">Permitting progress update — ESIA submitted federal + provincial</a></div>
+        <div><span class="src-tag">[OPERATOR]</span><a href="https://www.pmet.ca/news/" target="_blank" rel="noopener">PMET Resources — news / investor centre</a></div>
+      </div>
+    </div>
+
+    <div class="disc reveal">
+      <h4>// DISCLOSURE</h4>
+      <p>This report is for informational purposes only and does not constitute financial advice or a recommendation to buy, sell, or hold any security. The author does not disclose a position in PMET Resources (TSX:PMET / ASX:PMT / OTCQX:PMETF). All data is sourced from the company's public disclosures (NI 43-101 Technical Report, ASX/TSX releases, investor materials) and reputable third-party summaries; figures rounded as in the underlying release. The Feasibility Study is preliminary in the sense that it precedes a Final Investment Decision; project economics depend materially on lithium price, FX, financing structure, permits, and execution. Readers should conduct their own due diligence.</p>
+    </div>
+  </div>
+
+  <!-- ═══ FOOTER ═══ -->
+  <div class="footer">
+    <div>ZOVLYN RESEARCH · NOT INVESTMENT ADVICE · v1.0 · BUILD 2026.05.12</div>
+    <div class="links">
+      <a href="index.html">All tools</a>
+      <a href="lithium_supply_model.html">Supply Model</a>
+      <a href="lce_chart_2.html">EV/t LCE</a>
+      <a href="mining_dcf.html">DCF Model</a>
+      <a href="lithium_projects_map_8.html">Project Map</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── Live clock ───────────────────────────────────────
+(function () {
+  const clock = document.getElementById('t-clock');
+  const session = document.getElementById('t-session');
+  const sessionStart = Date.now();
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function tick() {
+    const now = new Date();
+    const dd = String(now.getDate()).padStart(2,'0');
+    const mm = months[now.getMonth()];
+    const yyyy = now.getFullYear();
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mn = String(now.getMinutes()).padStart(2,'0');
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone.split('/').pop().slice(0,3).toUpperCase();
+    clock.textContent = dd + '-' + mm + '-' + yyyy + ' · ' + hh + ':' + mn + ' ' + tz;
+
+    const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+    const eh = String(Math.floor(elapsed / 3600)).padStart(2,'0');
+    const em = String(Math.floor((elapsed % 3600) / 60)).padStart(2,'0');
+    const es = String(elapsed % 60).padStart(2,'0');
+    session.textContent = 'SESSION ' + eh + ':' + em + ':' + es;
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+// ─── Reveal ───────────────────────────────────────────
+(function () {
+  if (!('IntersectionObserver' in window)) {
+    document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+    return;
+  }
+  const io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+})();
+
+// ─── Page nav ─────────────────────────────────────────
+const pages = [
+  ['asset',  'Asset & Operator'],
+  ['fs',     'Feasibility Study'],
+  ['mine',   'Mine Plan & Reserves'],
+  ['econ',   'Economics & Sensitivity'],
+  ['peers',  'Peer Cost Curve'],
+  ['risks',  'Catalysts & Risks']
+];
+document.getElementById('rpt-nav').innerHTML = pages.map(([id,label],i) =>
+  `<button class="nav-btn${i===0?' on':''}" data-id="${id}"><span class="num">[0${i+1}]</span>${label}</button>`
+).join('');
+
+document.getElementById('rpt-nav').addEventListener('click', function(e){
+  const btn = e.target.closest('.nav-btn');
+  if (!btn) return;
+  const id = btn.dataset.id;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('show'));
+  document.getElementById('p-'+id).classList.add('show');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('#p-'+id+' .reveal').forEach(el => el.classList.add('in'));
+  window.scrollTo({top:0, behavior:'smooth'});
+  requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
+});
+
+// ─── Chart defaults ───────────────────────────────────
+Chart.defaults.color = '#8a8773';
+Chart.defaults.font.family = "'JetBrains Mono', monospace";
+Chart.defaults.font.size = 10.5;
+Chart.defaults.borderColor = 'rgba(58,61,51,0.5)';
+
+const CO = {
+  responsive: true, maintainAspectRatio: false,
+  plugins: { legend: { position: 'bottom', labels: { color: '#8a8773', font: { size: 10 }, boxWidth: 10, padding: 8 } } },
+};
+
+// ── NPV vs. discount rate (the math at a glance) ──
+// FS disclosed points: NPV(0%) after-tax = US$4.04B, NPV(8%) = US$1.19B
+// Interpolate a smooth curve between them
+const drRates = [0, 2, 4, 6, 8, 10, 12, 15];
+const drNPVs  = [4040, 3050, 2300, 1700, 1190, 800, 470, 80]; // back-fit; FS only discloses 0% and 8%
+new Chart(document.getElementById('econChart'), {
+  type:'line',
+  data:{
+    labels: drRates.map(d => d+'%'),
+    datasets:[{
+      label:'After-tax NPV (US$M) — disclosed at 0% and 8%, interpolated between',
+      data: drNPVs,
+      borderColor:'#5dd3a8',
+      backgroundColor:'rgba(93,211,168,0.10)',
+      fill:true, borderWidth:2, pointRadius:4, tension:.25
+    }]
+  },
+  options:{
+    ...CO,
+    plugins:{...CO.plugins, legend:{display:false},
+      tooltip:{callbacks:{label:c=>'US$'+c.raw.toLocaleString()+'M'}}},
+    scales:{
+      x:{ticks:{color:'#5d5b4d'}, grid:{color:'rgba(58,61,51,0.2)'},
+         title:{display:true, text:'Discount rate', color:'#8a8773'}},
+      y:{ticks:{color:'#5d5b4d', callback:v=>'US$'+v.toLocaleString()+'M'},
+         grid:{color:'rgba(58,61,51,0.3)'},
+         title:{display:true, text:'After-tax NPV (US$M)', color:'#8a8773'}}
+    }
+  },
+  plugins:[
+    { id:'anchors', afterDraw: ch => {
+        const ctx = ch.ctx;
+        ctx.save();
+        ctx.fillStyle = '#5dd3a8';
+        ctx.font = '10px JetBrains Mono';
+        // 0% anchor
+        let x = ch.scales.x.getPixelForValue(0);
+        let y = ch.scales.y.getPixelForValue(4040);
+        ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2); ctx.fill();
+        ctx.fillText('NPV(0%) US$4.04B (disclosed)', x + 8, y - 6);
+        // 8% anchor
+        x = ch.scales.x.getPixelForValue(4); // index 4 = 8%
+        y = ch.scales.y.getPixelForValue(1190);
+        ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2); ctx.fill();
+        ctx.fillText('NPV(8%) US$1.19B (disclosed)', x + 8, y - 6);
+        ctx.restore();
+    }}
+  ]
+});
+
+// ── NPV sensitivity to SC5.5 price (indicative) ──
+function indicativeNPV(price){
+  const anchorPrice = 1221;   // US$/t SC5.5
+  const anchorNPV   = 1190;   // US$M after-tax
+  const lomKt       = 13300;  // total LOM SC5.5, kt
+  // +20% price → ~US$2.0B disclosed by the company → backs into ~US$3.3M NPV per US$/t
+  // Cross-check: (2000 - 1190) / (1221*0.2) ≈ 3.32 US$M NPV per US$1 price
+  const sens = (2000 - 1190) / (1221 * 0.2);
+  const dNPV = sens * (price - anchorPrice);
+  return Math.max(0, anchorNPV + dNPV);
+}
+const sensPrices = [700, 900, 1000, 1100, 1221, 1350, 1500, 1700, 1900];
+const sensNPVs = sensPrices.map(indicativeNPV);
+new Chart(document.getElementById('sensChart'), {
+  type:'line',
+  data:{
+    labels: sensPrices.map(p => '$'+p.toLocaleString()),
+    datasets:[{
+      label:'After-tax NPV(8%) — indicative',
+      data: sensNPVs,
+      borderColor:'#5dd3a8',
+      backgroundColor:'rgba(93,211,168,0.10)',
+      fill:true, borderWidth:2, pointRadius:4, tension:.2
+    }]
+  },
+  options:{
+    ...CO,
+    plugins:{...CO.plugins, legend:{display:false},
+      tooltip:{callbacks:{label:c=>'US$'+Math.round(c.raw).toLocaleString()+'M'}}},
+    scales:{
+      x:{ticks:{color:'#5d5b4d'}, grid:{color:'rgba(58,61,51,0.2)'},
+         title:{display:true, text:'SC5.5 price (US$/t)', color:'#8a8773'}},
+      y:{ticks:{color:'#5d5b4d', callback:v=>'US$'+v.toLocaleString()+'M'},
+         grid:{color:'rgba(58,61,51,0.3)'},
+         title:{display:true, text:'After-tax NPV(8%) (US$M)', color:'#8a8773'}}
+    }
+  },
+  plugins:[
+    { id:'anchor', afterDraw: ch => {
+        const ctx = ch.ctx;
+        ctx.save();
+        ctx.fillStyle = '#5dd3a8';
+        ctx.font = '10px JetBrains Mono';
+        // Anchor at $1,221 → $1,190M
+        let idx = sensPrices.indexOf(1221);
+        let x = ch.scales.x.getPixelForValue(idx);
+        let y = ch.scales.y.getPixelForValue(1190);
+        ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2); ctx.fill();
+        ctx.fillText('FS anchor · $1,221 → US$1.19B', x + 8, y - 8);
+        // +20% disclosed
+        idx = sensPrices.indexOf(1500);
+        x = ch.scales.x.getPixelForValue(idx);
+        y = ch.scales.y.getPixelForValue(indicativeNPV(1500));
+        ctx.fillStyle = '#e8b658';
+        ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2); ctx.fill();
+        ctx.fillText('Company +20% → ~US$2.0B', x - 100, y - 12);
+        ctx.restore();
+    }}
+  ]
+});
+
+// ── Cost curve · PMET CV5 highlighted ──
+// AISC reported as US$597/t SC5.5. SC6 equivalent ≈ 597 × (6.0/5.5) ≈ ~650 (approximate normalisation).
+const cc = [
+  ['Greenbushes',220],['Pilgangoora',500],['Sigma',520],['Goulamina',550],
+  ['Kathleen V.',576],['Mt Holland',620],['NAL (post-exp.)',628],['PMET CV5*',650],
+  ['Wodgina',650],['Bikita',680],['Arcadia',720],['Mt Marion',750],
+  ['NAL (current)',791],['Whabouchi*',780],['Rose*',820],['Finniss',840],
+  ['PAK*',850],['Bald Hill',1050]
+];
+const spot = 2300;
+new Chart(document.getElementById('costChart'), {
+  type:'bar',
+  data:{
+    labels: cc.map(c=>c[0]),
+    datasets:[{
+      data: cc.map(c=>c[1]),
+      backgroundColor: cc.map(c => {
+        if (c[0].indexOf('PMET') === 0) return 'rgba(93,211,168,0.85)';
+        return c[1] <= spot ? 'rgba(93,211,168,0.45)' : 'rgba(255,95,86,0.55)';
+      }),
+      borderColor: cc.map(c => {
+        if (c[0].indexOf('PMET') === 0) return '#5dd3a8';
+        return c[1] <= spot ? '#5dd3a8' : '#ff5f56';
+      }),
+      borderWidth: cc.map(c => c[0].indexOf('PMET') === 0 ? 2 : 1),
+      barPercentage: 1, categoryPercentage: 0.85,
+    }],
+  },
+  options:{
+    ...CO,
+    plugins:{...CO.plugins, legend:{display:false},
+      tooltip:{callbacks:{label:c=>'$'+c.raw+'/t SC6'}}},
+    scales:{
+      x:{ticks:{color:c => {
+            const lbl = cc[c.index] ? cc[c.index][0] : '';
+            return lbl.indexOf('PMET') === 0 ? '#5dd3a8' : '#5d5b4d';
+          }, font:{size:9}, maxRotation:55}, grid:{display:false}},
+      y:{min:0, max:1400, ticks:{color:'#5d5b4d', callback:v=>'$'+v}, grid:{color:'rgba(58,61,51,0.3)'},
+         title:{display:true, text:'$ / t SC6 (FOB · AISC / C1 equiv.)', color:'#8a8773'}}
+    }
+  },
+  plugins:[
+    { id:'spot', afterDraw: ch => {
+        const y = ch.scales.y.getPixelForValue(spot);
+        if (spot > ch.scales.y.max) return;
+        const ctx = ch.ctx; ctx.save();
+        ctx.strokeStyle = '#e8b658'; ctx.lineWidth = 1.5; ctx.setLineDash([6,4]);
+        ctx.beginPath(); ctx.moveTo(ch.chartArea.left, y);
+        ctx.lineTo(ch.chartArea.right, y); ctx.stroke();
+        ctx.fillStyle = '#e8b658'; ctx.font = '10px JetBrains Mono';
+        ctx.fillText('Spot $' + spot.toLocaleString(), ch.chartArea.right - 130, y - 6);
+        ctx.restore();
+    }}
+  ]
+});
+</script>
+</body>
+</html>
