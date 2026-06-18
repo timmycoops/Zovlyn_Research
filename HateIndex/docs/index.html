@@ -51,14 +51,14 @@
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/prop-types@15/prop-types.min.js"></script>
 <script crossorigin src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- Pinned to 7.22.20 — newer babel-standalone defaults preset-react to the
+     "automatic" JSX runtime, which injects `import { jsx } from "react/jsx-runtime"`.
+     That import can't run inside a non-module <script type="text/babel"> tag, so
+     the dashboard silently fails to mount. 7.22.20 keeps the classic runtime
+     default and React.createElement output. -->
+<script src="https://unpkg.com/@babel/standalone@7.22.20/babel.min.js"></script>
 
-<script type="text/babel" data-presets='[["react",{"runtime":"classic"}]]'>
-// preset-react with classic runtime — compiles JSX to React.createElement(...)
-// instead of injecting `import { jsx } from "react/jsx-runtime"`. The automatic
-// runtime (preset-react's default since 7.9) emits an import that a non-module
-// <script type="text/babel"> tag can't execute, blanking the page.
-
+<script type="text/babel" data-presets="react">
 const { useState, useEffect, useMemo } = React;
 const {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
