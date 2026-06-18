@@ -53,13 +53,11 @@
 <script crossorigin src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-<script type="text/babel" data-presets="react">
-/** @jsxRuntime classic */
-// ^ The pragma above forces preset-react to use the classic runtime
-// (React.createElement). Without it, preset-react defaults to the "automatic"
-// runtime which injects `import { jsx } from "react/jsx-runtime"` into the
-// compiled output — and a non-module <script type="text/babel"> tag can't
-// run an `import` statement, so the whole block silently fails to mount.
+<script type="text/babel" data-presets='[["react",{"runtime":"classic"}]]'>
+// preset-react with classic runtime — compiles JSX to React.createElement(...)
+// instead of injecting `import { jsx } from "react/jsx-runtime"`. The automatic
+// runtime (preset-react's default since 7.9) emits an import that a non-module
+// <script type="text/babel"> tag can't execute, blanking the page.
 
 const { useState, useEffect, useMemo } = React;
 const {
