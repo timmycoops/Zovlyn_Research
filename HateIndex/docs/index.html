@@ -54,6 +54,13 @@
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <script type="text/babel" data-presets="react">
+/** @jsxRuntime classic */
+// ^ The pragma above forces preset-react to use the classic runtime
+// (React.createElement). Without it, preset-react defaults to the "automatic"
+// runtime which injects `import { jsx } from "react/jsx-runtime"` into the
+// compiled output — and a non-module <script type="text/babel"> tag can't
+// run an `import` statement, so the whole block silently fails to mount.
+
 const { useState, useEffect, useMemo } = React;
 const {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
