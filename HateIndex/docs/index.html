@@ -124,6 +124,33 @@ const RRG_DATA = {
   'Gold':         [[104, 103], [105, 103], [105.6, 102.6], [106.1, 102.1], [106.5, 101.6], [106.8, 101.1]],
 };
 
+// Weeks of trail used to derive rotation status / "just entered" — kept short so
+// the signal stays a *recent* event even though we now DRAW a much longer tail.
+const STATUS_WIN = 6;
+
+// The live pipeline emits a 26-week tail; the hand-authored mock above is only 6
+// anchor points. densifyTail interpolates those anchors up to `n` weekly points
+// (with a gentle wobble) so a no-data render shows a realistic long trail too.
+function densifyTail(anchors, n = 26) {
+  if (!anchors || anchors.length < 2) return anchors || [];
+  const segs = anchors.length - 1;
+  const out = [];
+  for (let k = 0; k < n; k++) {
+    const t = k / (n - 1);
+    const fpos = t * segs;
+    const i = Math.min(segs - 1, Math.floor(fpos));
+    const frac = fpos - i;
+    const x = anchors[i][0] + (anchors[i + 1][0] - anchors[i][0]) * frac;
+    const y = anchors[i][1] + (anchors[i + 1][1] - anchors[i][1]) * frac;
+    const wob = Math.sin(k * 1.25) * 0.45;
+    out.push([+(x + wob).toFixed(2), +(y - wob * 0.7).toFixed(2)]);
+  }
+  return out;
+}
+const RRG_DATA_26 = Object.fromEntries(
+  Object.entries(RRG_DATA).map(([k, v]) => [k, densifyTail(v, 26)])
+);
+
 function quadrant(x, y) {
   if (x >= 100 && y >= 100) return 'Leading';
   if (x < 100 && y >= 100) return 'Improving';
@@ -154,7 +181,7 @@ function buildAugmented(rawArray, rrgMap, sparklines) {
     .sort((a, b) => b.score - a.score);
   return sorted.map(d => {
     const tail = rrgMap[d.name] || [[100,100],[100,100],[100,100],[100,100],[100,100],[100,100]];
-    const status = rotationStatus(tail);
+    const status = rotationStatus(tail.slice(-STATUS_WIN));
     const justEntered = status.includes('→Improving') || status.includes('→Leading');
     return { ...d, tail, status, justEntered, history: sparklines[d.name] };
   });
@@ -209,6 +236,9 @@ function RRGPanel({ data, selected, setSelected }) {
           <stop offset="0%" stopColor={BRAND.orange} stopOpacity="0.1" />
           <stop offset="100%" stopColor={BRAND.orange} stopOpacity="0" />
         </radialGradient>
+        <clipPath id="rrgClip">
+          <rect x={PAD.left} y={PAD.top} width={CHART_W} height={CHART_H} />
+        </clipPath>
       </defs>
       <rect x={PAD.left} y={PAD.top} width={cx - PAD.left} height={cy - PAD.top} fill={`${BRAND.orange}08`} />
       <rect x={cx} y={PAD.top} width={PAD.left + CHART_W - cx} height={cy - PAD.top} fill={`${BRAND.green}0A`} />
@@ -249,16 +279,23 @@ function RRGPanel({ data, selected, setSelected }) {
         const isDimmed = selected && !isSelected;
         const opacity = isDimmed ? 0.12 : 1;
         const baseColor = colorForScore(d.score);
-        const last = d.tail[d.tail.length - 1];
+        const n = d.tail.length;
+        const last = d.tail[n - 1];
+        const start = d.tail[0];
         const isHated = d.score >= 4;
         const isCapit = d.score >= 8;
+        const tailWeeks = n - 1;            // one weekly bar per point
+        // Eased fade 0 (oldest) -> 1 (newest). ^1.5 throws the emphasis onto the
+        // recent weeks so the deep past reads as a faint ghost of the trail.
+        const frac = i => (n <= 2 ? 1 : i / (n - 2));
         const segments = [];
-        for (let i = 0; i < d.tail.length - 1; i++) {
+        for (let i = 0; i < n - 1; i++) {
+          const f = frac(i);
           segments.push({
             x1: xScale(d.tail[i][0]), y1: yScale(d.tail[i][1]),
             x2: xScale(d.tail[i + 1][0]), y2: yScale(d.tail[i + 1][1]),
-            opacity: 0.25 + (i / d.tail.length) * 0.6,
-            width: 1 + (i / d.tail.length) * 1.5,
+            opacity: 0.05 + 0.9 * Math.pow(f, 1.5),
+            width: 0.7 + 2.0 * f,
           });
         }
         return (
@@ -266,20 +303,43 @@ function RRGPanel({ data, selected, setSelected }) {
              onMouseEnter={() => setSelected(d.name)}
              onMouseLeave={() => setSelected(null)}
              style={{ cursor: 'pointer', transition: 'opacity 0.15s' }}>
-            {segments.map((s, i) => (
-              <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
-                    stroke={baseColor} strokeWidth={isSelected ? s.width + 1 : s.width}
-                    strokeOpacity={s.opacity} strokeLinecap="round" />
-            ))}
-            {d.tail.slice(0, -1).map((p, i) => (
-              <circle key={i} cx={xScale(p[0])} cy={yScale(p[1])} r={1.5}
-                      fill={baseColor} opacity={0.3 + (i / d.tail.length) * 0.5} />
-            ))}
+            {/* Trail is clipped to the plot rect so a 26-week tail can't run off the panel */}
+            <g clipPath="url(#rrgClip)">
+              {segments.map((s, i) => (
+                <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
+                      stroke={baseColor} strokeWidth={isSelected ? s.width + 1 : s.width}
+                      strokeOpacity={s.opacity} strokeLinecap="round" />
+              ))}
+              {/* Knot dots only on the recent half — convey rotation speed without
+                  cluttering the faded older weeks. */}
+              {d.tail.slice(0, -1).map((p, i) => {
+                const f = frac(i);
+                if (f < 0.5) return null;
+                return (
+                  <circle key={i} cx={xScale(p[0])} cy={yScale(p[1])} r={1.1}
+                          fill={baseColor} opacity={0.2 + 0.6 * f} />
+                );
+              })}
+              {/* Hollow ring anchors the oldest ("Nw ago") end of the trail */}
+              <circle cx={xScale(start[0])} cy={yScale(start[1])} r={2.6}
+                      fill="none" stroke={baseColor} strokeOpacity={0.3} strokeWidth={1} />
+            </g>
             {isCapit && <circle cx={xScale(last[0])} cy={yScale(last[1])} r={14} fill={baseColor} opacity={0.18} />}
             {isHated && !isCapit && <circle cx={xScale(last[0])} cy={yScale(last[1])} r={11} fill={baseColor} opacity={0.12} />}
             <circle cx={xScale(last[0])} cy={yScale(last[1])}
                     r={isSelected ? 8 : isHated ? 6 : 4.5}
                     fill={baseColor} stroke={BRAND.bg} strokeWidth={2} />
+            {/* On selection, label the faint end of the trail with how long ago it was */}
+            {isSelected && (() => {
+              const flipX = start[0] > X_MAX - 6;
+              return (
+                <text x={xScale(start[0]) + (flipX ? -8 : 8)} y={yScale(start[1]) - 6}
+                      textAnchor={flipX ? 'end' : 'start'}
+                      fill={BRAND.textDim} fontSize={9} fontFamily="JetBrains Mono">
+                  {tailWeeks}w ago
+                </text>
+              );
+            })()}
             {(() => {
               // Smart label placement: flip the label to the opposite side when a point
               // sits near the chart edge so the ticker doesn't run off the panel.
@@ -880,12 +940,14 @@ function HateIndexDashboard() {
     const sparklines = Object.fromEntries(
       RAW.map((d, i) => [d.name, genSparkline(i * 137 + 11, d.drift, d.drawdown + d.momentum + d.positioning + d.flows + d.valuation + d.sentiment)])
     );
-    return buildAugmented(RAW, RRG_DATA, sparklines);
+    return buildAugmented(RAW, RRG_DATA_26, sparklines);
   }, [liveData]);
 
   const flagged = data.filter(d => d.score >= 4 && d.justEntered);
   const mostHated = data[0] || { name: '—', score: 0 };
   const breadthHated = data.filter(d => d.score > 0).length;
+  const maxTail = data.reduce((m, d) => Math.max(m, (d.tail ? d.tail.length : 0)), 0);
+  const tailWeeks = Math.max(0, maxTail - 1);   // weeks of elapsed time on the trail
   const stackedData = data.map(d => ({
     name: d.name, drawdown: d.drawdown, momentum: d.momentum, positioning: d.positioning,
     flows: d.flows, valuation: d.valuation, sentiment: d.sentiment,
@@ -1018,15 +1080,24 @@ function HateIndexDashboard() {
             <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>FIG 03 · RELATIVE ROTATION GRAPH</div>
             <h2 className="display" style={{ fontSize: 22, fontWeight: 500, margin: '4px 0 0' }}>Sector rotation map</h2>
             <p style={{ fontSize: 12, color: BRAND.textMute, margin: '6px 0 0', maxWidth: 680 }}>
-              Each tail traces 6 weeks of momentum vs ASX 200. Sectors rotate clockwise: Lagging → Improving → Leading → Weakening.
-              Glow ring = HATED on the composite. Overlap of glow and Improving quadrant is the high-conviction setup.
+              Each tail traces the last {maxTail} weekly bars of momentum vs ASX 200 — older weeks fade out, the bright head is now.
+              Sectors rotate clockwise: Lagging → Improving → Leading → Weakening.
+              Glow ring = HATED on the composite; overlap of glow and the Improving quadrant is the high-conviction setup.
             </p>
           </div>
-          <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
-            <LegendDot dot={BRAND.orange} label="Capitulation (≥8σ)" />
-            <LegendDot dot={BRAND.pink} label="Hated (≥4σ)" />
-            <LegendDot dot={BRAND.purple} label="Neutral" />
-            <LegendDot dot={BRAND.blue} label="Liked" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
+            <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
+              <LegendDot dot={BRAND.orange} label="Capitulation (≥8σ)" />
+              <LegendDot dot={BRAND.pink} label="Hated (≥4σ)" />
+              <LegendDot dot={BRAND.purple} label="Neutral" />
+              <LegendDot dot={BRAND.blue} label="Liked" />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}
+                 title="Trail opacity encodes time: faint = oldest week, solid = latest">
+              <span className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.1em' }}>{tailWeeks}W AGO</span>
+              <span style={{ width: 54, height: 5, borderRadius: 3, background: `linear-gradient(90deg, ${BRAND.textDim}22, ${BRAND.text})` }} />
+              <span className="mono" style={{ fontSize: 9, color: BRAND.text, letterSpacing: '0.1em' }}>NOW</span>
+            </div>
           </div>
         </div>
         <div style={{ marginTop: 10 }}>

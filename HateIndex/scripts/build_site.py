@@ -36,7 +36,8 @@ TICKER_MAP: dict[str, str] = {
 BENCHMARK = "^AXJO"
 
 HISTORY_WEEKS = 104
-ROTATION_TAIL_LEN = 6
+ROTATION_TAIL_LEN = 26   # weeks of rotation trail drawn on the RRG (FIG 03)
+STATUS_WINDOW = 6        # weeks used to derive rotation status / just_entered
 STALE_THRESHOLD_DAYS = 10
 
 # Use the unicode arrow per SPEC.md output contract
@@ -103,12 +104,18 @@ def build() -> dict:
             continue
 
         latest = s_sub.iloc[-1]
+        # Display trail: 26-week rotation tail, each point carrying its own date so
+        # the dashboard can graduate the fade by real time ("Nw ago" -> now).
         rrg_tail = r_sub.tail(ROTATION_TAIL_LEN)
         tail_pairs = [
-            [round(float(r), 2), round(float(m), 2)]
-            for r, m in zip(rrg_tail["rs_ratio"], rrg_tail["rs_momentum"])
+            [round(float(r), 2), round(float(m), 2), d.strftime("%Y-%m-%d")]
+            for r, m, d in zip(rrg_tail["rs_ratio"], rrg_tail["rs_momentum"], rrg_tail["date"])
         ]
-        status, just_entered = make_status(rrg_tail["quadrant"].tolist())
+        # Rotation status / just_entered stay on the trailing 6-week window so the
+        # "just entered Improving/Leading" signal (FIG 04) keeps its meaning,
+        # independent of how long a trail we draw.
+        status_tail = r_sub.tail(STATUS_WINDOW)
+        status, just_entered = make_status(status_tail["quadrant"].tolist())
 
         history = (
             s_sub.tail(HISTORY_WEEKS)

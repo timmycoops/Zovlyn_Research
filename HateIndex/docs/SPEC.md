@@ -179,7 +179,7 @@ Quadrants (centred at 100, 100):
 | < 100    | < 100       | Lagging    |
 | ≥ 100    | < 100       | Weakening  |
 
-The dashboard tail is the **last 6 weeks**. The "rotation status" string is `{quadrant_at_t-5}→{quadrant_at_t}`, or just `{quadrant}` if unchanged.
+The dashboard draws a **26-week tail** (½ year of weekly bars) so the full rotation arc is visible; trail opacity fades from the oldest week to the latest. The **rotation status** string and the `just_entered` flag are computed on the **last 6 weeks only** — `{quadrant_at_t-5}→{quadrant_at_t}`, or just `{quadrant}` if unchanged — so a flag stays a *recent* event regardless of how long a trail is drawn.
 
 ## 4. Signal definition
 
@@ -217,7 +217,7 @@ The dashboard reads ONLY this file. Schema:
         "valuation": 1.9,
         "sentiment": 1.8
       },
-      "rrg_tail": [[94.0, 95.0], [95.0, 98.0], [96.0, 101.0], [98.0, 103.0], [100.0, 104.5], [101.8, 104.0]],
+      "rrg_tail": [[94.0, 95.0, "2025-12-19"], [95.0, 98.0, "2025-12-26"], [101.8, 104.0, "2026-06-12"]],
       "status": "Lagging→Leading",
       "just_entered": true,
       "score_history": [
@@ -232,7 +232,7 @@ The dashboard reads ONLY this file. Schema:
 
 Notes:
 - `score_history` is the trailing 104 weeks (2 years).
-- `rrg_tail` is exactly 6 entries.
+- `rrg_tail` is 26 entries, each `[rs_ratio, rs_momentum, "YYYY-MM-DD"]`, oldest → newest. The `status` / `just_entered` fields are derived from only the most recent 6 of these.
 - `components` includes all six keys; missing components have value `null` until Phase 7.
 - `as_of` is the date of the most recent Friday close used.
 - `is_stale` is `true` when `as_of` is older than 10 days (set in `build_site.STALE_THRESHOLD_DAYS`). The dashboard can use this to warn the user that the cron may have failed.
