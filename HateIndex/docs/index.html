@@ -332,11 +332,12 @@ function RRGPanel({ data, selected, setSelected }) {
             {/* On selection, label the faint end of the trail with how long ago it was */}
             {isSelected && (() => {
               const flipX = start[0] > X_MAX - 6;
+              const mo = Math.max(1, Math.round(n / 4.345));
               return (
                 <text x={xScale(start[0]) + (flipX ? -8 : 8)} y={yScale(start[1]) - 6}
                       textAnchor={flipX ? 'end' : 'start'}
                       fill={BRAND.textDim} fontSize={9} fontFamily="JetBrains Mono">
-                  {tailWeeks}w ago
+                  ≈{mo}mo ago
                 </text>
               );
             })()}
@@ -948,6 +949,7 @@ function HateIndexDashboard() {
   const breadthHated = data.filter(d => d.score > 0).length;
   const maxTail = data.reduce((m, d) => Math.max(m, (d.tail ? d.tail.length : 0)), 0);
   const tailWeeks = Math.max(0, maxTail - 1);   // weeks of elapsed time on the trail
+  const tailMonths = Math.max(1, Math.round(maxTail / 4.345));  // ~4.345 weeks per month
   const stackedData = data.map(d => ({
     name: d.name, drawdown: d.drawdown, momentum: d.momentum, positioning: d.positioning,
     flows: d.flows, valuation: d.valuation, sentiment: d.sentiment,
@@ -1080,7 +1082,7 @@ function HateIndexDashboard() {
             <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>FIG 03 · RELATIVE ROTATION GRAPH</div>
             <h2 className="display" style={{ fontSize: 22, fontWeight: 500, margin: '4px 0 0' }}>Sector rotation map</h2>
             <p style={{ fontSize: 12, color: BRAND.textMute, margin: '6px 0 0', maxWidth: 680 }}>
-              Each tail traces the last {maxTail} weekly bars of momentum vs ASX 200 — older weeks fade out, the bright head is now.
+              Each tail traces the last {maxTail} weeks (≈{tailMonths} months) of momentum vs ASX 200 — older weeks fade out, the bright head is now.
               Sectors rotate clockwise: Lagging → Improving → Leading → Weakening.
               Glow ring = HATED on the composite; overlap of glow and the Improving quadrant is the high-conviction setup.
             </p>
@@ -1094,7 +1096,7 @@ function HateIndexDashboard() {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}
                  title="Trail opacity encodes time: faint = oldest week, solid = latest">
-              <span className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.1em' }}>{tailWeeks}W AGO</span>
+              <span className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.1em' }}>≈{tailMonths}MO AGO</span>
               <span style={{ width: 54, height: 5, borderRadius: 3, background: `linear-gradient(90deg, ${BRAND.textDim}22, ${BRAND.text})` }} />
               <span className="mono" style={{ fontSize: 9, color: BRAND.text, letterSpacing: '0.1em' }}>NOW</span>
             </div>
