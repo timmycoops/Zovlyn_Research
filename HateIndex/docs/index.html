@@ -904,6 +904,7 @@ function HateIndexDashboard() {
   const [liveData, setLiveData] = useState(null);
   const [asOf, setAsOf] = useState('— mock data —');
   const [build, setBuild] = useState('dev');
+  const [loaded, setLoaded] = useState(false);
 
   // Load live data.json if present, else fall back to mocks
   useEffect(() => {
@@ -916,7 +917,8 @@ function HateIndexDashboard() {
           setBuild(j.build || 'live');
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoaded(true));
   }, []);
 
   const data = useMemo(() => {
@@ -938,11 +940,16 @@ function HateIndexDashboard() {
         constituents:  c.constituents,
       })).sort((a, b) => b.score - a.score);
     }
+    // While the real data.json is still loading, render nothing rather than
+    // flashing the 26-point mock — that would tease a half-year the live file
+    // may not have yet. Fall back to mock only once the fetch has settled
+    // (data.json genuinely missing, e.g. a fresh clone or file:// preview).
+    if (!loaded) return [];
     const sparklines = Object.fromEntries(
       RAW.map((d, i) => [d.name, genSparkline(i * 137 + 11, d.drift, d.drawdown + d.momentum + d.positioning + d.flows + d.valuation + d.sentiment)])
     );
     return buildAugmented(RAW, RRG_DATA_26, sparklines);
-  }, [liveData]);
+  }, [liveData, loaded]);
 
   const flagged = data.filter(d => d.score >= 4 && d.justEntered);
   const mostHated = data[0] || { name: '—', score: 0 };
@@ -1082,7 +1089,7 @@ function HateIndexDashboard() {
             <div className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.15em' }}>FIG 03 · RELATIVE ROTATION GRAPH</div>
             <h2 className="display" style={{ fontSize: 22, fontWeight: 500, margin: '4px 0 0' }}>Sector rotation map</h2>
             <p style={{ fontSize: 12, color: BRAND.textMute, margin: '6px 0 0', maxWidth: 680 }}>
-              Each tail traces the last {maxTail} weeks (≈{tailMonths} months) of momentum vs ASX 200 — older weeks fade out, the bright head is now.
+              Each tail traces the last {maxTail > 0 ? `${maxTail} weeks (≈${tailMonths} months)` : 'half-year'} of momentum vs ASX 200 — older weeks fade out, the bright head is now.
               Sectors rotate clockwise: Lagging → Improving → Leading → Weakening.
               Glow ring = HATED on the composite; overlap of glow and the Improving quadrant is the high-conviction setup.
             </p>
@@ -1096,7 +1103,7 @@ function HateIndexDashboard() {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}
                  title="Trail opacity encodes time: faint = oldest week, solid = latest">
-              <span className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.1em' }}>≈{tailMonths}MO AGO</span>
+              <span className="mono" style={{ fontSize: 9, color: BRAND.textDim, letterSpacing: '0.1em' }}>{maxTail > 0 ? `≈${tailMonths}MO AGO` : ''}</span>
               <span style={{ width: 54, height: 5, borderRadius: 3, background: `linear-gradient(90deg, ${BRAND.textDim}22, ${BRAND.text})` }} />
               <span className="mono" style={{ fontSize: 9, color: BRAND.text, letterSpacing: '0.1em' }}>NOW</span>
             </div>
